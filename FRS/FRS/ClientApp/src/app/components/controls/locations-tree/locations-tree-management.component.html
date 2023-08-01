@@ -1,0 +1,111 @@
+<div>
+  <header class="row">
+    <div class="col-sm-2 tree-filter-link">
+      <span class="location-page-header">Locations</span>
+      <!--<span><a href="javascript:;" (click)="isShowFilters=!isShowFilters"><small>Filters</small></a></span>-->
+    </div>
+    <div class="col-sm-10 col-xs-12 tree-filter-filters">
+      <div class="row bottom-space filter-container">
+        <div class="col-xs-6 col-sm-3 col-md-3 col-lg-2">
+          <mat-form-field floatLabel="always" class="filter">
+            <mat-label>Filter By Institution</mat-label>
+            <mat-select [(ngModel)]="filter.institutionId" name="fInstitution">
+              <!--<mat-option>ALL</mat-option>-->
+              <mat-option *ngFor="let institution of allFilterInstitutions" [value]="institution.id">{{institution.name}}</mat-option>
+
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-3 col-lg-2">
+          <mat-form-field floatLabel="always" class="filter">
+            <mat-label>Filter By Status</mat-label>
+            <mat-select [(ngModel)]="filter.imageReferenceColorId" name="fStatus">
+              <mat-select-trigger>
+                <div class="color-text-box">{{getColorNameById(filter.imageReferenceColorId)}}</div><div [style.background]="getColorById(filter.imageReferenceColorId)" class="color-span-filter"></div>
+                <!--<span class="color-span" [style.background]="getColorById(filter.imageReferenceColorId)">{{getColorNameById(filter.imageReferenceColorId)}} </span>-->
+              </mat-select-trigger>
+              <!--<mat-option>ALL</mat-option>-->
+              <mat-option *ngFor="let t of imageReferenceColors" [value]="t.id">
+                <div class="color-text-box">{{t.name}}</div><div [style.background]="t.colorCode" class="color-box"></div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-3 col-lg-2">
+          <mat-form-field [floatLabel]="always" class="filter">
+            <input matInput id="keyword" name="keyword" placeholder="Search" [(ngModel)]="filter.keyword">
+          </mat-form-field>
+        </div>
+        <div class="col-xs-2">
+          <mat-checkbox name="fIsBookingOnly" [(ngModel)]="filter.isBookingOnly">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">For Booking Only</label>
+          </mat-checkbox>
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-4 bottom-space" style="padding-bottom:10px;">
+          <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
+          <button type="button" class="btn btn-sm btn-info" (click)="applyFilters();">Filter</button>
+          <button type="button" class="btn btn-sm btn-info" (click)="downloadResults();" style="margin-left:5px;">Download Results</button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!--<hr class="separator-hr" />-->
+  <div class="row">
+    <div class="col-md-5 col-xs-11">
+      <!--<div ng-show="institutionId">
+        <mat-form-field class="col-md-12">
+          <mat-select placeholder="{{'devices.editor.Institution' | translate}}">
+            <mat-option *ngFor="let institution of allFilterInstitutions" [value]="institution.id" (onSelectionChange)="changeInstitutions($event)"><b>{{institution.name}}</b> - <small><i>{{institution.description}}</i></small></mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>-->
+      <div class="tree-toolbar-container">
+        <div class="node-actions">
+          <button mat-icon-button color="primary" (click)="addNode($event)" *ngIf="currentNode && currentNode.node && currentNode.node.id > 0 && currentNode.node.type != 'Room'">
+            <mat-icon aria-label="Add">add</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="removeNode($event)" *ngIf="currentNode && currentNode.node && currentNode.node.id > 0">
+            <mat-icon aria-label="Remove">delete</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="isTreeLoaded = false;treeKeyword ='';loadTree()">
+            <mat-icon aria-label="Refresh">refresh</mat-icon>
+          </button>
+          <!--<mat-form-field [floatLabel]="always" class="filter">
+            <input matInput id="treeKeyword" name="treeKeyword" placeholder="Quick Search" [(ngModel)]="treeKeyword" (keydown.enter)="searchTree()">
+          </mat-form-field>-->
+          <button mat-icon-button color="primary" (click)="isTreeLoaded = false;treeKeyword ='';syncSmartRooms()">
+            <mat-icon  matTooltip="Sync SMARTRoom Resources" aria-label="Sync SMARTRoom Resources">sync_alt</mat-icon>
+          </button>
+          <!--<button mat-icon-button color="primary" (click)="isTreeLoaded = false;treeKeyword ='';syncSmartRoomSchedules()">
+            <mat-icon aria-label="Sync SMARTRoom">sync_alt</mat-icon>
+            Sync Sched
+          </button>-->
+        </div>
+        <div class="tree-actions">
+          <button mat-icon-button color="primary" (click)="fileImport.click()" style="width:auto">
+            <mat-icon aria-label="Import">vertical_align_top</mat-icon>
+            Import
+          </button>
+          <button mat-icon-button color="primary" (click)="export()" style="width:auto">
+            <mat-icon aria-label="Export">vertical_align_bottom</mat-icon>
+            Export
+          </button>
+        </div>
+        <input type="file" #fileImport placeholder="Choose file" (change)="importedFile(fileImport.files)" style="display:none;" accept="{{fileTypes}}">
+        
+      </div>
+      <div class="tree-container">
+        <tree [tree]="tree"
+              #treeComponent
+              [settings]="treeSettings"
+              (nodeSelected)="handleSelected($event)">
+        </tree>
+      </div>
+      
+    </div>
+    <div class="col-md-7 col-xs-12 tree-details" *ngIf="currentNode">
+      <h5>Additional Information</h5>
+      <location-tree-editor [location]="selectedNode" #locationEditor (cancelChanges)="cancelChangeCompleted($event)" (savedLocation)="saveCompleted($event)" (renamedLocation)="renamedLocation($event)"></location-tree-editor>
+    </div>
+  </div>
+</div>

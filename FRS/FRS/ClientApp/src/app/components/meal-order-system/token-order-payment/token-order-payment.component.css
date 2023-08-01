@@ -1,0 +1,293 @@
+/* You can add global styles to this file, and also import other style files */
+.center {
+  margin: auto;
+}
+
+.bigbutton {
+  font-size: large;
+}
+
+.bigbutton {
+  height: 5em;
+  width: 9em;
+}
+
+.bigg {
+  height: 3.5em;
+  width: 100%;
+}
+
+#wrapper {
+  display: flex;
+  border: solid 5px black;
+  width: 50%;
+  margin: auto;
+}
+
+#left {
+  flex: 0 0 65%;
+  border: solid 5px brown;
+ /*1height: 100px; */
+}
+
+#right {
+  flex: 1;
+  border: solid 5px red;
+  1height: 100px;
+}
+
+.paymentimage {
+  border: solid 1px red;
+  width: 150px;
+  height: 150px;
+}
+
+.red {
+  height: 50px;
+  background: red;
+}
+
+.green {
+  height: 50px;
+  background: lightgreen;
+  margin: 10px;
+}
+
+.blue {
+  height: 50px;
+  background: blue;
+  margin: 10px;
+}
+
+.outline {
+  margin: auto;
+}
+
+.container {
+  margin: auto;
+  width: 80%;  
+  1padding: 10px;
+}
+
+.outlineName {
+  border: solid 2px black;
+  1margin: auto;
+  margin-top: -100px;
+}
+
+.resizeimg {
+  margin-left: auto;
+  margin-right: auto;
+  width: 130px;
+  height: 95px;
+}
+
+span.ans {
+  display: inline;
+  1text-indent: 142px;
+  1margin-left: 100px;
+  margin-top: -90px;
+}
+
+.center {
+  margin: auto;
+  /* width: 60%;
+    padding: 5px;
+  */
+}
+ 
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.fixedbox {
+  width: 7em; /* 3.3em;*/
+  1height: 80px;
+}
+
+.borderline {
+  border: solid 1px #DCDCDC;
+}
+
+.paymentdesc {
+  padding-left: 25px;
+  padding-right: 25px;
+  height: 30px;
+  font-size: 1em;
+}
+
+.fixcol {
+  width: 10em; 
+}
+
+.bigfont {
+  font-size: 1.45em;
+  font-weight: 100;
+}
+
+.bigfont2 {
+  font-size: 1.5em;
+  font-weight: 100;
+}
+
+.faintboxborder {
+  border: 1px solid #DCDCDC;
+}
+
+.faintboxborder-container {
+  border: 1px solid #F0F0F0;
+}
+
+.itembox {
+  width: auto;
+  border: 2px solid #F0F0F0;
+}
+
+.centertxt {
+  text-align: center;
+}
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gruende-button {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  grid-gap: 2px;
+  /*  align-items: center;  */
+}
+
+.gruende-button input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+
+/* Payment Button enabled */
+.gruende-button {
+  /* 1display: table-cell; set Text in vertical center (with vertical align) */
+  vertical-align: middle;
+  /* 1text-align: center;  set Text in horizontal center */
+  font-size: 100%;
+  font-family: Tahoma;
+  /*background-color: #7597F0; */
+  background-color: #00A774;
+  color: #FDFEFF; /* text white colour */
+  width: 100px;
+  height: 80px;
+  border-radius: 10px;
+}
+
+input.ng-dirty {
+  color: #A9A9A9; /* text colour */
+}
+
+/* ie mark as untouched/clean */
+input .ng-pristine {
+  background-color: #000000; /*   colour */
+}
+
+.gruende-button--checked {
+  background-color: #969699;
+}
+
+#content {
+  border: 1px ridge #999;
+  height: auto;
+  min-height: 1000px;
+  width: 1100px;
+  margin-top: 40px;
+  margin-right: auto;
+  /*  1margin-bottom: 30px; */
+  margin-left: auto;
+  float: left;
+  position: relative;
+  width: 100%;
+}
+
+.tab_container {
+  border: 1px ridge orange;  
+  clear: both;
+  width: 100%;
+  border-right: 1px ridge #999;
+ /*  1margin-bottom: 20px;*/
+  height: 100%;
+  position: absolute;
+}
+
+.textboxAlign {
+  padding-left: 18%;
+}
+
+.bigbuttontext {
+  font-size: 2em;
+}
+
+.highlight {
+  font-weight: bolder;
+}
+
+.widebutton {
+  width: 50px;
+}
+
+.subtitlespacer {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.bottonspacer {
+  padding-bottom: 10px;
+}
+
+.topspacer {
+  padding-top: 10px;
+}
+
+.filler--bordered:hover {
+  border:5px solid black;
+}
+
+.box:hover {
+  border-color: purple;
+}
+
+.boldtext{
+    font-weight:bold;
+}
+
+ .item {
+  background: #eee;
+  border: 1px solid transparent;
+}
+
+ .item:hover {
+    background: #e1e1e1;
+    border: 5px solid red;
+
+ }
+
+.container2 div {
+  float: left;
+  width: 180px;
+  height: 160px;
+}
+
+.box2 {
+  float:left;
+}
+ 
+.centerbox
+{
+  margin: auto;
+  width:100%;  
+  text-align:center;
+  padding-right:10px;
+  margin-right:10px;
+}

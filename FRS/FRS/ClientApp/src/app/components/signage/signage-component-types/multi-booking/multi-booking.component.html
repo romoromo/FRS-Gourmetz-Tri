@@ -1,0 +1,57 @@
+<table style="width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+">
+  <tr *ngFor="let x of getArrays(configurations.configurationsObj.noOfRows); let i = index">
+    <td *ngFor="let x of getArrays(configurations.configurationsObj.noOfColumns); let j = index"
+        [style.border-width.px]="configurations.configurationsObj.borderWidth"
+        [style.border-style]="configurations.configurationsObj.borderWidth ? 'solid' : ''"
+        [style.border-color]="configurations.configurationsObj.borderColor"
+        [style.overflow]="'hidden'">
+      <div [style.padding.px]="configurations.configurationsObj.cellPadding"
+           [style.border]="'none'"
+           [style.display]="'block'"
+           [style.width.%]="100"
+           [style.height.%]="100"
+           [style.position]="'relative'"
+           [style.overflow]="'hidden'">
+
+        <text-display [preview]="preview" [textStyle]="configurations.configurationsObj.contactNo" [previewText]="'Contact'" [actualText]="
+                      calendarEvents[
+                      (page * configurations.configurationsObj.noOfRows * configurations.configurationsObj.noOfColumns) + 
+                      (i * configurations.configurationsObj.noOfColumns)
+                      + j
+                      ]?.meta?.reservation?.createdByName"></text-display>
+
+        <text-display [preview]="preview" [textStyle]="configurations.configurationsObj.description" [previewText]="'Description'" [actualText]="
+                      calendarEvents[
+                      (page * configurations.configurationsObj.noOfRows * configurations.configurationsObj.noOfColumns) + 
+                      (i * configurations.configurationsObj.noOfColumns)
+                      + j
+                      ]?.meta?.reservation?.shortDescription"></text-display>
+
+        <text-display [preview]="preview" [textStyle]="configurations.configurationsObj.location" [previewText]="'Location'" [actualText]="
+                      calendarEvents[
+                      (page * configurations.configurationsObj.noOfRows * configurations.configurationsObj.noOfColumns) + 
+                      (i * configurations.configurationsObj.noOfColumns)
+                      + j
+                      ]?.meta?.location?.name"></text-display>
+
+        <text-display [preview]="preview" [textStyle]="configurations.configurationsObj.time" [previewText]="'Time'" [actualText]="
+                      calendarEvents[
+                      (page * configurations.configurationsObj.noOfRows * configurations.configurationsObj.noOfColumns) + 
+                      (i * configurations.configurationsObj.noOfColumns)
+                      + j
+                      ]?.time"></text-display>
+
+        <text-display [preview]="preview" [textStyle]="configurations.configurationsObj.meetingPurpose" [previewText]="'Meeting Purpose'" [actualText]="
+                      calendarEvents[
+                      (page * configurations.configurationsObj.noOfRows * configurations.configurationsObj.noOfColumns) + 
+                      (i * configurations.configurationsObj.noOfColumns)
+                      + j
+                      ]?.meta?.reservation?.longDescription"></text-display>
+      </div>
+    </td>
+  </tr>
+</table>

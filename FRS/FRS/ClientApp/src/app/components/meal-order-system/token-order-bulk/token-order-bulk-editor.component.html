@@ -1,0 +1,140 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="menuEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="save();">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-xs-12">
+          <mat-label>Student Group</mat-label>
+          <mat-select [disabled]="true" id="group" name="group" [(ngModel)]="orderEdit.studentGroupId" group="ngModel">
+            <mat-option *ngFor="let group of groups" [value]="group.id">
+              {{group.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12">
+          <input matInput [matDatepicker]="deliverypicker" placeholder="Delivery Date" [value]="deliveryDate"
+                 (dateChange)="onChangeDate('delivery', $event)" required>
+          <mat-datepicker-toggle matSuffix [for]="deliverypicker"></mat-datepicker-toggle>
+          <mat-datepicker #deliverypicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12">
+          <mat-label>Session</mat-label>
+          <mat-select id="session" name="session" [(ngModel)]="orderEdit.mealSessionDetailId" #session="ngModel">
+            <mat-option *ngFor="let session of periods" [value]="session.id">
+              {{session.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!--<mat-form-field class="col-xs-12">
+          <mat-label>Period</mat-label>
+          <mat-select id="period" name="period" [(ngModel)]="orderEdit.periodId" #period="ngModel">
+            <mat-option *ngFor="let period of periods" [value]="period.id">
+              {{period.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>-->
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" id="remarks" name="remarks" type="text" placeholder="Remarks" [(ngModel)]="orderEdit.remarks" #remarks="ngModel" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="true" id="totalAmount" name="totalAmount" type="text" placeholder="Total Amount" [(ngModel)]="orderEdit.totalAmount" #totalAmount="ngModel" />
+        </mat-form-field>
+
+        <hr />
+        <mat-label class="col-md-12"><h5>Tokens</h5></mat-label>
+
+        <div class="container" *ngFor="let detail of orderEdit.tokens; let i = index">
+          <div class="col-md-12">
+            <mat-form-field class="col-md-5">
+              <mat-label>Token {{i + 1}}</mat-label>
+              <mat-select (selectionChange)="selectToken($event,detail)" [disabled]="!canManageOrders" [(ngModel)]="detail.tokenId" [ngModelOptions]="{standalone: true}">
+                <mat-option *ngFor="let mealType of mealtypes" [value]="mealType.id">
+                  {{mealType.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="col-md-1">
+              <input matInput (change)="onChangeQty($event,detail)" autocomplete="off" [disabled]="!canManageOrders" type="text" placeholder="Qty" [(ngModel)]="detail.qty" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+
+            <mat-form-field class="col-md-1">
+              <input matInput autocomplete="off" [disabled]="true" type="text" placeholder="Price" [(ngModel)]="detail.price" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+
+            <mat-form-field class="col-md-2">
+              <input matInput autocomplete="off" [disabled]="true" type="text" placeholder="No. of Students" [(ngModel)]="detail.groupQty" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+
+            <mat-form-field class="col-md-2">
+              <input matInput autocomplete="off" [disabled]="true" type="text" placeholder="SubTotal" [(ngModel)]="detail.subtotal" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+
+            <div class="col-md-1">
+              <span class="btn btn-danger" (click)="removeToken(detail)">Remove</span>
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="container" *ngFor="let selCDish of detail.selectedCombinedDishes; let j = index" style="border-top:solid 1px;padding: 5px 0 0 0;">
+              <mat-form-field class="col-md-6">
+                <mat-label>Combined Dish {{j + 1}}</mat-label>
+                <mat-select (selectionChange)="selectCDish($event,detail,selCDish)" [disabled]="!canManageOrders" [(ngModel)]="selCDish.cDishLabel" [ngModelOptions]="{standalone: true}">
+                  <mat-option *ngFor="let cdish of detail.listCombinedDishes" [value]="cdish.setname">
+                    {{cdish.setname}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field class="col-md-3">
+                <input matInput (change)="onChangeCDQty($event,detail,selCDish)" autocomplete="off" [disabled]="!canManageOrders" type="number" placeholder="Qty" [(ngModel)]="selCDish.qty" [ngModelOptions]="{standalone: true}" />
+              </mat-form-field>
+
+              <!--<div class="col-md-2">
+          <span class="btn btn-danger" style="margin: 0 15px;" (click)="removeDish(detail,selDish)">Remove</span>
+        </div>-->
+            </div>
+
+            <div class="col-md-12">
+              <div class="container" *ngFor="let selDish of detail.selectedDishes; let k = index" style="border-top:solid 1px;padding: 5px 0 0 0;">
+                <mat-form-field class="col-md-6">
+                  <mat-label>Dish {{k + 1}}</mat-label>
+                  <mat-select [disabled]="true" [(ngModel)]="selDish.dishId" [ngModelOptions]="{standalone: true}">
+                    <mat-option *ngFor="let dish of dishes" [value]="dish.id">
+                      {{dish.label}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="col-md-3">
+                  <input matInput autocomplete="off" [disabled]="true" type="number" placeholder="Qty" [(ngModel)]="selDish.qty" [ngModelOptions]="{standalone: true}" />
+                </mat-form-field>
+
+                <!--div class="col-md-2">
+            <span class="btn btn-danger" style="margin: 0 15px;" (click)="removeDish(detail,selDish)">Remove</span>
+          </div>-->
+              </div>
+
+
+              <!--<span class="btn btn-success btn-xs" (click)="addDish(detail)" style="margin: 5px 0;">Add Dish</span>-->
+            </div>
+
+
+            <span *ngIf="!detail.selectedCombinedDishes" class="btn btn-success btn-xs" (click)="addCombinedDish(detail)" style="margin: 5px 0;">Add Commbined Dish</span>
+          </div>
+        </div>
+
+        <span class="btn btn-success btn-xs" (click)="addDetail(orderEdit)" style="margin: 5px 0;">Add Token</span>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageOrders" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageOrders" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageOrders" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

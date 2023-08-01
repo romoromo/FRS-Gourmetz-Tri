@@ -1,0 +1,121 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form class="form-horizontal" name="printLabelEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="save()">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-xs-6">
+          <input matInput [matDatepicker]="orderDate" placeholder="Order Date" [value]="orderDate"
+                 (dateChange)="onChangeDate('order', $event)" required>
+          <mat-datepicker-toggle matSuffix [for]="orderDate"></mat-datepicker-toggle>
+          <mat-datepicker #orderDate></mat-datepicker>
+        </mat-form-field>
+        <button type="button" mat-button (click)="getOrderData()" style="margin-top:20px">
+          <mat-icon>
+            input
+          </mat-icon> Get Order
+        </button>
+      </div>
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-xs-12 table-responsive">
+          <table class="table table-sm table-bordered" style="table-layout:fixed !important">
+            <thead>
+              <tr>
+                <th class="text-center">Token Orders</th>
+                <th class="text-center">Token Booked</th>
+                <th class="text-center">Dish Booked</th>
+                <th class="text-center">Proposed Allocation</th>
+                <th class="text-center">Overwrite Allocation</th>
+                <th class="text-center">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let tc of token_count; let i = index">
+                <tr>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="text" id="token{{tc.token_id}}{{i}}" name="token{{tc.token_id}}{{i}}" autocomplete="off" [value]="getTokenName(tc.token_id)" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="number" id="qty-menu-token{{tc.token_id}}{{i}}" name="qty-menu-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_menus" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="number" id="qty-token{{tc.token_id}}{{i}}" name="qty-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr *ngFor="let dc of tc.dishes; let i = index">
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="text" id="dish-name{{dc.dish_id}}{{i}}" name="dish-name{{dc.dish_id}}{{i}}" autocomplete="off" [value]="getDishName(dc.dish_id)" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td></td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="number" id="qty-dish{{dc.dish_id}}{{i}}" name="qty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.o_qty" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="number" id="pqty-dish{{dc.dish_id}}{{i}}" name="pqty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.p_qty" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="false" (change)="onChangeQty($event,dc,tc)" type="number" id="aqty-dish{{dc.dish_id}}{{i}}" name="aqty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.a_qty" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="number" id="tqty-dish{{dc.dish_id}}{{i}}" name="tqty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.t_qty" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="text" id="total{{tc.token_id}}{{i}}" name="total{{tc.token_id}}{{i}}" autocomplete="off" value="Total" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="number" id="qty-dishes{{tc.token_id}}{{i}}" name="qty-dishes{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_dishes" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="number" id="qty-pdishes{{tc.token_id}}{{i}}" name="qty-pdishes{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_pdishes" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td></td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="number" id="qty-tdishes{{tc.token_id}}{{i}}" name="qty-tdishes{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_tdishes" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

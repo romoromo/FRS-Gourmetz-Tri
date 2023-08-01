@@ -1,0 +1,47 @@
+<div>
+  <header class="pageHeader">
+    <h3><i class="fa fa-car fa-lg page-caption" aria-hidden="true"></i> {{'pageHeader.Vehicles' | translate}}</h3>
+  </header>
+
+  <div class="row control-box">
+    <div class="col-sm-8">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'userVehicles.management.Search' | translate}}">></search-box>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManageUserVehicles" class="toolbaritem">
+            <a href="javascript:;" (click)="addEditVehicle()">
+              <i class="fa fa-plus-circle"></i> {{'userVehicles.management.NewVehicle' | translate}}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="35"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [limit]="20">
+  </ngx-datatable>
+
+  <ng-template #indexTemplate let-value="value">
+    <strong>{{value}}</strong>
+  </ng-template>
+
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageUserVehicles && row.vehicleStatus != 'APPROVED'" class="btn btn-link btn-xs" href="javascript:;" (click)="approveVehicle(row)"><i class="fa fa-check" aria-hidden="true"></i> {{'userVehicles.management.Approve' | translate}}</a>
+    <a *ngIf="canManageUserVehicles && row.vehicleStatus == 'APPROVED'" class="btn btn-link btn-xs" href="javascript:;" (click)="disapproveVehicle(row)"><i class="fa fa-close" aria-hidden="true"></i> {{'userVehicles.management.Revoke' | translate}}</a>
+    <a *ngIf="canManageUserVehicles" class="btn btn-link btn-xs" href="javascript:;" (click)="addEditVehicle(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'userVehicles.management.Edit' | translate}}</a>
+    <a *ngIf="canManageUserVehicles" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteVehicle(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'userVehicles.management.Delete' | translate}}</a>
+  </ng-template>
+</div>

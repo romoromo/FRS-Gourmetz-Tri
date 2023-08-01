@@ -1,0 +1,167 @@
+<div class="container-fluid" *ngIf="dish">
+  <div class="row">
+    <!--<div class="col-xs-12 text-center">
+      <h1 class="capitalise">{{dish.label}}</h1>
+      <h4 class="capitalise">{{dish.code}}</h4>
+      <div *ngIf="dish.filePath" style="padding:10px;">
+        <img [src]="getFileImage(dish.filePath)" alt="icon" style="width:300px; height:300px;" />
+      </div>
+
+    </div>-->
+    <div class="col-md-8 col-md-offset-2" style="margin-top:20px">
+      <table class="table table-border-black">
+        <tbody>
+          <tr>
+            <td class="text-center text-bold">Caterer</td>
+            <td class="text-center">{{dish.catererName}}</td>
+            <td colspan="2" rowspan="3" style="text-align:center;vertical-align:middle"><img [src]="satsLogo" alt="SATS Food" style="width: 100px;"></td>
+          </tr>
+          <tr>
+            <td class="text-center text-bold">Kitchen</td>
+            <td class="text-center">{{dish.storeInfoName}}</td>
+          </tr>
+          <tr>
+            <td class="text-center text-bold">Menu Category</td>
+            <td class="text-center">{{dish.dishTypeName}}</td>
+          </tr>
+          <tr>
+            <td class="text-center text-bold" rowspan="3">Product Name</td>
+            <td class="text-center" rowspan="3">{{dish.label}}</td>
+            <td class="text-center">Menu Created By:</td>
+            <td class="text-center">{{dish.createdByName}}</td>
+          </tr>
+          <tr>
+            <td class="text-center">Date Created:</td>
+            <td class="text-center">{{dish.createdDate  | date:"dd-MMM-yy"}}</td>
+          </tr>
+          <tr>
+            <td class="text-center">Last Updated By:</td>
+            <td class="text-center">{{dish.updatedByName}}</td>
+          </tr>
+          <tr>
+            <td class="text-center text-bold">Product SKU Code</td>
+            <td class="text-center">{{dish.code}}</td>
+            <td class="text-center">Date Updated:</td>
+            <td class="text-center">{{dish.updatedDate  | date:"dd-MMM-yy"}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-border-black table-header-gray">
+        <thead>
+          <tr>
+            <th>Production Photo Spec</th>
+            <th>Menu Photo Spec</th>
+            <th>Product QR Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div *ngIf="dish.productionPicturePath" style="padding:10px;text-align:center">
+                <img [src]="getFileImage(dish.productionPicturePath)" alt="icon" style="width:200px; height:200px;" />
+              </div>
+            </td>
+            <td>
+              <div *ngIf="dish.filePath" style="padding:10px;text-align:center">
+                <img [src]="getFileImage(dish.filePath)" alt="icon" style="width:200px; height:200px;" />
+              </div>
+            </td>
+            <td>
+              <div [style.text-align]="'center'" style="padding-bottom:50px">
+                <qr-code [value]="dish.code" [size]="100" [level]="'H'"> </qr-code>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-border-black table-header-gray">
+        <thead>
+          <tr>
+            <th>Menu Description</th>
+            <th>Product Weight</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              {{dish.extraNotes}}
+            </td>
+            <td style="text-align:center">
+              {{totalWeight}}g
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-border-black table-header-gray">
+        <thead>
+          <tr>
+            <th colspan="4">Allergen Info</th>
+            <th colspan="4">NIP ({{totalWeight}}g Serving)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let restriction of restrictionTableData;let i = index">
+            <td class="check">
+              <mat-checkbox *ngIf="restriction[1] && restriction[1].length > 0" class="col-sm-6 col-xs-12" disabled [ngModel]="restriction[0]" id="restriction-{{i}}-0" name="restriction-{{i}}-0">
+              </mat-checkbox>
+            </td>
+            <td><div>{{ restriction[1] }}</div></td>
+            <td class="check">
+              <mat-checkbox *ngIf="restriction[3] && restriction[3].length > 0" class="col-sm-6 col-xs-12" disabled [ngModel]="restriction[2]" id="restriction-{{i}}-2" name="restriction-{{i}}-0">
+              </mat-checkbox>
+            </td>
+            <td><div>{{ restriction[3] }}</div></td>
+            <td><div>{{ nipTableData[i][0] }}</div></td>
+            <td class="check"><div>{{ nipTableData[i][1] }}</div></td>
+            <td><div>{{ nipTableData[i][2] }}</div></td>
+            <td class="check"><div>{{ nipTableData[i][3] }}</div></td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-border-black table-header-gray">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Category</th>
+            <th>Component</th>
+            <th>Weight</th>
+            <th>Pcs</th>
+            <th>SAP Product Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let component of dish.dishComponents;let i = index">
+            <td>{{i+1}}</td>
+            <td class="text-center">{{component.category}}</td>
+            <td>{{component.component}}</td>
+            <td class="text-center">{{component.weight}}g</td>
+            <td class="text-center">{{component.quantity}}pcs</td>
+            <td class="text-center">{{component.sapProductCode}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-border-black table-header-gray">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Packaging Material</th>
+            <th>Material Code</th>
+            <th>Packaging Photo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{1}}</td>
+            <td class="text-center">{{dish.bentoBoxTypeDetails}}</td>
+            <td class="text-center">{{dish.bentoBoxTypeCode}}</td>
+            <td class="text-center">
+              <div *ngIf="dish.bentoBoxTypePicture" style="padding:10px;text-align:center">
+                <img [src]="getFileImage(dish.bentoBoxTypePicture)" alt="icon" style="width:200px; height:200px;" />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

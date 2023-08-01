@@ -1,0 +1,362 @@
+{
+  "name": null,
+  "value": null,
+  "description": null,
+  "children": [
+    {
+      "name": "Root",
+      "value": "root.view",
+      "description": "Root",
+      "children": [
+        {
+          "name": "View System Settings Menu",
+          "value": "systemsetting.view",
+          "description": "Permission to view System Settings menu",
+          "children": [
+            {
+              "name": "User Management",
+              "value": "systemsetting.user.view",
+              "description": "Permission to view Users menu",
+              "children": [
+                {
+                  "name": "User",
+                  "value": "systemsetting.user.manage",
+                  "description": "Permission to view Users menu",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Role Management Menu",
+              "value": "systemsetting.role.view",
+              "description": "Permission to view Role menu",
+              "children": [
+                {
+                  "name": "Manage Role",
+                  "value": "systemsetting.role.manage",
+                  "description": "Permission to create, delete and modify roles",
+                  "children": []
+                },
+                {
+                  "name": "Assign Role",
+                  "value": "systemsetting.role.assign",
+                  "description": "Permission to assign roles to users",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Audit Logs Menu",
+              "value": "systemsetting.audit.view",
+              "description": "Permission to view Audit Logs menu",
+              "children": [
+                {
+                  "name": "Authentication Logs",
+                  "value": "systemsetting.audit.authlog.view",
+                  "description": "Permission to view authentication logs",
+                  "children": []
+                },
+                {
+                  "name": "Data Logs",
+                  "value": "systemsetting.audit.datalog.view",
+                  "description": "Permission to view data logs",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Application Setting Menu",
+              "value": "systemsetting.applicationsetting.view",
+              "description": "Permission to view Application Setting menu",
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "View Meal Order Account menu",
+          "value": "mosmgt.accountmgt.view",
+          "description": "Permission to view Meal Order Account menu",
+          "children": []
+        },
+        {
+          "name": "View Order Meals",
+          "value": "mosmgt.mealmgt.order.view",
+          "description": "Permission to view Order Meals menu",
+          "children": [
+            {
+              "name": "View Restriction Types menu",
+              "value": "mosmgt.mealmgt.order.restrictiontypes.view",
+              "description": "Permission to view Restriction Types menu",
+              "children": []
+            },
+            {
+              "name": "View Restrictions menu",
+              "value": "mosmgt.mealmgt.order.restrictions.view",
+              "description": "Permission to view Restrictions menu",
+              "children": []
+            },
+            {
+              "name": "View Cuisines menu",
+              "value": "mosmgt.mealmgt.order.cuisines.view",
+              "description": "Permission to view Cuisines menu",
+              "children": []
+            },
+            {
+              "name": "View Delivery menu",
+              "value": "mosmgt.mealmgt.order.delivery.view",
+              "description": "Permission to view Delivery menu",
+              "children": []
+            },
+            {
+              "name": "View Benton Box Types menu",
+              "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.view",
+              "description": "Permission to view Benton Box Types menu",
+              "children": []
+            },
+            {
+              "name": "View Bento Assets menu",
+              "value": "mosmgt.mealmgt.order.delivery.bentoassets.view",
+              "description": "Permission to view Bento Assets menu",
+              "children": []
+            },
+            {
+              "name": "View Carton Types menu",
+              "value": "mosmgt.mealmgt.order.delivery.cartontypes.view",
+              "description": "Permission to view Carton Types menu",
+              "children": []
+            },
+            {
+              "name": "View Carton Assets menu",
+              "value": "mosmgt.mealmgt.order.delivery.cartonassets.view",
+              "description": "Permission to view Carton Assets menu",
+              "children": []
+            },
+            {
+              "name": "View Tracking Status menu",
+              "value": "mosmgt.mealmgt.order.delivery.trackingstatus.view",
+              "description": "Permission to view Tracking Status menu",
+              "children": []
+            },
+            {
+              "name": "View Delivery Order menu",
+              "value": "mosmgt.mealmgt.order.delivery.deliveryorders.view",
+              "description": "Permission to view Delivery Order menu",
+              "children": []
+            },
+            {
+              "name": "View Dishing Process menu",
+              "value": "mosmgt.mealmgt.order.delivery.dishingprocess.view",
+              "description": "Permission to view Dishing Process menu",
+              "children": []
+            },
+            {
+              "name": "View Packing Process menu",
+              "value": "mosmgt.mealmgt.order.delivery.packingprocess.view",
+              "description": "Permission to view Packing Process menu",
+              "children": []
+            },
+            {
+              "name": "View Drivers menu",
+              "value": "mosmgt.mealmgt.order.delivery.drivers.view",
+              "description": "Permission to view Drivers menu",
+              "children": []
+            },
+            {
+              "name": "View Routes menu",
+              "value": "mosmgt.mealmgt.order.delivery.routes.view",
+              "description": "Permission to view Routes menu",
+              "children": []
+            },
+            {
+              "name": "View Caterers menu",
+              "value": "mosmgt.settingmgt.caterers.view",
+              "description": "Permission to view Caterers menu",
+              "children": []
+            },
+            {
+              "name": "View Outlet Profiles menu",
+              "value": "mosmgt.settingmgt.outletprofiles.view",
+              "description": "Permission to view Outlet Profiles menu",
+              "children": []
+            },
+            {
+              "name": "View Outlets menu",
+              "value": "mosmgt.settingmgt.outlets.view",
+              "description": "Permission to view Outlets menu",
+              "children": []
+            },
+            {
+              "name": "View Store Info menu",
+              "value": "mosmgt.settingmgt.storeinfo.view",
+              "description": "Permission to view Store Info menu",
+              "children": []
+            },
+            {
+              "name": "Manage Restriction Types menu",
+              "value": "mosmgt.mealmgt.order.restrictiontypes.manage",
+              "description": "Permission to view Restriction Types menu",
+              "children": []
+            },
+            {
+              "name": "Manage Restrictions menu",
+              "value": "mosmgt.mealmgt.order.restrictions.manage",
+              "description": "Permission to view Restrictions menu",
+              "children": []
+            },
+            {
+              "name": "Manage Cuisines menu",
+              "value": "mosmgt.mealmgt.order.cuisines.manage",
+              "description": "Permission to view Cuisines menu",
+              "children": []
+            },
+            {
+              "name": "Manage Delivery menu",
+              "value": "mosmgt.mealmgt.order.delivery.manage",
+              "description": "Permission to view Delivery menu",
+              "children": []
+            },
+            {
+              "name": "Manage Bento Box Types menu",
+              "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.manage",
+              "description": "Permission to view Benton Box Types menu",
+              "children": []
+            },
+            {
+              "name": "Manage Bento Assets menu",
+              "value": "mosmgt.mealmgt.order.delivery.bentoassets.manage",
+              "description": "Permission to view Bento Assets menu",
+              "children": []
+            },
+            {
+              "name": "Manage Carton Types menu",
+              "value": "mosmgt.mealmgt.order.delivery.cartontypes.manage",
+              "description": "Permission to view Carton Types menu",
+              "children": []
+            },
+            {
+              "name": "Manage Carton Assets menu",
+              "value": "mosmgt.mealmgt.order.delivery.cartonassets.manage",
+              "description": "Permission to view Carton Assets menu",
+              "children": []
+            },
+            {
+              "name": "Manage Tracking Status menu",
+              "value": "mosmgt.mealmgt.order.delivery.trackingstatus.manage",
+              "description": "Permission to view Tracking Status menu",
+              "children": []
+            },
+            {
+              "name": "Manage Delivery Order menu",
+              "value": "mosmgt.mealmgt.order.delivery.deliveryorders.manage",
+              "description": "Permission to view Delivery Order menu",
+              "children": []
+            },
+            {
+              "name": "Manage Dishing Process menu",
+              "value": "mosmgt.mealmgt.order.delivery.dishingprocess.manage",
+              "description": "Permission to view Dishing Process menu",
+              "children": []
+            },
+            {
+              "name": "Manage Packing Process menu",
+              "value": "mosmgt.mealmgt.order.delivery.packingprocess.manage",
+              "description": "Permission to view Packing Process menu",
+              "children": []
+            },
+            {
+              "name": "Manage Drivers menu",
+              "value": "mosmgt.mealmgt.order.delivery.drivers.manage",
+              "description": "Permission to view Drivers menu",
+              "children": []
+            },
+            {
+              "name": "Manage Routes menu",
+              "value": "mosmgt.mealmgt.order.delivery.routes.manage",
+              "description": "Permission to view Routes menu",
+              "children": []
+            },
+            {
+              "name": "Manage Caterers menu",
+              "value": "mosmgt.settingmgt.caterers.manage",
+              "description": "Permission to view Caterers menu",
+              "children": []
+            },
+            {
+              "name": "Manage Outlet Profiles menu",
+              "value": "mosmgt.settingmgt.outletprofiles.manage",
+              "description": "Permission to view Outlet Profiles menu",
+              "children": []
+            },
+            {
+              "name": "Manage Outlets menu",
+              "value": "mosmgt.settingmgt.outlets.manage",
+              "description": "Permission to view Outlets menu",
+              "children": []
+            },
+            {
+              "name": "Manage Store Info menu",
+              "value": "mosmgt.settingmgt.storeinfo.manage",
+              "description": "Permission to view Store Info menu",
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "View Meal Order Organisation menu",
+          "value": "mosmgt.orgmgt.view",
+          "description": "Permission to view Meal Order Organisation menu",
+          "children": []
+        },
+        {
+          "name": "View Meal Order Setting menu",
+          "value": "mosmgt.settingmgt.view",
+          "description": "Permission to view Meal Order Setting menu",
+          "children": [
+            {
+              "name": "Manage Payment Types",
+              "value": "mosmgt.settingmgt.payment.paymenttype.manage",
+              "description": "Permission to view Outlets menu",
+              "children": []
+            },
+            {
+              "name": "Manage Transaction Fees",
+              "value": "mosmgt.settingmgt.payment.transactionfee.manage",
+              "description": "Permission to view Store Info menu",
+              "children": []
+            },
+            {
+              "name": "Manage Voucher Types",
+              "value": "mosmgt.settingmgt.payment.vouchertype.manage",
+              "description": "Permission to view Voucher Types menu",
+              "children": []
+            },
+            {
+              "name": "Manage Vouchers",
+              "value": "mosmgt.settingmgt.payment.voucher.manage",
+              "description": "Permission to view Vouchers menu",
+              "children": []
+            },
+            {
+              "name": "Manage Waiver",
+              "value": "mosmgt.settingmgt.payment.waiver.manage",
+              "description": "Permission to view Waivers menu",
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "View Meal Order Report menu",
+          "value": "mosmgt.reportmgt.view",
+          "description": "Permission to view Meal Order Report menu",
+          "children": []
+        },
+        {
+          "name": "View Meal Order System Admin menu",
+          "value": "mosmgt.sysadminmgt.view",
+          "description": "Permission to view Meal Order System Admin menu",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

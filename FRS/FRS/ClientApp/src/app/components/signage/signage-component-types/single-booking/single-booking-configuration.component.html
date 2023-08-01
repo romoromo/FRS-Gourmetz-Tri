@@ -1,0 +1,58 @@
+<div>
+  <div>
+    <mat-checkbox class="example-margin" [(ngModel)]="configurations.screenoff">Screen Off When No Event</mat-checkbox>
+  </div>
+  <div>
+    <mat-checkbox class="example-margin" [(ngModel)]="configurations.screenon">Screen On When Event</mat-checkbox>
+  </div>
+  <br /><br />
+  <div>
+    <mat-checkbox class="example-margin" [(ngModel)]="configurations.pictureMode">Picture Playlist Mode</mat-checkbox>
+  </div>
+  <div *ngIf="configurations.pictureMode">
+    <mat-form-field style="width:300px">
+      <mat-label>Picture Playlist Interval (seconds)</mat-label>
+      <input matInput placeholder="default 5" value="0" type="number" [(ngModel)]="configurations.pictureModeInterval" />
+    </mat-form-field>
+  </div>
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.description.hide">Hide Description</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.description?.hide" [(configurations)]="configurations.description"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.contactNo.hide">Hide Contact</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.contactNo?.hide" [(configurations)]="configurations.contactNo"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.location.hide">Hide Location</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.location?.hide" [(configurations)]="configurations.location"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.time.hide">Hide Time</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.time?.hide" [(configurations)]="configurations.time"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.meetingPurpose.hide">Hide Meeting Purpose</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.meetingPurpose?.hide" [(configurations)]="configurations.meetingPurpose"></text-configuration>
+  </div>
+
+</div>

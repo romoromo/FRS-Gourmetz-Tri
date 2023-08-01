@@ -1,0 +1,472 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" name="locationEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() :
+          (!locationName.valid && showErrorAlert('Location name is required', 'Please enter a location name (minimum of 2 and maximum of 200 characters)'));">
+
+  <div mat-dialog-content class="tree-editor-container container">
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div>
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageLocations" type="text" id="locationName" name="locationName" placeholder="{{'locations.editor.Name' | translate}}" autofocus #location [(ngModel)]="locationEdit.name" #locationName="ngModel" required minlength="2" maxlength="200" (keyup)="renameNode($event)" />
+            <mat-error *ngIf="showValidationErrors && f.submitted && !locationName.valid">{{'locations.editor.LocationNameRequired' | translate}}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageLocations" type="text" id="locationDescription" name="locationDescription" placeholder="Enter location description" [(ngModel)]="locationEdit.description" /><mat-error *ngIf="showValidationErrors && f.submitted && !locationName.valid">{{'locations.editor.LocationNameRequired' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageLocations" type="number" id="locationCapacity" name="locationCapacity" placeholder="Enter capacity" [(ngModel)]="locationEdit.capacity" #locationCapacity="ngModel" required min="0" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && !locationCapacity.valid">{{'locations.editor.LocationCapacityRequired' | translate}}</mat-error>
+
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageLocations" type="text" name="locationGroup" placeholder="Location Group" [(ngModel)]="locationEdit.locationGroup" locationGroup="ngModel" /> <br />
+          <!--<label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label">Location Group</label>
+        <div class="col-md-7">
+          <input matInput type="text" name="locationGroup" placeholder="Location Group" [(ngModel)]="locationEdit.locationGroup" />
+        </div>-->
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageLocations" type="text" name="facePlateNumber" placeholder="Face Plate Number" [(ngModel)]="locationEdit.facePlateNumber" locationGroup="ngModel" /> <br />
+        </mat-form-field>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div *ngIf="!isEditMode || canManageLocations" class="form-group has-feedback">
+        <div *ngIf="!isEditMode" class="col-md-12">
+          <p ngPreserveWhitespaces class="form-control-static">
+            <span>
+              <span title='{{locationEdit.directoryName}}' class="badge">{{locationEdit.directoryName}}</span>
+            </span>
+          </p>
+        </div>
+        <div class="col-sm-12" *ngIf="isEditMode && canManageLocations" style="padding-left:45px;padding-right:45px">
+          <mat-form-field *ngIf="isEditMode && canManageLocations">
+            <input matInput placeholder="Directory" style="display: none">
+          </mat-form-field>
+          <select id="directory-location-info" name="mappedDirectory" [(ngModel)]="locationEdit.directoryId" #mappedDirectory="ngModel" #directorySelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect
+                  data-live-search="true" data-actions-box="false" data-live-search-placeholder="Search..." title="Select directory" data-dropup-auto="false">
+            <option *ngFor="let dir of allDirs" attr.data-content="<span title='{{dir.label}}'><b>{{dir.label}}</b> - <small><i>{{dir.description}}</i></small></span>" attr.value="{{dir.id}}">
+              {{dir.name}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!--******************************************************************************************************-->
+
+    <div *ngIf="!isEditMode || canManageLocations" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="locationEdit.locationTypeName == 'Room' && (!isEditMode || canManageLocations)">
+      <div class="col-md-12" *ngIf="!isEditMode">
+        <p ngPreserveWhitespaces class="form-control-static">
+          <span>
+            <span title='{{locationEdit.institutionName}}' class="badge">{{locationEdit.institutionName}}</span>
+          </span>
+        </p>
+      </div>
+      <div class="col-sm-12">
+
+        <mat-form-field *ngIf="isEditMode && canManageLocations">
+          <input matInput placeholder="{{'locations.editor.Institution' | translate}}" style="display: none">
+
+          <mat-select required multiple placeholder="{{'locations.editor.Institution' | translate}}" [formControl]="institutions" [(ngModel)]="locationEdit.institutionIds">
+            <mat-option [disabled]="setDisabledSelection(institution)" *ngFor="let institution of allInstitutions" [value]="institution.id" (selectionChange)="changeInstitutions($event.value)" required><b>{{institution.name}}</b> - <small><i>{{institution.description}}</i></small></mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted && institutions.invalid">{{'locations.editor.InstitutionRequired' | translate}}</mat-error>
+
+        </mat-form-field>
+      </div>
+    </div>
+    <!--******************************************************************************************************-->
+
+    <div *ngIf="locationEdit.locationTypeName == 'Room' && (!isEditMode || canManageLocations)" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="locationEdit.locationTypeName == 'Room' && (!isEditMode || canManageLocations)">
+      <div class="col-md-12">
+        <mat-form-field>
+          <input matInput placeholder="Equipments" style="display: none">
+          <mat-select placeholder="Equipments" [formControl]="facilities" multiple [(ngModel)]="locationEdit.facilityIds">
+            <mat-option *ngFor="let facility of facilitiesList" [value]="facility.id"><b>{{facility.name}}</b> - <small><i>{{facility.description}}</i></small></mat-option>
+          </mat-select>
+          <!--<mat-error *ngIf="showValidationErrors && f.submitted && facilities.invalid">{{'locations.editor.FacilitiesRequired' | translate}}</mat-error>-->
+
+        </mat-form-field>
+      </div>
+    </div>
+    <div *ngIf="locationEdit.locationTypeName == 'Room' && (!isEditMode || canManageLocations)">
+      <div class="col-md-12">
+        <mat-form-field>
+          <input matInput placeholder="Facility Types" style="display: none">
+          <mat-select placeholder="Facility Types" [formControl]="facilityTypes" multiple [(ngModel)]="locationEdit.facilityTypeIds">
+            <mat-option *ngFor="let facilityType of facilityTypesList" [value]="facilityType.id"><b>{{facilityType.name}}</b> - <small><i>{{facilityType.description}}</i></small></mat-option>
+          </mat-select>
+          <!--<mat-error *ngIf="showValidationErrors && f.submitted && facilities.invalid">{{'locations.editor.FacilitiesRequired' | translate}}</mat-error>-->
+
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageLocations" type="number" id="floorId" name="floorId" placeholder="Enter Floor ID" [(ngModel)]="locationEdit.floorId" #floorId="ngModel" min="0" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageLocations" type="text" id="exchangeId" name="exchangeId" placeholder="Enter Exchange ID" [(ngModel)]="locationEdit.exchangeId" #exchangeId="ngModel" min="0" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageLocations" type="text" id="extension" name="extension" placeholder="Enter Extension" [(ngModel)]="locationEdit.extension" #exchangeId="ngModel" min="0" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageLocations" type="text" id="ip" name="ip" placeholder="Enter IP" [(ngModel)]="locationEdit.ip" #ip="ngModel" min="0" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageLocations" type="text" id="deviceName" name="deviceName" placeholder="Enter Device Name" [(ngModel)]="locationEdit.deviceName" #deviceName="ngModel" min="0" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageLocations" type="text" id="category" name="category" placeholder="Enter Category" [(ngModel)]="locationEdit.category" #category="ngModel" min="0" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageLocations" type="text" id="remarks" name="remarks" placeholder="Enter Remarks" [(ngModel)]="locationEdit.remarks" #remarks="ngModel" min="0" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageLocations" type="number" id="floorX" name="floorX" placeholder="Enter Floor X" [(ngModel)]="locationEdit.floorX" #floorX="ngModel" min="0" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12" *ngIf="locationEdit.locationTypeName == 'Room'">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageLocations" type="number" id="floorY" name="floorY" placeholder="Enter Floor Y" [(ngModel)]="locationEdit.floorY" #floorY="ngModel" min="0" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-12">
+      <mat-form-field>
+        <input matInput placeholder="Available for Booking" style="display: none">
+        <mat-checkbox [disabled]="!canManageLocations" name="isBooking" [(ngModel)]="locationEdit.isBooking">
+          <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Available for Booking</label>
+        </mat-checkbox>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="locationEdit.locationTypeName == 'Room' && (!isEditMode || canManageLocations)" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="locationEdit.locationTypeName == 'Room' && (!isEditMode || canManageLocations)" class="row">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="locations-location-icon">Icon</label>
+      <div class="col-md-7">
+        <file-upload showTxt="false" (onUploadFinished)="uploadFinished($event)"></file-upload>
+      </div>
+
+      <div *ngIf="locationEdit.filePath" class="col-md-2" style="padding:10px; border: 1px dashed #808080;text-align:center">
+        <img [src]="getFileImage(locationEdit.filePath)" alt="icon" style="width:50px; height:50px;" />
+      </div>
+    </div>
+
+    <div class="row">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label">Colour Theme</label>
+      <div class="col-md-7">
+        <input name="colorTheme" [(colorPicker)]="locationEdit.colorTheme" [style.background]="locationEdit.colorTheme" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <hr class="edit-last-separator-hr" />
+      </div>
+    </div>
+    <mat-accordion>
+      <mat-expansion-panel style="margin-bottom:10px;">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <b>References</b>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="row">
+          <!--<label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label">References</label>-->
+          <div class="col-md-12 bottom-space">
+            <button class="btn btn-md" type="button" (click)="addImageReferenceRecord()"><i class="fa fa-plus-circle"></i> Add</button>
+            <!--<file-upload showTxt="false" (onUploadFinished)="addImageReference($event)" resetAfterUpload="true" btnText="Add Image/PDF" fileTypes="image/*,.pdf"></file-upload>-->
+          </div>
+
+          <div *ngIf="locationEdit.imageReferences && locationEdit.imageReferences.length > 0" class="col-xs-12 bottom-space filter-container">
+            <div class="col-xs-12 col-sm-5">
+              <mat-form-field floatLabel="always" class="filter">
+                <mat-label>Filter By Type</mat-label>
+                <mat-select [(ngModel)]="fType" name="type">
+                  <mat-option value=""></mat-option>
+                  <mat-option *ngFor="let t of imageReferenceTypes" [value]="t.id">
+                    {{t.name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xs-12 col-sm-5">
+              <mat-form-field floatLabel="always" class="filter">
+                <mat-label>Filter By Colour</mat-label>
+                <mat-select [(ngModel)]="fColor" name="status">
+                  <mat-select-trigger>
+                    <span class="color-span" [style.background]="getColorById(fColor)"> </span>
+                  </mat-select-trigger>
+                  <mat-option value="">--</mat-option>
+                  <mat-option *ngFor="let t of imageReferenceColors" [value]="t.id">
+                    <div class="color-text-box">{{t.name}}</div><div [style.background]="t.colorCode" class="color-box"></div>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xs-12  col-sm-2 bottom-space" style="padding-bottom:10px;">
+              <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
+              <button type="button" class="btn btn-sm btn-info" (click)="applyFilters();">Filter</button>
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="image-ref-table">
+              <table class="table table-sm table-bordered">
+                <thead>
+                  <tr>
+                    <th style="cursor:pointer" (click)="sortBy('referenceDate')">Date <i class="fa" [ngClass]="imageRefSort ? 'fa fa-arrow-up' : 'fa fa-arrow-down'"></i></th>
+                    <th>Type</th>
+                    <th>Colour Code</th>
+                    <th></th>
+                    <!--<th colspan="2">Details</th>-->
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let ir of locationEdit.imageReferences; let i = index;" [attr.data-index]="i">
+                    <tr [hidden]="ir.hidden" [ngClass]="!ir.id || ir.id < 1 ? 'new-record': ''">
+                      <td>
+                        <mat-form-field>
+                          <input matInput [matDatepicker]="picker" [disabled]="!canManageLocations" id="referenceDate{{i}}" name="referenceDate{{i}}" placeholder="Date" [(ngModel)]="ir.referenceDate" readonly [ngModelOptions]="{standalone: true}">
+                          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                          <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <mat-form-field *ngIf="canManageLocations">
+                          <input matInput placeholder="Type" style="display: none">
+                          <mat-select [disabled]="!canManageLocations" name="type{{i}}" [(ngModel)]="ir.imageReferenceTypeId" [ngModelOptions]="{standalone: true}" placeholder="Type">
+                            <mat-option *ngFor="let t of imageReferenceTypes" [value]="t.id">
+                              {{t.name}}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <div>
+                          <mat-form-field *ngIf="canManageLocations">
+                            <input matInput placeholder="Colour Code" style="display: none">
+                            <mat-select [disabled]="!canManageLocations" name="colorCode{{i}}" [(ngModel)]="ir.imageReferenceColorId" [ngModelOptions]="{standalone: true}" placeholder="Colour Code">
+                              <mat-select-trigger>
+                                <span class="color-span" [style.background]="getColorById(ir.imageReferenceColorId)"> </span>
+                              </mat-select-trigger>
+                              <mat-option *ngFor="let t of imageReferenceColors" [value]="t.id">
+                                <div class="color-text-box">{{t.name}}</div><div [style.background]="t.colorCode" class="color-box"></div>
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                      </td>
+                      <td style="text-align:center" rowspan="2">
+                        <div *ngIf="ir.filePath">
+                          <img [src]="getImageThumbnail(ir.filePath)" alt="icon" style="width:50px; height:50px;cursor:pointer;" id="img{{i}}" name="img{{i}}" (click)="viewImage(ir.filePath)" />
+                        </div>
+                        <div *ngIf="ir.filePath" class="ellipsis">
+                          <a class="btn btn-link btn-xs" style="padding-top:10px;" href="javascript:;" (click)="downloadFile(ir.filePath)"> {{ir.fileName}}</a>
+                        </div>
+                        <div class="btn-upload-container">
+                          <file-upload btnClassContainer="col-md-12" showTxt="false" (onUploadFinished)="addImageReference($event, ir)" resetAfterUpload="true" btnText="Add/Replace File" fileTypes="image/*,.pdf,.ppt, .pptx,.doc, .docx"></file-upload>
+                        </div>
+                        <!--<div *ngIf="ir.filePath">
+                        <a class="btn btn-link btn-xs" style="padding-top:10px;" href="javascript:;" (click)="downloadFile(ir.filePath)"><i class="fa fa-download" aria-hidden="true"></i> Download</a>
+                      </div>-->
+                        <div>
+                          <a *ngIf="canManageLocations" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteImage(ir.filePath)"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</a>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr [hidden]="ir.hidden" [ngClass]="!ir.id || ir.id < 1 ? 'new-record': ''">
+                      <td colspan="3">
+                        <mat-form-field>
+                          <textarea matInput [disabled]="!canManageLocations" id="remarks{{i}}" name="remarks{{i}}" placeholder="Remarks" [(ngModel)]="ir.remarks" [ngModelOptions]="{standalone: true}"></textarea>
+                          <!--<input matInput [disabled]="!canManageLocations" type="text" id="remarks{{i}}" name="remarks{{i}}" placeholder="Remarks" [(ngModel)]="ir.remarks" [ngModelOptions]="{standalone: true}" />--> <br />
+                        </mat-form-field>
+                      </td>
+                    </tr>
+                  </ng-container>
+
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+          <
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <b>Assets</b>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="row">
+          <div class="col-md-12 bottom-space">
+            <button class="btn btn-md" type="button" (click)="addAssetFromSelector()"><i class="fa fa-plus-circle"></i> Select</button>
+          </div>
+          <div class="col-md-12">
+            <div class="image-ref-table">
+              <table class="table table-sm table-bordered">
+                <thead>
+                  <tr>
+                    <th>Serial No.</th>
+                    <th>Model</th>
+                    <th>Asset Type</th>
+                    <th>Purchase Date</th>
+                    <th>Warranty Start</th>
+                    <th>Warranty End</th>
+                    <!--<th style="cursor:pointer" (click)="sortBy('purchaseDate')">Purchase Date <i class="fa" [ngClass]="assetSort ? 'fa fa-arrow-up' : 'fa fa-arrow-down'"></i></th>-->
+                    <!--<th style="width: 100px"></th>-->
+                    <!--<th colspan="2">Details</th>-->
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let ir of locationEdit.locationAssets; let i = index;" [attr.data-index]="i">
+                    <tr>
+                      <td>{{ir.serialNumber}}</td>
+                      <td>{{ir.assetModelName}}</td>
+                      <td>{{ir.assetTypeName}}</td>
+                      <td>{{ir.purchaseDate | date:"dd/MM/yyyy"}}</td>
+                      <td>{{ir.warrantyStart | date:"dd/MM/yyyy"}}</td>
+                      <td>{{ir.warrantyEnd | date:"dd/MM/yyyy"}}</td>
+                    </tr>
+                  </ng-container>
+
+                  <!--<ng-container *ngFor="let ir of locationEdit.assets; let i = index;" [attr.data-index]="i">
+                  <tr [hidden]="ir.hidden" [ngClass]="!ir.id || ir.id < 1 ? 'new-record': ''">
+                    <td>
+                      <mat-form-field *ngIf="canManageLocations">
+                        <input matInput placeholder="Asset Model *" style="display: none">
+                        <mat-select required [disabled]="!canManageLocations" name="assetModel{{i}}" [(ngModel)]="ir.assetModelId" [ngModelOptions]="{standalone: true}" placeholder="Asset Model">
+                          <mat-option *ngFor="let t of assetModels" [value]="t.id">
+                            {{t.name}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                    </td>
+                    <td style="vertical-align: middle;">
+                      {{getAssetTypeName(ir.assetModelId)}}
+                    </td>
+                    <td>
+                      <mat-form-field>
+                        <input matInput required [disabled]="!canManageLocations" type="text" name="serialNumber{{i}}" placeholder="Serial Number" [(ngModel)]="ir.serialNumber" [ngModelOptions]="{standalone: true}" /> <br />
+                      </mat-form-field>
+                    </td>
+                    <td rowspan="2" style="text-align: center;vertical-align: middle;">
+                      <div>
+                        <a *ngIf="canManageLocations" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteAsset(ir)"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</a>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr [hidden]="ir.hidden" [ngClass]="!ir.id || ir.id < 1 ? 'new-record': ''">
+                    <td>
+                      <mat-form-field>
+                        <input matInput [matDatepicker]="purchaseDatePicker" [disabled]="!canManageLocations" id="purchaseDate{{i}}" name="purchaseDate{{i}}" placeholder="Purchase Date" [(ngModel)]="ir.purchaseDate" readonly [ngModelOptions]="{standalone: true}">
+                        <mat-datepicker-toggle matSuffix [for]="purchaseDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #purchaseDatePicker></mat-datepicker>
+                      </mat-form-field>
+                    </td>
+                    <td>
+                      <mat-form-field>
+                        <input matInput [matDatepicker]="warrantyStartPicker" [disabled]="!canManageLocations" id="warrantyStart{{i}}" name="warrantyStart{{i}}" placeholder="Warranty Start" [(ngModel)]="ir.warrantyStart" readonly [ngModelOptions]="{standalone: true}">
+                        <mat-datepicker-toggle matSuffix [for]="warrantyStartPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #warrantyStartPicker></mat-datepicker>
+                      </mat-form-field>
+                    </td>
+                    <td>
+                      <mat-form-field>
+                        <input matInput [matDatepicker]="warrantyEndPicker" [disabled]="!canManageLocations" id="warrantyEnd{{i}}" name="warrantyEnd{{i}}" placeholder="Warranty End" [(ngModel)]="ir.warrantyEnd" readonly [ngModelOptions]="{standalone: true}">
+                        <mat-datepicker-toggle matSuffix [for]="warrantyEndPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #warrantyEndPicker></mat-datepicker>
+                      </mat-form-field>
+                    </td>
+                  </tr>
+                </ng-container>-->
+
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr class="edit-last-separator-hr" />
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="locationEdit != null && locationEdit.locationTypeName">
+    <button *ngIf="!canManageLocations" mat-button (click)="cancel()">{{'locations.editor.Close' | translate}}</button>
+    <button *ngIf="canManageLocations" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'locations.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageLocations" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('locations.editor.Saving' | translate) : ('locations.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

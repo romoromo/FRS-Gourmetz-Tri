@@ -1,0 +1,64 @@
+<div class="center-content">
+  <h2 class="bottom-space text-center">Attendance</h2>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="attendanceInfoForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+
+          (userNameEmail && !userNameEmail.valid && showErrorAlert('Username/Email is required', 'Please enter your email or username'));
+          ;">
+    <div class="row">
+      <div class="col-xs-12 col-sm-offset-2 col-sm-8">
+        <mat-card>
+          <mat-card-header>
+            <!--<div mat-card-avatar class="example-header-image"></div>-->
+            <mat-card-title class="upcoming-event-title">
+              <!--<div>{{event.shortDescription}}</div>-->
+              <div>
+                <mat-icon>calendar_today</mat-icon>
+                {{event.startDateTime | date: 'longDate'}}
+              </div>
+              <div>
+                <mat-icon>access_time</mat-icon>
+                {{event.startDateTime | date:'shortTime'}}
+              </div>
+            </mat-card-title>
+            <mat-card-subtitle>
+
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content style="padding-top:10px;text-align: center;">
+            <b>{{event.locationName}}</b>
+            <p>
+              {{event.longDescription}}
+            </p>
+            <br />
+            <div class="row">
+              <mat-form-field class="col-sm-12 col-md-6">
+                <input matInput type="text" id="userNameEmail" autocomplete="off" name="userNameEmail" placeholder="Enter Username or email" [(ngModel)]="userNameEmail" required />
+                <!--<mat-error *ngIf="showValidationErrors && f.submitted && !userNameEmail.valid">Please enter your email or username</mat-error>-->
+              </mat-form-field>
+              <mat-form-field class="col-sm-12 col-md-6">
+                <input matInput type="text" id="name" autocomplete="off" name="name" placeholder="Name" [(ngModel)]="name" required />
+                <!--<mat-error *ngIf="showValidationErrors && f.submitted && !userNameEmail.valid">Please enter your email or username</mat-error>-->
+              </mat-form-field>
+              <mat-form-field class="col-sm-12 col-md-6">
+                <input matInput type="text" id="company" autocomplete="off" name="company" placeholder="Company" [(ngModel)]="company" required />
+                <!--<mat-error *ngIf="showValidationErrors && f.submitted && !userNameEmail.valid">Please enter your email or username</mat-error>-->
+              </mat-form-field>
+              <mat-form-field class="col-sm-12 col-md-6">
+                <input matInput type="text" id="designation" autocomplete="off" name="designation" placeholder="Designation" [(ngModel)]="designation" required />
+                <!--<mat-error *ngIf="showValidationErrors && f.submitted && !userNameEmail.valid">Please enter your email or username</mat-error>-->
+              </mat-form-field>
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary" [disabled]="isSaving">
+                <i *ngIf="!isSaving" class='fa fa-check'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('Processing' | translate) : ('Attend' | translate)}}
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+    </div>
+    <div class="clearfix bottom-space"></div>
+  </form>
+</div>

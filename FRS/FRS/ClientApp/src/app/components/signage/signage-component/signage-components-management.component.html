@@ -1,0 +1,92 @@
+<div>
+  <header class="pageHeader">
+    <h3>Components</h3>
+  </header>
+  <div [hidden]="showEditor">
+    <div class="row control-box">
+      <div class="col-sm-6">
+        <div class="form-group search-box">
+          <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'signageComponents.management.Search' | translate}}">></search-box>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="navbar action-box">
+          <ul class="nav navbar-nav navbar-right">
+            <li *ngIf="canUpdateSignageComponents" class="toolbaritem">
+              
+              <a href="javascript:;" *ngIf="numberOfExports() > 0" >
+                <span>{{numberOfExports()}} item(s) </span> <span style="color: red;" (click)="exportList = {}"> <i class="fa fa-times"></i> Clear </span>
+              </a>
+            </li>
+            <li *ngIf="canUpdateSignageComponents && numberOfExports() > 0" class="toolbaritem">
+              <a href="javascript:;" (click)="export()">
+                <i class="fa fa-download"></i> Export
+              </a>
+            </li>
+            <li *ngIf="canUpdateSignageComponents" class="toolbaritem">
+              <file-upload id="chooseFile" [style.display]="'none'" (onUploadFinished)="uploadFinished($event)" [btnText]="'Choose File'"></file-upload>
+              <a href="javascript:;" (click)="importClicked()">
+                <i class="fa fa-upload"></i> Import
+              </a>
+
+            </li>
+            <li *ngIf="canCreateSignageComponents" class="toolbaritem">
+              <a href="javascript:;" (click)="newSignageComponent(row)">
+                <i class="fa fa-plus-circle"></i> {{'signageComponents.management.NewSignageComponent' | translate}}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <ngx-datatable class="material colored-header"
+                   [loadingIndicator]="loadingIndicator"
+                   [rows]="rows"
+                   [rowHeight]="'auto'"
+                   [headerHeight]="'auto'"
+                   [footerHeight]="35"
+                   [columns]="columns"
+                   [columnMode]="'force'"
+                   [limit]="20">
+    </ngx-datatable>
+
+    <ng-template #indexTemplate let-value="value">
+      <strong>{{value}}</strong>
+    </ng-template>
+
+
+    <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+
+      <a *ngIf="canUpdateSignageComponents" class="btn btn-link btn-xs" href="javascript:;" (click)="editSignageComponent(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'signageComponents.management.Edit' | translate}}</a>
+      <!--<a *ngIf="!canManageSignageComponents" class="btn btn-link btn-xs" href="javascript:;" (click)="editSignageComponent(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'signageComponents.management.Details' | translate}}</a>-->
+      <!--{{canManageSignageComponents ? '|' : ''}}-->
+      <a *ngIf="canDeleteSignageComponents" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteSignageComponent(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'signageComponents.management.Delete' | translate}}</a>
+      <br />
+      <a *ngIf="canUpdateSignageComponents && !exportList[row.id]?.included" class="btn btn-link btn-xs" href="javascript:;" (click)="addToExport(row)"><i class="fa fa-plus" aria-hidden="true"></i> Add To Export</a>
+      <a *ngIf="canUpdateSignageComponents && exportList[row.id]?.included" class="btn btn-link btn-xs" style="color: red;" href="javascript:;" (click)="removeFromExport(row)"><i class="fa fa-minus" aria-hidden="true"></i> Remove From Export</a>
+
+    </ng-template>
+  </div>
+  <div [hidden]="!showEditor">
+    <h3>{{header}}</h3>
+    <signage-component-editor #signageComponentEditor></signage-component-editor>
+  </div>
+
+  <!--<div class="modal fade" bsModal #editorModal="bs-modal" (onHidden)="onEditorModalHidden()" [config]="{backdrop: 'static'}" tabindex="-1">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 *ngIf="!canManageSignageComponents" class="modal-title pull-left"><i class="fa fa-shield"></i> {{'signageComponents.management.SignageComponentDetails' | translate:editingSignageComponentName}}</h4>
+          <h4 *ngIf="canManageSignageComponents" class="modal-title pull-left"><i class="fa fa-shield"></i> {{editingSignageComponentName ? ('signageComponents.management.EditSignageComponent' | translate:editingSignageComponentName) : ('signageComponents.management.NewSignageComponent' | translate)}}</h4>
+          <button type="button" class="close pull-right" title="Close" (click)="editorModal.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <signage-component-editor #signageComponentEditor></signage-component-editor>
+        </div>
+      </div>
+    </div>
+  </div>-->
+</div>

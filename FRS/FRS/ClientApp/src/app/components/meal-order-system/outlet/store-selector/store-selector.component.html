@@ -1,0 +1,83 @@
+<!--<div>
+  <h1 mat-dialog-title>{{data.header}}</h1>
+  <div mat-dialog-content>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group search-box">
+          <search-box (searchChange)="onSearchChanged($event)" placeholder="Search all columns"></search-box>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Name</th>
+              <th scope="col">Caterer</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let row of stores; let i = index;">
+              <tr *ngIf="row.status != 'Taken'">
+                <td>
+                  <a *ngIf="row.status == 'Available'" class="btn btn-link btn-xs" href="javascript:;" (click)="addStore(row)">Add</a>-->
+<!--<input type="checkbox" name="row{{row.id}}" [(ngModel)]="outlets[i].checked">-->
+<!--</td>
+              <td>{{row.name}}</td>
+              <td>{{row.catererInfoName}}</td>
+              <td>{{row.status}}</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions align="center">
+  <button type="button" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'reservations.editor.Cancel' | translate}}</button>-->
+<!--<button type="button" mat-button cdkFocusInitial (click)="save()">
+  <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> Choose
+</button>-->
+<!--</div>
+</div>-->
+
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form class="form-horizontal" name="storeSelectorForm" #f="ngForm" novalidate
+        (ngSubmit)="save() ">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-xs-12" style="min-height:300px">
+          <input matInput type="text" [hidden]="true" />
+            <button type="button" mat-button (click)="addStoreSel(editOutlet,selectedStores)" style="margin-top:20px">
+              <mat-icon>
+                add
+              </mat-icon> Add Store
+            </button>
+            <table class="table table-sm table-bordered">
+              <thead class="text-center">
+                <tr>
+                  <td>Store Name</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let store of selectedStores; let x=index">
+                  <td>{{store.name}}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>
+

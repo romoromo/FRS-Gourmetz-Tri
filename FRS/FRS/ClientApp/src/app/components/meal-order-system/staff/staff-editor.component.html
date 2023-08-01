@@ -1,0 +1,164 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="stafforForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() : invalidate()">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <h4>Staff Information</h4>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageStaffs" type="text" id="staffName" name="staffName" placeholder="Enter name" [(ngModel)]="staffEdit.name" #staffName="ngModel" required minlength="2" maxlength="200" />
+            <mat-error *ngIf="showValidationErrors && f.submitted">Name is required</mat-error>
+          </mat-form-field>
+          <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-12" style="padding-left: 15px !important;">
+            <input matInput placeholder="Gender" style="display: none" [disabled]="!canManageStaffs">
+            <mat-radio-group name="Gender" [(ngModel)]="staffEdit.gender" [disabled]="!canManageStaffs">
+              <mat-radio-button value="Male">Male</mat-radio-button>&nbsp;
+              <mat-radio-button value="Female">Female</mat-radio-button>&nbsp;
+            </mat-radio-group>
+          </mat-form-field>
+          <mat-form-field class="col-md-12">
+            <mat-label>Staff Type</mat-label>
+            <mat-select [disabled]="!canManageStaffs" id="staffType" name="staffType" [(ngModel)]="staffEdit.staffTypeId" #staffTypeId="ngModel" required>
+              <mat-option *ngFor="let staffType of staffTypes" [value]="staffType.id">
+                {{staffType.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="showValidationErrors && f.submitted">Staff Type is required</mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-md-12">
+            <mat-label>Department</mat-label>
+            <mat-select [disabled]="!canManageStaffs" id="departmentId" name="departmentId" [(ngModel)]="staffEdit.departmentId" #departmentId="ngModel" required>
+              <mat-option *ngFor="let dept of departments" [value]="dept.id">
+                {{dept.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="showValidationErrors && f.submitted">Department is required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-md-12">
+          <mat-checkbox class="col-sm-6 col-xs-12" name="isAddAccount" [(ngModel)]="isAddAccount">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Create Account</label>
+          </mat-checkbox>
+        </div>
+        <hr />
+        <div class="col-sm-12" *ngIf="isAddAccount">
+          <h4>Account Information</h4>
+        </div>
+
+        <div class="col-sm-12" *ngIf="isAddAccount">
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageStaffs" type="text" id="staffUserName" name="staffUserName" placeholder="Enter username" [(ngModel)]="staffEdit.username" #staffUserName="ngModel" required minlength="2" maxlength="200" />
+            <mat-error *ngIf="showValidationErrors && f.submitted">Username is required</mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageStaffs" type="text" id="staffEmail" name="staffEmail" placeholder="Enter email" [(ngModel)]="staffEdit.email" #staffEmail="ngModel" required minlength="2" maxlength="200" />
+            <mat-error *ngIf="showValidationErrors && f.submitted">Email is required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12" *ngIf="isAddAccount">
+          <!--<label for="newPassword" class="control-label col-md-2">{{'users.editor.Password' | translate}}</label>-->
+          <div *ngIf="!isChangePassword && staffEdit.userId" class="col-md-12">
+            <button type="button" (click)="changePassword()" class="btn btn-link">{{'users.editor.ChangePassword' | translate}}</button>
+          </div>
+
+          <div *ngIf="isChangePassword || (isAddAccount && !staffEdit.userId)" class="col-md-12">
+            <div class="password-well well well-sm">
+              <div *ngIf="isEditingSelf" class="form-group has-feedback">
+                <label class="control-label col-md-3" for="currentPassword">{{'users.editor.CurrentPassword' | translate}}</label>
+                <div class="col-md-9" [ngClass]="{'has-success': f.submitted && currentPassword.valid, 'has-error' : f.submitted && !currentPassword.valid}">
+                  <input type="password" attr.id="currentPassword" name="currentPassword" [attr.autocomplete]="new-password" placeholder="Enter current password" class="form-control" [(ngModel)]="staffEdit.currentPassword" #currentPassword="ngModel"
+                         required />
+                  <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': currentPassword.valid, 'glyphicon-remove' : !currentPassword.valid}"></span>
+                  <span *ngIf="showValidationErrors && f.submitted && !currentPassword.valid" class="errorMessage">
+                    {{'users.editor.CurrentPasswordRequired' | translate}}
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-group has-feedback">
+                <label class="control-label col-md-3" for="newPassword">{{'users.editor.NewPassword' | translate}}</label>
+                <div class="col-md-9" [ngClass]="{'has-success': f.submitted && newPassword.valid, 'has-error' : f.submitted && !newPassword.valid}">
+                  <input type="password" attr.id="newPassword" name="newPassword" placeholder="Enter new password" class="form-control" [(ngModel)]="staffEdit.newPassword" #newPassword="ngModel"
+                         required minlength="6" validateEqual="confirmPassword" reverse="true" />
+                  <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': newPassword.valid, 'glyphicon-remove' : !newPassword.valid}"></span>
+                  <span *ngIf="showValidationErrors && f.submitted && !newPassword.valid" class="errorMessage">
+                    {{'users.editor.NewPasswordRequired' | translate}}
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-group has-feedback">
+                <label class="control-label col-md-3" for="confirmPassword">{{'users.editor.ConfirmPassword' | translate}}</label>
+                <div class="col-md-9" [ngClass]="{'has-success': f.submitted && confirmPassword.valid, 'has-error' : f.submitted && !confirmPassword.valid}">
+                  <input type="password" attr.id="confirmPassword" name="confirmPassword" [attr.autocomplete]="isGeneralEditor ? new-password : null" placeholder="Confirm new password" class="form-control" [(ngModel)]="staffEdit.confirmPassword" #confirmPassword="ngModel"
+                         required validateEqual="newPassword" />
+                  <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': confirmPassword.valid, 'glyphicon-remove' : !confirmPassword.valid}"></span>
+                  <span *ngIf="showValidationErrors && f.submitted && confirmPassword.errors?.required" class="errorMessage">
+                    {{'users.editor.ConfirmationPasswordRequired' | translate}}
+                  </span>
+                  <span *ngIf="showValidationErrors && f.submitted && confirmPassword.errors?.validateEqual && !confirmPassword.errors?.required" class="errorMessage">
+                    {{'users.editor.PasswordMismatch' | translate}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div class="col-sm-12" *ngIf="isAddAccount">
+          <div class="form-group row">
+            <div class="col-md-12">
+              <button type="button" mat-button (click)="addCardId()" >
+                <mat-icon>
+                  card_membership
+                </mat-icon> Add Card Id
+              </button>
+            </div>
+            <div class="col-sm-12">
+              <table class="table table-sm" >
+                <thead>
+                  <tr>
+                    <th scope="col">Card Id</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Remarks</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of staffEdit.cards;let i = index">
+                    <td>{{row.cardId}}</td>
+                    <td>{{row.status}}</td>
+                    <td>{{row.remarks}}</td>
+                    <td>
+                      <a class="btn btn-link btn-xs" href="javascript:;" (click)="activateCardId(row,i)">
+                        <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                      </a>
+                      <a class="btn btn-link btn-xs" href="javascript:;" (click)="editCardId(row,i)">
+                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                      </a>
+                      <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteCardId(row)">
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageStaffs" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageStaffs" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageStaffs" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

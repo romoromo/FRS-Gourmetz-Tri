@@ -1,0 +1,86 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="studentEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() : invalidate()">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageMenuGroups" type="text" id="menuGroupName" name="menuGroupName" placeholder="Enter name" [(ngModel)]="menuGroupEdit.name" #menuGroupName="ngModel" required minlength="2" maxlength="200" />
+          <mat-error *ngIf="showValidationErrors && f.submitted">Name is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [value]="start"
+                 (dateChange)="onChangeDate('start', $event)" required>
+          <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+          <mat-datepicker #startpicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="endpicker" placeholder="End Date" [value]="end"
+                 (dateChange)="onChangeDate('end', $event)" required>
+          <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+          <mat-datepicker #endpicker></mat-datepicker>
+        </mat-form-field>
+        <mat-checkbox class="col-xs-12" [(ngModel)]="menuGroupEdit.isPublished" id="isPublished"
+                      name="isPublished">
+          <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Publish</label>
+        </mat-checkbox>
+        <hr />
+        <div style="padding-left:25px;min-height:300px">
+          <h4>Details</h4>
+          <mat-tab-group dynamicHeight>
+            <mat-tab label="Dish Cycles">
+              <div class="container-fluid" style="padding-top:20px">
+                <mat-error *ngIf="showValidationErrors && f.submitted && validDishCycle">Select at least one dish cycle</mat-error>
+                <div class="list-group-selection col-md-6">
+                  <div href="javascript:;" class="list-group-item list-group-item-action active">
+                    List of Dish Cycles
+                  </div>
+                  <div class="list-group-item list-group-item-action" *ngFor="let dishCycle of dishCycles" (click)="selectDishCycle(dishCycle)">
+                    {{dishCycle.label}}
+                  </div>
+                </div>
+                <div class="list-group-selection col-md-6">
+                  <div class="list-group-item list-group-item-action active">
+                    Selected Dish Cycles
+                  </div>
+                  <div class="list-group-item list-group-item-action" *ngFor="let dishCycle of selectedDishCycles" (click)="removeSelectDishCycle(dishCycle)">
+                    {{dishCycle.label}}
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Classes">
+              <div class="container-fluid" style="padding-top:20px">
+                <div class="list-group-selection col-md-6">
+                  <div href="javascript:;" class="list-group-item list-group-item-action active">
+                    List of Classes
+                  </div>
+                  <div class="list-group-item list-group-item-action" *ngFor="let c of classes" (click)="selectClass(c)">
+                    {{c.name}}
+                  </div>
+                </div>
+                <div class="list-group-selection col-md-6">
+                  <div class="list-group-item list-group-item-action active">
+                    Selected Classes
+                  </div>
+                  <div class="list-group-item list-group-item-action" *ngFor="let c of selectedClasses" (click)="removeSelectClass(c)">
+                    {{c.name}}
+                  </div>
+                </div>
+
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageMenuGroups" type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageMenuGroups" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageMenuGroups" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

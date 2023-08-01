@@ -1,0 +1,56 @@
+
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="deviceEditorForm" #f="ngForm" novalidate canManagePIBDevices
+        (ngSubmit)="f.form.valid && fcLocation.valid ? save() :
+          (!deviceCode.valid && showErrorAlert('Device code is required', 'Please enter a device code (minimum of 2 and maximum of 200 characters)'));">
+
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6">
+            <input matInput autocomplete="off" [disabled]="!canManagePIBDevices" type="text" id="deviceCode" name="deviceCode" placeholder="Enter device code" [(ngModel)]="pibDeviceEdit.device_code" #deviceCode="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceCode.valid">{{'devices.editor.DeviceCodeRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6">
+            <input matInput autocomplete="off" [disabled]="!canManagePIBDevices" type="text" id="deviceIpAddress" name="deviceIpAddress" placeholder="Enter device IP address" [(ngModel)]="pibDeviceEdit.ip_address" #deviceIpAddress="ngModel" />
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6">
+            <input matInput autocomplete="off" [disabled]="!canManagePIBDevices" type="text" id="deviceLabel" name="deviceLabel" placeholder="Enter device label" [(ngModel)]="pibDeviceEdit.device_label" #deviceLabel="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceLabelRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6">
+            <input matInput autocomplete="off" [disabled]="!canManagePIBDevices" type="text" id="deviceMacAddress" name="deviceMacAddress" placeholder="Enter device mac address" [(ngModel)]="pibDeviceEdit.mac_address" #deviceMacAddress="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceMacAddressRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManagePIBDevices" type="text" id="epaperUrl" name="epaperUrl" placeholder="Enter EPaper URL" [(ngModel)]="pibDeviceEdit.epaper_url" #epaperUrl="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceLabelRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <mat-select required [disabled]="!canManagePIBDevices" placeholder="{{'devices.editor.Location' | translate}}" [(ngModel)]="pibDeviceEdit.location_id" [formControl]="fcLocation">
+              <mat-option *ngFor="let location of allLocations" [value]="location.location_id" required><b>{{location.ancestor_alias}}</b> - <small><i>{{location.alias}}</i></small></mat-option>
+            </mat-select>
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcInstitution.invalid">{{'devices.editor.InstitutionRequired' | translate}}</mat-error>-->
+
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <!--<button *ngIf="!canManagePIBDevices  || pibDeviceEdit.status == 'Approved'" type="button" mat-button (click)="cancel()">{{'devices.editor.Close' | translate}}</button>-->
+      <button *ngIf="canManagePIBDevices" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'devices.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManagePIBDevices" mat-button color="primary" type="submit" [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('devices.editor.Saving' | translate) : ('devices.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,97 @@
+<h1 mat-dialog-title>{{'pageHeader.EmployeeSchedules' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="employeeScheduleAssignForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <mat-radio-group aria-label="Select an option" [(ngModel)]="day" name="days" class="col-md-12" style="margin-bottom: 10px;text-align:center" #radioGroup="matRadioGroup">
+        <mat-radio-button [style.width.%]="100/7" value="1">Monday</mat-radio-button>
+        <mat-radio-button [style.width.%]="100/7" value="2">Tuesday</mat-radio-button>
+        <mat-radio-button [style.width.%]="100/7" value="3">Wednesday</mat-radio-button>
+        <mat-radio-button [style.width.%]="100/7" value="4">Thursday</mat-radio-button>
+        <mat-radio-button [style.width.%]="100/7" value="5">Friday</mat-radio-button>
+        <mat-radio-button [style.width.%]="100/7" value="6">Saturday</mat-radio-button>
+        <mat-radio-button [style.width.%]="100/7" value="0">Sunday</mat-radio-button>
+      </mat-radio-group>
+      Click on table cell to assign employees.
+      <table style="width: 100%;border-collapse: collapse;table-layout: fixed;" class="table table-bordered table-hover table-striped">
+        <tr>
+          <td [style.width.%]="100/4"></td>
+          <td style="text-align:center" [hidden]="!(s.monday && day == 1 || s.tuesday && day == 2 || s.wednesday && day == 3 || s.thursday && day == 4 || s.friday && day == 5 || s.saturday && day == 6 || s.sunday && day == 0)" *ngFor="let s of employeeScheduleEdit.shifts;let j = index;trackBy:trackByIndex;">{{s.name}}</td>
+        </tr>
+        <tr *ngFor="let l of employeeScheduleEdit.locations;let i = index;trackBy:trackByIndex;">
+          <td>{{l.name}}</td>
+          <td [hidden]="!(s.monday && day == 1 || s.tuesday && day == 2 || s.wednesday && day == 3 || s.thursday && day == 4 || s.friday && day == 5 || s.saturday && day == 6 || s.sunday && day == 0)" *ngFor="let s of employeeScheduleEdit.shifts;let j = index;trackBy:trackByIndex;" (click)="clickedCell(l.locationId, s.id, day)">
+
+            <div [hidden]="!(c.locationId == l.locationId && c.shiftId == s.id && c.day == day && c.isActive)" *ngFor="let c of employeeScheduleEdit.slots;let index = index;trackBy:trackByIndex;">
+              <span><i class='fa fa-square'></i> {{c.name}}</span> &nbsp;
+
+              <span *ngIf="clickedLocationId == l.locationId && clickedShiftId == s.id && clickedDay == day">
+                <span class="btn btn-primary btn-xs" (click)="c.cover = !c.cover">Cover</span>
+                <span class="btn btn-danger btn-xs" (click)="c.isActive = 0"><i class='fa fa-times'></i> Remove</span>
+              </span>
+              <br />
+              <span *ngIf="c.coverName" style="font-style:italic">
+                {{c.coverName}} (cover for {{c.name}})
+                <span class="btn btn-danger btn-xs" *ngIf="clickedLocationId == l.locationId && clickedShiftId == s.id && clickedDay == day" (click)="c.coveringEmployeeDataId = null; c.coverName = ''; c.cover = false"><i class='fa fa-times'></i> Remove</span>
+              </span>
+              <br />
+              <span *ngIf="clickedLocationId == l.locationId && clickedShiftId == s.id && clickedDay == day">
+
+
+                <span *ngIf="c.cover">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Covering Employee</mat-label>
+                    <mat-select [(ngModel)]="selectedCover" name="employee">
+                      <mat-option *ngFor="let sc of allEmployeeDatas" [value]="sc">
+                        {{sc.name}}
+                      </mat-option>
+                    </mat-select>
+
+                  </mat-form-field>
+                  <span class="btn btn-primary" (click)="addCover(selectedCover, c)"><i class='fa fa-plus'></i> Cover</span>
+                </span>
+              </span>
+            </div>
+
+            <div [hidden]="!(c.locationId == l.locationId && c.shiftId == s.id && c.day == day)" *ngFor="let c of employeeScheduleEdit.infos;let index = index;trackBy:trackByIndex;">
+              <section class="example-section" *ngIf="c.extend || (clickedLocationId == l.locationId && clickedShiftId == s.id && clickedDay == day)">
+                <mat-checkbox [(ngModel)]="c.extend" name="extend{{c.locationId}}a{{c.shiftId}}a{{day}}" class="example-margin">Extend Schedule</mat-checkbox>
+              </section>
+              <section class="example-section" *ngIf="c.noDisplay || (clickedLocationId == l.locationId && clickedShiftId == s.id && clickedDay == day)">
+                <mat-checkbox [(ngModel)]="c.noDisplay" name="nodp{{c.locationId}}a{{c.shiftId}}a{{day}}" class="example-margin">Don't Display</mat-checkbox>
+              </section>
+            </div>
+
+            <div *ngIf="clickedLocationId == l.locationId && clickedShiftId == s.id && clickedDay == day">
+              <mat-form-field appearance="fill">
+                <mat-label>Add Employees</mat-label>
+                <mat-select [(ngModel)]="selected" name="employee">
+                  <mat-option *ngFor="let sc of allEmployeeDatas" [value]="sc">
+                    {{sc.name}}
+                  </mat-option>
+                </mat-select>
+
+              </mat-form-field>
+              <span class="btn btn-primary" (click)="addEmployee(selected, l.locationId, s.id, day)"><i class='fa fa-plus'></i> Add</span>
+            </div>
+
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="employeeScheduleEdit != null">
+    <button *ngIf="!canManageEmployeeSchedules" mat-button (click)="cancel()">{{'employeeSchedules.editor.Close' | translate}}</button>
+    <button *ngIf="canManageEmployeeSchedules" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'employeeSchedules.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageEmployeeSchedules" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('employeeSchedules.editor.Saving' | translate) : ('employeeSchedules.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

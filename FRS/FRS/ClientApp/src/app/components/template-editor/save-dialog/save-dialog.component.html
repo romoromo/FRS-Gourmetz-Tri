@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Save Template</h1>
+<div>
+  <div mat-dialog-content>
+    <form *ngIf="formResetToggle" class="form-horizontal" name="templateEditorForm" #f="ngForm" novalidate
+          (ngSubmit)="f.form.valid ? save() :
+          (!templateName.valid && showErrorAlert('Template name is required', 'Please enter a template name (minimum of 2 and maximum of 200 characters)'));">
+
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput type="text" name="name" placeholder="Name" [(ngModel)]="templateEdit.name" autocomplete="off" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput type="text" name="description" placeholder="Description" [(ngModel)]="templateEdit.description" autocomplete="off" />
+        </mat-form-field>
+        <div class="col-md-12">
+          <mat-checkbox name="isMapApi" [(ngModel)]="templateEdit.isMapToAPI">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Map to API</label>
+          </mat-checkbox>
+        </div>
+        <mat-form-field class="col-md-12" *ngIf="templateEdit.isMapToAPI">
+          <input matInput name="device_api_url" type="text" placeholder="API Url" [(ngModel)]="templateEdit.mapAPIUrl" />
+        </mat-form-field>
+        <h5 class="col-md-12 field_name_label">Locations</h5>
+        <mat-select #locSelect  name="bed" multiple class="col-md-12 field_name_select" placeholder="Select Bed" [(ngModel)]="templateEdit.locationIds">
+          <mat-option [class.hide]="!locations || locations.length == 0" [value]="0" (click)="toggleAllSelection()">All items</mat-option>
+          <mat-option *ngFor="let v of locations" [value]="v.location_id">{{v.label}}</mat-option>
+        </mat-select>
+      </div>
+
+      <div mat-dialog-actions align="center">
+        <button *ngIf="canManageTemplates" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'templates.editor.Cancel' | translate}}</button>
+        <button *ngIf="canManageTemplates" type="submit" mat-button [disabled]="isSaving">
+          <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('templates.editor.Saving' | translate) : ('templates.editor.Save' | translate)}}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

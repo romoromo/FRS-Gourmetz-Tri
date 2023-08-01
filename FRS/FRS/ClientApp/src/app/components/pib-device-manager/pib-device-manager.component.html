@@ -1,0 +1,37 @@
+<div class="container">
+  <header class="pageHeader">
+    <h3><i class="fa fa-cog fa-lg page-caption" aria-hidden="true"></i> {{'pageHeader.DeviceManager' | translate}}</h3>
+  </header>
+
+  <div [@fadeInOut] class="row">
+    <div class="col-sm-2 side-menu">
+      <ul bootstrapTab #tab="bootstrap-tab" class="nav nav-tabs tabs-left" (showBSTab)="onShowTab($event)">
+        <li class="active">
+          <a id="unknownDeviceTab" [routerLink]="[]" fragment="unknownDevice" href="#unknownDevice" data-toggle="tab"><i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> {{'settings.tab.UnknownDevice' | translate}}</a>
+        </li>
+        <li>
+          <a id="approveDeviceTab" [routerLink]="[]"fragment="approveDevice" href="#approveDevice" data-toggle="tab"><i class="fa fa-sliders fa-fw" aria-hidden="true"></i> {{'settings.tab.ApproveDevice' | translate}}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-sm-10">
+      <div class="tab-content">
+        <div class="tab-pane active" id="unknownDevice">
+          <h4>{{'settings.header.UnknownDevice' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] *ngIf="isUnknownDevice" class="content-container">
+            <devices-management #deviceManagement  [isApproval]="false" ></devices-management>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="approveDevice">
+          <h4>{{'settings.header.ApproveDevice' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] *ngIf="isApproveDevice" class="content-container">
+            <devices-management  #deviceManagement  [isApproval]="true"></devices-management>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

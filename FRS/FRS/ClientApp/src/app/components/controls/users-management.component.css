@@ -1,0 +1,80 @@
+
+.user-role {
+    font-size: 0.8em !important;
+    margin-right: 1px;
+}
+
+.control-box {
+    margin-bottom: 5px;
+}
+
+.search-box {
+    margin: 0;
+}
+
+.action-box {
+    margin: 0 50px 0 0;
+    min-height: 0;
+}
+
+    .action-box .toolbaritem a {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        min-width: 100px;
+    }
+
+
+.user-disabled {
+    color: #777;
+    font-style: italic;
+}
+
+
+.locked-out {
+    background-color: orangered;
+    color: whitesmoke;
+    width: 100%;
+    display: inline-block;
+    padding-left: 5px;
+}
+
+
+@media (max-width: 768px) {
+    .action-box {
+        margin: 0 14px;
+    }
+}
+
+
+.status_offline {
+  font-size: 20px;
+  color: lightgray !important;
+}
+
+.status_online {
+  font-size: 20px;
+  color: #08ca08;
+}
+
+.status_engaged {
+  font-size: 20px;
+  color: yellow;
+}
+
+.status_offduty {
+  font-size: 20px;
+  color: #f72626 !important;
+}
+
+.status-container {
+  display: flex;
+  align-items: center;
+}
+
+.status-holder{
+  margin-top:-3px;
+}
+
+.user-info-modal{
+  z-index: 1000 !important;
+}

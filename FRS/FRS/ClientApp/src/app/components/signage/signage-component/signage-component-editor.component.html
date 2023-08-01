@@ -1,0 +1,137 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="signageComponentEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!signageComponentName.valid && showErrorAlert('Signage component name is required', 'Please enter a signage component name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageSignageComponents" type="text" id="signageComponentName" name="signageComponentName" placeholder="Enter name" [(ngModel)]="signageComponentEdit.name" #signageComponentName="ngModel" required />
+          </mat-form-field>
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageSignageComponents" type="text" id="signageComponentDescription" name="signageComponentDescription" placeholder="Enter descriptions" [(ngModel)]="signageComponentEdit.description" #signageComponentDescription="ngModel" required />
+          </mat-form-field>
+
+          <!--<mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageSignageComponents" type="number" id="signageComponentFixWidth" name="signageComponentFixWidth" placeholder="Enter fixed width (optional)" [(ngModel)]="signageComponentEdit.fixWidth" #signageComponentFixWidth="ngModel" />
+          </mat-form-field>
+
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageSignageComponents" type="number" id="signageComponentFixHeight" name="signageComponentFixHeight" placeholder="Enter fixed height (optional)" [(ngModel)]="signageComponentEdit.fixHeight" #signageComponentFixHeight="ngModel" />
+          </mat-form-field>
+
+          <div class="col-md-12">
+            <mat-checkbox [disabled]="!canManageSignageComponents" id="signageComponentIsRatio" name="signageComponentIsRatio" placeholder="Width and Height not fix, but keep aspect ratio" [(ngModel)]="signageComponentEdit.isRatio" #signageComponentIsRatio="ngModel">
+              <label>Width and Height not fixed, but keep aspect ratio</label>
+            </mat-checkbox>
+          </div>-->
+
+          <div class="col-md-12">
+            Background Image <file-upload (onUploadFinished)="uploadFinished($event)"></file-upload>
+            <span *ngIf="signageComponentEdit.backgroundImage" (click)="signageComponentEdit.backgroundImage = null" class="btn btn-danger">Remove</span>
+            <br />
+            <img [hidden]="!signageComponentEdit.backgroundImage" [src]="signageComponentEdit.backgroundImage" style="max-width: 300px; max-height: 300px;padding:2px" />
+          </div>
+
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageSignageComponents" id="signageComponentBackgroundColor" name="signageComponentBackgroundColor" placeholder="Enter background color (optional)" [(colorPicker)]="signageComponentEdit.backgroundColor" [style.background]="signageComponentEdit.backgroundColor" />
+            
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Component Types</mat-label>
+            <mat-select [(ngModel)]="signageComponentEdit.componentType" name="signageComponentComponentType" (selectionChange)="componentTypeChange($event)">
+              <mat-option *ngFor="let type of componentTypes" [value]="type.id">
+                {{type.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="col-md-12">
+            <h4>Componet Type {{signageComponentEdit.componentTypeObj ? signageComponentEdit.componentTypeObj.name : ""}} Configuration</h4>
+            <signage-component-type-wrapper #signageComponentTypeWrapper *ngIf="signageComponentEdit.componentTypeObj && signageComponentEdit.componentTypeObj.configuration" [type]="signageComponentEdit.componentTypeObj.configuration" [configurations]="signageComponentEdit.configurationsObj"></signage-component-type-wrapper>
+          </div>
+
+          <div class="col-md-12">
+
+            <h1>Preview</h1>
+            Preview width <input type="number" name="previewWidth" [(ngModel)]="signageComponentEdit.previewWidth" />
+            Preview height <input type="number" name="previewHeight" [(ngModel)]="signageComponentEdit.previewHeight" />&nbsp;&nbsp;&nbsp;
+            <span class="btn btn-primary" (click)="componentTypeChange($event, true)">Hard Reload Preview</span>
+            <br />
+            <signage-component-type-wrapper #signageDisplayTypeWrapper
+                                            *ngIf="signageComponentEdit.componentTypeObj && signageComponentEdit.componentTypeObj.component"
+                                            [style.border]="'none'"
+                                            [style.display]="'block'"
+                                            [style.width.px]="signageComponentEdit.previewWidth"
+                                            [style.height.px]="signageComponentEdit.previewHeight"
+                                            [style.background-color]="signageComponentEdit.backgroundColor || 'lightgray'"
+                                            [style.background-image]="'url(\'' + signageComponentEdit.backgroundImage + '\')'"
+                                            [style.background-size]="'cover'"
+                                            [type]="signageComponentEdit.componentTypeObj.component"
+                                            [style.z-index] [configurations]="signageComponentEdit" [preview]="true"
+                                            [style.position]="'relative'"
+                                            [style.overflow]="'hidden'"></signage-component-type-wrapper>
+          </div>
+          <!--<div class="form-group has-feedback">
+            <label class="control-label col-md-2" for="signageComponentName">{{'signageComponents.editor.Name' | translate}}</label>
+            <div class="col-md-10" [ngClass]="{'has-success': f.submitted && signageComponentName.valid, 'has-error' : f.submitted && !signageComponentName.valid}">
+              <input [disabled]="!canManageSignageComponents" type="text" id="signageComponentName" name="signageComponentName" placeholder="Enter signageComponent name" class="form-control" [(ngModel)]="signageComponentEdit.name" #signageComponentName="ngModel" required minlength="2" maxlength="200" />
+              <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': signageComponentName.valid, 'glyphicon-remove' : !signageComponentName.valid}"></span>
+            </div>
+          </div>-->
+        </div>
+
+        <!--<div class="col-sm-12">
+          <div class="form-group">
+            <label class="control-label col-md-2" for="signageComponentDescription">{{'signageComponents.editor.Description' | translate}}</label>
+            <div class="col-md-10">
+              <input [disabled]="!canManageSignageComponents" type="text" id="signageComponentDescription" name="signageComponentDescription" placeholder="Enter signageComponent description" class="form-control" [(ngModel)]="signageComponentEdit.description" />
+            </div>
+          </div>
+        </div>-->
+      </div>
+
+      <!--<div class="row">
+        <div class="col-md-12">
+          <span *ngIf="showValidationErrors && f.submitted && !signageComponentName.valid" class="errorMessage signageComponentErrorMessage">
+            {{'signageComponents.editor.SignageComponentNameRequired' | translate}}
+          </span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <hr class="edit-separator-hr" />
+        </div>
+      </div>-->
+      <!--<div class="form-group">
+
+        <div class="col-sm-7">
+          <div ngPreserveWhitespaces class="pull-right">
+            <button *ngIf="!canManageSignageComponents" type="button" (click)="cancel()" class="btn btn-default">{{'signageComponents.editor.Close' | translate}}</button>
+            <button *ngIf="canManageSignageComponents" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'signageComponents.editor.Cancel' | translate}}</button>
+            <button *ngIf="canManageSignageComponents" type="submit" class="btn btn-primary" [disabled]="isSaving">
+              <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('signageComponents.editor.Saving' | translate) : ('signageComponents.editor.Save' | translate)}}
+            </button>
+          </div>
+        </div>
+      </div>-->
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageSignageComponents" type="button" mat-button (click)="cancel()">{{'signageComponents.editor.Close' | translate}}</button>
+      <button *ngIf="canManageSignageComponents" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'signageComponents.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageSignageComponents" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('signageComponents.editor.Saving' | translate) : ('signageComponents.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+
+  <style>
+    .mat-form-field-label {
+      color: black !important;
+    }
+  </style>
+</div>

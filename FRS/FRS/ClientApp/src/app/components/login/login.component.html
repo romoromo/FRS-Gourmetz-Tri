@@ -1,0 +1,97 @@
+<div class="vertical-center-flex">
+
+    <div class="login-container center-block">
+        <div class="panel panel-primary boxshadow">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-lock"></span> {{'app.Login' | translate}}
+                <!--<button *ngIf="isModal" type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>-->
+                <span style="float:right">
+                  {{'app.Language' | translate}}
+                  <select style="background: #0a5856;" [(ngModel)]="selectedlanguage" (ngModelChange)="setLanguage($event)">
+                    <option *ngFor="let v of languageoptions" [value]="v.value">{{v.viewValue}}</option>
+                  </select>
+                </span>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-8 col-md-offset-2">
+                  <form *ngIf="formResetToggle" class="form-horizontal login" name="loginForm" #f="ngForm" novalidate
+                        (ngSubmit)="f.form.valid ? login() :
+                          (!email.valid && showErrorAlert('Email is required', 'Please enter a valid email'));
+                          (!password.valid && showErrorAlert('Password is required', 'Please enter a valid password'))">
+                    <div class="form-group has-feedback">
+                      <label class="control-label col-md-4" for="login-email">{{'app.Email' | translate}}:</label>
+                      <div class="col-md-8" [ngClass]="{'has-success': f.submitted && email.valid, 'has-error' : f.submitted && !email.valid}">
+                        <input type="text" id="login-email" name="email" placeholder="{{'app.EmailPlaceholder' | translate}}" autocomplete="username email" class="form-control" [(ngModel)]="userLogin.email" #email="ngModel" required />
+                        <span *ngIf="f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': email.valid, 'glyphicon-remove' : !email.valid}" aria-hidden="true"></span>
+                        <span class="errorMessage" *ngIf="f.submitted && !email.valid">
+                          {{'app.EmailRequired' | translate}}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="form-group has-feedback">
+                      <label class="control-label col-md-4" for="login-password">{{'app.Password' | translate}}:</label>
+                      <div class="col-md-8" [ngClass]="{'has-success': f.submitted && password.valid, 'has-error' : f.submitted && !password.valid}">
+                        <input type="password" id="login-password" name="password" placeholder="{{'app.PasswordPlaceholder' | translate}}" autocomplete="current-password" class="form-control" [(ngModel)]="userLogin.password" #password="ngModel" required />
+                        <span *ngIf="f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': password.valid, 'glyphicon-remove' : !password.valid}" aria-hidden="true"></span>
+                        <span class="errorMessage" *ngIf="f.submitted && !password.valid">
+                          {{'app.PasswordRequired' | translate}}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-md-offset-4 col-md-8">
+                        <div class="checkbox">
+                          <label><input type="checkbox" name="rememberMe" [(ngModel)]="userLogin.rememberMe"> {{'app.RememberMe' | translate}}</label>
+                        </div>
+                      </div>
+                    </div>
+                    <!--<div class="form-group">
+                      <div class="col-md-offset-2 col-md-10">
+                        <div class="checkbox">
+                          <label><input type="checkbox" name="isAD" [(ngModel)]="userLogin.isAD"> Is AD Account</label>
+                        </div>
+                      </div>
+                    </div>-->
+                    <div class="form-group">
+                      <div class="col-md-offset-4 col-md-8">
+                        <button type="submit" class="btn btn-primary" [disabled]="isLoading"><i *ngIf="isLoading" class='fa fa-circle-o-notch fa-spin'></i> {{isLoading ? ('app.LoggingIn' | translate)  : ('app.Login' | translate) }}</button>
+                        <!--<span style="padding-left:10px;"><a ng-href="forgotPasswordUrl" (click)="redirectToForgotPassword()">Forgot Password?</a></span>-->
+                      </div>
+                    </div>
+                    <br />
+                    <!--<div class="form-group text-center">
+
+                      <div class="btn btn-default col-md-5" style="border: 1px solid #afadad;">
+                        <a ng-href="signInGoogleUrl" (click)="redirectToSignIn()" style="text-transform:none">
+                          <div class="left" style="width: 20px;float: left;">
+                            <img width="20px" alt="Google &quot;G&quot; Logo" src="../../../assets/images/google.png" />
+                          </div>
+                          Continue with Google
+                        </a>
+                      </div>
+                      <div class="btn btn-default  col-md-offset-1" style="border: 1px solid #afadad;">
+                        <a ng-href="registerUrl" (click)="redirectToRegister()" style="text-transform:none">
+                          <div class="left" style="width: 20px;float: left;">
+
+                          </div>
+                          Or sign up with email
+                        </a>
+                      </div>
+                    </div>-->
+                    <div class="form-group text-center">
+                    </div>
+                    <!--<div *ngIf="!isModal" class="col-md-12">
+      <hr class="separator-hr" />
+  </div>
+
+  <div *ngIf="!isModal" class="col-md-12 last-control-group">
+      <span>Don't have an account?</span><a href="javascript:;" class="btn btn-link" (click)="signUp()">Sign Up</a>
+  </div>-->
+                  </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

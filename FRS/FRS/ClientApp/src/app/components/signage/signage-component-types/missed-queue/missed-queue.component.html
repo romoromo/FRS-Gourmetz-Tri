@@ -1,0 +1,70 @@
+<table style="    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+">
+  <tr *ngIf="!configurations.configurationsObj.hideHeader">
+    <th [style.border-width.px]="configurations.configurationsObj.borderWidth"
+        [style.border-style]="configurations.configurationsObj.borderWidth ? 'solid' : ''"
+        [style.border-color]="configurations.configurationsObj.borderColor"
+        [style.overflow]="'hidden'"
+        [style.height.px]="configurations.configurationsObj.headerHeight || 1"
+        [style.background-color]="configurations.configurationsObj.labelHeaderStyle?.fieldColorLocation && locationColorTheme ? locationColorTheme : configurations.configurationsObj.labelHeaderStyle?.fieldColor"
+        [style.vertical-align]="configurations.configurationsObj.labelHeaderStyle?.vAlign"
+        [attr.colspan]="configurations.configurationsObj.noOfColumns">
+
+      <div [style.padding.px]="configurations.configurationsObj.cellPadding"
+           [style.font-family]="configurations.configurationsObj.labelHeaderStyle?.fontFamily"
+           [style.font-size.px]="configurations.configurationsObj.labelHeaderStyle?.textSize"
+           [style.color]="configurations.configurationsObj.labelHeaderStyle?.textColor"
+           [style.width.%]="100"
+           [style.font-weight]="configurations.configurationsObj.labelHeaderStyle?.bold ? 'bold' : 'normal'"
+           [style.text-decoration]="configurations.configurationsObj.labelHeaderStyle?.underline ? 'underline' : 'none'"
+           [style.font-style]="configurations.configurationsObj.labelHeaderStyle?.italic ? 'italic' : 'normal'"
+           [style.text-align]="configurations.configurationsObj.labelHeaderStyle?.textAlign">
+        {{configurations.configurationsObj.labelText || 'Missed Queue'}} <span *ngIf="data.length > configurations.configurationsObj.noOfRows * configurations.configurationsObj.noOfColumns">{{"(" + (page + 1) + " of " + (math.ceil(data.length / (configurations.configurationsObj.noOfRows * configurations.configurationsObj.noOfColumns))) + ")"}}</span>
+      </div>
+
+      <div [style.padding.px]="configurations.configurationsObj.cellPadding"
+           [style.font-family]="configurations.configurationsObj.secondLabelHeaderStyle?.fontFamily"
+           [style.font-size.px]="configurations.configurationsObj.secondLabelHeaderStyle?.textSize"
+           [style.color]="configurations.configurationsObj.secondLabelHeaderStyle?.textColor"
+           [style.width.%]="100"
+           [style.font-weight]="configurations.configurationsObj.secondLabelHeaderStyle?.bold ? 'bold' : 'normal'"
+           [style.text-decoration]="configurations.configurationsObj.secondLabelHeaderStyle?.underline ? 'underline' : 'none'"
+           [style.font-style]="configurations.configurationsObj.secondLabelHeaderStyle?.italic ? 'italic' : 'normal'"
+           [style.text-align]="configurations.configurationsObj.secondLabelHeaderStyle?.textAlign">
+        {{configurations.configurationsObj.secondLabelText || ''}}
+      </div>
+
+    </th>
+  </tr>
+  <tr *ngFor="let x of getArrays(configurations.configurationsObj.noOfRows); let i = index">
+    <td [style.border-width.px]="configurations.configurationsObj.borderWidth"
+        [style.border-style]="configurations.configurationsObj.borderWidth ? 'solid' : ''"
+        [style.border-color]="configurations.configurationsObj.borderColor"
+        [style.overflow]="'hidden'"
+        [style.white-space]="'nowrap'"
+        *ngFor="let y of getArrays(configurations.configurationsObj.noOfColumns); let j = index"
+        [style.background-color]="configurations.configurationsObj.queueNoStyle?.fieldColorLocation && locationColorTheme ? locationColorTheme : configurations.configurationsObj.queueNoStyle?.fieldColor"
+        [style.vertical-align]="configurations.configurationsObj.queueNoStyle?.vAlign">
+
+      <div [style.padding.px]="configurations.configurationsObj.cellPadding"
+           [style.font-family]="configurations.configurationsObj.queueNoStyle?.fontFamily"
+           [style.font-size.px]="configurations.configurationsObj.queueNoStyle?.textSize"
+           [style.color]="configurations.configurationsObj.queueNoStyle?.textColor"
+           [style.width.%]="100"
+           [style.font-weight]="configurations.configurationsObj.queueNoStyle?.bold ? 'bold' : 'normal'"
+           [style.text-decoration]="configurations.configurationsObj.queueNoStyle?.underline ? 'underline' : 'none'"
+           [style.font-style]="configurations.configurationsObj.queueNoStyle?.italic ? 'italic' : 'normal'"
+           [style.text-align]="configurations.configurationsObj.queueNoStyle?.textAlign">
+        <span *ngIf="preview">A1234</span>
+        <span *ngIf="!preview">
+          {{data[(page * configurations.configurationsObj.noOfRows * configurations.configurationsObj.noOfColumns) + (i * configurations.configurationsObj.noOfColumns) + j]?.queueNo || '&#8205;'}}
+        </span>
+      </div>
+
+    </td>
+  </tr>
+
+</table>

@@ -1,0 +1,103 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="contactGroupEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!contactGroupName.valid && showErrorAlert('Contact Group name is required', 'Please enter a contactGroup name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-xs-12 col-md-6">
+            <input matInput [disabled]="!canManageContactGroups" type="text" id="contactGroupName" name="contactGroupName" placeholder="Enter name" [(ngModel)]="contactGroupEdit.name" #contactGroupName="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+          <mat-form-field class="col-xs-12 col-md-6">
+            <input matInput [disabled]="!canManageContactGroups" type="text" id="contactGroupDescription" name="contactGroupDescription" placeholder="Enter description" [(ngModel)]="contactGroupEdit.description" #contactGroupEmail="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+          <mat-form-field class="col-xs-12 col-md-6">
+            <mat-select required placeholder="Access By" [formControl]="departments" multiple [(ngModel)]="contactGroupEdit.departmentIds">
+              <mat-option *ngFor="let department of departmentList" [value]="department.id"><b>{{department.name}}</b> - <small><i>{{department.description}}</i></small></mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <br />
+        <hr class="separator-hr" />
+        <div class="col-md-12">
+          <button type="button" mat-button [matMenuTriggerFor]="menu">
+            <mat-icon>
+              person_add
+            </mat-icon> Add Members
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item type="button" (click)="openFromUserList()">
+              <mat-icon>
+                assignment
+              </mat-icon>From Address Book
+            </button>
+            <!--<button mat-menu-item type="button" (click)="openFromAddressBook()">
+              <mat-icon>
+                assignment
+              </mat-icon>From Address Book
+            </button>-->
+            <button mat-menu-item type="button" (click)="openContactDialog('New contact')">
+              <mat-icon>
+                person_add
+              </mat-icon>New Email Contact
+            </button>
+          </mat-menu>
+        </div>
+        <div class="col-sm-12">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Department</th>
+                <th scope="col">Designation</th>
+                <th scope="col">Phone No</th>
+                <th scope="col">Home No</th>
+                <th scope="col">Mobile No</th>
+                <th scope="col">Company</th>
+                <th scope="col">Photo</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of contactGroupEdit.members">
+                <td>{{row.name}}</td>
+                <td>{{row.email}}</td>
+                <td>{{row.department}}</td>
+                <td>{{row.designation}}</td>
+                <td>{{row.phoneNumber}}</td>
+                <td>{{row.homeNo}}</td>
+                <td>{{row.mobileNo}}</td>
+                <td>{{row.company}}</td>
+                <td>
+                  <div *ngIf="row.filePath">
+                    <img [src]="getFileImage(row.filePath)" alt="icon" style="width:25px; height:25px;" />
+                  </div>
+                </td>
+                <td>
+                  <a *ngIf="!row.userId" class="btn btn-link btn-xs" href="javascript:;" (click)="editMember(row)">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                  </a>
+                  <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteMember(row)">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageContactGroups" type="button" mat-button (click)="cancel()">{{'contactGroups.editor.Close' | translate}}</button>
+      <button *ngIf="canManageContactGroups" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'contactGroups.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageContactGroups" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('contactGroups.editor.Saving' | translate) : ('contactGroups.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

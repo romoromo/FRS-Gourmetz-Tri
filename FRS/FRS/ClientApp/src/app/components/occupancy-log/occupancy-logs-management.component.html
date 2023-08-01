@@ -1,0 +1,74 @@
+<div>
+  <header class="pageHeader">
+    <h3>Occupancy Logs</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-12">
+      <div class="form-group search-box">
+        <!--<search-box (searchChange)="onSearchChanged($event)" placeholder="{{'occupancyLogs.management.Search' | translate}}">></search-box>-->
+
+        <div class="col-sm-4">
+          <input type="text" [(ngModel)]="deviceId" placeholder="Device Id" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+          <input type="text" [(ngModel)]="sensorId" placeholder="Sensor Id" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+          <input type="text" [(ngModel)]="status" placeholder="Status" class="form-control" />
+        </div>
+        <br />
+        <div class="col-sm-4">
+          <input type="datetime-local" [(ngModel)]="startTime" placeholder="Start Time" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+          <input type="datetime-local" [(ngModel)]="endTime" placeholder="End Time" class="form-control" />
+        </div>
+        <div class="col-sm-4" style="text-align:center">
+          <button class="btn btn-primary" (click)="loadData()">Refresh</button>
+        </div>
+        <br />
+        <div class="col-sm-12">
+          If no data shown, change start time value.
+        </div>
+        <!--<div class="col-sm-12">
+          <button class="btn btn-primary" (click)="loadData()">Refresh</button>
+        </div>-->
+      </div>
+    </div>
+    <!--<div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManageOccupancyLogs" class="toolbaritem">
+            <a href="javascript:;" (click)="newOccupancyLog(row)">-->
+    <!--<i class="fa fa-plus-circle"></i> {{'occupancyLogs.management.New' | translate}}-->
+    <!--</a>
+          </li>
+        </ul>
+      </div>
+    </div>-->
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [limit]="20">
+  </ngx-datatable>
+
+  <ng-template #indexTemplate let-value="value">
+    <strong>{{value}}</strong>
+  </ng-template>
+
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <!--<a *ngIf="canManageOccupancyLogs" class="btn btn-link btn-xs" href="javascript:;" (click)="editOccupancyLog(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'occupancyLogs.management.Edit' | translate}}</a>
+    <a *ngIf="!canManageOccupancyLogs" class="btn btn-link btn-xs" href="javascript:;" (click)="editOccupancyLog(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'occupancyLogs.management.Details' | translate}}</a>
+    {{canManageOccupancyLogs ? '|' : ''}}
+    <a *ngIf="canManageOccupancyLogs" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteOccupancyLog(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'occupancyLogs.management.Delete' | translate}}</a>-->
+  </ng-template>
+  <occupancy-log-editor #occupancyLogEditor [hidden]="true"></occupancy-log-editor>
+</div>

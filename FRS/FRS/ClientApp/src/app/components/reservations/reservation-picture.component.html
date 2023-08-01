@@ -1,0 +1,56 @@
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="reservationEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!reservationShortDescription.valid && showErrorAlert('Reservation description is required', 'Please enter a reservation name (minimum of 2 and maximum of 200 characters)'));">
+
+    <div class="col-sm-12">
+      <h4>Picture List</h4>
+    </div>
+    <hr />
+    <div class="col-sm-12">
+      <div class="form-group row">
+        <div class="col-md-12">
+          <button type="button" mat-button (click)="addPicture()">
+            <mat-icon>
+              add
+            </mat-icon> Add Picture
+          </button>
+        </div>
+        <div class="col-sm-12">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Picture</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of reservationEdit.reservationPictures;let i = index">
+                <td *ngIf="row.pictureUrl">
+                  <img [src]="getFileImage(row.pictureUrl)" alt="icon" style="height:150px;" /></td>
+                <td>
+                  <a class="btn btn-link btn-xs" href="javascript:;" (click)="deletePicture(row)">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-7">
+        <div ngPreserveWhitespaces class="pull-right">
+          <button *ngIf="!canManageReservations" type="button" (click)="cancel()" class="btn btn-default">{{'reservations.editor.Close' | translate}}</button>
+          <button *ngIf="canManageReservations" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'reservations.editor.Cancel' | translate}}</button>
+          <button *ngIf="canManageReservations" type="submit" class="btn btn-primary" [disabled]="isSaving">
+            <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('reservations.editor.Saving' | translate) : ('reservations.editor.Save' | translate)}}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </form>
+</div>

@@ -1,0 +1,37 @@
+<div class="row" style="margin-bottom:15px;">
+  <mat-card>
+    <mat-card-content>
+      <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;">
+      <button mat-stroked-button type="button" class="btn btn-sm" (click)="file.click()">Upload Media</button>
+      <span *ngIf="progress == 100">
+        {{message}}
+      </span>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="progress > 0">
+    <mat-card-content>
+      <h5 class="example-h2">Upload Progress</h5>
+
+      <section class="example-section">
+        <mat-progress-bar class="example-margin"
+                          [color]="primary"
+                          [mode]="determinate"
+                          [value]="progress">
+        </mat-progress-bar>
+      </section>
+    </mat-card-content>
+  </mat-card>
+  <!--<div class="col-md-5" *ngIf="showTxt">
+
+    <span class="upload" *ngIf="filename">
+      {{filename}}
+    </span>
+    <span class="upload" *ngIf="progress > 0">
+      {{progress}}%
+    </span>
+    <span class="upload" *ngIf="message">
+      {{message}}
+    </span>
+  </div>-->
+</div>

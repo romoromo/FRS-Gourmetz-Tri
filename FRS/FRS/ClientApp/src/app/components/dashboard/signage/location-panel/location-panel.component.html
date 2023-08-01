@@ -1,0 +1,8 @@
+<mat-select #select>
+  <ng-container *ngFor="let item of items">
+    <mat-option *ngIf="!item.children || item.children.length == 0; else branch">{{item.value}}</mat-option>
+    <ng-template #branch>
+      <app-location-panel #innerPanel [items]="item.children"></app-location-panel>
+    </ng-template>
+  </ng-container>
+</mat-select>

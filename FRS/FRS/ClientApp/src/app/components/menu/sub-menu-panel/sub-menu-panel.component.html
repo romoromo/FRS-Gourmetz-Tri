@@ -1,0 +1,17 @@
+<li class="dropdown-submenu" routerLinkActive="active"  *ngIf="isAccessAllowed(item)">
+  <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+    <span *ngIf="item.showLogo" class="sub-menu-icon {{(item.logoClass ? item.logoClass : 'fa fa-book')}}"></span>
+    <span *ngIf="item.showLabel">{{item.label}}</span>
+  </a>
+  <ul class="dropdown-menu">
+    <ng-container *ngFor="let cm of item.childMenus">
+      <li *ngIf="isAccessAllowed(cm) && (!cm.childMenus || cm.childMenus.length == 0)">
+        <a routerLink="{{cm.link}}">
+          <span *ngIf="cm.showLogo" class="sub-menu-icon {{(cm.logoClass ? cm.logoClass : 'fa fa-book')}}"></span>
+          <span *ngIf="cm.showLabel">{{cm.label}}</span>
+        </a>
+      </li>
+      <app-sub-menu-panel [item]="cm" (selectMenu)="triggerSelect($event)" *ngIf="cm.childMenus && cm.childMenus.length > 0"></app-sub-menu-panel>
+    </ng-container>
+  </ul>
+</li>

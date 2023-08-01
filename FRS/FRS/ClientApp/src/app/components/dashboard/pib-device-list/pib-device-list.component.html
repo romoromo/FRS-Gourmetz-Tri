@@ -1,0 +1,46 @@
+<div>
+  <mat-expansion-panel expanded="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <h4>PIB Devices</h4>
+      </mat-panel-title>
+      <mat-panel-description>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <table class="table table-sm" [hidden]="show_no_results">
+      <thead>
+        <tr>
+          <th scope="col">Code</th>
+          <th scope="col">Label</th>
+          <th scope="col">MAC Address</th>
+          <th scope="col">Location</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of devices">
+          <td>{{row.device_code}}</td>
+          <td>{{row.device_label}}</td>
+          <td>{{row.macAddress}}</td>
+          <td>{{row.location_code}}</td>
+          <td>
+            <span *ngIf="row.status_display =='ONLINE'" title="Device is online">
+              <i class="status_online material-icons">fiber_manual_record</i>
+            </span>
+            <span *ngIf="row.status_display !='ONLINE'" title="Device is offline">
+              <i class="status_offline material-icons">fiber_manual_record</i>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div [hidden]="!show_no_results">
+      <p>
+        No PIB devices.
+      </p>
+    </div>
+
+  </mat-expansion-panel>
+</div>

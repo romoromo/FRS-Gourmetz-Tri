@@ -1,0 +1,93 @@
+<h1 mat-dialog-title>{{'pageHeader.DirectoryListings' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="directoryListingEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" autocomplete="off" name="id" id="id" key="id" placeholder="ID" [(ngModel)]="directoryListingEdit.id" #code="ngModel" required minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageDirectoryListings" type="text" autocomplete="off" name="code" id="code" key="code" placeholder="{{'directoryListings.editor.Code' | translate}}" [(ngModel)]="directoryListingEdit.code" #code="ngModel" required minlength="1" maxlength="200" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && (!code.valid || validation.code)">{{'directoryListings.editor.CodeRequired' | translate}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageDirectoryListings" type="text" autocomplete="off" name="label" id="label" key="label" placeholder="{{'directoryListings.editor.Label' | translate}}" [(ngModel)]="directoryListingEdit.label" #label="ngModel" required minlength="1" maxlength="200" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && (!label.valid || validation.label)">{{'directoryListings.editor.LabelRequired' | translate}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="col-md-12">
+          <mat-label>Select category</mat-label>
+          <mat-select [(value)]="directoryListingEdit.directoryListingCategoryId">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let c of directoryListingCategorys" [value]="c.id">
+              {{c.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="col-md-12">
+          <mat-label>Select Floor</mat-label>
+          <mat-select [(value)]="directoryListingEdit.floorId">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let f of floors" [value]="f.id">
+              {{f.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12 example-full-width">
+          <mat-label>Unit Number</mat-label>
+          <input matInput name="unitNumber" [(ngModel)]="directoryListingEdit.unitNumber">
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12 example-full-width">
+          <mat-label>Aliases</mat-label>
+          <input matInput name="aliases" [(ngModel)]="directoryListingEdit.aliases">
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12 example-full-width">
+          <mat-label>Contact</mat-label>
+          <input matInput name="contact" [(ngModel)]="directoryListingEdit.contact">
+        </mat-form-field>
+
+
+
+
+
+      </div>
+      <div class="col-md-6">
+        <mat-form-field class="col-md-12 example-full-width">
+          <mat-label>Map Display Name</mat-label>
+          <input matInput name="mapDisplayName" [(ngModel)]="directoryListingEdit.mapDisplayName">
+        </mat-form-field>
+
+        <section class="col-md-12 example-section">
+          <mat-checkbox class="example-margin" [(ngModel)]="directoryListingEdit.availableForBooking" name="availableForBooking">Available for booking</mat-checkbox>
+        </section>
+
+        <section class="col-md-12 example-section">
+          <mat-checkbox class="example-margin" [(ngModel)]="directoryListingEdit.isInternal" name="isInternal">Don't Display to Public</mat-checkbox>
+        </section>
+
+        <div class="col-md-12">
+          Icon <file-upload (onUploadFinished)="uploadFinished($event)"></file-upload>
+          <img [hidden]="!directoryListingEdit.iconUrl" [src]="directoryListingEdit.iconUrl" style="max-width: 300px; max-height: 300px;padding:2px" />
+        </div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="directoryListingEdit != null">
+    <button *ngIf="!canManageDirectoryListings" mat-button (click)="cancel()">{{'directoryListings.editor.Close' | translate}}</button>
+    <button *ngIf="canManageDirectoryListings" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'directoryListings.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageDirectoryListings" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('directoryListings.editor.Saving' | translate) : ('directoryListings.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

@@ -1,0 +1,99 @@
+<h1 mat-dialog-title>{{'pageHeader.EmployeeSchedules' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="employeeScheduleEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <div class="col-md-6">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageEmployeeSchedules" type="text" autocomplete="off" name="code" id="code" key="code" placeholder="{{'employeeSchedules.editor.Code' | translate}}" [(ngModel)]="employeeScheduleEdit.code" #code="ngModel" required minlength="1" maxlength="200" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && (!code.valid || validation.code)">{{'employeeSchedules.editor.CodeRequired' | translate}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageEmployeeSchedules" type="text" autocomplete="off" name="label" id="label" key="label" placeholder="{{'employeeSchedules.editor.Label' | translate}}" [(ngModel)]="employeeScheduleEdit.label" #label="ngModel" required minlength="1" maxlength="200" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && (!label.valid || validation.label)">{{'employeeSchedules.editor.LabelRequired' | translate}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="col-md-12">
+          <mat-label>Effective date</mat-label>
+          <input matInput [matDatepicker]="effectiveDate" [(ngModel)]="employeeScheduleEdit.effectiveDate" name="effectiveDate">
+          <mat-datepicker-toggle matSuffix [for]="effectiveDate"></mat-datepicker-toggle>
+          <mat-datepicker #effectiveDate></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="col-md-12">
+          <mat-label>Ineffective date</mat-label>
+          <input matInput [matDatepicker]="ineffectiveDate" [(ngModel)]="employeeScheduleEdit.ineffectiveDate" name="ineffectiveDate">
+          <mat-datepicker-toggle matSuffix [for]="ineffectiveDate"></mat-datepicker-toggle>
+          <mat-datepicker #ineffectiveDate></mat-datepicker>
+        </mat-form-field>
+
+        <div class="col-md-12">
+          <span class="btn btn-primary" (click)="addShift()"><i class='fa fa-plus'></i> Add Shift</span>
+        </div>
+
+        <div [hidden]="!s.isActive" class="col-md-12" *ngFor="let s of employeeScheduleEdit.shifts;let index = index;trackBy:trackByIndex;" style="padding: 10px;margin: 5px;border: solid 1px;border-radius: 10px;">
+
+          <mat-form-field class="col-md-12 example-full-width">
+            <mat-label>Shift Name</mat-label>
+            <input matInput name="name{{index}}" [(ngModel)]="s.name">
+          </mat-form-field>
+
+          <div class="col-md-12">
+            <mat-checkbox name="monday{{index}}" [(ngModel)]="s.monday">Monday</mat-checkbox>&nbsp;
+            <mat-checkbox name="tuesday{{index}}" [(ngModel)]="s.tuesday">Tuesday</mat-checkbox>&nbsp;
+            <mat-checkbox name="wednesday{{index}}" [(ngModel)]="s.wednesday">Wednesday</mat-checkbox>&nbsp;
+            <mat-checkbox name="thursday{{index}}" [(ngModel)]="s.thursday">Thursday</mat-checkbox>&nbsp;
+            <mat-checkbox name="friday{{index}}" [(ngModel)]="s.friday">Friday</mat-checkbox>&nbsp;
+            <mat-checkbox name="saturday{{index}}" [(ngModel)]="s.saturday">Saturday</mat-checkbox>&nbsp;
+            <mat-checkbox name="sunday{{index}}" [(ngModel)]="s.sunday">Sunday</mat-checkbox>
+          </div>
+
+          <div class="col-md-12">
+
+            <mat-label>Start Time</mat-label>&nbsp;
+            <input type="time" [(ngModel)]="s.startTime" name="startTime{{index}}">
+            &nbsp;
+
+
+            <mat-label>End Time</mat-label>&nbsp;
+            <input type="time" [(ngModel)]="s.endTime" name="endTime{{index}}">&nbsp;
+
+            <span class="btn btn-danger btn-xs" (click)="s.isActive = 0" style="float: right;"><i class='fa fa-times'></i> Remove</span>&nbsp;
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6" style="padding: 10px;border: solid 1px;border-radius: 10px;">
+        <mat-form-field appearance="fill">
+          <mat-label>Select Locations</mat-label>
+          <mat-select [(ngModel)]="selected" name="location">
+            <mat-option *ngFor="let sc of allLocations" [value]="sc">
+              {{sc.name}}
+            </mat-option>
+          </mat-select>
+
+        </mat-form-field>
+        <span class="btn btn-primary" (click)="addLocation(selected)"><i class='fa fa-plus'></i> Add</span>
+        <br />
+        <div [hidden]="!c.isActive" *ngFor="let c of employeeScheduleEdit.locations;let index = index;trackBy:trackByIndex;" style="margin-bottom:10px">
+          <span class="btn btn-danger btn-xs" (click)="c.isActive = 0"><i class='fa fa-times'></i> Remove</span> &nbsp; <span>{{c.name}}</span>  <br />
+          
+        </div>
+      </div>
+
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="employeeScheduleEdit != null">
+    <button *ngIf="!canManageEmployeeSchedules" mat-button (click)="cancel()">{{'employeeSchedules.editor.Close' | translate}}</button>
+    <button *ngIf="canManageEmployeeSchedules" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'employeeSchedules.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageEmployeeSchedules" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('employeeSchedules.editor.Saving' | translate) : ('employeeSchedules.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

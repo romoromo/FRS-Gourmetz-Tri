@@ -1,0 +1,265 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+	<TypeScriptExperimentalDecorators>true</TypeScriptExperimentalDecorators>
+    <IsPackable>false</IsPackable>
+    <SpaRoot>ClientApp\</SpaRoot>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+
+    <!-- Set this to true if you enable server-side prerendering -->
+    <BuildServerSideRenderer>false</BuildServerSideRenderer>
+    <Description>Facility Resource Management</Description>
+    <Copyright>Copyright © 2018 Serial Multivision Pte Ltd</Copyright>
+    <PackageProjectUrl></PackageProjectUrl>
+    <Company>SMV</Company>
+    <Version>2.7.1</Version>
+    <UserSecretsId>835d5d5c-b0f7-455f-8be3-c44665c557fa</UserSecretsId>
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Projects\FRS\FRS\FRS\FRS.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.Proxy" Version="4.3.0" />
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.2-preview-56107813" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="8.1.3" />
+    <PackageReference Include="Hangfire" Version="1.7.0" />
+    <PackageReference Include="Ical.Net" Version="4.2.0" />
+    <PackageReference Include="IntelliTect.AspNetCore.SignalR.SqlServer" Version="1.0.1" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.3" />
+    <PackageReference Include="MailKit" Version="2.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="Ocelot" Version="13.5.2" />
+    <PackageReference Include="OpenIddict" Version="2.0.0" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="2.0.0" />
+    <PackageReference Include="RestSharp" Version="108.0.1" />
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="1.1.0" />
+    <PackageReference Include="Sieve" Version="2.3.3" />
+    <PackageReference Include="SoapCore" Version="0.9.9.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+    <PackageReference Include="Twilio" Version="5.43.0" />
+    <PackageReference Include="UAParser" Version="3.1.47" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BAL\BAL.csproj" />
+    <ProjectReference Include="..\DAL\DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ClientApp\dist\**" />
+    <Compile Remove="ClientApp\src\app\components\calendar\backup\**" />
+    <Compile Remove="ClientApp\src\app\components\calendar\calendar-booking-grid - Copy\**" />
+    <Compile Remove="ClientApp\src\app\components\calendar\datepicker\**" />
+    <Compile Remove="ClientApp\src\app\components\calendar\reservations\attendance\**" />
+    <Compile Remove="ClientApp\src\app\components\calendar\sample\**" />
+    <Compile Remove="ClientApp\src\app\components\dashboard\inprogress-events\**" />
+    <Compile Remove="ClientApp\src\app\components\reports\reservations\attendance\**" />
+    <Compile Remove="ClientApp\src\app\components\signage\signage-component-default\**" />
+    <Compile Remove="Logs\**" />
+    <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp\dist\**" />
+    <Content Remove="ClientApp\src\app\components\calendar\backup\**" />
+    <Content Remove="ClientApp\src\app\components\calendar\calendar-booking-grid - Copy\**" />
+    <Content Remove="ClientApp\src\app\components\calendar\datepicker\**" />
+    <Content Remove="ClientApp\src\app\components\calendar\reservations\attendance\**" />
+    <Content Remove="ClientApp\src\app\components\calendar\sample\**" />
+    <Content Remove="ClientApp\src\app\components\dashboard\inprogress-events\**" />
+    <Content Remove="ClientApp\src\app\components\reports\reservations\attendance\**" />
+    <Content Remove="ClientApp\src\app\components\signage\signage-component-default\**" />
+    <Content Remove="Logs\**" />
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--Include email templates in the publish output-->
+    <Content Include="Helpers\Templates\*.template" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="ClientApp\dist\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\components\calendar\backup\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\components\calendar\calendar-booking-grid - Copy\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\components\calendar\datepicker\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\components\calendar\reservations\attendance\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\components\calendar\sample\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\components\dashboard\inprogress-events\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\components\reports\reservations\attendance\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\components\signage\signage-component-default\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <None Remove="ClientApp\dist\**" />
+    <None Remove="ClientApp\src\app\components\calendar\backup\**" />
+    <None Remove="ClientApp\src\app\components\calendar\calendar-booking-grid - Copy\**" />
+    <None Remove="ClientApp\src\app\components\calendar\datepicker\**" />
+    <None Remove="ClientApp\src\app\components\calendar\reservations\attendance\**" />
+    <None Remove="ClientApp\src\app\components\calendar\sample\**" />
+    <None Remove="ClientApp\src\app\components\dashboard\inprogress-events\**" />
+    <None Remove="ClientApp\src\app\components\reports\reservations\attendance\**" />
+    <None Remove="ClientApp\src\app\components\signage\signage-component-default\**" />
+    <None Remove="Logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20190311025404_add_timings.cs" />
+    <Compile Remove="Migrations\20190311025404_add_timings.Designer.cs" />
+    <Compile Remove="Migrations\20200527104943_added_ancestor_id.cs" />
+    <Compile Remove="Migrations\20200527105428_added_ancestor_location_id.cs" />
+    <Compile Remove="Migrations\20200527105747_added_template_location.cs" />
+    <Compile Remove="Migrations\20200527110912_added_template_location.cs" />
+    <Compile Remove="Migrations\20200527122732_remove_identity_template_location.cs" />
+    <Compile Remove="Migrations\20200527123105_remove_identity_template_location.cs" />
+    <Compile Remove="Migrations\20200529052034_frs_demo_new_tables.cs" />
+    <Compile Remove="Migrations\20200706035002_vehicle_entry_type.cs" />
+    <Compile Remove="Migrations\20210729024722_added_device_columns.cs" />
+    <Compile Remove="Migrations\20210907072905_extend_userrole_class.cs" />
+    <Compile Remove="Migrations\20211115033047_added_assettables.cs" />
+    <Compile Remove="Migrations\20211115033312_added_assettables.cs" />
+    <Compile Remove="Migrations\20211115033833_added_new_assettables.cs" />
+    <Compile Remove="Migrations\20211115034136_added_newassettables.cs" />
+    <Compile Remove="Migrations\20220328032903_update location and reservation.cs" />
+    <Compile Remove="Migrations\20220328032903_update location and reservation.Designer.cs" />
+    <Compile Remove="Migrations\20220330051859_directorylist-location.cs" />
+    <Compile Remove="Migrations\20220330051859_directorylist-location.Designer.cs" />
+    <Compile Remove="Migrations\20220404083041_update-location-and-reservation.cs" />
+    <Compile Remove="Migrations\20220404083041_update-location-and-reservation.Designer.cs" />
+    <Compile Remove="Migrations\20220423035857_added_mos_class_level_student.cs" />
+    <Compile Remove="Migrations\20220423072248_added_classlevelid_in_class.cs" />
+    <Compile Remove="Migrations\20220511065114_added_new_field_students_.cs" />
+    <Compile Remove="Migrations\20220512031459_addDeliveryDetail.cs" />
+    <Compile Remove="Migrations\20220512031459_addDeliveryDetail.Designer.cs" />
+    <Compile Remove="Migrations\20220516025447_added_classbatch.cs" />
+    <Compile Remove="Migrations\20220516043756_added_studentbatch.cs" />
+    <Compile Remove="Migrations\20220517101627_added_dishdetail.cs" />
+    <Compile Remove="Migrations\20220802063438_update_outletdishperiodmenu.cs" />
+    <Compile Remove="Migrations\20221020091308_added_transaction_fee.cs" />
+    <Compile Remove="Migrations\20221031115353_added_externallogin.cs" />
+    <Compile Remove="Migrations\20230312185937_added_cancelledby_in_order.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\src\app\components\signage\signage-component-types\signage-component-type-wrapper.component.ts" />
+    <None Remove="ClientApp\src\app\components\signage\signage-component-types\vjs-player.component.ts" />
+    <None Remove="ClientApp\src\app\components\signage\signage-display\signage-display.component.ts" />
+    <None Remove="ClientApp\src\app\directives\signage-component-type.directive.ts" />
+    <None Remove="ClientApp\src\app\models\bookinggridrow.model.ts" />
+    <None Remove="ClientApp\src\app\models\usercardid.model.ts" />
+    <None Remove="ClientApp\src\app\models\userreward.model.ts" />
+    <None Remove="ClientApp\src\app\models\uservehicle.model.ts" />
+    <None Remove="ClientApp\src\app\models\userwallet.model.ts" />
+    <None Remove="ClientApp\src\proxy.config.json" />
+    <None Remove="Helpers\Templates\AbandonedCart2.template" />
+    <None Remove="Helpers\Templates\AccountReadyEmail.template" />
+    <None Remove="Helpers\Templates\CancellationRequestApproved.template" />
+    <None Remove="Helpers\Templates\CancellationRequestRejected.template" />
+    <None Remove="Helpers\Templates\ConfirmEmail.template" />
+    <None Remove="Helpers\Templates\ForgotPassword.template" />
+    <None Remove="Helpers\Templates\MissedCollection.template" />
+    <None Remove="Helpers\Templates\NoOrderNextWeek.template" />
+    <None Remove="Helpers\Templates\ParticipantEmail.template" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ClientApp\src\app\components\menu\" />
+    <Folder Include="Resources\Images\" />
+    <Content Include="Resources\Default\**" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="acl.json" />
+    <Content Remove="acl_nuh.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="acl_nuh.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="acl.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!--<Target Name="CreateResourcesFolder" AfterTargets="AfterPublish" Condition=" '!Exists('$(PublishUrl)Resources') ">
+    <MakeDir Directories="$(PublishUrl)Resources"></MakeDir>
+  </Target>-->
+
+  
+  <ItemGroup>
+    <Reference Include="NPOI">
+      <HintPath>..\..\..\..\Users\sheila.tabay\.nuget\packages\npoi\2.4.1\lib\net45\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML">
+      <HintPath>..\..\..\..\Users\sheila.tabay\.nuget\packages\npoi\2.4.1\lib\net45\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net">
+      <HintPath>..\..\..\..\Users\sheila.tabay\.nuget\packages\npoi\2.4.1\lib\net45\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats">
+      <HintPath>..\..\..\..\Users\sheila.tabay\.nuget\packages\npoi\2.4.1\lib\net45\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\components\signage\signage-component-types\signage-component-type-wrapper.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\components\signage\signage-component-types\vjs-player.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\components\signage\signage-display\signage-display.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\directives\signage-component-type.directive.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\bookinggridrow.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\userreward.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\usercardid.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\userwallet.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\uservehicle.model.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="FRS.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install --legacy-peer-deps" />
+  </Target>
+
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install --legacy-peer-deps" />
+    <!--<Exec WorkingDirectory="$(SpaRoot)" Command="npm install   legacy-peer-deps" />-->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build --prod" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:ssr -- --prod" Condition=" '$(BuildServerSideRenderer)' == 'true' " />
+
+    <!-- Include the newly-built files in the publish output -->
+    <ItemGroup>
+      <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
+      <DistFiles Include="$(SpaRoot)node_modules\**" Condition="'$(BuildServerSideRenderer)' == 'true'" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+</Project>

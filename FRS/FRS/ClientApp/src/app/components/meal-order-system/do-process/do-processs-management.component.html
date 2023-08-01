@@ -1,0 +1,51 @@
+<div>
+  <header class="pageHeader">
+    <h3>Carton To DO</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-5">
+      <mat-form-field style="width: 100%;" class="example-full-width" appearance="fill">
+        <mat-label>DO Number</mat-label>
+        <input matInput #doInput [(ngModel)]="doNumber" (ngModelChange)="doChanged($event)">
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-5">
+      <mat-form-field style="width: 100%;" class="example-full-width" appearance="fill">
+        <mat-label>Carton Asset TID</mat-label>
+        <input matInput #cartonInput [(ngModel)]="cartonAssetCode" (ngModelChange)="cartonChanged($event)">
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-2">
+      <button class="btn btn-primary" style="height: 52px;" (click)="add()">Add</button> <br />
+      <section class="example-section" style="white-space: normal;">
+        <mat-checkbox [(ngModel)]="autoAdd" class="example-margin">Auto add when carton inputted</mat-checkbox>
+      </section>
+    </div>
+  </div>
+
+  <div class="container" style="margin-bottom: 10px;">
+    <button class="btn btn-success" (click)="submit()" style="float: right;">Submit List</button>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [externalPaging]="true"
+                 [externalSorting]="true"
+                 [count]="rows.length">
+  </ngx-datatable>
+
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <span *ngIf="row.isSuccess" style="color: green">Success</span>
+    <button *ngIf="!row.isSuccess" class="btn btn-danger" (click)="remove(row)">Remove</button> <br />
+    <span *ngIf="row.message" style="color: red">{{row.message}}</span>
+  </ng-template>
+</div>

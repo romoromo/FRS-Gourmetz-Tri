@@ -1,0 +1,47 @@
+<h1 mat-dialog-title>{{'pageHeader.Buildings' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="buildingEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageBuildings" type="text" autocomplete="off" name="code" id="code" key="code" placeholder="{{'buildings.editor.Code' | translate}}" [(ngModel)]="buildingEdit.code" #code="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!code.valid || validation.code)">{{'buildings.editor.CodeRequired' | translate}}</mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageBuildings" type="text" autocomplete="off" name="label" id="label" key="label" placeholder="{{'buildings.editor.Label' | translate}}" [(ngModel)]="buildingEdit.label" #label="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!label.valid || validation.label)">{{'buildings.editor.LabelRequired' | translate}}</mat-error>
+      </mat-form-field>
+
+      <h2>Floors</h2>
+      <mat-form-field appearance="fill">
+        <mat-label>Select Floors</mat-label>
+        <mat-select [(ngModel)]="selected" name="floors">
+          <mat-option *ngFor="let f of allFloors" [value]="f">
+            {{f.label}}
+          </mat-option>
+        </mat-select>
+
+      </mat-form-field>
+      <span class="btn btn-primary" (click)="add(selected)"><i class='fa fa-plus'></i> Add</span>
+
+      <span class="btn btn-primary" (click)="sort()"><i class='fa fa-sort'></i> Sort</span>
+
+      <div [hidden]="!f.isActive" *ngFor="let f of buildingEdit.floors;let index = index;trackBy:trackByIndex;" style="margin-bottom:10px">
+        <i class="fa fa-circle"></i> {{f.code}} - {{f.label}} - order <input type="number" min="1" [(ngModel)]="f.order" name="x{{index}}" placeholder="order" /> <span class="btn-xs" (click)="f.isActive = 0"><i class='fa fa-times'></i> Remove</span>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="buildingEdit != null">
+    <button *ngIf="!canManageBuildings" mat-button (click)="cancel()">{{'buildings.editor.Close' | translate}}</button>
+    <button *ngIf="canManageBuildings" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'buildings.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageBuildings" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('buildings.editor.Saving' | translate) : ('buildings.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

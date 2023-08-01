@@ -1,0 +1,116 @@
+<div>
+  <header class="pageHeader">
+    <h3>Users</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-4">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()"  placeholder="{{'users.management.Search' | translate}}"></search-box>
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <input type="checkbox" (click)="onFilterApprovedUsers()" [(ngModel)]="forApproval" /> <span><small>Pending for approval</small></span>
+    </div>
+    <div class="col-sm-2">
+      <input type="checkbox" (click)="onFilterOnlineUsers()" [(ngModel)]="forOnline" /> <span><small>Online only</small></span>
+    </div>
+    <div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManageUsers && canAssignRoles" class="toolbaritem">
+            <a href="javascript:;" (click)="newUser(row)">
+              <i class="fa fa-plus-circle"></i> {{'users.management.NewUser' | translate}}
+            </a>
+          </li>
+          <!--<li *ngIf="canManageUsers && canAssignRoles" class="toolbaritem">
+            <a href="javascript:;" (click)="uploadCSV()">
+              <i class="fa fa-upload"></i> {{'users.management.UploadCSV' | translate}}
+            </a>
+          </li>-->
+          <!--<li *ngIf="canManageUsers && canAssignRoles" class="toolbaritem">
+            <a href="javascript:;" (click)="syncAd()">
+              <i class="fa fa-refresh"></i> {{'users.management.SyncADUsers' | translate}}
+            </a>
+          </li>-->
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header" #userMgtTable
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [externalPaging]="true"
+                 [externalSorting]="true"
+                 [count]="pagedResult.totalCount"
+                 [limit]="pagedResult.filter.pageSize"
+                 (page)="loadData($event)"
+                 (sort)="loadData($event)">
+  </ngx-datatable>
+
+  <ng-template #indexTemplate let-row="row" let-value="value">
+    <div class="status-container">
+      <span>
+        <i *ngIf="row.status == 'AVAILABLE' || (row.status != 'AVAILABLE' && row.status != 'ENGAGED' && row.status != 'OFFDUTY')" class="status_online material-icons" title="{{(row.isConnected ? 'Online' : 'Offline')}}">fiber_manual_record</i>
+        <i *ngIf="row.status == 'ENGAGED'" class="status_engaged material-icons" title="{{(row.isConnected ? 'Online' : 'Offline')}}">fiber_manual_record</i>
+        <i *ngIf="row.status == 'OFFDUTY'" class="status_offduty material-icons" title="{{(row.isConnected ? 'Online' : 'Offline')}}">fiber_manual_record</i>
+      </span>
+      <span class="status-holder" title="{{row.status}}">
+        {{row.status}}
+      </span>
+    </div>
+    <!--<span *ngIf="row.status">
+      <small>{{row.status}}</small>
+    </span>-->
+    <!--<span *ngIf="row.status =='ENGAGED'" title="ENGAGED">
+      <i class="status_engaged material-icons">fiber_manual_record</i>
+    </span>-->
+  </ng-template>
+
+  <ng-template #userNameTemplate let-row="row" let-value="value">
+    <span [class.locked-out]="row.isLockedOut" [class.user-disabled]="!row.isEnabled">
+      <i *ngIf="row.isLockedOut" class="fa fa-exclamation-triangle"> </i>
+      <i *ngIf="!row.isEnabled" class="fa fa-exclamation"> </i>
+      {{value}}
+    </span>
+  </ng-template>
+
+  <ng-template #rolesTemplate let-row="row" let-value="value" let-i="index">
+    <span class="user-role badge" *ngFor="let role of value">{{role}}</span>
+  </ng-template>
+
+  <ng-template #departmentsTemplate let-row="row" let-value="value" let-i="index">
+    <span class="user-department" *ngFor="let dept of value">{{dept}}</span>
+  </ng-template>
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <div *ngIf="canManageUsers">
+      <a class="btn btn-link btn-xs" href="javascript:;" (click)="editUser(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'users.management.Edit' | translate}}</a>
+      <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteUser(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'users.management.Delete' | translate}}</a>
+      <!--<a class="btn btn-link btn-xs" href="javascript:;" (click)="addRewardPoints(row)"><i class="fa fa-gift" aria-hidden="true"></i> {{'users.management.AddRewardPoints' | translate}}</a>-->
+      <a class="btn btn-link btn-xs" href="javascript:;" (click)="resetPassword(row)"><i class="fa fa-refresh" aria-hidden="true"></i>Reset Password</a>
+    </div>
+  </ng-template>
+
+
+  <div class="modal fade user-info-modal" bsModal #editorModal="bs-modal" (onHidden)="onEditorModalHidden()" [config]="{backdrop: false}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left"><i class="fa fa-user-circle-o"></i> {{editingUserName ? ('users.management.EditUser' | translate:editingUserName) : ('users.management.NewUser' | translate)}}</h4>
+          <button type="button" class="close pull-right" title="Close" (click)="editorModal.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <user-info #userEditor [isGeneralEditor]="true"></user-info>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

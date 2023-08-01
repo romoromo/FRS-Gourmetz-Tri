@@ -1,0 +1,74 @@
+<div>
+  <h1 mat-dialog-title>{{data.header}}</h1>
+  <div mat-dialog-content>
+    <!--<div class="row">
+    <div class="col-md-12">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="Search all columns"></search-box>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Code</th>
+            <th scope="col">Label</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of dishes; let i = index;">
+            <td>
+              <input type="checkbox" name="row{{row.id}}" [(ngModel)]="dishes[i].checked">
+            </td>
+            <td>{{row.code}}</td>
+            <td>{{row.label}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>-->
+    <div class="form-group search-box">
+      <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
+    </div>
+    <ngx-datatable class="material colored-header"
+                   [loadingIndicator]="loadingIndicator"
+                   [rows]="rows"
+                   [rowHeight]="'auto'"
+                   [headerHeight]="'auto'"
+                   [footerHeight]="35"
+                   [columns]="columns"
+                   [columnMode]="'force'"
+                   [limit]="10">
+      </ngx-datatable>
+      <!--<ngx-datatable class="material colored-header"
+                   [loadingIndicator]="loadingIndicator"
+                   [rows]="rows"
+                   [rowHeight]="'auto'"
+                   [headerHeight]="'auto'"
+                   [footerHeight]="35"
+                   [columns]="columns"
+                   [columnMode]="'force'"
+                   [externalPaging]="false"
+                   [externalSorting]="false"
+                   [count]="pagedResult.totalCount"
+                   [offset]="pagedResult.filter.pageNumber"
+                   [limit]="pagedResult.filter.pageSize"
+                   (page)="loadData($event)"
+                   (sort)="loadData($event)">
+    </ngx-datatable>-->
+
+      <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+        <a class="example-section btn btn-link btn-xs" style="cursor:pointer">
+          <mat-checkbox [(ngModel)]="row.checked"></mat-checkbox>
+        </a>
+      </ng-template>
+  </div>
+
+  <div mat-dialog-actions align="center">
+    <button type="button" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'reservations.editor.Cancel' | translate}}</button>
+    <button type="button" mat-button cdkFocusInitial (click)="save()">
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> Choose
+    </button>
+  </div>
+</div>

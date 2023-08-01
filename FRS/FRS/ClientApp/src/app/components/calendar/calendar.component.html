@@ -1,0 +1,211 @@
+<div class="container-fluid">
+  <header class="pageHeader text-center row">
+    <div class="col-md-12">
+      <button mat-raised-button (click)="goBack()" style="margin-top:20px;color: #005d5a !important;">
+        <mat-icon aria-label="Filter">search</mat-icon>
+        Search another
+      </button>
+    </div>
+  </header>
+  <!--<div>
+    <button mat-icon-button (click)="sideBarOpened = !sideBarOpened">
+      <mat-icon aria-label="Filter">list</mat-icon> Filter
+    </button>
+  </div>
+  <div class="col-md-2" style="max-height:90vh; overflow:auto" *ngIf="sideBarOpened" [@slideInOut]>
+
+    <div><mat-calendar #calendar [selected]="selectedDate" (selectedChange)="selectedDate = $event"></mat-calendar></div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <h5>Location</h5>
+      <mat-select multiple placeholder="{{'reservations.management.SelectLocation' | translate}}" [formControl]="fcLocations" [(ngModel)]="filter.locationIds">
+        <mat-optgroup *ngFor="let building of buildingList"
+                      [label]="building.name">
+          <mat-option *ngFor="let location of getRoomsByBuildingId(building.id)" [value]="location.id"><b>{{location.name}}</b> - <small><i>{{location.description}}</i></small></mat-option>
+        </mat-optgroup>
+      </mat-select>
+    </div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <h5>Facility</h5>
+      <mat-select multiple placeholder="{{'reservations.management.SelectFacilities' | translate}}" [formControl]="fcFacilities" [(ngModel)]="filter.facilityIds">
+        <mat-option *ngFor="let facility of facilityList" [value]="facility.id"><b>{{facility.name}}</b> - <small><i>{{facility.description}}</i></small></mat-option>
+      </mat-select>
+    </div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <h5>Min. Capacity</h5>
+
+      <mat-slider [max]="100"
+                  [min]="1"
+                  [step]="1"
+                  [thumbLabel]="true"
+                  [(ngModel)]="filter.capacity" style="width:100%">
+      </mat-slider>
+    </div>
+    <div class="hide">
+      <h5>Start</h5>
+      <mat-select #selectStart placeholder="{{'reservations.management.SelectStart' | translate}}" [formControl]="fcStartTimes" [(ngModel)]="selectStartTimeId">
+        <mat-option *ngFor="let start of allStartTimes" [value]="start.id">{{start.description}}</mat-option>
+      </mat-select>
+    </div>
+    <div class="hide">
+      <h5>End</h5>
+      <mat-select #selectEnd placeholder="{{'reservations.management.SelectEnd' | translate}}" [formControl]="fcEndTimes" [(ngModel)]="selectEndTimeId">
+        <mat-option *ngFor="let end of allEndTimes" [value]="end.id">{{end.description}}</mat-option>
+      </mat-select>
+    </div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <button mat-raised-button (click)="apply()" style="margin:5px">{{'reservations.calendar.ApplyFilter' | translate}}</button>
+      <button mat-raised-button (click)="clear()" style="margin:5px" color="warn">{{'reservations.calendar.ClearFilter' | translate}}</button>
+    </div>
+  </div>-->
+  <!--<div [ngClass]="sideBarOpened ? 'col-md-10' : 'col-md-12'">-->
+  <div class="col-md-12">
+    <!--<div style="float:right">
+      <button mat-raised-button>Add reservation</button>
+    </div>-->
+    <div>
+      <mwl-demo-utils-calendar-header [(view)]="view"
+                                      [(viewDate)]="viewDate"
+                                      (viewDateChange)="apply()"
+                                      (viewChange)="apply()">
+      </mwl-demo-utils-calendar-header>
+    </div>
+    <ng-template #loading>
+      <div class="text-center">
+        <i class="fa fa-spin fa-spinner fa-5x"></i> <br />
+        Loading events...
+      </div>
+    </ng-template>
+
+    <ng-template #customCellTemplate let-day="day" let-locale="locale">
+      <div class="cal-cell-top">
+        <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
+        <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+      </div>
+      <!--<small style="margin: 5px">There are{{ day.events.length }}events on this day</small>-->
+      <div *ngFor="let ev of day.events; let i=index;">
+        >
+        ="
+        <div *ngIf="i < 3" class="day-view-event-block"><span>{{ev.start | date:'hh:mm a'}}</span> : {{ev.title | slice:0:10 }}</div>
+
+      </div>
+      <!--<div *ngIf="day.badgeTotal > 0"><a href="javascript:void(0)"><small>View details...</small></a></div>-->
+    </ng-template>
+
+    <ng-template #weekViewHourSegmentTemplate
+                 let-segment="segment"
+                 let-locale="locale"
+                 let-segmentHeight="segmentHeight"
+                 let-isTimeLabel="isTimeLabel">
+      <div #segmentElement
+           class="cal-hour-segment"
+           [style.height.px]="segmentHeight"
+           [class.cal-hour-start]="segment.isStart"
+           [class.cal-after-hour-start]="!segment.isStart"
+           [ngClass]="segment.cssClass"
+           (mousedown)="startDragToCreate(segment, $event, segmentElement)">
+        <div class="cal-time" *ngIf="isTimeLabel">
+          {{ segment.date | calendarDate:'weekViewHour':locale }}
+        </div>
+      </div>
+    </ng-template>
+    <div [ngSwitch]="view">
+      <div *ngIf="(events$ | async) || view != 'month'; else loading; let ev">
+
+        <mwl-calendar-month-view *ngSwitchCase="'month'"
+                                 [viewDate]="viewDate"
+                                 [events]="events"
+                                 [activeDayIsOpen]="activeDayIsOpen"
+                                 (dayClicked)="dayClicked($event.day)"
+                                 (eventClicked)="eventClicked($event.event)"
+                                 [cellTemplate]="customCellTemplate">
+        </mwl-calendar-month-view>
+        <!--<mwl-calendar-week-view *ngSwitchCase="'week'"
+                        [viewDate]="viewDate"
+                        [events]="events"
+                        (eventClicked)="eventClicked($event.event)"
+                        [hourSegmentTemplate]="weekViewHourSegmentTemplate">
+        </mwl-calendar-week-view>-->
+        <reservation-list *ngSwitchCase="'list'"
+                          [viewDate]="viewDate"
+                          [filteredReservations]="reservations"
+                          [calendarFilter]="filter"
+                          #bookingList>
+
+        </reservation-list>
+
+
+        <div *ngSwitchCase="'day'">
+          <calendar-booking-grid [viewDate]="viewDate"
+                                 [calendarFilter]="filter"
+                                 [events]="calendarEvents"
+                                 [locations]="calendarLocations"
+                                 [startHour]="dayStartHour"
+                                 [endHour]="dayEndHour"
+                                 #bookingGrid></calendar-booking-grid>
+        </div>
+        <!--<mwl-day-view-scheduler *ngSwitchCase="'day'"
+                                [viewDate]="viewDate"
+                                [events]="events"
+                                [locationColList]="locationColList"
+                                (facilityChanged)="facilityChanged($event)"
+                                (eventTimesChanged)="eventTimesChanged($event)"
+                                [dayStartHour]="8"
+                                [dayEndHour]="18"
+                                [cdref]="cdr">
+        </mwl-day-view-scheduler>-->
+        <!--<mwl-calendar-day-view *ngSwitchCase="'day'"
+                               [viewDate]="viewDate"
+                               [events]="events"
+                               (eventClicked)="eventClicked($event.event)">
+        </mwl-calendar-day-view>-->
+      </div>
+    </div>
+    <!--<div class="row">
+        <mwl-demo-utils-calendar-header [(view)]="view"
+                                        [(viewDate)]="viewDate"
+                                        (viewDateChange)="fetchEvents()"
+                                        (viewChange)="fetchEvents()">
+        </mwl-demo-utils-calendar-header>
+        <div class="col-md-6">
+          <div class="btn-group">
+            <div class="btn btn-primary"
+                 mwlCalendarPreviousView
+                 [view]="'day'"
+                 [(viewDate)]="viewDate">
+              Previous
+            </div>
+            <div class="btn btn-outline-secondary"
+                 mwlCalendarToday
+                 [(viewDate)]="viewDate">
+              Today
+            </div>
+            <div class="btn btn-primary"
+                 mwlCalendarNextView
+                 [view]="'day'"
+                 [(viewDate)]="viewDate">
+              Next
+            </div>
+          </div>
+        </div>
+      <div class="col-md-6 text-right">
+        <h3>{{ viewDate | calendarDate:('dayViewTitle') }}</h3>
+      </div>
+    </div>
+        <br />
+
+        <mwl-day-view-scheduler [viewDate]="viewDate"
+                                [events]="events"
+                                [facilities]="facilities"
+                                (eventTimesChanged)="eventTimesChanged($event)"
+                                (userChanged)="userChanged($event)">
+        </mwl-day-view-scheduler>
+          -->
+
+
+  </div>
+
+</div>

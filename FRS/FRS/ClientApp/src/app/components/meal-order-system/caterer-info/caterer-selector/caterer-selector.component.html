@@ -1,0 +1,52 @@
+<div>
+  <h1 mat-dialog-title>{{data.header}}</h1>
+  <div mat-dialog-content>
+    <div class="row">
+      <!--<div class="col-md-12">
+        <div class="form-group search-box">
+          <search-box (searchChange)="onSearchChanged($event)" placeholder="Search all columns"></search-box>
+        </div>
+      </div>-->
+      <div class="col-md-12">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Name</th>
+              <th scope="col" style="width: 200px">Outlet Profile</th>
+              <th scope="col">RRP = RSP</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of editCaterer.catererOutlets; let i = index;">
+              <td>
+                <a *ngIf="row.status != 'APPROVED'" class="btn btn-link btn-xs" href="javascript:;" (click)="approve(row);"> Approve</a>
+                <a *ngIf="row.status != 'REJECTED'" class="btn btn-link btn-xs" href="javascript:;" (click)="reject(row)"> Reject</a>
+                <!--<input type="checkbox" name="row{{row.id}}" [(ngModel)]="outlets[i].checked">-->
+              </td>
+              <td>{{row.outlet.name}}</td>
+              <td>
+                <mat-select [disabled]="row.status == 'APPROVED' && row.outletProfileId > 0" id="outletProfile" name="outletProfile" [(ngModel)]="row.outletProfileId" #outletProfile="ngModel" required style="border: 1px solid #000;">
+                  <mat-option *ngFor="let outletProfile of outletProfileByCaterer(row)" [value]="outletProfile.id">
+                    {{outletProfile.label}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="row.showValidationErrors && !row.outletProfileId">Outlet Profile is required</mat-error>
+              </td>
+              <td><mat-checkbox [(ngModel)]="row.isRsp"></mat-checkbox></td>
+              <td>{{row.status}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions align="center">
+    <button type="button" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'reservations.editor.Cancel' | translate}}</button>
+    <!--<button type="button" mat-button cdkFocusInitial (click)="save()">
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> Choose
+    </button>-->
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div>
+  <header class="pageHeader">
+    <h3>Bento Box Types</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-8">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManageBentoBoxTypes" class="toolbaritem">
+            <a href="javascript:;" (click)="newBentoBoxType(row)">
+              <i class="fa fa-plus-circle"></i> {{'common.New' | translate}}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [externalPaging]="true"
+                 [externalSorting]="true"
+                 [count]="pagedResult.totalCount"
+                 [offset]="pagedResult.filter.pageNumber"
+                 [limit]="pagedResult.filter.pageSize"
+                 (page)="loadData($event)"
+                 (sort)="loadData($event)">
+  </ngx-datatable>
+
+  <ng-template #flagTemplate let-row="row" let-value="value" let-i="index">
+    <div class="text-center"><i [ngClass]="value ? 'fa fa-check-circle-o active': 'fa fa-circle-o'" aria-hidden="true"></i></div>
+  </ng-template>
+
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageBentoBoxTypes" class="btn btn-link btn-xs" href="javascript:;" (click)="editBentoBoxType(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
+    <a *ngIf="!canManageBentoBoxTypes" class="btn btn-link btn-xs" href="javascript:;" (click)="editBentoBoxType(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
+    <a *ngIf="canManageBentoBoxTypes" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteBentoBoxType(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+  </ng-template>
+</div>

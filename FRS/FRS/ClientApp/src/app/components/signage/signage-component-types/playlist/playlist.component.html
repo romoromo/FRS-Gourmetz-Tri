@@ -1,0 +1,13 @@
+<div [ngClass]="animation" *ngIf="isVideo && url && even" style="width: 100%;height: 100%;">
+  <app-vjs-player [options]="{ autoplay: 'any', loop: true, controls: false, preload: 'auto', muted: false, volume: defaultVolume, fluid: true, errorDisplay: false, sources: [{ src: url, type: 'video/mp4' }]}"></app-vjs-player>
+</div>
+
+<img [ngClass]="animation" *ngIf="!isVideo && url && even" [src]="url" style="object-fit: contain;width: 100%;height: 100%;">
+
+<div [ngClass]="animation" *ngIf="isVideo && url && !even" style="width: 100%;height: 100%;">
+  <app-vjs-player [options]="{ autoplay: 'any', loop: true, controls: false, preload: 'auto', muted: false, volume: defaultVolume, fluid: true, errorDisplay: false, sources: [{ src: url, type: 'video/mp4' }]}"></app-vjs-player>
+</div>
+
+<img [ngClass]="animation" *ngIf="!isVideo && url && !even" [src]="url" style="object-fit: contain;width: 100%;height: 100%;">
+
+<!--style="display: flex;align-items: center;height: 100%;justify-content: center;"-->

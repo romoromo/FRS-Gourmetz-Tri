@@ -1,0 +1,122 @@
+<table style="    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+"
+       id="tabel1"
+       >
+  <tr *ngIf="!configurations.configurationsObj.hideHeader">
+    <th [style.border-width.px]="configurations.configurationsObj.borderWidth"
+        [style.border-style]="configurations.configurationsObj.borderWidth ? 'solid' : ''"
+        [style.border-color]="configurations.configurationsObj.borderColor"
+        [style.overflow]="'hidden'"
+        *ngFor="let x of getArrays(configurations.configurationsObj.noOfColumns * 2); let j = index"
+        [style.height.px]="configurations.configurationsObj.headerHeight || 1"
+        [style.width.%]="checkEven(j) ? configurations.configurationsObj.labelWidth / configurations.configurationsObj.noOfColumns : (100 - configurations.configurationsObj.labelWidth) / configurations.configurationsObj.noOfColumns"
+        [style.background-color]="checkEven(j) ? (configurations.configurationsObj.labelHeaderStyle.fieldColorLocation && locationColorTheme ? locationColorTheme : configurations.configurationsObj.labelHeaderStyle.fieldColor) : (configurations.configurationsObj.queueNoHeaderStyle.fieldColorLocation && locationColorTheme ? locationColorTheme : configurations.configurationsObj.queueNoHeaderStyle.fieldColor)"
+        [style.vertical-align]="checkEven(j) ? (configurations.configurationsObj.labelHeaderStyle.vAlign) : (configurations.configurationsObj.queueNoHeaderStyle.vAlign)">
+
+      <div *ngIf="checkEven(j)"
+           [style.padding.px]="configurations.configurationsObj.cellPadding"
+           [style.font-family]="configurations.configurationsObj.labelHeaderStyle.fontFamily"
+           [style.font-size.px]="configurations.configurationsObj.labelHeaderStyle.textSize"
+           [style.color]="configurations.configurationsObj.labelHeaderStyle.textColor"
+           [style.width.%]="100"
+           [style.font-weight]="configurations.configurationsObj.labelHeaderStyle.bold ? 'bold' : 'normal'"
+           [style.text-decoration]="configurations.configurationsObj.labelHeaderStyle.underline ? 'underline' : 'none'"
+           [style.font-style]="configurations.configurationsObj.labelHeaderStyle.italic ? 'italic' : 'normal'"
+           [style.text-align]="configurations.configurationsObj.labelHeaderStyle.textAlign">
+        {{configurations.configurationsObj.headerlabels[floor(j/2)] || 'Label'}}
+      </div>
+      <div *ngIf="checkOdd(j)"
+           [style.padding.px]="configurations.configurationsObj.cellPadding"
+           [style.font-family]="configurations.configurationsObj.queueNoHeaderStyle.fontFamily"
+           [style.font-size.px]="configurations.configurationsObj.queueNoHeaderStyle.textSize"
+           [style.color]="configurations.configurationsObj.queueNoHeaderStyle.textColor"
+           [style.width.%]="100"
+           [style.font-weight]="configurations.configurationsObj.queueNoHeaderStyle.bold ? 'bold' : 'normal'"
+           [style.text-decoration]="configurations.configurationsObj.queueNoHeaderStyle.underline ? 'underline' : 'none'"
+           [style.font-style]="configurations.configurationsObj.queueNoHeaderStyle.italic ? 'italic' : 'normal'"
+           [style.text-align]="configurations.configurationsObj.queueNoHeaderStyle.textAlign">
+        {{configurations.configurationsObj.queuenolabels[floor(j/2)] || 'Queue No'}}
+      </div>
+
+    </th>
+  </tr>
+  <tr *ngFor="let x of getArrays(configurations.configurationsObj.noOfRows); let i = index">
+    <td [style.border-width.px]="configurations.configurationsObj.borderWidth"
+        [style.border-style]="configurations.configurationsObj.borderWidth ? 'solid' : ''"
+        [style.border-color]="configurations.configurationsObj.borderColor"
+        [style.overflow]="'hidden'"
+        [style.white-space]="'nowrap'"
+        *ngFor="let y of getArrays(configurations.configurationsObj.noOfColumns * 2); let j = index"
+        [style.background-color]="checkEven(j) ? (configurations.configurationsObj.labelStyle.fieldColorLocation && locationColorTheme ? locationColorTheme : configurations.configurationsObj.labelStyle.fieldColor) : (configurations.configurationsObj.queueNoStyle.fieldColorLocation && locationColorTheme ? locationColorTheme : configurations.configurationsObj.queueNoStyle.fieldColor)"
+        [style.vertical-align]="checkEven(j) ? (configurations.configurationsObj.labelStyle.vAlign) : (configurations.configurationsObj.queueNoStyle.vAlign)">
+
+      <!--<div *ngIf="checkOdd(j)"
+       style="background-color:purple">
+    a
+  </div>-->
+      <!--[@changeBodyColor]="{value: data[i + '-' + (j-1)/2]?.queueNo && data[i + '-' + (j-1)/2]?.isFlashing && data[i + '-' + (j-1)/2]?.isOn ? 'on' : 'off', params:{backgrounColor: configurations.configurationsObj.flashColor}} "-->
+      <!--[class.flash-background] = "data[i + '-' + (j-1)/2]?.queueNo && data[i + '-' + (j-1)/2]?.isFlashing"-->
+      <div *ngIf="checkEven(j)"
+           [style.padding.px]="configurations.configurationsObj.cellPadding"
+           [style.font-family]="configurations.configurationsObj.labelStyle.fontFamily"
+           [style.font-size.px]="configurations.configurationsObj.labelStyle.textSize"
+           [style.color]="configurations.configurationsObj.labelStyle.textColor"
+           [style.width.%]="100"
+           [style.font-weight]="configurations.configurationsObj.labelStyle.bold ? 'bold' : 'normal'"
+           [style.text-decoration]="configurations.configurationsObj.labelStyle.underline ? 'underline' : 'none'"
+           [style.font-style]="configurations.configurationsObj.labelStyle.italic ? 'italic' : 'normal'"
+           [style.text-align]="configurations.configurationsObj.labelStyle.textAlign">
+        <!--<span *ngIf="preview">{{configurations.configurationsObj.stationlabels[i + '-' + (floor(j/2))] || 'Label-' + i + '-' + floor(j/2)}}</span>-->
+
+        <span *ngIf="!configurations.configurationsObj.fifoMode">
+          <span *ngIf="configurations.configurationsObj.roomInfoAsLabel">{{data[i + '-' + (floor(j/2))]?.roomInfo}}</span>
+          <span *ngIf="!configurations.configurationsObj.roomInfoAsLabel" style="white-space:normal">{{configurations.configurationsObj.stationlabels[i + '-' + (floor(j/2))]}}</span>
+        </span>
+        <span *ngIf="configurations.configurationsObj.fifoMode">
+          <span *ngIf="preview">{{'Room ' + (((floor(j/2)) * configurations.configurationsObj.noOfRows) + i + 1)}}</span>
+          <span *ngIf="!preview">
+            <span *ngIf="((((floor(j/2)) * configurations.configurationsObj.noOfRows) +  i) + '') as idx">
+              {{dataFifo[idx]?.roomName}}
+            </span>
+          </span>
+        </span>
+      </div>
+      <div *ngIf="checkOdd(j)"
+           [style.padding.px]="configurations.configurationsObj.cellPadding"
+           [style.font-family]="configurations.configurationsObj.queueNoStyle.fontFamily"
+           [style.font-size.px]="configurations.configurationsObj.queueNoStyle.textSize"
+           [style.color]="configurations.configurationsObj.queueNoStyle.textColor"
+           [style.width.%]="100"
+           [style.font-weight]="configurations.configurationsObj.queueNoStyle.bold ? 'bold' : 'normal'"
+           [style.text-decoration]="configurations.configurationsObj.queueNoStyle.underline ? 'underline' : 'none'"
+           [style.font-style]="configurations.configurationsObj.queueNoStyle.italic ? 'italic' : 'normal'"
+           [style.text-align]="configurations.configurationsObj.queueNoStyle.textAlign">
+
+        <span *ngIf="!configurations.configurationsObj.fifoMode">
+          <span *ngIf="preview">{{'A' + i + '-' + floor(j/2)}}</span>
+          <span *ngIf="!preview" [@changeBodyColor]="{value: data[i + '-' + floor(j/2)]?.queueNo && data[i + '-' + floor(j/2)]?.isFlashing && data[i + '-' + floor(j/2)]?.isOn ? 'on' : 'off', params:{color: configurations.configurationsObj.flashColor, default: configurations.configurationsObj.queueNoStyle.textColor}} ">
+            {{data[i + '-' + floor(j/2)]?.queueNo || '&#8205;'}}
+          </span>
+        </span>
+
+        <span *ngIf="configurations.configurationsObj.fifoMode">
+          <span *ngIf="((((floor(j/2)) * configurations.configurationsObj.noOfRows) +  i) + '') as idx">
+            <span *ngIf="preview">{{'Queue ' + (parseInteger(idx) + 1) }}</span>
+            <span *ngIf="!preview" [@changeBodyColor]="{value: dataFifo[idx]?.queueNo && dataFifo[idx]?.isFlashing && dataFifo[idx]?.isOn ? 'on' : 'off', params:{color: configurations.configurationsObj.flashColor, default: configurations.configurationsObj.queueNoStyle.textColor}}">
+              {{dataFifo[idx]?.queueNo || '&#8205;'}}
+            </span>
+
+          </span>
+        </span>
+
+
+      </div>
+
+    </td>
+  </tr>
+
+</table>
+

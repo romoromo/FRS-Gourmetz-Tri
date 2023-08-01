@@ -1,0 +1,37 @@
+<div>
+  <mat-expansion-panel expanded="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <h4>Available Rooms Today</h4>
+      </mat-panel-title>
+      <mat-panel-description>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <table class="table table-sm" [hidden]="show_no_results">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">Facilities</th>
+          <th scope="col">Capacity</th>
+          <th scope="col">Availability</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of locations">
+          <td>{{row.name}}</td>
+          <td>{{row.description}}</td>
+          <td>{{row.facilityNames}}</td>
+          <td>{{row.capacity}}</td>
+          <td>{{row.availableTimeDisplay}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div [hidden]="!show_no_results">
+      <p>
+        No available rooms to book.
+      </p>
+    </div>
+  </mat-expansion-panel>
+</div>

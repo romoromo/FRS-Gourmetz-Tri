@@ -1,0 +1,69 @@
+<div>
+  <header class="pageHeader">
+    <h3>Packing Process</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-5">
+      <mat-form-field style="width: 100%;" class="example-full-width" appearance="fill">
+        <mat-label>Carton Asset TID</mat-label>
+        <input matInput #cartonInput [(ngModel)]="cartonAssetCode" (ngModelChange)="cartonChanged($event)">
+      </mat-form-field>
+      <div *ngIf="cartonSearchs && cartonSearchs.length > 0" style="border: solid 1px;padding: 0;max-height: 385px;overflow: auto;" class="col-sm-12">
+        <div *ngFor="let row of cartonSearchs" (click)="cartonAssetCode = row.code; cartonChanged($event)">
+          <div class="col-sm-12">
+            <h5>{{row.code}}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--<div class="col-sm-3">
+      <mat-form-field style="width: 100%;" class="example-full-width" appearance="fill">
+        <mat-label>Dish Code</mat-label>
+        <input matInput #dishInput [(ngModel)]="dishCode" (ngModelChange)="dishChanged($event)">
+      </mat-form-field>
+    </div>-->
+    <div class="col-sm-5">
+      <mat-form-field style="width: 100%;" class="example-full-width" appearance="fill">
+        <mat-label>Bento Asset TID</mat-label>
+        <input matInput #bentoInput [(ngModel)]="bentoAssetCode" (ngModelChange)="bentoChanged($event)">
+      </mat-form-field>
+      <div *ngIf="bentoSearchs && bentoSearchs.length > 0" style="border: solid 1px;padding: 0;max-height: 385px;overflow: auto;" class="col-sm-12">
+        <div *ngFor="let row of bentoSearchs" (click)="bentoAssetCode = row.code; bentoChanged($event)">
+          <div class="col-sm-12">
+            <h5>{{row.code}}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <button class="btn btn-primary" style="height: 52px;" (click)="addBento()">Add</button> <br />
+      <section class="example-section">
+        <mat-checkbox [(ngModel)]="autoAdd" class="example-margin">Auto add when bento inputted</mat-checkbox>
+      </section>
+    </div>
+  </div>
+
+  <div class="container" style="margin-bottom: 10px;">
+    <button class="btn btn-success" (click)="submit()" style="float: right;">Submit List</button>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [externalPaging]="true"
+                 [externalSorting]="true"
+                 [count]="rows.length">
+  </ngx-datatable>
+
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <span *ngIf="row.isSuccess" style="color: green">Success</span>
+    <button *ngIf="!row.isSuccess" class="btn btn-danger" (click)="removeBento(row)">Remove</button> <br />
+    <span *ngIf="row.message" style="color: red">{{row.message}}</span>
+  </ng-template>
+</div>

@@ -1,0 +1,222 @@
+
+.control-box {
+    margin-bottom: 5px;
+}
+
+.search-box {
+    margin: 0;
+}
+
+.action-box {
+    margin: 0 50px 0 0;
+    min-height: 0;
+}
+
+.action-box .toolbaritem a {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    min-width: 100px;
+}
+
+@font-face {
+  font-family: "Avenir Bold";
+}
+
+@font-face {
+  font-family: "Avenir";
+}
+
+.tit {
+  font: 400 1rem 'Roboto', sans-serif;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.top {
+  position: fixed;
+  top: 0;
+  z-index: 999;
+  background-color: #fff;
+  width: 100%;
+}
+
+.slide {
+  list-style-type: none;
+  padding: 0;
+  width: 1080px;
+  height: 280px;
+  margin: 0 !important;
+}
+
+.slide__item {
+  position: relative;
+}
+
+.item {
+  position: relative;
+  padding: 0 !important;
+  height: 280px !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
+
+
+.slide-caption {
+  visibility: hidden;
+  position: relative;
+  top: 70%;
+  left: 0%;
+  text-align: left;
+  font-family: 'Roboto';
+  margin: 0;
+  background-color: rgba(224, 11, 86, 0.75);
+  height: 30% !important;
+  width: 100% !important;
+  padding: 10px !important;
+}
+
+.slide-date {
+  visibility: hidden;
+  position: relative;
+  top: -25%;
+  left: 75%;
+  text-align: center;
+  font-family: 'Roboto';
+  margin: 0;
+  background-color: rgba(224, 11, 86, 0.75);
+  height: 27% !important;
+  width: 25% !important;
+  padding: 10px !important;
+}
+
+.slide-date-txt {
+  font-size: 28px;
+  font-weight: 900;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: white;
+  font-family: Avenir;
+}
+
+.slide-month {
+  font-size: 14px;
+  font-weight: 900;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  color: white;
+  font-family: Avenir;
+}
+
+
+
+.slide-caption__title {
+  font-size: 14px;
+  font-weight: 900;
+  margin-bottom: 0;
+  margin-top: 0;
+  text-transform: uppercase;
+  color: white;
+  font-family: Avenir;
+}
+
+.owl-item.active.center .slide-caption {
+  visibility: visible;
+  -webkit-animation: 1s .2s fadeInUp both;
+  animation: 1s .2s fadeInUp both;
+}
+
+.owl-item.active.center .slide-date {
+  visibility: visible;
+}
+
+.owl-item.active.center .slide-caption__title {
+  -webkit-animation: 1s .2s fadeInUp both;
+  animation: 1s .2s fadeInUp both;
+}
+
+.owl-item.active.center .slide-caption__desc {
+  -webkit-animation: 1s .6s fadeInUp both;
+  animation: 1s .6s fadeInUp both;
+}
+
+.owl-item.active.center .btn {
+  -webkit-animation: 1s .9s flipInX both;
+  animation: 1s .9s flipInX both;
+}
+
+.owl-item.active .slide-caption {
+  visibility: visible;
+}
+
+.owl-item.active .slide-date {
+  visibility: visible;
+}
+
+.slide-caption__desc {
+  font-size: 12px;
+  font-weight: 300;
+  margin-top: 0;
+  color: white;
+  margin-bottom: 0;
+  font-family: Avenir;
+}
+
+.btn {
+  font-size: 16px;
+  font-weight: 300;
+  border: 2px solid #fff;
+  color: #fff;
+  padding: .6rem 2rem;
+  display: inline-block;
+  text-decoration: none;
+  margin-top: .5rem;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.dirLabel {
+  line-height: 2em;
+  padding: 0.2em 0.5em;
+  border-top: 1px solid rgba(34,36,38,.15);
+}
+
+
+
+/*@media (max-width: 768px) {
+    .action-box {
+        margin: 0 14px;
+    }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+iframe {
+  display: block;
+}
+
+@font-face {
+  font-family: "Avenir Bold";
+  src: url("Avenir-Bold.ttf")*/ /* TTF file for CSS3 browsers */
+/*}
+
+@font-face {
+  font-family: "Avenir";
+  src: url("Avenir-Regular.ttf")*/ /* TTF file for CSS3 browsers */
+/*}
+
+#overlap {
+  position: absolute;
+  visibility: hidden;
+  top: 0px;
+  left: 0px;
+  margin: 0;
+  padding: 0;
+  width: 1080px;
+  height: 1920px;
+}*/

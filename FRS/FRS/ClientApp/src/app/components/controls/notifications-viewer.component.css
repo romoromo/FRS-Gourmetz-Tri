@@ -1,0 +1,16 @@
+
+.unread {
+  font-weight: bold;
+  color: #007f7b;
+}
+
+.no-notification {
+  text-align: center;
+  /* height: 40px; */
+  vertical-align: middle;
+  padding: 7px;
+}
+
+  .no-notification a {
+    color: #007f7b !important;
+  }

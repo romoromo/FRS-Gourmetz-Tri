@@ -1,0 +1,290 @@
+<mat-expansion-panel expanded="true">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <h4>Signage Dashboard</h4>
+    </mat-panel-title>
+    <mat-panel-description>
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  <div>
+    <div class="row bottom-space" *ngIf="dashboard">
+      <div class="col-xs-12 col-sm-4 col-md-4">
+        <div class="card bg-gradient-unreachable border-0">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <h5 class="card-title text-uppercase text-muted mb-0 text-white">Units not reachable</h5>
+                <span class="h2 font-weight-bold mb-0 text-white">{{dashboard.unreachable}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-4 col-md-4">
+        <div class="card bg-gradient-unassigned border-0">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <h5 class="card-title text-uppercase text-muted mb-0 text-white">Unit Asleep</h5>
+                <span class="h2 font-weight-bold mb-0 text-white">{{dashboard.asleep}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-4 col-md-4">
+        <div class="card bg-gradient-alive border-0">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <h5 class="card-title text-uppercase text-muted mb-0 text-white">Units Alive</h5>
+                <span class="h2 font-weight-bold mb-0 text-white">{{dashboard.alive}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row bottom-space filter-container">
+      <div class="col-xs-12 col-sm-6 col-md-2">
+        <mat-form-field floatLabel="always" class="filter">
+          <mat-label>Filter By Location</mat-label>
+          <mat-select [(ngModel)]="location_id" name="location">
+            <mat-option [value]="0">ALL LOCATIONS</mat-option>
+            <ng-container *ngFor="let building of buildingList">
+              <mat-option class="optionGroup" [value]="building.id"><b>{{building.name}}</b></mat-option>
+              <mat-option class="optionChild" *ngFor="let location of getRoomsByBuildingId(building.id)" [value]="location.id"><small>{{location.name}}</small></mat-option>
+            </ng-container>
+
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-2">
+        <mat-form-field floatLabel="always" class="filter">
+          <mat-label>Filter By Status</mat-label>
+          <mat-select [(ngModel)]="status" name="status">
+            <mat-option value="all"><small>ALL STATUS</small></mat-option>
+            <mat-option value="alive"><small>Alive</small></mat-option>
+            <mat-option value="asleep"><small>Asleep</small></mat-option>
+            <mat-option value="unreachable"><small>Unreachable</small></mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-2">
+        <mat-form-field floatLabel="always" class="filter">
+          <mat-label>Filter By Device Type</mat-label>
+          <mat-select [(ngModel)]="deviceTypeId" name="deviceTypeId">
+            <mat-option value="0"><small>ALL DEVICE TYPES</small></mat-option>
+            <mat-option *ngFor="let deviceType of deviceTypes" [value]="deviceType.id">
+              <small>{{deviceType.name}}</small>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-2">
+        <mat-form-field [floatLabel]="always" class="filter">
+          <input matInput id="keyword" name="keyword" placeholder="Search" [(ngModel)]="keyword">
+        </mat-form-field>
+      </div>
+      <div class="col-xs-12  col-sm-6 col-md-4 bottom-space" style="padding-bottom:10px;">
+        <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
+        <button type="button" class="btn btn-sm btn-info" (click)="applyFilters();">Filter</button>
+        <button *ngIf="canPushMessage && dashboard && dashboard.pagedDevices && dashboard.pagedDevices.totalCount > 0" type="button" class="btn btn-sm btn-info" (click)="openPushMessageDialog();" style="margin-left:10px;">Push Message</button>
+        <button *ngIf="canReboot && dashboard && dashboard.pagedDevices && dashboard.pagedDevices.totalCount > 0" type="button" class="btn btn-sm btn-info" (click)="bulkReboot();" style="margin-left:5px;">Reboot</button>
+        <button *ngIf="canRefresh && dashboard && dashboard.pagedDevices && dashboard.pagedDevices.totalCount > 0" type="button" class="btn btn-sm btn-info" (click)="bulkRefresh();" style="margin-left:5px;">Refresh Panels</button>
+      </div>
+    </div>
+
+    <div class="chart-inner-container row" *ngIf="dashboard && dashboard.pagedDevices">
+      <!--<div>
+        <div style="width: 80%;float:left;font-size: 18px;font-weight: 500;">Device List</div>
+      </div>-->
+
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered" [hidden]="show_no_results">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 5%" class="text-center">Status</th>
+              <th scope="col" style="width: 15%">Signage Player</th>
+              <th scope="col" style="width: 15%" class="">Location</th>
+              <th scope="col" style="width: 25%" class="">Publication to Use</th>
+              <th scope="col" style="width: 25%" class="" *ngIf="canPushMessage">Push Messages</th>
+              <th scope="col" style="width: 155%" class="" *ngIf="canPreview || canReboot || canRefresh || canScreenshot"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of dashboard.pagedDevices.pagedData" class="signage-device-rows">
+              <td class="text-center">
+                <div class="padding-top-1em">
+                  <span *ngIf="row.connection_status_display =='ONLINE' && row.isScreenOn == true" title="Device is online">
+                    <i class="status_online material-icons">fiber_manual_record</i>
+                  </span>
+                  <span *ngIf="row.connection_status_display =='ONLINE' && !row.isScreenOn" title="Device is asleep">
+                    <i class="status_sleep material-icons">fiber_manual_record</i>
+                  </span>
+                  <span *ngIf="row.connection_status_display !='ONLINE'" title="Device is offline">
+                    <i class="status_offline material-icons">fiber_manual_record</i>
+                  </span>
+                </div>
+
+              </td>
+              <td>
+                <p class="padding-top-1em device-label">
+                  {{row.device_label}}
+                  <a class="btn btn-link btn-xs" href="javascript:;" *ngIf="canChangeDeviceInformation" (click)="editDevice(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                </p>
+                <p><small><b>IP Address:</b> <a target="_blank" [href]="sanitize(row)" class="link">{{row.ipAddress}}</a></small></p>
+                <p><small><b>Identifier:</b> {{row.code}}</small></p>
+                <p><small><b>Mac:</b> {{row.macAddress}}</small></p>
+                <p><small><b>Serial:</b> {{row.serialNumber}}</small></p>
+                <p>
+                  <small>
+                    <b>Rotation:</b>
+                    <span *ngIf="!row.isEdit">{{row.rotation}}</span>
+                    <mat-select name="deviceRotation{{row.id}}" *ngIf="row.isEdit" [(ngModel)]="row.rotation" #deviceRotation="ngModel">
+                      <mat-option *ngFor="let rotation of rotations" [value]="rotation">
+                        {{rotation}}
+                      </mat-option>
+                    </mat-select>
+                  </small>
+                </p>
+                <p>
+                  <small>
+                    <b>Resolution:</b>
+                    <span *ngIf="!row.isEdit">{{row.resolution}}</span>
+                    <mat-select name="deviceResolution{{row.id}}" *ngIf="row.isEdit" [(ngModel)]="row.resolution" #deviceResolution="ngModel">
+                      <mat-option *ngFor="let res of ress" [value]="res.value">
+                        {{res.viewValue}}
+                      </mat-option>
+                    </mat-select>
+
+                  </small>
+                </p>
+                <p>
+                  <small>
+                    <b>Brightness:</b>
+                    <span *ngIf="!row.isEdit">{{row.brightness}}</span>
+                    <mat-form-field *ngIf="row.isEdit">
+                      <input matInput type="number" name="deviceBrightness{{row.id}}" [(ngModel)]="row.brightness" min="0" max="10" onKeyDown="return false" />
+                    </mat-form-field>
+                  </small>
+                </p>
+                <p>
+                  <small>
+                    <b>Volume:</b>
+                    <span *ngIf="!row.isEdit">{{row.volume > 0 ? row.volume : 0}}/100</span>
+                    <mat-form-field *ngIf="row.isEdit">
+                      <input matInput type="number" name="deviceVolume{{row.id}}" [(ngModel)]="row.volume" min="0" max="100" onKeyDown="return false" />
+                    </mat-form-field>
+                  </small>
+                </p>
+
+                <p><small><b>Screen:</b> {{row.isScreenOn ? "ON" :"OFF"}}</small></p>
+                <div *ngIf="row.isEdit">
+                  <a class="btn btn-warning btn-xs" href="javascript:;" (click)="cancelEditDevice(row)">Cancel</a>
+                  <a class="btn btn-primary btn-xs" href="javascript:;" (click)="saveDevice(row)">Save</a>
+                </div>
+              </td>
+              <td>
+                <p class="padding-top-1em">{{row.locationName}}</p>
+              </td>
+              <td>
+                <div class="col-xs-12">
+                  <mat-form-field class="publications" style="width: 100%">
+                    <mat-select [(ngModel)]="row.assignedPublicationId" name="pub{{row.id}}" (selectionChange)="changePublication(row)" [disabled]="!canChangePublication">
+                      <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" [formControl]="searchForm"></ngx-mat-select-search>
+                      </mat-option>
+                      <mat-option [style.display]="(publication.name).toLowerCase().includes((searchForm?.value || '').toLowerCase()) ? 'block' : 'none'" *ngFor="let publication of allPublications" [value]="publication.id" [disabled]="!publication.approved">
+                        {{publication.name}}
+                      </mat-option>
+                    </mat-select>
+
+                    <!--<mat-select [(ngModel)]="row.assignedPublicationId" name="pub" (selectionChange)="changePublication(row)">
+                      <mat-option value="">--Select Publication--</mat-option>
+                      <mat-option *ngFor="let publication of allPublications" [value]="publication.id">{{publication.name}}</mat-option>
+                    </mat-select>-->
+                  </mat-form-field>
+                </div>
+
+              </td>
+              <td>
+                <div class="row" style="padding: 15px;">
+                  <mat-form-field class="col-xs-12">
+                    <input matInput type="text" id="deviceMessage1" name="deviceMessage1" autocomplete="off" placeholder="Message 1" [(ngModel)]="row.emergencyMessage1" #deviceMessage1="ngModel" />
+                  </mat-form-field>
+                  <mat-form-field class="col-xs-12">
+                    <input matInput type="text" id="deviceMessage2" name="deviceMessage2" autocomplete="off" placeholder="Message 2" [(ngModel)]="row.emergencyMessage2" #deviceMessage2="ngModel" />
+                  </mat-form-field>
+                  <mat-form-field class="col-xs-12">
+                    <input matInput type="text" id="deviceMessage3" name="deviceMessage3" autocomplete="off" placeholder="Message 3" [(ngModel)]="row.emergencyMessage3" #deviceMessage3="ngModel" />
+                  </mat-form-field>
+                  <mat-form-field class="col-xs-12">
+                    <input matInput type="text" id="deviceMessage4" name="deviceMessage4" autocomplete="off" placeholder="Emergency Message (Message 4)" [(ngModel)]="row.emergencyMessage4" #deviceMessage4="ngModel" />
+                  </mat-form-field>
+                  <div class="col-xs-12 bottom-space text-center" style="padding-bottom:10px;" *ngIf="canPushMessage">
+                    <button type="button" class="btn btn-sm" (click)="pushMessages(row);"><i class="fa fa-check"></i> Push Messages</button>
+                    <!--<button type="button" class="btn btn-sm btn-warning" (click)="exportAllReports();">Export All</button>-->
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                <div class="padding-top-1em">
+                  <a class="btn btn-md" target="_blank" href="/display/{{row.code}}" *ngIf="canPreview"><i class="fa fa-desktop" aria-hidden="true"></i> View</a>
+                  <a class="btn btn-md" href="javascript:;" (click)="reboot(row)" *ngIf="canReboot"><i class="fa fa-repeat " aria-hidden="true"></i> Reboot</a>
+                  <a class="btn btn-md" href="javascript:;" (click)="refresh(row)" *ngIf="canRefresh"><i class="fa fa-refresh " aria-hidden="true"></i> Refresh</a>
+                  <a class="btn btn-md" target="_blank" [attr.href]="'/api/devicemanager/getImage/' + row.id" *ngIf="canScreenshot"><i class="fa fa-file-image-o " aria-hidden="true"></i> Screenshot</a>
+
+                  <div *ngIf="allChannelInfos && allChannelInfos.length > 0">
+                    <br />
+                    <mat-form-field>
+                      <mat-label>Select Channel</mat-label>
+                      <mat-select [(ngModel)]="row.channelId" [ngModelOptions]="{standalone: true}">
+                        <mat-option value="0"><small>Select Channel</small></mat-option>
+                        <mat-option *ngFor="let ci of allChannelInfos" [value]="ci.number">
+                          <small>{{ci.name}}</small>
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <button class="btn btn-md btn-primary" href="javascript:;" (click)="changechannel(row)">Change Channel</button>
+                    <br />
+
+                    <a class="btn btn-md" href="javascript:;" (click)="channelup(row)"><i class="fa fa-arrow-up " aria-hidden="true"></i> Channel Up</a>
+                    <a class="btn btn-md" href="javascript:;" (click)="channeldown(row)"><i class="fa fa-arrow-down " aria-hidden="true"></i> Channel Down</a>
+
+                    <!--<a class="btn btn-md" href="javascript:;" (click)="screenon(row)"><i class="fa fa-repeat " aria-hidden="true"></i> Screen On</a>
+    <a class="btn btn-md" href="javascript:;" (click)="screenoff(row)"><i class="fa fa-repeat " aria-hidden="true"></i> Screen Off</a>-->
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5">
+                <div class="col-md-12">
+                  <mat-paginator [length]="dashboard.pagedDevices.totalCount" class="paginator"
+                                 [pageSize]="sgnFilter.filter.pageSize"
+                                 [pageIndex]="sgnFilter.filter.page - 1"
+                                 [pageSizeOptions]="[5, 10, 20]"
+                                 (page)="applyFilters($event)">
+                  </mat-paginator>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div [hidden]="!show_no_results">
+        <div class="col-md-13">
+          No device.
+        </div>
+      </div>
+
+
+    </div>
+
+  </div>
+
+</mat-expansion-panel>
+

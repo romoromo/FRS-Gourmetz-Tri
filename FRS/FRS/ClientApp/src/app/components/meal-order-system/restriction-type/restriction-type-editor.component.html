@@ -1,0 +1,64 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="restrictionTypeEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!restrictionTypeCode.valid && showErrorAlert('Code is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageRestrictionTypes" type="text" id="restrictionTypeCode" name="restrictionTypeCode" placeholder="Enter code" [(ngModel)]="restrictionTypeEdit.code" #restrictionTypeCode="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageRestrictionTypes" type="text" id="restrictionTypeLabel" name="restrictionTypeLabel" placeholder="Enter label" [(ngModel)]="restrictionTypeEdit.label" #restrictionTypeLabel="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+          <input matInput placeholder="Handled EMR" style="display: none">
+          <mat-radio-group name="isHandledEMR" [(ngModel)]="restrictionTypeEdit.isHandledEMR" [disabled]="!canManageRestrictionTypes">
+            <mat-radio-button [value]="true">Yes</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </mat-form-field>
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+          <input matInput placeholder="Dish Type Customisation" style="display: none">
+          <mat-radio-group name="isDishTypeCustomisation" [(ngModel)]="restrictionTypeEdit.isDishTypeCustomisation" [disabled]="!canManageRestrictionTypes">
+            <mat-radio-button [value]="true">Yes</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </mat-form-field>
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+          <input matInput placeholder="Special Condition" style="display: none">
+          <mat-radio-group name="isSpecialCondition" [(ngModel)]="restrictionTypeEdit.isSpecialCondition" [disabled]="!canManageRestrictionTypes">
+            <mat-radio-button [value]="true">Yes</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </mat-form-field>
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+          <input matInput placeholder="Carried Forward" style="display: none">
+          <mat-radio-group name="isCarriedForward" [(ngModel)]="restrictionTypeEdit.isCarriedForward" [disabled]="!canManageRestrictionTypes">
+            <mat-radio-button [value]="true">Yes</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </mat-form-field>
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+          <input matInput placeholder="Meal Filtering" style="display: none">
+          <mat-radio-group name="isMealFiltering" [(ngModel)]="restrictionTypeEdit.isMealFiltering" [disabled]="!canManageRestrictionTypes">
+            <mat-radio-button [value]="true">Yes</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </mat-form-field>
+        <mat-form-field class="col-md-4">
+          <input matInput autocomplete="off" [disabled]="!canManageRestrictionTypes" type="number" id="restrictionTypeSequence" name="restrictionTypeSequence" placeholder="Sequence" [(ngModel)]="restrictionTypeEdit.sequence" #restrictionTypeSequence="ngModel" required min="0"/>
+        </mat-form-field>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageRestrictionTypes" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageRestrictionTypes" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageRestrictionTypes" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

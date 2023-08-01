@@ -1,0 +1,18 @@
+<div class="row" style="margin-bottom:15px;">
+  <div [ngClass]="btnClassContainer ? btnClassContainer : 'col-md-2 '">
+    <input type="file" #file id="file" placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;" accept="{{fileTypes}}">
+    <button mat-stroked-button type="button" [ngClass]="btnClass ? btnClass : 'btn btn-sm'" (click)="file.click()">{{(btnText ? btnText : 'Upload File')}}</button>
+  </div>
+  <!--<div class="col-md-5" *ngIf="showTxt">
+
+    <span class="upload" *ngIf="filename">
+      {{filename}}
+    </span>
+    <span class="upload" *ngIf="progress > 0">
+      {{progress}}%
+    </span>
+    <span class="upload" *ngIf="message">
+      {{message}}
+    </span>
+  </div>-->
+</div>

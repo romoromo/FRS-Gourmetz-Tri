@@ -1,0 +1,105 @@
+<div class="center-content">
+  <h4 class="bottom-space">Register</h4>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="userInfoForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+
+          (userPassword && !userPassword.valid && showErrorAlert('Password is required', 'Please enter the current password'));
+
+          (email.errors?.required && showErrorAlert('Email is required', 'Please enter an email address (maximum of 200 characters)'));
+          (email.errors?.pattern && showErrorAlert('Invalid Email', 'Please enter a valid email address'));
+
+          (!currentPassword.valid && showErrorAlert('Current password is required', 'Please enter the current password'));
+
+          (!newPassword.valid && showErrorAlert('New password is required', 'Please enter the new password (minimum of 8 characters)'));
+
+          (newPassword.valid && confirmPassword.errors?.required && showErrorAlert('Confirmation password is required', 'Please enter the confirmation password'));
+          (newPassword.valid && confirmPassword.errors?.validateEqual && showErrorAlert('Passwword mismatch', 'New password and comfirmation password do not match'));
+
+          ;">
+    <div class="row">
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput type="text" id="institutionCode" autocomplete="off" name="institutionCode" placeholder="{{'users.editor.Institution' | translate}}" [(ngModel)]="userEdit.institutionCode" required #institutionCode="ngModel" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && !institutionCode.valid">{{'users.editor.InstitutionRequired' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12" *ngIf="!showDepartmentList">
+          <input matInput type="text" id="registeredDepartment" autocomplete="off" name="registeredDepartment" placeholder="{{'users.editor.Department' | translate}}" [(ngModel)]="userEdit.registeredDepartment" required #registeredDepartment="ngModel" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && !registeredDepartment.valid">{{'users.editor.DepartmentRequired' | translate}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-12" *ngIf="showDepartmentList">
+          <mat-select required placeholder="{{'users.editor.Department' | translate}}" [formControl]="fcDepartments" [(ngModel)]="userEdit.registeredDepartment">
+            <mat-option *ngFor="let department of departmentList" [value]="department.name"><b>{{department.name}}</b> - <small><i>{{department.description}}</i></small></mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput type="text" id="employeeId" autocomplete="off" name="employeeId" placeholder="{{'users.editor.EmployeeId' | translate}}" [(ngModel)]="userEdit.employeeId" />
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput type="password" id="pin" pattern="[0-9]*" inputmode="numeric" minlength="6" maxlength="6" autocomplete="off" name="pin" placeholder="{{'users.editor.Pin' | translate}}" [(ngModel)]="userEdit.pin" required #pin="ngModel" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && !pin.valid">{{'users.editor.PinRequired' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-12">
+
+        <mat-form-field class="col-md-12">
+          <input matInput type="text" id="email" autocomplete="off" name="email" placeholder="{{'users.editor.Email' | translate}}" [(ngModel)]="userEdit.email" #email="ngModel" required minlength="2" maxlength="200"
+                 pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && email.errors?.required">{{'users.editor.EmailRequired' | translate}}</mat-error>
+          <mat-error *ngIf="showValidationErrors && f.submitted && email.errors?.pattern">{{'users.editor.InvalidEmail' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12" *ngIf="!isExternalLogin">
+        <mat-form-field class="col-md-12">
+          <input matInput type="password" id="newPassword" name="newPassword" placeholder="{{'users.editor.NewPassword' | translate}}" [(ngModel)]="userEdit.newPassword" #newPassword="ngModel" required minlength="6" validateEqual="confirmPassword" reverse="true" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && !newPassword.valid">{{'users.editor.NewPasswordRequired' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12" *ngIf="!isExternalLogin">
+        <mat-form-field class="col-md-12">
+          <input matInput type="password" id="confirmPassword" name="confirmPassword" placeholder="{{'users.editor.ConfirmPassword' | translate}}" [(ngModel)]="userEdit.confirmPassword" #confirmPassword="ngModel" required minlength="6" validateEqual="newPassword" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && confirmPassword.errors?.required">{{'users.editor.ConfirmationPasswordRequired' | translate}}</mat-error>
+          <mat-error *ngIf="showValidationErrors && f.submitted && confirmPassword.errors?.validateEqual && !confirmPassword.errors?.required">{{'users.editor.PasswordMismatch' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput type="text" id="jobTitle" autocomplete="off" name="jobTitle" placeholder="{{'users.editor.JobTitle' | translate}}" [(ngModel)]="userEdit.jobTitle" #jobTitle="ngModel" />
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput type="text" id="fullName" autocomplete="off" name="fullName" placeholder="{{'users.editor.FullName' | translate}}" [(ngModel)]="userEdit.fullName" #fullName="ngModel" required minlength="2" maxlength="200" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && !fullName.valid">{{'users.editor.FullNameRequired' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput type="text" id="phoneNumber" autocomplete="off" name="phoneNumber" placeholder="{{'users.editor.PhoneNumber' | translate}}" [(ngModel)]="userEdit.phoneNumber" #phoneNumber="ngModel" required minlength="2" maxlength="200" />
+          <mat-error *ngIf="showValidationErrors && f.submitted && !phoneNumber.valid">{{'users.editor.PhoneNumberRequired' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12 text-center">
+        <button type="submit" class="btn btn-primary" [disabled]="isSaving">
+          <i *ngIf="!isSaving" class='fa fa-check'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('users.editor.Processing' | translate) : ('users.editor.Register' | translate)}}
+        </button>
+      </div>
+    </div>
+    <div class="clearfix bottom-space"></div>
+    <div class="row text-center" style="padding-top:50px;">
+      <div class="col-md-12">
+        <h5>Scan QR Code below to download the Android application</h5>
+      </div>
+      <div class="col-md-12">
+        <img ngSrc [src]="qrCodeUrl" />
+      </div>
+    </div>
+  </form>
+</div>

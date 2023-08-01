@@ -1,0 +1,37 @@
+<h1 mat-dialog-title>{{'pageHeader.MediaExtensions' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="mediaExtensionEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageMediaExtensions" type="text" autocomplete="off" name="extension" id="extension" key="extension" placeholder="{{'mediaExtensions.editor.Code' | translate}}" [(ngModel)]="mediaExtensionEdit.extension" #extension="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!extension.valid || validation.extension)">{{'mediaExtensions.editor.CodeRequired' | translate}}</mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageMediaExtensions" type="text" autocomplete="off" name="label" id="label" key="label" placeholder="{{'mediaExtensions.editor.Label' | translate}}" [(ngModel)]="mediaExtensionEdit.label" #label="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!label.valid || validation.label)">{{'mediaExtensions.editor.LabelRequired' | translate}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="col-md-12">
+        <input matInput type="text" id="" name="minSize" placeholder="Min. Size (KB) (optional)" [(ngModel)]="mediaExtensionEdit.min" #imageTitle="ngModel" />
+      </mat-form-field>
+
+      <mat-form-field class="col-md-12">
+        <input matInput type="text" id="" name="maxSize" placeholder="Max. Size (KB) (optional)" [(ngModel)]="mediaExtensionEdit.max" #imageTitle="ngModel" />
+      </mat-form-field>
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="mediaExtensionEdit != null">
+    <button *ngIf="!canManageMediaExtensions" mat-button (click)="cancel()">{{'mediaExtensions.editor.Close' | translate}}</button>
+    <button *ngIf="canManageMediaExtensions" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'mediaExtensions.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageMediaExtensions" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('mediaExtensions.editor.Saving' | translate) : ('mediaExtensions.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

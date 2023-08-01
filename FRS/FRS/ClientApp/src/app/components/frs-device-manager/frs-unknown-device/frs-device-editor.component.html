@@ -1,0 +1,56 @@
+
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="deviceEditorForm" #f="ngForm" novalidate canManageEpaperDevices
+        (ngSubmit)="f.form.valid && fcLocation.valid ? save() :
+          (!deviceCode.valid && showErrorAlert('Device code is required', 'Please enter a device code (minimum of 2 and maximum of 200 characters)'));">
+
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6">
+            <input matInput autocomplete="off" [disabled]="!canManageEpaperDevices" type="text" id="deviceCode" name="deviceCode" placeholder="Enter device code" [(ngModel)]="epaperDeviceEdit.device_code" #deviceCode="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceCode.valid">{{'devices.editor.DeviceCodeRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6">
+            <input matInput autocomplete="off" [disabled]="!canManageEpaperDevices" type="text" id="deviceIpAddress" name="deviceIpAddress" placeholder="Enter device IP address" [(ngModel)]="epaperDeviceEdit.ip_address" #deviceIpAddress="ngModel" />
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6">
+            <input matInput autocomplete="off" [disabled]="!canManageEpaperDevices" type="text" id="deviceLabel" name="deviceLabel" placeholder="Enter device label" [(ngModel)]="epaperDeviceEdit.device_label" #deviceLabel="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceLabelRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6">
+            <input matInput autocomplete="off" [disabled]="!canManageEpaperDevices" type="text" id="deviceMacAddress" name="deviceMacAddress" placeholder="Enter device mac address" [(ngModel)]="epaperDeviceEdit.mac_address" #deviceMacAddress="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceMacAddressRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageEpaperDevices" type="text" id="epaperUrl" name="epaperUrl" placeholder="Enter EPaper URL" [(ngModel)]="epaperDeviceEdit.epaper_url" #epaperUrl="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceLabelRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <mat-select required [disabled]="!canManageEpaperDevices" placeholder="{{'devices.editor.Location' | translate}}" [(ngModel)]="epaperDeviceEdit.location_id" [formControl]="fcLocation">
+              <mat-option *ngFor="let location of allLocations" [value]="location.id" required><b>{{location.name}}</b> - <small><i>{{location.description}}</i></small></mat-option>
+            </mat-select>
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcInstitution.invalid">{{'devices.editor.InstitutionRequired' | translate}}</mat-error>-->
+
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <!--<button *ngIf="!canManageEpaperDevices  || epaperDeviceEdit.status == 'Approved'" type="button" mat-button (click)="cancel()">{{'devices.editor.Close' | translate}}</button>-->
+      <button *ngIf="canManageEpaperDevices" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'devices.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageEpaperDevices" mat-button color="primary" type="submit" [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('devices.editor.Saving' | translate) : ('devices.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

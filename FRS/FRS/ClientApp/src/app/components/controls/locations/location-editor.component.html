@@ -1,0 +1,112 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" name="locationEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() :
+          (!locationName.valid && showErrorAlert('Location name is required', 'Please enter a location name (minimum of 2 and maximum of 200 characters)'));">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div>
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageLocations" type="text" id="locationName" name="locationName" placeholder="{{'locations.editor.Name' | translate}}" [(ngModel)]="locationEdit.name" #locationName="ngModel" required minlength="2" maxlength="200" />
+            <mat-error *ngIf="showValidationErrors && f.submitted && !locationName.valid">{{'locations.editor.LocationNameRequired' | translate}}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageLocations" type="text" id="locationDescription" name="locationDescription" placeholder="Enter location description" [(ngModel)]="locationEdit.description" /><mat-error *ngIf="showValidationErrors && f.submitted && !locationName.valid">{{'locations.editor.LocationNameRequired' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-12">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageLocations" type="number" id="locationCapacity" name="locationCapacity" placeholder="Enter capacity" [(ngModel)]="locationEdit.capacity" #locationCapacity="ngModel" required />
+          <mat-error *ngIf="showValidationErrors && f.submitted && !locationCapacity.valid">{{'locations.editor.LocationCapacityRequired' | translate}}</mat-error>
+
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!--******************************************************************************************************-->
+
+    <div *ngIf="!isEditMode || canManageLocations" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="!isEditMode || canManageLocations">
+      <div class="col-md-12" *ngIf="!isEditMode">
+        <p ngPreserveWhitespaces class="form-control-static">
+          <span>
+            <span title='{{locationEdit.institutionName}}' class="badge">{{locationEdit.institutionName}}</span>
+          </span>
+        </p>
+      </div>
+      <div class="col-sm-12">
+
+        <mat-form-field *ngIf="isEditMode && canManageLocations">
+          <mat-select required multiple placeholder="{{'locations.editor.Institution' | translate}}" [formControl]="institutions" [(ngModel)]="locationEdit.institutionIds">
+            <mat-option *ngFor="let institution of allInstitutions" [value]="institution.id" (selectionChange)="changeInstitutions($event.value)" required><b>{{institution.name}}</b> - <small><i>{{institution.description}}</i></small></mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted && institutions.invalid">{{'locations.editor.InstitutionRequired' | translate}}</mat-error>
+
+        </mat-form-field>
+      </div>
+    </div>
+    <!--******************************************************************************************************-->
+
+    <div *ngIf="!isEditMode || canManageLocations" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="!isEditMode || canManageLocations">
+      <div class="col-md-12">
+        <mat-form-field>
+          <mat-select required placeholder="Equipments" [formControl]="facilities" multiple [(ngModel)]="locationEdit.facilityIds">
+            <mat-option *ngFor="let facility of facilitiesList" [value]="facility.id"><b>{{facility.name}}</b> - <small><i>{{facility.description}}</i></small></mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted && facilities.invalid">{{'locations.editor.FacilitiesRequired' | translate}}</mat-error>
+
+        </mat-form-field>
+      </div>
+    </div>
+    <div *ngIf="!isEditMode || canManageLocations" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="!isEditMode || canManageLocations" class="row">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="locations-location-icon">Icon</label>
+      <div class="col-md-7">
+        <file-upload (onUploadFinished)="uploadFinished($event)"></file-upload>
+      </div>
+
+      <div *ngIf="locationEdit.filePath" class="col-md-2" style="padding:10px; border: 1px dashed #808080;text-align:center">
+        <img [src]="getFileImage(locationEdit.filePath)" alt="icon" style="width:50px; height:50px;" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <hr class="edit-last-separator-hr" />
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center">
+    <button *ngIf="!canManageLocations" mat-button (click)="cancel()">{{'locations.editor.Close' | translate}}</button>
+    <button *ngIf="canManageLocations" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'locations.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageLocations" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('locations.editor.Saving' | translate) : ('locations.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

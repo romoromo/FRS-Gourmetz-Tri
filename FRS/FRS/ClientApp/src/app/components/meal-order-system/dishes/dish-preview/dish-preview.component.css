@@ -1,0 +1,50 @@
+.upload {
+  font-weight: bold;
+  color: #28a745;
+  margin-left: 15px;
+  line-height: 36px;
+}
+
+.box-type {
+  height: 100px;
+  width: 100px;
+  background-color: #04AA6D !important;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.box-code {
+  text-align: center;
+  line-height: 100px;
+  font-weight:500;
+}
+
+.capitalise{
+  text-transform:uppercase
+}
+
+.font-color-danger {
+  color: #d9534f !important;
+}
+
+.table-header-gray thead tr th {
+  background-color: #d7d7d7;
+  font-weight: bold;
+  text-align: center;
+}
+
+.text-bold{
+  font-weight:bold;
+}
+
+.table-border-black th, .table-border-black td{
+  border: 1px solid black !important;
+}
+
+td.check{
+  width: 50px;
+}
+
+.mat-checkbox-inner-container {
+  border: none !important;
+}

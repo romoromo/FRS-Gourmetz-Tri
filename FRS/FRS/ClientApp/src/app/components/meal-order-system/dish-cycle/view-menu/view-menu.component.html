@@ -1,0 +1,70 @@
+<h1 mat-dialog-title style="overflow-wrap: anywhere;">{{data.header}} for {{dishCycle.label}} {{day > 0 ? '(Day ' + day + ')' : ''}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="viewDishEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!dishCycleLabel.valid && showErrorAlert('Label is required', 'Please enter label (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-label class="col-md-12"><h5>Meal Periods</h5></mat-label>
+        <mat-chip-list class="col-xs-12">
+          <mat-chip *ngFor="let period of dishCycle.dishCyclePeriods; let i=index">
+            {{period.mealPeriodName}}
+          </mat-chip>
+        </mat-chip-list>
+        <div *ngFor="let set of sets; let x=index" class="col-xs-12">
+          <!--<div style="margin-top: 10px">
+      <div class="col-sm-4 dish-select">
+        <mat-select id="schedule-{{i}}-{{period.id}}" name="schedule-{{i}}-{{period.id}}" style="border: 1px solid #dddddd;padding: 5px;"
+                    [(ngModel)]="period.selectedDish">
+          <mat-option>
+            <ngx-mat-select-search placeholderLabel="Search" [formControl]="searchForm"></ngx-mat-select-search>
+          </mat-option>
+          <mat-option [style.display]="(dish.label).toLowerCase().includes((searchForm?.value || '').toLowerCase()) ? 'block' : 'none'" *ngFor="let dish of dishes" [value]="dish">
+            {{dish.label}}-{{dish.code}}
+          </mat-option>
+        </mat-select>
+      </div>
+      <div class="col-sm-1">
+        <a class="btn btn-link btn-xs" href="javascript:;" (click)="addDish(period, period.selectedDish)">
+          <i class="fa fa-plus-square" aria-hidden="true"></i> Add Dish
+        </a>
+      </div>
+    </div>-->
+          <table class="table table-sm table-condensed table-bordered" style="margin-top: 10px">
+            <thead>
+              <tr>
+                <th colspan="2" class="text-center">{{(set.cycleTypeLabel ? set.cycleTypeLabel : set.label)}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let menu of set.menus">
+                <td>
+                  {{menu.dishLabel}}
+                </td>
+                <td>
+                  {{menu.dishCode}}
+                </td>
+                <!--<td style="width:30px">
+            <a class="btn btn-link btn-xs" href="javascript:;" (click)="EditDish(period, dish.dishId)">
+              <i class="fa" aria-hidden="true"></i>
+            </a>
+            <a class="btn btn-link btn-xs" href="javascript:;" (click)="removeDish(period, dish.dishId)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>-->
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+      <!--<button type="submit" mat-button [disabled]="isSaving" *ngIf="day > 0">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>-->
+    </div>
+  </form>
+</div>

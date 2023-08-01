@@ -1,0 +1,4 @@
+<h1 *ngIf="!compilation">{{message}}</h1>
+<div [hidden]="compilation.id !== compi.id" *ngFor="let compi of compilationList" [style.width.px]="compi.width" [style.height.px]="compi.height" [style.background-color]="compi.backgroundColor" [style.background-image]="'url(\'' + compi.backgroundImage + '\')'" [style.background-size]="'cover'">
+  <signage-component-type-wrapper *ngFor="let c of compi.components" [style.left.px]="c.x" [style.top.px]="c.y" [style.width.px]="c.width" [style.height.px]="c.height" [style.background-color]="c.backgroundColor" [style.background-image]="'url(\'' + c.backgroundImage + '\')'" [style.background-size]="'cover'" [type]="componentTypeMap[c.componentType].component" [style.position]="'absolute'" [style.z-index]="c.order" [configurations]="c" [style.overflow]="'hidden'" [preview]="preview"></signage-component-type-wrapper>
+</div>

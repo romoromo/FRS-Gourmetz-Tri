@@ -1,0 +1,184 @@
+<!--<div id="pre-bootstrap">
+  <div class="messaging">
+    <h1>
+      Facility Reservation System
+    </h1>
+    <br />
+    <div class="cs-loader">
+      <div class="cs-loader-inner">
+        <label>&#9679;</label>
+        <label>&#9679;</label>
+        <label>&#9679;</label>
+        <label>&#9679;</label>
+        <label>&#9679;</label>
+        <label>&#9679;</label>
+      </div>
+    </div>
+
+  </div>
+</div>-->
+<div id="app_container" class="{{configurations.theme | lowercase}}-theme">
+  <ngx-toasta></ngx-toasta>
+  <div class='container-fluid'>
+    <nav id="header" class="app-component navbar navbar-inner navbar-fixed-top">
+      <nav class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="app-component navbar-toggle collapsed" data-toggle="collapse" data-target=".menuItemsContainer" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a ngPreserveWhitespaces class="app-component navbar-brand" routerLink="{{initLink}}">
+            <img [src]="appLogo" alt="logo">
+            <span class="app-component appTitle">{{appTitle}}</span>
+          </a>
+        </div>
+        <div *ngIf="isUserLoggedIn" class="collapse navbar-collapse menuItemsContainer" data-toggle="collapse" data-target=".menuItemsContainer app-component">
+          <app-menu-panel #panel [item]="menu" (selectMenu)="selectMenu($event)"></app-menu-panel>
+          <!--<ul class="app-component nav navbar-nav nav-pills navBarPadding">-->
+            <!--<ng-container>
+    <li *ngFor="let m of menu" [ngClass]="m.hasSubMenu ? 'dropdown' : ''">
+      <a routerLinkActive="{{m.active}}" routerLink="{{m.link}}" *ngIf="!m.hasSubMenu">
+        {{m.label}} <span class="{{m.logoClass}}"></span>
+      </a>
+
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" *ngIf="m.hasSubMenu">
+        {{m.label}} <b class="caret"></b>
+        <ul class="dropdown-menu multi-level">
+          <li *ngFor="let s of m.submenu" class="dropdown-submenu">
+            <a href="#">{{s.label}}</a>
+          </li>
+        </ul>
+      </a>
+    </li>
+  </ng-container>-->
+
+
+            <!--<li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+              <a routerLink=""><span class="glyphicon glyphicon-home"></span></a>
+            </li>
+            <li routerLinkActive="active" *ngIf="canViewReservations"><a routerLink="/calendar">{{'mainMenu.Calendar' | translate}}</a></li>z
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Content <b class="caret"></b></a>
+              <ul class="dropdown-menu multi-level">
+                <li class="dropdown-submenu">
+                  <a href="#">Media</a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-submenu">
+                      <a href="#">Media Group</a>
+                        <ul class="dropdown-menu">
+                          <li><a href="#">Media Group 1</a></li>
+                          <li><a href="#">Media Group 2</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Media Upload</a></li>
+                  </ul>
+                </li>
+                <li><a href="#">Playlist</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Devices <b class="caret"></b></a>
+              <ul class="dropdown-menu multi-level">
+                <li><a  routerLink="/devices/unknown">Unknown Devices</a></li>
+                <li><a  routerLink="/devices/approval">For Approval</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Signage <b class="caret"></b></a>
+              <ul class="dropdown-menu multi-level">
+                <li><a href="#">Components</a></li>
+                <li><a href="#">Compilations</a></li>
+                <li><a href="#">Publication</a></li>
+                <li><a href="#">Queue Monitor</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">EMS <b class="caret"></b></a>
+              <ul class="dropdown-menu multi-level">
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Schedule</a></li>
+              </ul>
+            </li>
+            <li routerLinkActive="active" *ngIf="canViewReports"><a routerLink="/reports">{{'mainMenu.Reports' | translate}}</a></li>
+            <li routerLinkActive="active"><a routerLink="/settings">Settings
+              <span class="menu-icon-only glyphicon glyphicon-cog"></span>
+               </a>
+            </li>-->
+
+            <!--<li routerLinkActive="active" *ngIf="canViewDevices"><a routerLink="/devices">{{'mainMenu.Devices' | translate}}</a></li>
+            <li routerLinkActive="active" *ngIf="canViewVehicles"><a routerLink="/uservehicles">{{'mainMenu.Vehicles' | translate}}</a></li>
+            <li routerLinkActive="active" *ngIf="canManageContactGroups"><a routerLink="/contactgroups">{{'mainMenu.ContactGroups' | translate}}</a></li>
+            <li routerLinkActive="active" *ngIf="canViewPhonebooks"><a routerLink="/phonebooks">{{'mainMenu.Phonebooks' | translate}}</a></li>
+            <li routerLinkActive="active" *ngIf="canViewReports"><a routerLink="/reports">{{'mainMenu.Reports' | translate}}</a></li>
+            <li routerLinkActive="active" *ngIf="canManagePIBTemplates"><a routerLink="/templateeditor">{{'mainMenu.TemplateEditor' | translate}}</a></li>
+            <li routerLinkActive="active" *ngIf="canManagePIBDevices"><a routerLink="/pibdevices">{{'mainMenu.PIBDevices' | translate}}</a></li>
+            <li routerLinkActive="active" *ngIf="true"><a routerLink="/queuemonitor">{{'mainMenu.QueueMonitor' | translate}}</a></li>-->
+          <!--</ul>-->
+          <ul class="app-component nav navbar-nav nav-pills navBarPadding navbar-right">
+            <li (click)="logout()"><a href="javascript:;"><span class="glyphicon glyphicon-log-out"></span> {{'mainMenu.Logout' | translate}}</a></li>
+          </ul>
+          <p class="app-component navbar-text navbar-right notifications-popup">
+            {{'app.Welcome' | translate}}
+            <a class="app-component navbar-link user-name" href="javascript:;" (click)="gotoProfile()">
+              {{userName}}
+            </a>
+            <a class="app-component navbar-link notification-bell" [popover]="popTemplate" (onHidden)="markNotificationsAsRead()" placement="bottom" [popoverTitle]="notificationsTitle" href="javascript:;">
+              <span class="fa fa-bell-o"></span> <div *ngIf="newNotificationCount > 0" class="notification-circle"></div>
+            </a>
+          </p>
+
+          <ng-template #popTemplate>
+            <notifications-viewer [isViewOnly]="true"></notifications-viewer>
+          </ng-template>
+
+
+          <!--<ul class="app-component nav navbar-nav nav-pills navBarPadding navbar-right">
+            <li routerLinkActive="active"><a routerLink="/settings"><span class="glyphicon glyphicon-cog"></span></a></li>
+          </ul>-->
+        </div>
+        <!--<div *ngIf="!isUserLoggedIn && isRegister" class="app-component collapse navbar-collapse menuItemsContainer">
+          <app-register></app-register>
+        </div>-->
+      </nav>
+    </nav>
+
+    <div id="pre-bootstrap" *ngIf="!removePrebootScreen && !isRegister && !isForgotPassword && !isResetPassword && !isAttendance" [class.prebootShow.app-component]="!isAppLoaded" class="app-component prebootStep">
+      <div class="messaging">
+        <h1>
+          Welcome to FRS!
+        </h1>
+
+      </div>
+    </div>
+
+    <div id="mainContent" class="app-component">
+      <router-outlet></router-outlet>
+    </div>
+
+    <div id="footer">
+      <div class="app-component navbar-fixed-bottom navbar-inner footer">
+        <div class="container-fluid">
+          <footer>
+            <div class="app-component vcenter_text center-block">
+              <p class="text-center text-muted">
+                <span class="appName" style="font-style:italic">FRS</span> &copy; {{getYear()}}
+                </p>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="shouldShowLoginModal && !isRegister && !isAttendance && !isForgotPassword && !isResetPassword && !isPIBDeviceTemplate" class="modal fade" bsModal #loginModal="bs-modal" (onShown)="onLoginModalShown()" (onHidden)="onLoginModalHidden()" (onHide)="onLoginModalHide()"
+       [config]="{backdrop: 'static'}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <app-login #loginControl isModal="true"></app-login>
+    </div>
+  </div>
+  <!--<div *ngIf="isResetPassword">
+    <app-reset-password userId="resetUserId" code="resetCode"></app-reset-password>
+  </div>-->
+</div>

@@ -1,0 +1,48 @@
+<div>
+  <mat-expansion-panel expanded="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <h4>My Upcoming Events</h4>
+      </mat-panel-title>
+      <mat-panel-description>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-card *ngFor="let event of events">
+      <mat-card-header>
+        <!--<div mat-card-avatar class="example-header-image"></div>-->
+        <mat-card-title class="upcoming-event-title">
+          <!--<div>{{event.shortDescription}}</div>-->
+          <div>
+            <mat-icon>calendar_today</mat-icon>
+            {{event.startDateTime | date: 'longDate'}}
+          </div>
+          <div>
+            <mat-icon>access_time</mat-icon>
+            {{event.startDateTime | date:'shortTime'}}
+          </div>
+        </mat-card-title>
+        <mat-card-subtitle>
+
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content style="padding-top:10px;">
+        <b>{{event.locationName}}</b>
+        <p>
+          {{event.longDescription}}
+        </p>
+      </mat-card-content>
+    </mat-card>
+    <!--<a href="#" [hidden]="show_no_events">View All</a>-->
+    <div [hidden]="!show_no_events">
+      <mat-card>
+        <mat-card-content>
+          <p>
+            You have no events.
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </mat-expansion-panel>
+  
+</div>

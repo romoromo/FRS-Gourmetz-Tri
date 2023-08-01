@@ -1,0 +1,251 @@
+<div style="width: 1920px; height: 1080px;margin: 0;background:black;">
+
+  <!--<div id="screenSaver" style="width: 100%;position:fixed;z-index:99;background:black;">
+    <img class="mySlides" src="banner-772x250.png" style="position:fixed;">
+    <img class="mySlides" src="banner-772x250.jpg" style="position:fixed;">
+  </div>-->
+  <div *ngIf="!active" style="width: 1920px; height: 1080px; position: fixed; z-index: 99; background: black;">
+    <owl-carousel-o [options]="customOptions">
+      <ng-container *ngFor="let slide of screenSaverSlides">
+        <ng-template carouselSlide [id]="slide.id">
+          <img [src]="slide.img">
+        </ng-template>
+      </ng-container>
+
+    </owl-carousel-o>
+  </div>
+
+
+  <div id="txt" style="position:absolute;z-index: 100;top: 10px; width: 1920px;color: #636363;font-size: 30px;font-family: Avenir;font-weight: bold; text-align:right; text-shadow: 2px 2px 1px #000000;"></div>
+  <div id="txt_time" style="position:absolute;z-index: 100;top: 40px; width: 1920px;color: #636363;font-size: 38px;font-family: Avenir;font-weight: bold; text-align:right; text-shadow: 2px 2px 1px #000000;"></div>
+
+
+  <div id="container" style="background: black; width: 1920px; height: 1080px;">
+    <ng-container *ngIf="setting">
+      <!--<div *ngIf="setting.dir_font_type" style="height:100px" [ngStyle]="{'background': 'url(' + getFileImage(setting.dir_font_type) + ') no-repeat 0 0 / cover'}" id="bannerDiv"></div>-->
+      <!--<img *ngIf="setting.dir_font_type" [src]="getFileImage(setting.dir_font_type)" style="height:150px;width:1920px" id="bannerDiv" />-->
+      <!--<div style="height: 267px; background: url(banner-772x250.jpg)"></div>-->
+      <!--<iframe id="advertFrame" src="/Web/static/eventLayout/advert.html" scrolling="no" style="height: 320px;width: 100%;border:none;overflow:hidden;"></iframe>-->
+      <!--<div *ngIf="topSlides.length > 0" style="height: 230px; width: 1920px; border: none; overflow: hidden;">
+        <owl-carousel-o [options]="customOptions">
+          <ng-container *ngFor="let slide of topSlides">
+            <ng-template carouselSlide [id]="slide.id">
+              <img [src]="slide.img">
+            </ng-template>
+          </ng-container>
+
+        </owl-carousel-o>
+      </div>-->
+      <div id="wayfinder" style="height: 1080px;width: 1920px;border:none">
+        <div *ngIf="(currentMap && currentMap.paths && currentMap.paths[0])" style="padding-top: 0;height:100%;overflow-y:scroll;background-color:white;" class="col-md-4">
+          <div *ngFor="let p of paths; let i = index" [style.color]="p.mapId == currentMap.id ? 'red' : 'black'">
+            <h1 *ngIf="i == 0 || p.mapId != paths[i - 1].mapId" style="border-top: solid;padding-top: 15px;font-weight:bold">{{p.mapInfo.floorLabel}} Floor</h1>
+            <h3>{{p.label}}</h3>
+          </div>
+        </div>
+        <div *ngIf="!(currentMap && currentMap.paths && currentMap.paths[0])" style="padding-top: 0;height:100%;overflow-y:scroll;background-color:white;" class="col-md-4">
+          <label [style.font-family]="setting.dir_font_type2" [style.color]="setting.dir_font_color" [style.background-color]="setting.dir_color" [style.font-size]="setting.dir_font_size + 'px'" style="width:100%; border-radius: .28571429rem;">Directory</label>
+          <ng-container *ngFor="let d of searchList; let i = index">
+            <div *ngIf="i == 0 || searchList[i - 1].directoryListingCategoryLabel != d.directoryListingCategoryLabel" style="border-radius: .28571429rem;" [style.color]="setting.dir_font_color" [style.background-color]="setting.dir_color">
+              <label [style.font-family]="setting.dir_font_type2" [style.font-size]="setting.dir_font_size + 'px'">
+                <strong>{{d.directoryListingCategoryLabel || "Uncategorized"}}</strong>
+              </label>
+            </div>
+            <div (click)="directoryClicked(d)" class="dirLabel"
+                 matRipple
+                 [matRippleCentered]="true">
+              <label style="font-size:16px;">{{d.label}}</label>
+            </div>
+          </ng-container>
+        </div>
+        <div style="padding-top:0;height:100%;background:white;position:relative" class="col-md-8">
+          <div style="position: relative;top: 0;left: 0; width: 100%; height: 920px;">
+            <!--<div style="position: absolute; bottom: 200px; right: 0; z-index: 10; margin: 5px;margin-bottom:20px; padding: 5px; border-radius: 5px; background-color: white; text-align: right;">
+            </div>-->
+            <!--<div style="position: absolute; bottom: 150px; left: 0; z-index: 10; margin: 5px; padding: 10px; border-radius: 5px; background-color: transparent; width:100%;padding-right:22px;">-->
+            <!--<div class="col-md-5" style="text-align: left;">
+              <div *ngIf="!to" lines="none" style="--min-height: auto;background:white;">
+                <label style="margin: 5px 0px">Please choose destination.</label>
+              </div>
+              <div *ngIf="to" lines="none" style="--min-height: auto; background: white;">
+                <label style="margin: 5px 0px">Destination : {{to.label}}</label>
+              </div>
+            </div>
+            <div class="col-md-5" style="text-align: left;">
+              <div *ngIf="to && !from && !point_id" lines="none" style="--min-height: auto; background: white; ">
+                <label style="margin: 5px 0px">Please choose starting point.</label>
+              </div>
+              <div *ngIf="from && to" lines="none" style="--min-height: auto; background: white;">
+                <label style="margin: 5px 0px">Starting Point : {{from.label}}</label>
+              </div>
+            </div>-->
+            <!--<div class="col-md-2" style="text-align:right;">
+            <div *ngIf="to && (from || point_id) && !dirload" lines="none" style="--min-height: auto;">
+              <div style="width: 100%;">
+                <button (click)="directoryChanged(from, to)" color="primary">Get Direction</button>
+              </div>
+            </div>
+            <div *ngIf="paths && mode != 1">
+              <div *ngIf="mapIndex > 0" (click)="next(mapIndex - 1)" style="padding-bottom:5px">-->
+            <!--<button color="primary">Previous {{maps[mapIndex - 1].floorLabel}} Floor</button>-->
+            <!--<button color="primary">Previous Floor</button>
+            </div>
+            <div *ngIf="maps && maps[mapIndex + 1]" (click)="next(mapIndex + 1)">-->
+            <!--<button color="primary">Next {{maps[mapIndex + 1].floorLabel}} Floor</button>-->
+            <!--<button color="primary">Next Floor</button>
+                </div>
+              </div>
+            </div>-->
+            <!--</div>-->
+            <div *ngIf="up" style="width:100%;height:100%;background-image:url('../../../assets/images/up.gif');background-repeat: no-repeat;background-color: #00000047;position: absolute;z-index: 99;background-position: center;"></div>
+            <div *ngIf="down" style="width:100%;height:100%;background-image:url('../../../assets/images/down.gif');background-repeat: no-repeat;background-color: #00000047;position: absolute;z-index: 99;background-position: center;"></div>
+            <div id="map" class="map"></div>
+          </div>
+          <div>
+            <div style="position:absolute;bottom:0;">
+              <div class="col-md-6">
+                <div class="col-md-12" style="padding-bottom:10px;">
+                  <input matInput type="search" id="searchModel" name="searchModel" placeholder="Search" [(ngModel)]="searchModel"
+                         (input)="selectSearch(searchModel)" style="width:400px;" />
+                </div>
+                <div class="col-md-12">
+                  <button (click)="selectLevel(l.key)" *ngFor="let l of floorPairs | keyvalue: valueAscOrder" style="font-size:17px">
+                    {{l.value}}
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="col-md-6" style="text-align: left;">
+                  <div *ngIf="!to" lines="none" style="--min-height: auto;background:white;">
+                    <label style="margin: 5px 0px">Please choose destination.</label>
+                  </div>
+                  <div *ngIf="to" lines="none" style="--min-height: auto; background: white;">
+                    <label style="margin: 5px 0px">Destination : {{to.label}}</label>
+                  </div>
+                </div>
+                <div class="col-md-2" style="text-align: left;">
+                  <div *ngIf="to && !from && !point_id" lines="none" style="--min-height: auto; background: white; ">
+                    <label style="margin: 5px 0px">Please choose starting point.</label>
+                  </div>
+                  <div *ngIf="from && to" lines="none" style="--min-height: auto; background: white;">
+                    <label style="margin: 5px 0px">Starting Point : {{from.label}}</label>
+                  </div>
+                </div>
+                <div class="col-md-4" style="text-align:right;">
+                  <div *ngIf="to && (from || point_id) && !dirload" lines="none" style="--min-height: auto;">
+                    <div style="width: 100%;">
+                      <button (click)="directoryChanged(from, to)" color="primary">Start</button>
+                    </div>
+                  </div>
+                  <div *ngIf="paths && mode != 1">
+                    <div *ngIf="!pause" (click)="pause = true" style="padding-bottom:5px">
+                      <button color="primary">Pause</button>
+                    </div>
+                    <div *ngIf="pause && mapIndex > 0" (click)="next(mapIndex - 1)" style="padding-bottom:5px">
+                      <button color="primary">Previous Floor</button>
+                    </div>
+                    <div *ngIf="pause && maps && maps[mapIndex + 1]" (click)="next(mapIndex + 1)">
+                      <button color="primary">Next Floor</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-10" style=" margin-top: 5px">
+                <ng-container *ngFor="let l of dir_cats">
+                  <img [src]="l.icon" (click)="selectCat(l)" *ngIf="l.icon" style="width:80px">
+                </ng-container>
+              </div>
+              <div class="col-md-2" style=" margin-top: 5px;text-align:end">
+                <img [src]="wheelIcon" (click)="changeWheel()" style="width:80px">
+                <img [src]="homeIcon" (click)="resetSearch()" style="width:80px">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--<iframe id="eventFrame" style="height: 280px;width: 100%;border:none"></iframe>-->
+      <!--<div *ngIf="eventSlides.length > 0" style="height: 140px; width: 100%; border: none; overflow: hidden;">
+      <owl-carousel-o [options]="eventOptions">
+        <ng-container *ngFor="let slide of eventSlides">
+          <ng-template carouselSlide [id]="slide.id">
+            <img [src]="slide.img" style="object-fit:cover;height:270px;">-->
+      <!--<div class="item" style="background-size:cover;height:270px;" [style.background-image]="'url(&quot;' + slide.img + '&quot;)'">-->
+      <!--</div>-->
+      <!--</ng-template>
+          </ng-container>
+
+        </owl-carousel-o>
+      </div>-->
+      <!--<div *ngIf="bottomSlides.length > 0" style="height: 150px; width: 100%; border: none; overflow: hidden;">
+        <owl-carousel-o [options]="customOptions">
+          <ng-container *ngFor="let slide of bottomSlides">
+            <ng-template carouselSlide [id]="slide.id">
+              <img [src]="slide.img">
+            </ng-template>
+          </ng-container>
+
+        </owl-carousel-o>
+      </div>-->
+      <!--<div style="height: 80px; width: 100%; border: none; overflow: hidden;background:white;">
+      <div class="col-md-10" style=" margin-top: 5px">
+        <ng-container *ngFor="let l of dir_cats">
+          <img [src]="l.icon" (click)="selectCat(l)" *ngIf="l.icon" style="width:80px">
+        </ng-container>
+      </div>
+      <div class="col-md-2" style=" margin-top: 5px;text-align:end">
+        <img [src]="wheelIcon" (click)="changeWheel()" style="width:80px">
+        <img [src]="homeIcon" (click)="resetSearch()" style="width:80px">
+      </div>-->
+      <!--<div class="col-md-12" style=" margin-top: 10px">
+        <button (click)="selectLevel(l.key)" *ngFor="let l of floorPairs | keyvalue" style="font-size:17px">
+          {{l.value}}
+        </button>
+      </div>-->
+      <!--</div>-->
+      <div id="overlap">
+
+
+      </div>
+
+
+    </ng-container>
+  </div>
+  <div style="    width: 100vw;
+    height: 100%;
+    background-color: #00000073;
+    z-index: 999;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+" *ngIf="showRouteOption">
+    <div style="    width: 40%;
+    height: 40%;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+">
+      <h1 style="    margin-top: 0;
+
+">
+        Route Options
+      </h1>
+      <div style="flex-grow:1">
+        <!--<h3>Start : {{from.label}}</h3>-->
+        <h3>Destination : {{to.label}}</h3>
+        <div style="display: flex;justify-content: space-evenly;align-items: center;font-size: 30px;margin-top: 65px;">
+          <mat-slide-toggle [(ngModel)]="wheelchair">Wheelchair Friendly</mat-slide-toggle>
+          <mat-slide-toggle [(ngModel)]="sheltered">Sheltered</mat-slide-toggle>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <button (click)="showRouteOption = false; to = null" style="font-size:25px" class="btn btn-info btn-lg">Cancel</button>
+        <button (click)="getRoute(from.id, to.id)" style="font-size:25px" class="btn btn-primary btn-lg">Start</button>
+      </div>
+    </div>
+  </div>
+</div>

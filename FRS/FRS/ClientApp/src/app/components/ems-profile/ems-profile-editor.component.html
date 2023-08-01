@@ -1,0 +1,144 @@
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="emsProfileEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid || true ? save() :
+          (!emsProfileShortDescription.valid && showErrorAlert('EmsProfile description is required', 'Please enter a ems profile name (minimum of 2 and maximum of 200 characters)'));">
+
+    <div class="row">
+
+
+      <!--<div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsProfileCode">{{'emsProfiles.editor.Code' | translate}}</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageEmsProfiles" type="text" id="emsProfileCode" name="emsProfileCode" placeholder="Enter code" class="form-control" [(ngModel)]="emsProfileEdit.code" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsProfileLabel">{{'emsProfiles.editor.Label' | translate}}</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageEmsProfiles" type="text" id="emsProfileLabel" name="emsProfileLabel" placeholder="Enter label" class="form-control" [(ngModel)]="emsProfileEdit.label" />
+          </div>
+        </div>
+      </div>-->
+
+      <div class="col-sm-12">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <input matInput autocomplete="off" [disabled]="!canManageEmsProfiles" type="text" id="Code" name="Code" placeholder="Enter code" [(ngModel)]="emsProfileEdit.code" #Code="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
+            <input matInput autocomplete="off" [disabled]="!canManageEmsProfiles" type="text" id="Label" name="Label" placeholder="Enter Label" [(ngModel)]="emsProfileEdit.label" #Label="ngModel" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-sm-12">
+          <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+            <input matInput placeholder="Screen" style="display: none">
+            <mat-radio-group name="isScreenOn" [(ngModel)]="emsProfileEdit.screenStatus">
+              <mat-radio-button [value]="0">No Changes</mat-radio-button>&nbsp;
+              <mat-radio-button [value]="1">On</mat-radio-button>&nbsp;
+              <mat-radio-button [value]="2">Off</mat-radio-button>
+            </mat-radio-group>
+          </mat-form-field>
+
+          <section  floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+            <mat-checkbox matInput type="checkbox" name="emsProfileReboot" [(ngModel)]="emsProfileEdit.reboot" >Reboot</mat-checkbox>
+          </section>
+        </div>
+
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <!--<input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceResolution" name="deviceResolution" placeholder="Enter device resolution" [(ngModel)]="deviceEdit.resolution" #deviceResolution="ngModel" minlength="2" maxlength="200" />-->
+            <mat-label>Resolution</mat-label>
+            <mat-select [disabled]="!canManageEmsProfiles" id="deviceResolution" name="deviceResolution" placeholder="Enter resolution" [(ngModel)]="emsProfileEdit.resolution" #deviceResolution="ngModel">
+              <mat-option *ngFor="let res of ress" [value]="res.value">
+                {{res.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-select class="field_name_select" [disabled]="!canManageEmsProfiles" name="deviceRotation" placeholder="Rotate" [(ngModel)]="emsProfileEdit.rotation" #displayType="ngModel">
+              <mat-option *ngFor="let v of rotations" [value]="v">{{v}}</mat-option>
+            </mat-select>
+            <!--<input matInput [disabled]="!canManageEmsProfiles" type="text" id="deviceRotation" name="deviceRotation" placeholder="Enter device rotation in (°)" [(ngModel)]="emsProfileEdit.rotation" #deviceRotation="ngModel" />-->
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <input matInput [disabled]="!canManageEmsProfiles" type="number" id="deviceBrightness" name="deviceBrightness" placeholder="Brightness" [(ngModel)]="emsProfileEdit.brightness" min="0" max="10" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcBrightness.invalid">Enter value from 0-10</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
+            <input matInput [disabled]="!canManageEmsProfiles" type="number" id="deviceVolume" name="deviceVolume" placeholder="Volume" [(ngModel)]="emsProfileEdit.volume" min="0" max="100" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcVolume.invalid">Enter value from 0-100</mat-error>-->
+          </mat-form-field>
+        </div>
+
+        <div class="col-sm-12">
+          <!--<mat-form-field class="col-md-6 col-xs-12">
+            <mat-select [disabled]="!canManageEmsProfiles" placeholder="{{'devices.editor.Module' | translate}}" [(ngModel)]="emsProfileEdit.module_path_value" name="module">
+              <mat-option [value]="">--</mat-option>
+              <mat-option *ngFor="let module of modules" [value]="module.route">
+                {{module.name}}
+              </mat-option>
+            </mat-select>-->
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcModule.invalid">{{'devices.editor.ModuleRequired' | translate}}</mat-error>-->
+          <!--</mat-form-field>-->
+          <!--<mat-form-field class="col-md-6 col-xs-12" *ngIf="emsProfileEdit.module_path_value == '/communicatorpatientdisplay'">
+            <mat-select [disabled]="!canManageEmsProfiles" placeholder="Menu" [(ngModel)]="emsProfileEdit.communicatorMenuId" name="menu">
+              <mat-option [value]="">--</mat-option>
+              <mat-option *ngFor="let menu of menus" [value]="menu.id">
+                {{menu.recordName}}
+              </mat-option>
+            </mat-select>-->
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcModule.invalid">{{'devices.editor.ModuleRequired' | translate}}</mat-error>-->
+          <!--</mat-form-field>-->
+        </div>
+      </div>
+    </div>
+
+
+
+    <!--******************************************************************************************************-->
+
+    <div *ngIf="!isEditMode || canManageEmsProfiles" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+
+    <div class="row">
+
+    </div>
+    <div *ngIf="!isEditMode || canManageEmsProfiles" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr class="edit-last-separator-hr" />
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <div class="col-sm-7">
+        <div ngPreserveWhitespaces class="pull-right">
+          <button *ngIf="!canManageEmsProfiles" type="button" (click)="cancel()" class="btn btn-default">{{'emsProfiles.editor.Close' | translate}}</button>
+          <button *ngIf="canManageEmsProfiles" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'emsProfiles.editor.Cancel' | translate}}</button>
+          <button *ngIf="canManageEmsProfiles" type="submit" class="btn btn-primary" [disabled]="isSaving">
+            <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('emsProfiles.editor.Saving' | translate) : ('emsProfiles.editor.Save' | translate)}}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </form>
+</div>

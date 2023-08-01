@@ -1,0 +1,111 @@
+<!--<mat-form-field appearance="fill">
+  <mat-label>Font</mat-label>
+  <mat-select [(ngModel)]="configurations.fontFamily">
+    <mat-option [style.font-family]="f" *ngFor="let f of fonts" [value]="f">
+      {{f}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-form-field>
+  <input matInput type="number" name="textSize" placeholder="Text Size" [(ngModel)]="configurations.textSize" />
+</mat-form-field>
+<mat-form-field>
+  <input matInput name="textColor" placeholder="Text Color" [(colorPicker)]="configurations.textColor" [style.background]="configurations.textColor"/>
+</mat-form-field>
+<mat-form-field appearance="fill">
+  <mat-label>Text Align</mat-label>
+  <mat-select [(ngModel)]="configurations.textAlign">
+    <mat-option *ngFor="let a of aligns" [value]="a">
+      {{a}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-checkbox [(ngModel)]="configurations.bold">Bold</mat-checkbox>&nbsp;
+<mat-checkbox [(ngModel)]="configurations.italic">Italic</mat-checkbox>&nbsp;
+<mat-checkbox [(ngModel)]="configurations.underline">Underline</mat-checkbox>&nbsp;
+<br />
+<mat-form-field>
+  <mat-label>X</mat-label>
+  <input matInput placeholder="x" value="0" type="number" [(ngModel)]="configurations.x" />
+</mat-form-field>
+<mat-form-field>
+  <mat-label>Y</mat-label>
+  <input matInput placeholder="y" value="0" type="number" [(ngModel)]="configurations.y" />
+</mat-form-field>
+<mat-form-field>
+  <mat-label>Width</mat-label>
+  <input matInput placeholder="width" value="0" type="number" [(ngModel)]="configurations.width" />
+</mat-form-field>
+<mat-form-field>
+  <mat-label>Height</mat-label>
+  <input matInput placeholder="height" value="0" type="number" [(ngModel)]="configurations.height" />
+</mat-form-field>
+<mat-form-field>
+  <input matInput placeholder="Field Color" [(colorPicker)]="configurations.fieldColor" [style.background]="configurations.fieldColor" />
+</mat-form-field>-->
+
+<mat-form-field appearance="fill">
+  <mat-label>Direction</mat-label>
+  <mat-select [(ngModel)]="configurations.direction">
+    <mat-option [style.font-family]="f" *ngFor="let f of directions" [value]="f">
+      {{f}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-form-field style="width: 300px">
+  <mat-label>Time from start to end (in second) default 10</mat-label>
+  <input matInput type="number" name="speed" placeholder="Default 10 seconds" [(ngModel)]="configurations.speed" />
+
+</mat-form-field>
+  To see scrolling effect change in preview, need to click Hard Reload button.
+<br />
+
+<div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+  <section class="example-section">
+    <mat-checkbox class="example-margin" [(ngModel)]="configurations.textStyle.hide">Hide Regular Message (Message 1, 2, 3)</mat-checkbox>
+  </section>
+  <mat-checkbox class="example-margin" [(ngModel)]="configurations.textStyle.enableScrolling">Enable Scrolling</mat-checkbox>
+  (To see scrolling effect change in preview, need to click Hard Reload button.)
+  <br />
+  <!--<h5>Regular Message (Message 1, 2, 3) </h5>-->
+
+
+  <mat-form-field>
+    <input matInput type="number" name="message1duration" placeholder="Message 1 Duration (s)" [(ngModel)]="configurations.message1Duration" />
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput type="number" name="message2duration" placeholder="Message 2 Duration (s)" [(ngModel)]="configurations.message2Duration" />
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput type="number" name="message3duration" placeholder="Message 3 Duration (s)" [(ngModel)]="configurations.message3Duration" />
+  </mat-form-field>
+  <br />
+
+  <text-configuration *ngIf="!configurations.textStyle?.hide" [(configurations)]="configurations.textStyle"></text-configuration>
+</div>
+<div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+  <section class="example-section">
+    <mat-checkbox class="example-margin" [(ngModel)]="configurations.emergencyStyle.hide">Hide Emergency Message (Message 4)</mat-checkbox>
+  </section>
+  <mat-form-field style="width: 300px">
+    <mat-label>Blink Speed (in seconds)</mat-label>
+    <input matInput type="number" name="blinkSpeed" placeholder="Default 0.5 seconds" [(ngModel)]="configurations.blinkSpeed" />
+
+  </mat-form-field>
+
+  <mat-checkbox class="example-margin" [(ngModel)]="configurations.emergencyStyle.disableBlinking">Disable Blinking</mat-checkbox>
+  <br />
+  <mat-checkbox class="example-margin" [(ngModel)]="configurations.emergencyStyle.enableScrolling">Enable Scrolling</mat-checkbox>
+  (To see scrolling effect change in preview, need to click Hard Reload button.)
+  <br />
+  <!--<h5>Emergency Message (Message 4) </h5>-->
+
+  <text-configuration *ngIf="!configurations.emergencyStyle?.hide" [(configurations)]="configurations.emergencyStyle"></text-configuration>
+</div>
+
+<style>
+  label {
+    color: black
+  }
+</style>

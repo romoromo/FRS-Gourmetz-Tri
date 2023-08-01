@@ -1,0 +1,80 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form class="form-horizontal" name="packingEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="save()">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-xs-6">
+          <input matInput [matDatepicker]="orderDatePicker" placeholder="Order Date" [value]="orderDate"
+                 (dateChange)="onChangeDate('order', $event)" required>
+          <mat-datepicker-toggle matSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #orderDatePicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-xs-6">
+          <mat-label>Route</mat-label>
+          <mat-select (selectionChange)="onChangeRoute()" id="route" name="route" [(ngModel)]="allocation.routeId" #route="ngModel">
+            <mat-option *ngFor="let route of newRoutes" [value]="route.id">
+              {{route.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!--<button type="button" mat-button (click)="getOrderData()" style="margin-top:20px">
+          <mat-icon>
+            input
+          </mat-icon> Get Allocations
+        </button>-->
+      </div>
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-xs-12 table-responsive">
+          <table class="table table-sm table-bordered" style="table-layout:fixed !important">
+            <thead>
+              <tr>
+                <th width="30%" class="text-center">Dish Code</th>
+                <th width="50%" class="text-center">Dish Name</th>
+                <th width="20%" class="text-center">Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let dc of dish_count; let i = index">
+                <tr>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="text" id="dish-code{{dc.dishId}}{{i}}" name="dish-code{{dc.dishId}}{{i}}" autocomplete="off" [value]="getDishCode(dc.dishId)" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <!--<mat-form-field class="col-md-12">
+              <input matInput [disabled]="true" type="text" id="dish-name{{dc.dishId}}{{i}}" name="dish-name{{dc.dishId}}{{i}}" autocomplete="off" [value]="getDishName(dc.dishId)" minlength="1" maxlength="200" />
+            </mat-form-field>-->
+                    <div class="col-md-12" style="padding-top:4%">
+                      {{getDishName(dc.dishId)}}
+                    </div>
+                  </td>
+                  <td>
+                    <mat-form-field class="col-md-12">
+                      <input matInput [disabled]="true" type="number" id="qty{{dc.dishId}}{{i}}" name="qty{{dc.dishId}}{{i}}" autocomplete="off" [(ngModel)]="dc.qty" minlength="1" maxlength="200" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+          <div *ngIf="isLoading" align="center">
+            <mat-spinner [diameter]="50"></mat-spinner>
+          </div>
+          <div *ngIf="!isLoading && dish_count.length <= 0" align="center">
+            <p>There is no order for this route</p>
+          </div>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving || isLoading"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button type="submit" mat-button [disabled]="isSaving || isLoading">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,45 @@
+<h1 mat-dialog-title>{{'pageHeader.EmployeeDatas' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="employeeDataEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageEmployeeDatas" type="text" autocomplete="off" name="code" id="code" key="code" placeholder="{{'employeeDatas.editor.Code' | translate}}" [(ngModel)]="employeeDataEdit.code" #code="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!code.valid || validation.code)">{{'employeeDatas.editor.CodeRequired' | translate}}</mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageEmployeeDatas" type="text" autocomplete="off" name="name" id="name" key="name" placeholder="{{'employeeDatas.editor.Name' | translate}}" [(ngModel)]="employeeDataEdit.name" #name="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!name.valid || validation.name)">{{'employeeDatas.editor.NameRequired' | translate}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="col-md-12">
+        <mat-label>Select designation</mat-label>
+        <mat-select [(value)]="employeeDataEdit.employeeDesignationId">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let c of employeeDesignations" [value]="c.id">
+            {{c.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="col-md-12 example-full-width">
+        <mat-label>Display Name</mat-label>
+        <input matInput name="displayName" [(ngModel)]="employeeDataEdit.displayName">
+      </mat-form-field>
+
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="employeeDataEdit != null">
+    <button *ngIf="!canManageEmployeeDatas" mat-button (click)="cancel()">{{'employeeDatas.editor.Close' | translate}}</button>
+    <button *ngIf="canManageEmployeeDatas" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'employeeDatas.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageEmployeeDatas" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('employeeDatas.editor.Saving' | translate) : ('employeeDatas.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

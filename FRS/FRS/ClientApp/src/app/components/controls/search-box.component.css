@@ -1,0 +1,20 @@
+
+.search-icon {
+    pointer-events: none;
+}
+input.form-control {
+  border-left-width: 1px !important;
+}
+
+.clear-input {
+  right: 30px !important;
+}
+
+.refresh-input, .refresh-input:hover {
+  color: #007f7b;
+  text-decoration: none;
+}
+
+.icon-addon.addon-sm .form-control.right-icon {
+  padding-right: 56px !important;
+}

@@ -1,0 +1,55 @@
+<div>
+  <h1 mat-dialog-title>{{data.header}}</h1>
+  <div mat-dialog-content>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group search-box">
+          <search-box (searchChange)="onSearchChanged($event)" placeholder="Search all columns"></search-box>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Phone No</th>
+              <th scope="col">Home No</th>
+              <th scope="col">Mobile No</th>
+              <!--<th scope="col">Vehicle</th>-->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of userPhonebooks; let i = index;">
+              <td>
+                <input type="checkbox" name="row{{row.id}}" [(ngModel)]="userPhonebooks[i].checked">
+              </td>
+              <td>{{row.name}}</td>
+              <td>{{row.email}}</td>
+              <td>{{row.phoneNumber}}</td>
+              <td>{{row.homeNo}}</td>
+              <td>{{row.mobileNo}}</td>
+              <!--<td>
+                <div class="col-sm-12">
+                  <mat-form-field>
+                    <mat-select required placeholder="Vehicle" name="userVehicle" (selectChange)="setUserVehicle(row, vehicle)">
+                      <mat-option *ngFor="let vehicle of row.userVehicles" [value]="vehicle" [hidden]="!vehicle.isApprove">{{vehicle.plateNumber}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </td>-->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions align="center">
+    <button type="button" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'reservations.editor.Cancel' | translate}}</button>
+    <button type="button" mat-button cdkFocusInitial (click)="save()">
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> Choose
+    </button>
+  </div>
+</div>

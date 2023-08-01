@@ -1,0 +1,348 @@
+::ng-deep .hidden {
+  display: none;
+}
+::ng-deep .node-menu {
+  position: relative;
+  width: 150px;
+}
+
+  ::ng-deep .node-menu .node-menu-content {
+    width: 100%;
+    padding: 5px;
+    position: absolute;
+    border: 1px solid #bdbdbd;
+    border-radius: 5%;
+    box-shadow: 0 0 5px #bdbdbd;
+    background-color: #eee;
+    color: #212121;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    z-index: 999;
+  }
+
+    ::ng-deep .node-menu .node-menu-content li.node-menu-item {
+      list-style: none;
+      padding: 3px;
+    }
+
+    ::ng-deep .node-menu .node-menu-content .node-menu-item:hover {
+      border-radius: 5%;
+      opacity: unset;
+      cursor: pointer;
+      background-color: #bdbdbd;
+      transition: background-color 0.2s ease-out;
+    }
+
+    ::ng-deep .node-menu .node-menu-content .node-menu-item .node-menu-item-icon {
+      display: inline-block;
+      width: 16px;
+    }
+
+      ::ng-deep .node-menu .node-menu-content .node-menu-item .node-menu-item-icon.new-tag:before {
+        content: '\25CF';
+      }
+
+      ::ng-deep .node-menu .node-menu-content .node-menu-item .node-menu-item-icon.new-folder:before {
+        content: '\25B6';
+      }
+
+      ::ng-deep .node-menu .node-menu-content .node-menu-item .node-menu-item-icon.rename:before {
+        content: '\270E';
+      }
+
+      ::ng-deep .node-menu .node-menu-content .node-menu-item .node-menu-item-icon.remove:before {
+        content: '\2716';
+      }
+
+    ::ng-deep .node-menu .node-menu-content .node-menu-item .node-menu-item-value {
+      margin-left: 5px;
+    }
+
+::ng-deep tree-internal ul {
+  padding: 3px 0 3px 25px;
+}
+
+::ng-deep tree-internal li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+::ng-deep tree-internal .over-drop-target {
+  border: 4px solid #757575;
+  transition: padding 0.2s ease-out;
+  padding: 5px;
+  border-radius: 5%;
+}
+
+::ng-deep tree-internal .tree {
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+  ::ng-deep tree-internal .tree li {
+    list-style: none;
+    cursor: default;
+  }
+
+    ::ng-deep tree-internal .tree li div {
+      display: inline-block;
+      box-sizing: border-box;
+    }
+
+  ::ng-deep tree-internal .tree .node-value {
+    display: inline-block;
+    color: #212121;
+  }
+
+    ::ng-deep tree-internal .tree .node-value:after {
+      display: block;
+      padding-top: -3px;
+      width: 0;
+      height: 2px;
+      background-color: #212121;
+      content: '';
+      transition: width 0.3s;
+    }
+
+    ::ng-deep tree-internal .tree .node-value:hover:after {
+      width: 100%;
+    }
+
+  ::ng-deep tree-internal .tree .node-left-menu {
+    display: inline-block;
+    height: 100%;
+    width: auto;
+  }
+
+    ::ng-deep tree-internal .tree .node-left-menu span:before {
+      content: '\2026';
+      color: #757575;
+    }
+
+  ::ng-deep tree-internal .tree .node-selected:after {
+    width: 100%;
+  }
+
+  ::ng-deep tree-internal .tree .folding {
+    width: 25px;
+    display: inline-block;
+    line-height: 1px;
+    padding: 0 5px;
+    font-weight: bold;
+  }
+
+    ::ng-deep tree-internal .tree .folding.node-collapsed {
+      cursor: pointer;
+    }
+
+      ::ng-deep tree-internal .tree .folding.node-collapsed:before {
+        content: '\25B6';
+        color: #757575;
+      }
+
+    ::ng-deep tree-internal .tree .folding.node-expanded {
+      cursor: pointer;
+    }
+
+      ::ng-deep tree-internal .tree .folding.node-expanded:before {
+        content: '\25BC';
+        color: #757575;
+      }
+
+    ::ng-deep tree-internal .tree .folding.node-empty {
+      color: #212121;
+      text-align: center;
+      font-size: 0.89em;
+    }
+
+      ::ng-deep tree-internal .tree .folding.node-empty:before {
+        content: '\25B6';
+        color: #757575;
+      }
+
+    ::ng-deep tree-internal .tree .folding.node-leaf {
+      color: #212121;
+      text-align: center;
+      font-size: 0.89em;
+    }
+
+      ::ng-deep tree-internal .tree .folding.node-leaf:before {
+        content: '\25CF';
+        color: #757575;
+      }
+
+::ng-deep tree-internal ul.rootless {
+  padding: 0;
+}
+
+::ng-deep tree-internal div.rootless {
+  display: none !important;
+}
+
+::ng-deep tree-internal .loading-children:after {
+  content: ' loading ...';
+  color: #6a1b9a;
+  font-style: italic;
+  font-size: 0.9em;
+  animation-name: loading-children;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes loading-children {
+  0% {
+    color: #f3e5f5;
+  }
+
+  12.5% {
+    color: #e1bee7;
+  }
+
+  25% {
+    color: #ce93d8;
+  }
+
+  37.5% {
+    color: #ba68c8;
+  }
+
+  50% {
+    color: #ab47bc;
+  }
+
+  62.5% {
+    color: #9c27b0;
+  }
+
+  75% {
+    color: #8e24aa;
+  }
+
+  87.5% {
+    color: #7b1fa2;
+  }
+
+  100% {
+    color: #6a1b9a;
+  }
+}
+
+
+
+
+
+/*end tree*/
+.row:not(:last-child) {
+    /*border-bottom: 1px solid #ccc;*/
+}
+
+.separator-hr {
+    margin: 0 5px;
+    border-top-style: dashed;
+}
+
+.edit-separator-hr {
+    margin: 10px 5px;
+    border-top-style: dashed;
+}
+
+.last-separator-hr {
+    margin-top: 5px;
+}
+
+.edit-last-separator-hr {
+    margin-top: 15px;
+}
+
+
+/*input.form-control {
+    border-left-width: 5px;
+}*/
+
+.facilityErrorMessage {
+    margin-left: 50px;
+}
+
+.permissionsColumn {
+    margin-bottom: 20px;
+}
+
+.permissionsRow {
+    margin: 0 15px;
+}
+
+
+.password-well {
+    margin-bottom: 0;
+}
+
+@media (min-width: 992px) {
+    .user-enabled {
+        margin-left: 40px;
+    }
+}
+
+.mat-form-field{
+  width: 100%;
+}
+
+.color-span {
+  width: 90%;
+  height: 16px;
+  float: left;
+}
+
+.color-box {
+  width: 20%;
+  float: right;
+  border: 1px solid;
+  height: 30px;
+  margin-top: 5px;
+}
+
+.color-text-box {
+  width: 80%;
+  float: left;
+  text-overflow: ellipsis;
+  /* padding-right: 10px; */
+  overflow: hidden;
+}
+/*.image-ref-table{
+  max-height:300px;
+  overflow:auto;
+}*/
+
+.image-ref-table table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.new-record {
+  background: #fbfeff;
+}
+
+.btn-upload-container file-upload .btn-container {
+  width: 100% !important;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tree-editor-container {
+  max-height: 60vh;
+  overflow: auto;
+}
+
+@media (min-height: 650px) {
+  .tree-container {
+    max-height: 70vh !important;
+    overflow: auto !important;
+  }
+}
+
+.text-left{
+  text-align:left;
+}

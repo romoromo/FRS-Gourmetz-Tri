@@ -1,0 +1,193 @@
+table {
+  width: 100%;
+}
+
+/*.ellipsis:hover {
+  overflow: visible;
+  white-space: normal;
+  max-width: 100%;
+}*/
+
+::ng-deep .ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 58px;
+}
+
+::ng-deep .ellipsis-short {
+  max-width: 58px;
+}
+
+::ng-deep .ellipsis-long {
+  max-width: 80%;
+}
+
+/*::ng-deep .booking-result-table th, td {
+  min-width: 70px !important;
+  font-weight: 100;
+  font-size: 12px;
+  border: 1px solid;
+  text-align:center;
+}*/
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: #f5f5f5;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+
+::ng-deep .mat-chip-list-wrapper .mat-standard-chip, .mat-chip-list-wrapper input.mat-input-element {
+  margin: 2px !important;
+}
+
+.mat-standard-chip {
+  transition: box-shadow 280ms cubic-bezier(.4,0,.2,1);
+  display: inline-flex;
+  padding: 5px 5px;
+  border-radius: 0;
+  align-items: center;
+  cursor: default;
+  min-height: 20px;
+  height: 1px;
+}
+
+.mat-chip {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+::ng-deep .time-class {
+  padding: 0 5px !important;
+  font-size: 11px !important;
+  border-radius: 1px !important;
+  line-height: 20px !important;
+  min-width: 20px !important;
+  margin: 1px !important;
+}
+
+::ng-deep .btn-time-selected {
+  background-color: #e6e6e6 !important;
+}
+
+.table-container{
+  overflow:auto;
+}
+
+::ng-deep .col-booked {
+  background-color: #b10202 !important;
+  color: #fff !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  text-shadow: none !important;
+}
+
+::ng-deep .col-new-booked {
+  background-color: lightgreen !important;
+}
+
+.zui-table {
+  border: none;
+  border-right: solid 1px #DDEFEF;
+  border-collapse: separate;
+  border-spacing: 0;
+  font: normal 13px Arial, sans-serif;
+}
+
+  .zui-table thead th {
+    background-color: #DDEFEF;
+    border-right: 1px solid #a7cece;
+    color: #336B6B;
+    padding: 10px;
+    text-align: center;
+    text-shadow: 1px 1px 1px #fff;
+    white-space: nowrap;
+    min-width: 150px;
+  }
+
+  .zui-table tbody td {
+    border-bottom: solid 1px #DDEFEF;
+    border-right: solid 1px #DDEFEF;
+    color: #333;
+    padding: 15px;
+    text-shadow: 1px 1px 1px #fff;
+    white-space: nowrap;
+  }
+
+tr.row-values {
+
+}
+
+.zui-wrapper {
+  position: relative;
+}
+
+.zui-scroller {
+  margin-left: 200px;
+  overflow-x: scroll;
+  overflow-y: visible;
+  padding-bottom: 5px;
+  /*width: 300px;*/
+}
+
+.zui-table .zui-sticky-col {
+  border-left: solid 1px #DDEFEF;
+  border-right: solid 1px #DDEFEF;
+  left: 0;
+  position: absolute;
+  top: auto;
+  width: 200px;
+  text-align: center;
+}
+
+th.zui-sticky-col{
+  height:auto !important;
+}
+
+::ng-deep .building {
+  text-align: left !important;
+  background-color: #f7f7ff !important;
+  height: 20px;
+}
+
+  ::ng-deep .building .building-name {
+    font-weight: bold !important;
+  }
+

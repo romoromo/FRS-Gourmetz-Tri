@@ -1,0 +1,464 @@
+{
+  "Name": "",
+  "Value": "",
+  "Description": "",
+  "Children": [
+    {
+      "Name": "Root",
+      "Value": "root.view",
+      "Description": "Root",
+      "Children": [
+        {
+          "Name": "View Signages and Kiosks Menu",
+          "Value": "sgnmanagement.view",
+          "Description": "Permission to view Signages and Kiosks menu",
+          "Children": [
+            {
+              "Name": "View Content Management Menu",
+              "Value": "sgnmanagement.contentmanagement.view",
+              "Description": "Permission to view Content Management menu",
+              "Children": [
+                {
+                  "Name": "Media Group",
+                  "Value": "sgnmanagement.contentmanagement.mediagroup.view",
+                  "Description": "Permission to view Media Group menu",
+                  "Children": []
+                },
+                {
+                  "Name": "Media Library",
+                  "Value": "sgnmanagement.contentmanagement.medialibrary.view",
+                  "Description": "Permission to view Media Library menu",
+                  "Children": []
+                },
+                {
+                  "Name": "Playlists",
+                  "Value": "sgnmanagement.contentmanagement.playlist.view",
+                  "Description": "Permission to view Playlists menu",
+                  "Children": []
+                },
+                {
+                  "Name": "Components",
+                  "Value": "sgnmanagement.contentmanagement.component.view",
+                  "Description": "Permission to view Components menu",
+                  "Children": [
+                    {
+                      "Name": "Create Component",
+                      "Value": "sgnmanagement.contentmanagement.component.create",
+                      "Description": "Permission to create Components",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Update Component",
+                      "Value": "sgnmanagement.contentmanagement.component.update",
+                      "Description": "Permission to update Components",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Delete Component",
+                      "Value": "sgnmanagement.contentmanagement.component.delete",
+                      "Description": "Permission to delete Components",
+                      "Children": []
+                    }
+                  ]
+                },
+                {
+                  "Name": "Compilations",
+                  "Value": "sgnmanagement.contentmanagement.compilation.view",
+                  "Description": "Permission to view Compilations menu",
+                  "Children": [
+                    {
+                      "Name": "Create Compilation",
+                      "Value": "sgnmanagement.contentmanagement.compilation.create",
+                      "Description": "Permission to create Compilations",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Update Compilation",
+                      "Value": "sgnmanagement.contentmanagement.compilation.update",
+                      "Description": "Permission to update Compilations",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Delete Compilation",
+                      "Value": "sgnmanagement.contentmanagement.compilation.delete",
+                      "Description": "Permission to delete Compilations",
+                      "Children": []
+                    }
+                  ]
+                },
+                {
+                  "Name": "Publications",
+                  "Value": "sgnmanagement.contentmanagement.publication.view",
+                  "Description": "Permission to view Publications menu",
+                  "Children": [
+                    {
+                      "Name": "Publications Approval",
+                      "Value": "frsmgt.accesscontrol.publication.approve",
+                      "Description": "Permission to approve publications",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Approval Email Alert",
+                      "Value": "frsmgt.accesscontrol.publication.email",
+                      "Description": "Receive email alert when publication created",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Create Publication",
+                      "Value": "sgnmanagement.contentmanagement.publication.create",
+                      "Description": "Permission to create Publications",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Update Publication",
+                      "Value": "sgnmanagement.contentmanagement.publication.update",
+                      "Description": "Permission to update Publications",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Delete Publication",
+                      "Value": "sgnmanagement.contentmanagement.publication.delete",
+                      "Description": "Permission to delete Publications",
+                      "Children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Name": "View Directory Listing Menu",
+              "Value": "sgnmanagement.directorylisting.view",
+              "Description": "Permission to view Directory Listing menu",
+              "Children": [
+                {
+                  "Name": "Directory Category",
+                  "Value": "sgnmanagement.directorylisting.directorycategory.view",
+                  "Description": "Permission to view Directory Category menu",
+                  "Children": []
+                },
+                {
+                  "Name": "Directory Listing",
+                  "Value": "sgnmanagement.directorylisting.directorylisting.view",
+                  "Description": "Permission to view Directory Listing menu",
+                  "Children": []
+                },
+                {
+                  "Name": "Building",
+                  "Value": "sgnmanagement.directorylisting.building.view",
+                  "Description": "Permission to view Building menu",
+                  "Children": []
+                },
+                {
+                  "Name": "Floor",
+                  "Value": "sgnmanagement.directorylisting.floor.view",
+                  "Description": "Permission to view Floor menu",
+                  "Children": []
+                },
+                {
+                  "Name": "Map",
+                  "Value": "sgnmanagement.directorylisting.map.view",
+                  "Description": "Permission to view Map menu",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "View Queue Display Interface Menu",
+              "Value": "sgnmanagement.qdi.view",
+              "Description": "Permission to view Queue Display Interface menu",
+              "Children": [
+                {
+                  "Name": "Queue Matrix Menu",
+                  "Value": "sgnmanagement.qdi.queuematrix.view",
+                  "Description": "Permission to view Queue Matrix menu",
+                  "Children": []
+                },
+                {
+                  "Name": "Queue Display Logs Menu",
+                  "Value": "sgnmanagement.qdi.queuedisplaylog.view",
+                  "Description": "Permission to view Queue Display Logs menu",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "View Device Management Menu",
+              "Value": "sgnmanagement.devicemgt.view",
+              "Description": "Permission to view Device Management menu",
+              "Children": [
+                {
+                  "Name": "Devices",
+                  "Value": "sgnmanagement.devicemgt.device.view",
+                  "Description": "Permission to view Devices",
+                  "Children": [
+                    {
+                      "Name": "Manage Devices",
+                      "Value": "sgnmanagement.devicemgt.device.manage",
+                      "Description": "Permission to manage Devices",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Approval",
+                      "Value": "sgnmanagement.devicemgt.device.approve",
+                      "Description": "Permission to approve Devices",
+                      "Children": []
+                    }
+                  ]
+                },
+                {
+                  "Name": "EMS",
+                  "Value": "sgnmanagement.devicemgt.ems.view",
+                  "Description": "Permission to view EMS menu",
+                  "Children": []
+                },
+                {
+                  "Name": "EMS Profile",
+                  "Value": "sgnmanagement.devicemgt.emsprofile.view",
+                  "Description": "Permission to view EMS Profile menu",
+                  "Children": []
+                },
+                {
+                  "Name": "EMS Schedule",
+                  "Value": "sgnmanagement.devicemgt.emsschedule.view",
+                  "Description": "Permission to view EMS Schedule menu",
+                  "Children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Name": "View Reports Menu",
+          "Value": "reportmgt.view",
+          "Description": "Permission to view Reports menu",
+          "Children": [
+            {
+              "Name": "View Facility Management",
+              "Value": "reportmgt.facilitymgt.view",
+              "Description": "Permission to view Facilitiy Management Reports menu",
+              "Children": [
+                {
+                  "Name": "Occupancy Logs",
+                  "Value": "reportmgt.facilitymgt.occupancylog.view",
+                  "Description": "Permission to view Occupancy Logs menu",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "Signages and Kiosks",
+              "Value": "reportmgt.sgn.view",
+              "Description": "Permission to view Signages and Kiosks Reports menu",
+              "Children": [
+                {
+                  "Name": "Up/Downtime Logs",
+                  "Value": "reportmgt.sgn.updownlog.view",
+                  "Description": "Permission to view Up/Downtime Logs menu",
+                  "Children": []
+                }
+              ]
+            }
+
+          ]
+        },
+        {
+          "Name": "View System Settings Menu",
+          "Value": "systemsetting.view",
+          "Description": "Permission to view System Settings menu",
+          "Children": [
+            {
+              "Name": "Location Tree",
+              "Value": "systemsetting.locationtree.view",
+              "Description": "Permission to view Location Tree menu",
+              "Children": [
+                {
+                  "Name": "Manage Location Tree",
+                  "Value": "systemsetting.locationtree.manage",
+                  "Description": "Permission to manage Location Tree menu",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "Institution",
+              "Value": "systemsetting.institution.view",
+              "Description": "Permission to view Institution menu",
+              "Children": [
+                {
+                  "Name": "Manage Institution",
+                  "Value": "systemsetting.institution.manage",
+                  "Description": "Permission to manage Institution menu",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "Department",
+              "Value": "systemsetting.department.view",
+              "Description": "Permission to view Department menu",
+              "Children": [
+                {
+                  "Name": "Manage Department",
+                  "Value": "systemsetting.department.manage",
+                  "Description": "Permission to manage Department menu",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "Building",
+              "Value": "systemsetting.building.view",
+              "Description": "Permission to view Building menu",
+              "Children": []
+            },
+            {
+              "Name": "User Group",
+              "Value": "systemsetting.usergroup.view",
+              "Description": "Permission to view User Group menu",
+              "Children": [
+                {
+                  "Name": "Manage User Group",
+                  "Value": "systemsetting.usergroup.manage",
+                  "Description": "Permission to manage User Group menu",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "User Management",
+              "Value": "systemsetting.user.view",
+              "Description": "Permission to view Users menu",
+              "Children": [
+                {
+                  "Name": "Manage User",
+                  "Value": "systemsetting.user.manage",
+                  "Description": "Permission to manage Users",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "Role Management",
+              "Value": "systemsetting.role.view",
+              "Description": "Permission to view Role menu",
+              "Children": [
+                {
+                  "Name": "Manage Role",
+                  "Value": "systemsetting.role.manage",
+                  "Description": "Permission to create, delete and modify roles",
+                  "Children": []
+                },
+                {
+                  "Name": "Assign Role",
+                  "Value": "systemsetting.role.assign",
+                  "Description": "Permission to assign roles to users",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "Audit Logs Menu",
+              "Value": "systemsetting.audit.view",
+              "Description": "Permission to view Audit Logs menu",
+              "Children": [
+                {
+                  "Name": "Authentication Logs",
+                  "Value": "systemsetting.audit.authlog.view",
+                  "Description": "Permission to view authentication logs",
+                  "Children": []
+                },
+                {
+                  "Name": "Data Logs",
+                  "Value": "systemsetting.audit.datalog.view",
+                  "Description": "Permission to view data logs",
+                  "Children": []
+                }
+              ]
+            },
+            {
+              "Name": "Application Setting Menu",
+              "Value": "systemsetting.applicationsetting.view",
+              "Description": "Permission to view Application Setting menu",
+              "Children": []
+            },
+            {
+              "Name": "Module Setting Menu",
+              "Value": "systemsetting.modulesetting.view",
+              "Description": "Permission to view Module Setting menu",
+              "Children": []
+            },
+            {
+              "Name": "Email Queue Menu",
+              "Value": "systemsetting.emailqueue.view",
+              "Description": "Permission to view Email Queue menu",
+              "Children": []
+            },
+            {
+              "Name": "Dashboard Menu",
+              "Value": "systemsetting.dashboard.view",
+              "Description": "Permission to view Dashboard",
+              "Children": [
+                {
+                  "Name": "Signage Dashboard",
+                  "Value": "systemsetting.dashboard.sgn.view",
+                  "Description": "Permission to view Signage Dashboard menu",
+                  "Children": [
+                    {
+                      "Name": "Preview",
+                      "Value": "systemsetting.dashboard.sgn.controls.preview",
+                      "Description": "Permission to allow preview of signage",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Reboot",
+                      "Value": "systemsetting.dashboard.sgn.controls.reboot",
+                      "Description": "Permission to allow rebooting of devices",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Refresh",
+                      "Value": "systemsetting.dashboard.sgn.controls.refresh",
+                      "Description": "Permission to allow refreshing of devices",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Screenshot",
+                      "Value": "systemsetting.dashboard.sgn.controls.screenshot",
+                      "Description": "Permission to download screenshot of signage",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Push Message",
+                      "Value": "systemsetting.dashboard.sgn.controls.pushmessage",
+                      "Description": "Permission to allow to push messages",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Modify device information",
+                      "Value": "systemsetting.dashboard.sgn.controls.deviceinfo",
+                      "Description": "Permission to allow to change device info",
+                      "Children": []
+                    },
+                    {
+                      "Name": "Publication",
+                      "Value": "systemsetting.dashboard.sgn.controls.publication",
+                      "Description": "Permission to allow change publication",
+                      "Children": []
+                    }
+                  ]
+                },
+                {
+                  "Name": "Device Approval List",
+                  "Value": "systemsetting.dashboard.deviceapproval.view",
+                  "Description": "Permission to view Device Approval List menu",
+                  "Children": []
+                }
+              ]
+
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

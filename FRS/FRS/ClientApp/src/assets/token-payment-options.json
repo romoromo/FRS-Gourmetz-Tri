@@ -1,0 +1,21 @@
+{
+  "ALIPAY": true,
+  "ATOME": false,
+  "BROWSER": true,
+  "CARD": true,
+  "DPT": false,
+  "GRABPAY": true,
+  "NETSPAY": true,
+  "PAYNOW": true,
+  "PAYPAL": false,
+  "SHOPEEPAY": true,
+  "UNIONPAY": false,
+  "WECHATPAY": true
+}
+
+
+ 
+
+
+
+

@@ -1,0 +1,44 @@
+<div>
+  <mat-expansion-panel expanded="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <h4>Devices For Approval</h4>
+      </mat-panel-title>
+      <mat-panel-description>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <table class="table table-sm" [hidden]="show_no_results">
+      <thead>
+        <tr>
+          <th scope="col">Code</th>
+          <th scope="col">IP Address</th>
+          <th scope="col">MAC Address</th>
+          <th scope="col">Serial</th>
+          <th scope="col">Location</th>
+          <th scope="col">Start</th>
+          <th scope="col">End</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of devices">
+          <td>{{row.code}}</td>
+          <td>{{row.ipAddress}}</td>
+          <td>{{row.macAddress}}</td>
+          <td>{{row.serialNumber}}</td>
+          <td>{{row.locationName}}</td>
+          <td>{{row.startDate | date: 'longDate'}}</td>
+          <td>{{row.endDate | date: 'longDate'}}</td>
+
+        </tr>
+      </tbody>
+    </table>
+
+    <div [hidden]="!show_no_results">
+      <p>
+        No devices for approval.
+      </p>
+    </div>
+
+  </mat-expansion-panel>
+</div>

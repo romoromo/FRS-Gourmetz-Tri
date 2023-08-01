@@ -1,0 +1,65 @@
+.row:not(:last-child) {
+    /*border-bottom: 1px solid #ccc;*/
+}
+
+.separator-hr {
+    margin: 0 5px;
+    border-top-style: dashed;
+}
+
+.edit-separator-hr {
+    margin: 10px 5px;
+    border-top-style: dashed;
+}
+
+.last-separator-hr {
+    margin-top: 5px;
+}
+
+.edit-last-separator-hr {
+    margin-top: 15px;
+}
+
+
+input.form-control {
+    border-left-width: 5px;
+}
+
+.facilityErrorMessage {
+    margin-left: 50px;
+}
+
+.permissionsColumn {
+    margin-bottom: 20px;
+}
+
+.permissionsRow {
+    margin: 0 15px;
+}
+
+
+.password-well {
+    margin-bottom: 0;
+}
+
+@media (min-width: 992px) {
+    .user-enabled {
+        margin-left: 40px;
+    }
+}
+
+.no-padding-top{
+  padding-top: 0px !important;
+}
+
+.font-unbold {
+  font-weight: 100 !important;
+}
+
+.padding-right-10 {
+  padding-right: 10px !important;
+}
+
+.modal {
+  z-index: 1000 !important;
+}

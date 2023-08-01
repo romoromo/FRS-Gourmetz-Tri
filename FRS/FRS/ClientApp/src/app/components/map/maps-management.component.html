@@ -1,0 +1,52 @@
+<div>
+  <header class="pageHeader">
+    <h3>Maps</h3>
+  </header>
+  <div [hidden]="showEditor">
+    <div class="row control-box">
+      <div class="col-sm-8">
+        <div class="form-group search-box">
+          <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'maps.management.Search' | translate}}">></search-box>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="navbar action-box">
+          <ul class="nav navbar-nav navbar-right">
+            <li *ngIf="canManageMaps" class="toolbaritem">
+              <a href="javascript:;" (click)="newMap(row)">
+                <i class="fa fa-plus-circle"></i> {{'maps.management.New' | translate}}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <ngx-datatable class="material colored-header"
+                   [loadingIndicator]="loadingIndicator"
+                   [rows]="rows"
+                   [rowHeight]="'auto'"
+                   [headerHeight]="'auto'"
+                   [footerHeight]="35"
+                   [columns]="columns"
+                   [columnMode]="'force'"
+                   [limit]="20">
+    </ngx-datatable>
+
+    <ng-template #indexTemplate let-value="value">
+      <strong>{{value}}</strong>
+    </ng-template>
+
+
+    <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+      <a *ngIf="canManageMaps" class="btn btn-link btn-xs" href="javascript:;" (click)="editMap(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'maps.management.Edit' | translate}}</a>
+      <a *ngIf="!canManageMaps" class="btn btn-link btn-xs" href="javascript:;" (click)="editMap(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'maps.management.Details' | translate}}</a>
+      <!--{{canManageMaps ? '|' : ''}}-->
+      <a *ngIf="canManageMaps" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteMap(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'maps.management.Delete' | translate}}</a>
+    </ng-template>
+  </div>
+  <div [hidden]="!showEditor">
+    <h3>{{header}}</h3>
+    <map-editor #mapEditor></map-editor>
+  </div>
+</div>

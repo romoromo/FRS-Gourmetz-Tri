@@ -1,0 +1,152 @@
+<div class="container-fluid">
+  <header class="pageHeader">
+    <!--<h3><i class="fa fa-handshake fa-lg page-caption" aria-hidden="true"></i> {{'pageHeader.Calendar' | translate}}</h3>-->
+
+  </header>
+  <div class="col-md-2" style="max-height:90vh; overflow:auto">
+    <!--<mat-form-field>
+      <input matInput [matDatepicker]="picker" placeholder="Choose a date" ng-show="false" (blur)="return false;">
+      <mat-datepicker #picker opened="true"></mat-datepicker>
+    </mat-form-field>-->
+    <div><mat-calendar [selected]="selectedDate" (selectedChange)="selectedDate = $event"></mat-calendar></div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <h5>Location</h5>
+      <mat-select multiple placeholder="{{'reservations.management.SelectLocation' | translate}}" [formControl]="fcLocations" [(ngModel)]="filter.locationIds">
+        <mat-option *ngFor="let location of locationList" [value]="location.id"><b>{{location.name}}</b> - <small><i>{{location.description}}</i></small></mat-option>
+      </mat-select>
+    </div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <h5>Facility</h5>
+      <mat-select multiple placeholder="{{'reservations.management.SelectFacilities' | translate}}" [formControl]="fcFacilities" [(ngModel)]="filter.facilityIds">
+        <mat-option *ngFor="let facility of facilityList" [value]="facility.id"><b>{{facility.name}}</b> - <small><i>{{facility.description}}</i></small></mat-option>
+      </mat-select>
+    </div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <h5>Min. Capacity</h5>
+
+      <mat-slider [max]="100"
+                  [min]="1"
+                  [step]="1"
+                  [thumbLabel]="true"
+                  [(ngModel)]="filter.capacity" style="width:100%">
+      </mat-slider>
+    </div>
+    <div>
+      <h5>Start</h5>
+      <mat-select #selectStart placeholder="{{'reservations.management.SelectStart' | translate}}" [formControl]="fcStartTimes" [(ngModel)]="selectStartTimeId">
+        <mat-option *ngFor="let start of allStartTimes" [value]="start.id">{{start.description}}</mat-option>
+      </mat-select>
+    </div>
+    <div>
+      <h5>End</h5>
+      <mat-select #selectEnd placeholder="{{'reservations.management.SelectEnd' | translate}}" [formControl]="fcEndTimes" [(ngModel)]="selectEndTimeId">
+        <mat-option *ngFor="let end of allEndTimes" [value]="end.id">{{end.description}}</mat-option>
+      </mat-select>
+    </div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <button mat-raised-button (click)="apply()" style="margin:5px">{{'reservations.calendar.ApplyFilter' | translate}}</button>
+      <button mat-raised-button (click)="clear()" style="margin:5px" color="warn">{{'reservations.calendar.ClearFilter' | translate}}</button>
+    </div>
+  </div>
+  <div class="col-md-10">
+    <div>
+      <h3><i class="fa fa-handshake fa-lg page-caption" aria-hidden="true"></i> Available Locations</h3>
+    </div>
+    <div class="example-table-container">
+
+      <table mat-table [dataSource]="locationColList" class="example-table" multiTemplateDataRows>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{row.name}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let row">{{row.description}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="capacity">
+          <th mat-header-cell *matHeaderCellDef>Capacity</th>
+          <td mat-cell *matCellDef="let row">{{row.capacity}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="facilityNames">
+          <th mat-header-cell *matHeaderCellDef>
+            Facilities
+          </th>
+          <td mat-cell *matCellDef="let row">{{row.facilityNames}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            &nbsp;
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-stroked-button color="primary" (click)=book(row)>Book</button>
+          </td>
+        </ng-container>
+
+        <!--<ng-container matColumnDef="{{column}}" *ngFor="let column of displayedColumns">
+          <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+          <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+        </ng-container>-->
+        <!--<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>-->
+
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+            <div class="example-element-detail"
+                 [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'"  (click)="selectTime($event)">
+              <div style="margin-bottom: 10px;">
+                <b>Available Time:</b>
+                <div>
+                  <button  
+                         (click)="hightlightStatus[i]=!hightlightStatus[i]" 
+                         [class.btn-time-selected]="hightlightStatus[i]"
+                          class="time-class"
+                          mat-stroked-button *ngFor="let time of allAvailableTimeIntervals, let i = index" >{{time.description}}</button>
+                </div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let element; columns: displayedColumns;"
+            class="example-element-row"
+            [class.example-expanded-row]="expandedElement === element"
+            (click)="loadTimeIntervals(element);expandedElement = expandedElement === element ? null : element"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+      </table>
+
+
+      <!--<mat-paginator [length]="resultsLength" [pageSize]="30"></mat-paginator>-->
+    </div>
+
+    <!--<ngx-datatable class="material colored-header sm table table-striped table-hover"
+                   [loadingIndicator]="loadingIndicator"
+                   [rows]="rows"
+                   [rowHeight]="'70'"
+                   [headerHeight]="50"
+                   [footerHeight]="50"
+                   [columns]="columns"
+                   [columnMode]="'force'"
+                   [reorderable]="'reorderable'">
+    </ngx-datatable>-->
+
+    <ng-template #indexTemplate let-value="value">
+      <strong>{{value}}</strong>
+    </ng-template>
+
+
+    <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+      <button mat-stroked-button color="primary" (click)=book(row)>Book</button>
+    </ng-template>
+  </div>
+
+</div>

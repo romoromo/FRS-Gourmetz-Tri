@@ -1,0 +1,40 @@
+<h1 mat-dialog-title>
+  {{data.header}}
+  <div>
+    <small>* This will push the messages to all devices in the list</small>
+  </div>
+</h1>
+
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="departmentEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="pushMessage();">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-xs-12">
+            <input matInput type="text" id="deviceMessage1" name="deviceMessage1" autocomplete="off" placeholder="Message 1" [(ngModel)]="message.emergencyMessage1" #deviceMessage1="ngModel" />
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput type="text" id="deviceMessage2" name="deviceMessage2" autocomplete="off" placeholder="Message 2" [(ngModel)]="message.emergencyMessage2" #deviceMessage2="ngModel" />
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput type="text" id="deviceMessage3" name="deviceMessage3" autocomplete="off" placeholder="Message 3" [(ngModel)]="message.emergencyMessage3" #deviceMessage3="ngModel" />
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput type="text" id="deviceMessage4" name="deviceMessage4" autocomplete="off" placeholder="Emergency Message (Message 4)" [(ngModel)]="message.emergencyMessage4" #deviceMessage4="ngModel" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+
+      <!--<button type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>-->
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-check'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-check'></i> {{isSaving ? 'Pushing messages' : 'Push Messages'}}
+      </button>
+    </div>
+  </form>
+</div>

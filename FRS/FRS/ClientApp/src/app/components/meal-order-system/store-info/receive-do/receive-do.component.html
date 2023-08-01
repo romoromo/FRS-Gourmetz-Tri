@@ -1,0 +1,111 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form class="form-horizontal" name="mealSessionEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="save()">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="do-number" placeholder="DO Number" name="do-number" autocomplete="off" [(ngModel)]="editDo.doNumber" minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="false" type="text" id="si-remarks" placeholder="Remarks" name="si-remarks" autocomplete="off" [(ngModel)]="editInventory.remarks" minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="false" type="text" id="si-deliv" placeholder="Delivered By" name="si-deliv" autocomplete="off" [(ngModel)]="editInventory.deliveredBy" minlength="1" maxlength="200" />
+        </mat-form-field>
+      </div>
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-xs-12 table-responsive">
+          <table class="table table-sm table-bordered" style="table-layout:fixed !important">
+            <thead>
+              <tr>
+                <th class="text-center">Carton Code</th>
+                <th class="text-center">Qty Expected</th>
+                <th class="text-center">Qty Received</th>
+                <th class="text-center">Qty to Receive</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cart of doCartons; let i = index">
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="true" type="text" id="cart-code{{cart.cartonCode}}{{i}}" name="cart-code{{cart.cartonCode}}{{i}}" autocomplete="off" [(ngModel)]="cart.cartonCode" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="true" type="number" id="cqty-exp{{cart.qtyExpected}}{{i}}" name="cqty-exp{{cart.qtyExpected}}{{i}}" autocomplete="off" [(ngModel)]="cart.qtyExpected" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="true" type="number" id="cqty-rcv{{cart.qtyReceived}}{{i}}" name="cqty-rcv{{cart.qtyReceived}}{{i}}" autocomplete="off" [(ngModel)]="cart.qtyReceived" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="false" type="number" id="cqty-trc{{cart.qtyToReceive}}{{i}}" name="cqty-trc{{cart.qtyToReceive}}{{i}}" autocomplete="off" [(ngModel)]="cart.qtyToReceive" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-xs-12 table-responsive">
+          <table class="table table-sm table-bordered" style="table-layout:fixed !important">
+            <thead>
+              <tr>
+                <th class="text-center">Dish Code</th>
+                <th class="text-center">Qty Expected</th>
+                <th class="text-center">Qty Received</th>
+                <th class="text-center">Qty to Receive</th>
+                <th class="text-center">Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let dish of doDishes; let i = index">
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="true" type="text" id="dish-code{{dish.dishCode}}{{i}}" name="dish-code{{dish.dishCode}}{{i}}" autocomplete="off" [(ngModel)]="dish.dishCode" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="true" type="number" id="qty-exp{{dish.qtyExpected}}{{i}}" name="qty-exp{{dish.qtyExpected}}{{i}}" autocomplete="off" [(ngModel)]="dish.qtyExpected" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="true" type="number" id="qty-rcv{{dish.qtyReceived}}{{i}}" name="qty-rcv{{dish.qtyReceived}}{{i}}" autocomplete="off" [(ngModel)]="dish.qtyReceived" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="false" type="number" id="qty-trc{{dish.qtyToReceive}}{{i}}" name="qty-trc{{dish.qtyToReceive}}{{i}}" autocomplete="off" [(ngModel)]="dish.qtyToReceive" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="false" type="text" id="remark{{dish.remarks}}{{i}}" name="remark{{dish.remarks}}{{i}}" autocomplete="off" [(ngModel)]="dish.remarks" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+      <div mat-dialog-actions align="center">
+        <button *ngIf="!canManageReceive" type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+        <button *ngIf="canManageReceive" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+        <button *ngIf="canManageReceive" type="submit" mat-button [disabled]="isSaving">
+          <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+        </button>
+      </div>
+</form>
+</div>

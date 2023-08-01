@@ -1,0 +1,132 @@
+<div>
+  <header class="pageHeader">
+    <h3>Notification Settings</h3>
+  </header>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <hr class="last-separator-hr" />
+  </div>
+</div>
+<div class="form-horizontal" *ngFor="let setting of notificationSettings">
+  <h4>{{(setting.type == 'NO_ORDER' ? 'Students With No Orders' : setting.type == 'ABANDONED_CART_1' ? 'Abandoned Cart 4 Hours Abandoned' : 'Abandoned Cart 4 Days Before Cut-Off')}}</h4>
+
+
+  <div class="form-group row">
+    <label class="col-sm-3 control-label" for="setting-{{setting.dayEnabled}}"> Trigger Notification On </label>
+    <div class="col-sm-4">
+      <select id="setting-{{setting.dayEnabled}}" [(ngModel)]="setting.dayEnabled" #languageSelector="bootstrap-select" bootstrapSelect class="selectpicker form-control">
+        <option value="Sunday">Sunday</option>
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+      </select>
+    </div>
+    <!--<div class="col-sm-5">
+      <p class="form-control-static text-muted small">{{'preferences.DashboardTodoHint' | translate}}</p>
+    </div>-->
+  </div>
+  <div class="form-group row">
+    <label class="col-sm-3 control-label" for="setting-{{setting.allowedEmails}}"> Whitelist Emails</label>
+    <div class="col-sm-4">
+      <div>
+        <textarea rows="5" name="setting-{{setting.allowedEmails}}" [(ngModel)]="setting.allowedEmails" class="form-control"></textarea>
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <p class="form-control-static text-muted small">Allow semi-colon separated emails to receive the notifications (Empty means allow all)</p>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-sm-3 control-label" for="setting-{{setting.subject}}"> Email Subject</label>
+    <div class="col-sm-4">
+      <div>
+        <input type="text" name="setting-{{setting.subject}}" [(ngModel)]="setting.subject" class="form-control" />
+      </div>
+    </div>
+    <!--<div class="col-sm-5">
+      <p class="form-control-static text-muted small">Allow semi-colon separated emails to receive the notifications (Empty means allow all)</p>
+    </div>-->
+  </div>
+  <div class="form-group row">
+    <label class="col-sm-3 control-label" for="setting-{{setting.template}}"> Email Template</label>
+    <div class="col-sm-4">
+      <div>
+        <textarea rows="5" name="setting-{{setting.template}}" [(ngModel)]="setting.template" class="form-control"></textarea>
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <p class="form-control-static text-muted small">Allow semi-colon separated emails to receive the notifications (Empty means allow all)</p>
+    </div>
+  </div>
+  <div class="form-group row" *ngIf="setting.type == 'ABANDONED_CART_2'">
+    <label class="col-sm-3 control-label" for="setting-{{setting.numDaysBeforeCutoff}}"> Number of days cut-off</label>
+    <div class="col-sm-4">
+      <div>
+        <input type="number" name="setting-{{setting.numDaysBeforeCutoff}}" [(ngModel)]="setting.numDaysBeforeCutoff" class="form-control" />
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <p class="form-control-static text-muted small">This is the number of days before cut-off to notify the users</p>
+    </div>
+  </div>
+
+  <div class="form-group row" *ngIf="setting.type == 'ABANDONED_CART_1'">
+    <label class="col-sm-3 control-label" for="setting-{{setting.numHoursLeftCutoff}}"> Number of hours cut-off</label>
+    <div class="col-sm-4">
+      <div>
+        <input type="number" name="setting-{{setting.numHoursLeftCutoff}}" [(ngModel)]="setting.numHoursLeftCutoff" class="form-control" />
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <p class="form-control-static text-muted small">This is the number of hours before cut-off to notify the users</p>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-3 control-label" for="setting-{{setting.isEmailEnabled}}"> Enable Email Notification</label>
+    <div class="col-sm-4">
+      <div class="checkbox">
+        <input name="setting-{{setting.isEmailEnabled}}" [(ngModel)]="setting.isEmailEnabled" class="form-control" type="checkbox" bootstrapToggle data-size="small">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-3 control-label" for="setting-{{setting.isAlertEnabled}}"> Enable Alert</label>
+    <div class="col-sm-4">
+      <div class="checkbox">
+        <input name="setting-{{setting.isAlertEnabled}}" [(ngModel)]="setting.isAlertEnabled" class="form-control" type="checkbox" bootstrapToggle data-size="small">
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <hr class="last-separator-hr" />
+    </div>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-sm-3">
+
+  </div>
+  <div class="col-sm-9">
+    <div class="row pull-left">
+      <!--<div class="col-sm-6 col-reset-default">
+        <button type="button" (click)="resetDefault()" class="btn btn-success">
+          <i class='fa fa-circle-o-notch'></i> {{'preferences.ResetDefault' | translate}}
+        </button>
+      </div>-->
+      <div class="col-sm-6 col-set-default">
+        <button type="button" (click)="save()" class="btn btn-primary">
+          <i class='fa fa-save'></i> Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

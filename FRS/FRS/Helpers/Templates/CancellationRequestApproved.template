@@ -1,0 +1,5 @@
+﻿<p>
+  Your cancellation request for {delivery_date}
+  ({session_name}), {items} has been approved.
+</p>
+<p>Check your cart for the voucher.</p>

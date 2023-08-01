@@ -1,0 +1,77 @@
+<div>
+  <header class="pageHeader">
+    <h3>User Group Roles</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-xs-12 col-sm-4">
+      <div class="form-group search-box">
+        <search-box #searchbox (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()" placeholder="Role name"></search-box>
+      </div>
+    </div>
+
+    <mat-form-field class="col-xs-12 col-sm-4 col-md-2">
+      <mat-select name="userRole" [(ngModel)]="reportFilter.roleId" placeholder="User Group Role">
+        <mat-option *ngFor="let t of userRoles" [value]="t.id">
+          {{t.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xs-12 col-sm-4 col-md-2">
+      <mat-select name="userRole" [(ngModel)]="reportFilter.permissions" placeholder="Functions" multiple>
+        <mat-option *ngFor="let t of permissions" [value]="t.value">
+          {{t.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xs-12 col-sm-4 col-md-2">
+      <input matInput [matDatepicker]="createdstartpicker" placeholder="Created From" [(ngModel)]="reportFilter.createdStart"
+             (dateChange)="onChangeDate('createdstart', $event)">
+      <mat-datepicker-toggle matSuffix [for]="createdstartpicker"></mat-datepicker-toggle>
+      <mat-datepicker #createdstartpicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-xs-12 col-sm-4 col-md-2">
+      <input matInput [matDatepicker]="createdendpicker" placeholder="Created To" [(ngModel)]="reportFilter.createdEnd"
+             (dateChange)="onChangeDate('createdend',$event)">
+      <mat-datepicker-toggle matSuffix [for]="createdendpicker"></mat-datepicker-toggle>
+      <mat-datepicker #createdendpicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-xs-12 col-sm-4 col-md-2">
+      <input matInput [matDatepicker]="lastupdatedstartpicker" placeholder="Last Updated From" [(ngModel)]="reportFilter.lastUpdatedStart"
+             (dateChange)="onChangeDate('lastupdatedstart', $event)">
+      <mat-datepicker-toggle matSuffix [for]="lastupdatedstartpicker"></mat-datepicker-toggle>
+      <mat-datepicker #lastupdatedstartpicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-xs-12 col-sm-4 col-md-2">
+      <input matInput [matDatepicker]="lastupdatedendpicker" placeholder="Last Updated To" [(ngModel)]="reportFilter.lastUpdatedEnd"
+             (dateChange)="onChangeDate('lastupdatedend',$event)">
+      <mat-datepicker-toggle matSuffix [for]="lastupdatedendpicker"></mat-datepicker-toggle>
+      <mat-datepicker #lastupdatedendpicker></mat-datepicker>
+    </mat-form-field>
+    <div class="col-xs-12 col-sm-12 col-md-4" style="padding-bottom:10px;">
+      <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
+      <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>
+      <button type="button" class="btn btn-sm btn-info" (click)="downloadResults();" style="margin-left:5px;">Download Results</button>
+    </div>
+  </div>
+
+  <div class="table-responsive" *ngIf="pagedResult">
+    <ngx-datatable class="material colored-header" #userReportTable
+                   [loadingIndicator]="loadingIndicator"
+                   [rows]="rows"
+                   [rowHeight]="'auto'"
+                   [headerHeight]="'auto'"
+                   [footerHeight]="35"
+                   [columns]="columns"
+                   [columnMode]="'force'"
+                   [externalPaging]="true"
+                   [externalSorting]="true"
+                   [count]="pagedResult.totalCount"
+                   [limit]="pagedResult.filter.pageSize"
+                   (page)="loadData($event)"
+                   (sort)="loadData($event)">
+    </ngx-datatable>
+  </div>
+  <ng-template #indexTemplate let-value="value" let-rowCount="rowCount" let-pageSize="pageSize" let-curPage="curPage" let-offset="offset">
+    <strong>{{value}}</strong>
+  </ng-template>
+</div>

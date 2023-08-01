@@ -1,0 +1,59 @@
+<div>
+  <header class="pageHeader">
+    <h3>Directory Listing</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-8">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'directoryListings.management.Search' | translate}}">></search-box>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManageDirectoryListings" class="toolbaritem">
+            <a href="javascript:;" (click)="newDirectoryListing(row)">
+              <i class="fa fa-plus-circle"></i> {{'directoryListings.management.New' | translate}}
+            </a>
+
+          </li>
+          <li *ngIf="canManageDirectoryListings" class="toolbaritem">
+            <input type="file" #fileImport placeholder="Choose file" (change)="importedFile(fileImport.files)" style="display:none;" accept="{{fileTypes}}">
+            <a href="javascript:;" (click)="fileImport.click()">
+              <i class="fa fa-upload"></i> Imports
+            </a>
+          </li>
+          <li *ngIf="canManageDirectoryListings" class="toolbaritem">
+            <a href="/api/directorylisting/export" target="_blank">
+              <i class="fa fa-download"></i> Export
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [limit]="20">
+  </ngx-datatable>
+
+  <ng-template #indexTemplate let-value="value">
+    <strong>{{value}}</strong>
+  </ng-template>
+
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageDirectoryListings" class="btn btn-link btn-xs" href="javascript:;" (click)="editDirectoryListing(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'directoryListings.management.Edit' | translate}}</a>
+    <a *ngIf="!canManageDirectoryListings" class="btn btn-link btn-xs" href="javascript:;" (click)="editDirectoryListing(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'directoryListings.management.Details' | translate}}</a>
+    <!--{{canManageDirectoryListings ? '|' : ''}}-->
+    <a *ngIf="canManageDirectoryListings" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteDirectoryListing(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'directoryListings.management.Delete' | translate}}</a>
+  </ng-template>
+  <directory-listing-editor #directoryListingEditor [hidden]="true"></directory-listing-editor>
+</div>

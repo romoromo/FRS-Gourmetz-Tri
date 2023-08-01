@@ -1,0 +1,668 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using AspNet.Security.OpenIdConnect.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
+using AspNet.Security.OpenIdConnect.Server;
+using OpenIddict.Core;
+using AspNet.Security.OpenIdConnect.Primitives;
+using DAL.Models;
+using DAL.Core;
+using Microsoft.Extensions.Options;
+using System.Security.Claims;
+using OpenIddict.Abstractions;
+using OpenIddict.Server;
+using FRS.ViewModels;
+using System.Web;
+using BAL.Services;
+using BAL.Services.Interfaces;
+using BAL.DTO;
+using Microsoft.AspNetCore.Http;
+using UAParser;
+using Microsoft.Extensions.Configuration;
+using System.DirectoryServices;
+using System.DirectoryServices.AccountManagement;
+using FRS.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using FRS.Pages;
+
+
+// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+
+
+namespace FRS.Controllers
+{
+    public class AuthorizationController : Controller
+    {
+        private readonly IOptions<IdentityOptions> _identityOptions;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationUserManager _userManager;
+        private readonly IAuthenticationLogService _authLogService;
+        private IHttpContextAccessor _httpAccessor;
+        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly IConfiguration _configuration;
+        private readonly IEmailSender _emailSender;
+        private readonly EmailController _emailController;
+        private readonly IAuditLogService _auditLogService;
+
+        public AuthorizationController(
+            IOptions<IdentityOptions> identityOptions,
+            SignInManager<ApplicationUser> signInManager,
+            RoleManager<ApplicationRole> roleManager,
+            ApplicationUserManager userManager,
+            IAuthenticationLogService authLogService,
+            IHttpContextAccessor httpAccessor,
+            IConfiguration configuration,
+            IEmailSender emailSender,
+            EmailController emailController,
+            IAuditLogService auditLogService)
+        {
+            _identityOptions = identityOptions;
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _authLogService = authLogService;
+            _httpAccessor = httpAccessor;
+            _roleManager = roleManager;
+            _configuration = configuration;
+            _emailSender = emailSender;
+            _emailController = emailController;
+            _auditLogService = auditLogService;
+        }
+
+        [HttpPost("~/updatefirstlogin")]
+        [Produces("application/json")]
+        public async Task<IActionResult> UpdateFirstLogin(string id, bool confirmReadTermsConditions, bool consentDataCollection, bool receivePromotionalMaterials)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+
+                user.NotFirstLogin = true;
+                user.ConfirmReadTermsConditions = confirmReadTermsConditions;
+                user.ConsentDataCollection = consentDataCollection;
+                user.ReceivePromotionalMaterials = receivePromotionalMaterials;
+
+                await _userManager.UpdateAsync(user);
+                return Ok("Success");
+            } catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error, " + ex.Message);
+            }
+         }
+
+        [HttpPost("~/connect/token")]
+        [Produces("application/json")]
+        public async Task<IActionResult> Exchange(OpenIdConnectRequest request = null, string institutionCode = null, bool isExternal = false, bool isExternalLogin = false, bool isAD = false, bool needConfirmationCode = false, string appId = null)
+        {
+            var uaParser = Parser.GetDefault();
+            ClientInfo c = uaParser.Parse(_httpAccessor.HttpContext.Request.Headers["User-Agent"]);
+            string message = string.Format(" sign in with access using {0}", isExternal ? "Mobile App" : isExternalLogin ? "Third party login" : "Web");
+            string ip = _httpAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            if (c.Device != null && !string.IsNullOrEmpty(c.Device.Family))
+            {
+                message += string.Format(" .Device: {0}, OS: {1}, Agent: {2}, IP: {3}", c.Device.ToString(), c.OS.ToString(), c.UserAgent.ToString(), ip);
+            }
+            else
+            {
+                message += string.Format(" with IP {0}", ip);
+            }
+
+
+            var log = new AuthenticationLogDTO
+            {
+                CreatedDate = DateTime.Now,
+                InstitutionCode = institutionCode,
+                UserName = request.Username
+            };
+
+            if (request.IsPasswordGrantType() || isExternalLogin)
+            {
+                _userManager.InstitutionCode = institutionCode;
+                ApplicationUser user = null;
+
+                user = await _userManager.FindByEmailAsync(request.Username) ?? await _userManager.FindByNameAsync(request.Username);
+
+                if (user == null)
+                {
+                    //someone tries to login
+                    log.Message = "Failed " + message + " Error: You have entered an invalid user ID or password. Please note that your password is case-sensitive." + " Account was not found." + request.Username;
+                    await _authLogService.CreateAsync(log);
+                    return BadRequest(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        ErrorDescription = "You have entered an invalid user ID or password. Please note that your password is case-sensitive."
+                    });
+                }
+
+                // Ensure the user is enabled.
+                if (!user.IsEnabled)
+                {
+                    log.Message = "Failed " + message + " Error: Pending account activation from Admin.";
+                    await _authLogService.CreateAsync(log);
+                    return BadRequest(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        ErrorDescription = "Pending account activation from Admin."
+                    });
+                }
+
+                // Ensure the user is active.
+                if (!user.IsActive)
+                {
+                    log.Message = "Failed " + message + " Error: Account was not found or was deactivated in the system.";
+                    await _authLogService.CreateAsync(log);
+
+                    return BadRequest(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        ErrorDescription = "Account was not found or was deactivated in the system."
+                    });
+                }
+
+
+                if (!isExternalLogin)
+                {
+                    if (user.IsAD)
+                    {
+                        if (!ValidateADAccount(request.Username, request.Password))
+                        {
+                            log.Message = "Failed " + message + " Error: You have entered an invalid user ID or password. Please note that your password is case-sensitive.";
+                            await _authLogService.CreateAsync(log);
+                            return BadRequest(new OpenIdConnectResponse
+                            {
+                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                ErrorDescription = "You have entered an invalid user ID or password. Please note that your password is case-sensitive."
+                            });
+                        }
+                    }
+                    else
+                    {
+                        // Validate the username/password parameters and ensure the account is not locked out.
+                        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, true);
+
+                        // Ensure the user is not already locked out.
+                        if (result.IsLockedOut)
+                        {
+                            log.Message = "Failed " + message + " Error: The specified user account has been suspended.";
+                            await _authLogService.CreateAsync(log);
+
+                            return BadRequest(new OpenIdConnectResponse
+                            {
+                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                ErrorDescription = "The specified user account has been suspended"
+                            });
+                        }
+
+                        // Reject the token request if two-factor authentication has been enabled by the user.
+                        if (result.RequiresTwoFactor)
+                        {
+                            log.Message = "Failed " + message + " Error: Invalid login procedure.";
+                            await _authLogService.CreateAsync(log);
+
+                            return BadRequest(new OpenIdConnectResponse
+                            {
+                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                ErrorDescription = "Invalid login procedure"
+                            });
+                        }
+                        // Ensure the user is allowed to sign in.
+                        if (result.IsNotAllowed)
+                        {
+                            log.Message = "Failed " + message + " Error: The specified user is not allowed to sign in.";
+                            await _authLogService.CreateAsync(log);
+
+                            return BadRequest(new OpenIdConnectResponse
+                            {
+                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                ErrorDescription = "The specified user is not allowed to sign in"
+                            });
+                        }
+
+                        if (!result.Succeeded)
+                        {
+                            log.Message = "Failed " + message + " Error: You have entered an invalid user ID or password. Please note that your password is case-sensitive.";
+                            await _authLogService.CreateAsync(log);
+
+                            return BadRequest(new OpenIdConnectResponse
+                            {
+                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                ErrorDescription = "You have entered an invalid user ID or password. Please note that your password is case-sensitive."
+                            });
+                        }
+                    }
+
+
+                    if (_signInManager.Options.SignIn.RequireConfirmedEmail && !(await _userManager.IsEmailConfirmedAsync(user)))
+                    {
+                        log.Message = "Failed " + message + " Error: Please confirm your email first.";
+                        await _authLogService.CreateAsync(log);
+
+                        return BadRequest(new OpenIdConnectResponse
+                        {
+                            Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                            ErrorDescription = "Please confirm your email first"
+                        });
+                    }
+                }
+
+                // Create a new authentication ticket.
+                var ticket = await CreateTicketAsync(request, user);
+
+                user.LastLoginTime = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+
+                log.Message = "Successful " + message;
+                await _authLogService.CreateAsync(log);
+
+                if (needConfirmationCode && !string.IsNullOrEmpty(user.Email))
+                {
+                    Random generator = new Random();
+                    String r = generator.Next(0, 1000000).ToString("D6");
+
+                    user.ConfirmationCode = r;
+
+                    var externalAppLog = new ExternalAppLoginLogDTO
+                    {
+                        AppId = appId,
+                        Email = user.Email,
+                        EventDateTime = DateTime.Now,
+                        UserId = user.Id,
+                        Message = log.Message,
+                        Username = user.UserName
+                    };
+
+                    await _auditLogService.CreateExternalLoginLogAsync(externalAppLog);
+                    await _userManager.UpdateAsync(user);
+
+                    var isSuccess = await _emailSender.SendEmailAsync("Tappee", "smv.notification@gmail.com", user.FullName, user.Email, "Tappee Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+
+                    //await _emailController.SendEmailFromQueue();
+                }
+
+                if (isExternal)
+                {
+
+
+                    return new JsonResult(new
+                    {
+                        IsValidUser = true,
+                        UserId = user.Id,
+                        InstitutionId = user.InstitutionId,
+                        FullName = user.FullName,
+                        UserName = user.UserName,
+                        InstitutionName = user.Institution.Name,
+                        Pin = user.Pin,
+                        Email = user.Email,
+                        Status = !string.IsNullOrEmpty(user.Status) ? user.Status : UserConnectionStatus.OFFDUTY.ToString(),
+                        FirebaseToken = user.FirebaseToken,
+                        ConfirmationCode = needConfirmationCode ? user.ConfirmationCode : "",
+                        NotFirstLogin = user.NotFirstLogin,
+                        ConfirmReadTermsConditions = user.ConfirmReadTermsConditions,
+                        ConsentDataCollection = user.ConsentDataCollection,
+                        ReceivePromotionalMaterials = user.ReceivePromotionalMaterials
+                    });
+
+                    
+                }
+
+                var ticket2 = await CreateTicketAsync(request, user);
+
+                return SignIn(ticket2.Principal, ticket2.Properties, ticket2.AuthenticationScheme);
+            }
+            else if (request.IsRefreshTokenGrantType())
+            {
+                // Retrieve the claims principal stored in the refresh token.
+                var info = await HttpContext.AuthenticateAsync(OpenIddictServerDefaults.AuthenticationScheme);
+
+                // Retrieve the user profile corresponding to the refresh token.
+                // Note: if you want to automatically invalidate the refresh token
+                // when the user password/roles change, use the following line instead:
+                // var user = _signInManager.ValidateSecurityStampAsync(info.Principal);
+                var user = await _userManager.GetUserAsync(info.Principal);
+                if (user == null)
+                {
+                    log.Message = "Failed " + message;
+                    await _authLogService.CreateAsync(log);
+
+                    return BadRequest(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        ErrorDescription = "The refresh token is no longer valid"
+                    });
+                }
+
+                // Ensure the user is still allowed to sign in.
+                if (!await _signInManager.CanSignInAsync(user))
+                {
+                    log.Message = "Failed " + message;
+                    await _authLogService.CreateAsync(log);
+
+                    return BadRequest(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        ErrorDescription = "The user is no longer allowed to sign in"
+                    });
+                }
+
+                // Create a new authentication ticket, but reuse the properties stored
+                // in the refresh token, including the scopes originally granted.
+                var ticket = await CreateTicketAsync(request, user);
+
+                user.LastLoginTime = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+
+                log.Message = "Successful " + message;
+                await _authLogService.CreateAsync(log);
+                
+                if (isExternal)
+                {
+                    return new JsonResult(new
+                    {
+                        IsValidUser = true,
+                        UserId = user.Id,
+                        InstitutionId = user.InstitutionId,
+                        FullName = user.FullName,
+                        UserName = user.UserName,
+                        InstitutionName = user.Institution.Name,
+                        Pin = user.Pin,
+                        Email = user.Email,
+                        Status = !string.IsNullOrEmpty(user.Status) ? user.Status : UserConnectionStatus.OFFDUTY.ToString(),
+                        FirebaseToken = user.FirebaseToken
+                    });
+                }
+
+                return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
+            }
+
+            log.Message = "Failed " + message;
+            await _authLogService.CreateAsync(log);
+
+            return BadRequest(new OpenIdConnectResponse
+            {
+                Error = OpenIdConnectConstants.Errors.UnsupportedGrantType,
+                ErrorDescription = "The specified grant type is not supported"
+            });
+        }
+
+        public async Task<ActionResult> ConfirmEmail(string userId, string code, string passwordSetCode)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    ErrorDescription = "Please make sure you have a correct link to confirm your email"
+                });
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                if (result.Succeeded && !string.IsNullOrEmpty(token))
+                {
+                    return RedirectToAction("ResetPassword", "Authorization", new { userId = userId, code = token, firstPassword = true });
+                }
+
+                return Ok("Thank you for confirming your email. A separate email will be sent to you when your account is ready.");
+                //return View("ConfirmEmail");
+            }
+
+            return BadRequest(new OpenIdConnectResponse
+            {
+                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                ErrorDescription = "Please make sure you have a correct link to confirm your email"
+            });
+        }
+
+        [AllowAnonymous]
+        public ActionResult ResetPassword(int userId, string code, bool firstPassword = false)
+        {
+            if (code == null)
+                return View("Error");
+
+            var model = new ResetPasswordModel { Token = code, UserId = userId };
+
+            return firstPassword ? View("FirstPassword", model) : View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
+        {
+            if (!ModelState.IsValid)
+                return View(resetPasswordModel);
+
+            var user = await _userManager.FindByIdAsync(resetPasswordModel.UserId.ToString());
+            if (user == null)
+                RedirectToAction(nameof(ResetPasswordConfirmation));
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password);
+            if (!resetPassResult.Succeeded)
+            {
+                foreach (var error in resetPassResult.Errors)
+                {
+                    ModelState.TryAddModelError(error.Code, error.Description);
+                }
+                return View("ResetPassword");
+            }
+            return RedirectToAction(nameof(ResetPasswordConfirmation));
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+        public IActionResult SignInWithGoogle(string institutionCode)
+        {
+            var authenticationProperties = _signInManager.ConfigureExternalAuthenticationProperties("Google", Url.Action(nameof(HandleExternalLogin), new { institutionCode = institutionCode }));
+            return Challenge(authenticationProperties, "Google");
+        }
+
+        public async Task<IActionResult> HandleExternalLogin(string institutionCode)
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            ApplicationUser user1 = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            if (!result.Succeeded) //user does not exist yet
+            {
+                //var newUser = new ApplicationUser
+                //{
+                //    UserName = email,
+                //    Email = email,
+                //    EmailConfirmed = true
+                //};
+                //var createResult = await _userManager.CreateAsync(newUser);
+                //if (!createResult.Succeeded)
+                //    throw new Exception(createResult.Errors.Select(e => e.Description).Aggregate((errors, error) => $"{errors}, {error}"));
+
+                //await _userManager.AddLoginAsync(newUser, info);
+
+                //var newUserClaims = info.Principal.Claims.Append(new Claim("Id", newUser.Id.ToString()));
+                //await _userManager.AddClaimsAsync(newUser, newUserClaims);
+                //await _signInManager.SignInAsync(newUser, isPersistent: false);
+                //await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+                return Redirect(string.Format("/register?email={0}&provider={1}&key={2}{3}", HttpUtility.UrlEncode(email), info.LoginProvider, info.ProviderKey, !string.IsNullOrEmpty(institutionCode) ? "&institutionCode=" + institutionCode : string.Empty));
+            }
+
+            _userManager.InstitutionCode = institutionCode;
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null && !user.InstitutionId.HasValue)
+            {
+                return Redirect(string.Format("/register?email={0}&provider={1}&key={2}", HttpUtility.UrlEncode(email), info.LoginProvider, info.ProviderKey));
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            //await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            //var request = new OpenIdConnectRequest { Scope = "openid email phone profile offline_access roles" };
+            //var ticket = await CreateTicketAsync(request, user);
+
+            // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
+            //SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
+
+            //return await Exchange(request);
+            return Redirect("/externallogin?email=" + HttpUtility.UrlEncode(email));
+        }
+
+        public async Task<IActionResult> AttendanceSignIn()
+        {
+            return Redirect("/attendancesignin");
+        }
+
+        public async Task<IActionResult> ChangePassword()
+        {
+            return Redirect("/changepassword");
+        }
+
+        [HttpGet("logotp")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<IActionResult> LogOtpAttempt(string username, bool isSuccessful)
+        {
+            var log = new AuthenticationLogDTO
+            {
+                CreatedDate = DateTime.Now,
+                UserName = username,
+                Message = isSuccessful ? $"Successfully validated the OTP for {username}" : $"Failed OTP Validation Error: Incorrect OTP for {username}"
+            };
+
+            var response = await _authLogService.CreateAsync(log);
+
+            return Ok(response);
+        }
+
+        private async Task<AuthenticationTicket> CreateTicketAsync(OpenIdConnectRequest request, ApplicationUser user)
+        {
+            // Create a new ClaimsPrincipal containing the claims that
+            // will be used to create an id_token, a token or a code.
+            var principal = await _signInManager.CreateUserPrincipalAsync(user);
+            var principalIdentity = principal.Identity as ClaimsIdentity;
+
+            //if (this._userManager.SupportsUserRole && user.Roles != null)
+            //{
+            //    foreach (var role in user.Roles.Select(e => e.Role))
+            //    {
+            //        var roleClaims = await this._roleManager.GetClaimsAsync(role);
+            //        principalIdentity.AddClaims(roleClaims);
+            //    }
+            //}
+
+            // Create a new authentication ticket holding the user identity.
+            var ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), OpenIddictServerDefaults.AuthenticationScheme);
+            //if (!request.IsRefreshTokenGrantType())
+            //{
+            // Set the list of scopes granted to the client application.
+            // Note: the offline_access scope must be granted
+            // to allow OpenIddict to return a refresh token.
+            ticket.SetScopes(new[]
+            {
+                    OpenIdConnectConstants.Scopes.OpenId,
+                    OpenIdConnectConstants.Scopes.Email,
+                    OpenIdConnectConstants.Scopes.Phone,
+                    OpenIdConnectConstants.Scopes.Profile,
+                    OpenIdConnectConstants.Scopes.OfflineAccess,
+                    OpenIddictConstants.Scopes.Roles
+            }.Intersect(request.GetScopes()));
+            //}
+
+            //ticket.SetResources("frs_api");
+            // Uncomment if cookie affinity doesn't fix the issue
+            //ticket.SetAudiences(_configuration.GetSection("Jwt:Audience").Get<string>());
+
+            // Note: by default, claims are NOT automatically included in the access and identity tokens.
+            // To allow OpenIddict to serialize them, you must attach them a destination, that specifies
+            // whether they should be included in access tokens, in identity tokens or in both.
+
+            foreach (var claim in ticket.Principal.Claims)
+            {
+                // Never include the security stamp in the access and identity tokens, as it's a secret value.
+                if (claim.Type == _identityOptions.Value.ClaimsIdentity.SecurityStampClaimType)
+                    continue;
+
+
+                var destinations = new List<string> { OpenIdConnectConstants.Destinations.AccessToken };
+
+                // Only add the iterated claim to the id_token if the corresponding scope was granted to the client application.
+                // The other claims will only be added to the access_token, which is encrypted when using the default format.
+                if ((claim.Type == OpenIdConnectConstants.Claims.Subject && ticket.HasScope(OpenIdConnectConstants.Scopes.OpenId)) ||
+                    (claim.Type == OpenIdConnectConstants.Claims.Name && ticket.HasScope(OpenIdConnectConstants.Scopes.Profile)) ||
+                    (claim.Type == OpenIdConnectConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles)) ||
+                    (claim.Type == CustomClaimTypes.Permission && ticket.HasScope(OpenIddictConstants.Claims.Roles)))
+                {
+                    destinations.Add(OpenIdConnectConstants.Destinations.IdentityToken);
+                }
+
+
+                claim.SetDestinations(destinations);
+            }
+
+
+            var identity = principal.Identity as ClaimsIdentity;
+
+            identity.AddClaim(OpenIdConnectConstants.Claims.Audience, _configuration.GetSection("Jwt:Audience").Get<string>(), OpenIdConnectConstants.Destinations.AccessToken);
+            identity.AddClaim(OpenIdConnectConstants.Claims.Audience, _configuration.GetSection("Jwt:Audience").Get<string>(), OpenIdConnectConstants.Destinations.IdentityToken);
+
+            if (ticket.HasScope(OpenIdConnectConstants.Scopes.Profile))
+            {
+                
+                identity.AddClaim(CustomClaimTypes.UserId, user.Id + "", OpenIdConnectConstants.Destinations.IdentityToken);
+
+                if (!string.IsNullOrWhiteSpace(user.ConfirmationCode))
+                    identity.AddClaim(CustomClaimTypes.ConfirmationCode, user.ConfirmationCode, OpenIdConnectConstants.Destinations.IdentityToken);
+
+                
+                    identity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin + "", OpenIdConnectConstants.Destinations.IdentityToken);
+
+
+                if (!string.IsNullOrWhiteSpace(user.JobTitle))
+                    identity.AddClaim(CustomClaimTypes.JobTitle, user.JobTitle, OpenIdConnectConstants.Destinations.IdentityToken);
+
+                if (!string.IsNullOrWhiteSpace(user.FullName))
+                    identity.AddClaim(CustomClaimTypes.FullName, user.FullName, OpenIdConnectConstants.Destinations.IdentityToken);
+
+                if (!string.IsNullOrWhiteSpace(user.Configuration))
+                    identity.AddClaim(CustomClaimTypes.Configuration, user.Configuration, OpenIdConnectConstants.Destinations.IdentityToken);
+
+                if (user.InstitutionId.HasValue)
+                    identity.AddClaim(CustomClaimTypes.InstitutionId, user.InstitutionId.ToString(), OpenIdConnectConstants.Destinations.IdentityToken);
+            }
+
+            if (ticket.HasScope(OpenIdConnectConstants.Scopes.Email))
+            {
+                if (!string.IsNullOrWhiteSpace(user.Email))
+                    identity.AddClaim(CustomClaimTypes.Email, user.Email, OpenIdConnectConstants.Destinations.IdentityToken);
+            }
+
+            if (ticket.HasScope(OpenIdConnectConstants.Scopes.Phone))
+            {
+                if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                    identity.AddClaim(CustomClaimTypes.Phone, user.PhoneNumber, OpenIdConnectConstants.Destinations.IdentityToken);
+            }
+
+            return ticket;
+        }
+
+        private bool ValidateADAccount(string username, string userpassword)
+        {
+            var ldapServer = _configuration["AppSettings:AD_Server"];
+            var uname = _configuration["AppSettings:AD_Username"];
+            var password = _configuration["AppSettings:AD_Password"];
+
+            using (var context =
+                (!string.IsNullOrWhiteSpace(uname) && !string.IsNullOrWhiteSpace(password))
+                ? new PrincipalContext(ContextType.Domain, ldapServer, uname, password)
+                : new PrincipalContext(ContextType.Domain, ldapServer))
+            {
+                return context.ValidateCredentials(username, userpassword, ContextOptions.Negotiate);
+            }
+        }
+    }
+}

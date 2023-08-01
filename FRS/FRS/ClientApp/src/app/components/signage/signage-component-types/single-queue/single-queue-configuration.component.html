@@ -1,0 +1,15 @@
+<div>
+  <div>
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.roomInfoLocationName">Room Info based on Location Name</mat-checkbox>
+    </section>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;" *ngFor="let t of configurations.texts | keyvalue">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="t.value.hide">Hide {{t.value.label}}</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!t.value.hide" [(configurations)]="t.value"></text-configuration>
+  </div>
+</div>

@@ -1,0 +1,206 @@
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="reservationEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!reservationShortDescription.valid && showErrorAlert('Reservation description is required', 'Please enter a reservation name (minimum of 2 and maximum of 200 characters)'));">
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group has-feedback">
+          <label class="control-label col-md-2" for="reservationShortDescription">{{'reservations.editor.ShortDescription' | translate}}</label>
+          <div class="col-md-10" [ngClass]="{'has-success': f.submitted && reservationShortDescription.valid, 'has-error' : f.submitted && !reservationShortDescription.valid}">
+            <input [disabled]="!canManageReservations" type="text" id="reservationShortDescription" name="reservationShortDescription" placeholder="Enter brief descpription" class="form-control" [(ngModel)]="reservationEdit.shortDescription" #reservationShortDescription="ngModel" required minlength="2" maxlength="200" />
+            <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': reservationShortDescription.valid, 'glyphicon-remove' : !reservationShortDescription.valid}"></span>
+            <span *ngIf="showValidationErrors && f.submitted && !reservationShortDescription.valid" class="errorMessage reservationErrorMessage">
+              {{'reservations.editor.ReservationShortDescriptionRequired' | translate}}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2">Display Title</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageReservations" type="text" id="reservationDTitle" name="reservationDTitle" placeholder="Enter display title" class="form-control" [(ngModel)]="reservationEdit.displayTitle" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="reservationDescription">Description</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageReservations" type="text" id="reservationDescription" name="reservationDescription" placeholder="Enter description" class="form-control" [(ngModel)]="reservationEdit.longDescription" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2">Meeting Purpose</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageReservations" type="text" id="meetingPurpose" name="meetingPurpose" placeholder="Enter meeting purpose" class="form-control" [(ngModel)]="reservationEdit.meetingPurpose" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2">Status</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageReservations" type="text" id="status" name="status" placeholder="Enter status" class="form-control" [(ngModel)]="reservationEdit.status" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2">Status Remark</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageReservations" type="text" id="statusRemark" name="statusRemark" placeholder="Enter status remark" class="form-control" [(ngModel)]="reservationEdit.statusRemark" />
+          </div>
+        </div>
+      </div>
+
+      </div>
+
+      <!--******************************************************************************************************-->
+
+      <div *ngIf="!isEditMode || canManageReservations" class="row">
+        <div class="col-md-12">
+          <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+        </div>
+      </div>
+
+      <div *ngIf="!isEditMode || canManageReservations" class="form-group has-feedback">
+        <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="reservations-reservation-info">{{'reservations.editor.Location' | translate}}</label>
+        <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+          <p ngPreserveWhitespaces class="form-control-static">
+            <span>
+              <span title='{{reservationEdit.locationName}}' class="badge">{{reservationEdit.locationName}}</span>
+            </span>
+          </p>
+        </div>
+        <div *ngIf="isEditMode && canManageReservations" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && location.valid, 'has-error' : f.submitted && !location.valid}">
+          <select id="location-reservation-info" name="location" [(ngModel)]="reservationEdit.locationId" #location="ngModel" #locationsSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect required
+                  data-live-search="true" data-actions-box="false" data-live-search-placeholder="Search..." title="Select location">
+            <option *ngFor="let location of allLocations" attr.data-content="<span title='{{location.description}}'><b>{{location.name}}</b> - <small><i>{{location.description}}</i></small></span>" attr.value="{{location.id}}">
+              {{location.name}}
+            </option>
+          </select>
+          <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': location.valid, 'glyphicon-remove' : !location.valid}"></span>
+          <span *ngIf="showValidationErrors && f.submitted && !location.valid" class="errorMessage">
+            {{'reservations.editor.LocationRequired' | translate}}
+          </span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group has-feedback">
+            <label class="control-label col-md-2" for="reservationStartDate">{{'reservations.editor.StartDate' | translate}}</label>
+            <div class="col-md-4" [ngClass]="{'has-success': f.submitted && reservationStartDate.valid, 'has-error' : f.submitted && !reservationStartDate.valid}">
+              <input bootstrapDatepicker [disabled]="!canManageReservations" type="text" id="reservationStartDate" name="reservationStartDate" placeholder="" class="form-control" [(ngModel)]="reservationEdit.startDate" #reservationStartDate="ngModel" required />
+              <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': reservationStartDate.valid, 'glyphicon-remove' : !reservationStartDate.valid}"></span>
+            </div>
+
+            <label class="control-label col-md-2" for="startTime">{{'reservations.editor.StartTime' | translate}}</label>
+
+            <div class="col-md-4" [ngClass]="{'has-success': f.submitted && startTime.valid, 'has-error' : f.submitted && !startTime.valid}">
+              <select [disabled]="disabledTime" id="reservation-startTime-info" name="startTime" [(ngModel)]="reservationEdit.startTime.id" #startTime="ngModel" #allStartTimesSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect required
+                      data-actions-box="false" title="Select time" (change)="changeEndTime(startTime.id)">
+                <option *ngFor="let startTime of allStartTimes" attr.data-content="<span title='{{startTime.description}}'>{{startTime.description}}</span>" attr.value="{{startTime.id}}">
+                  {{startTime.description}}
+                </option>
+              </select>
+              <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': startTime.valid, 'glyphicon-remove' : !startTime.valid}"></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <div class="form-group has-feedback">
+            <label class="control-label col-md-2" for="reservationEndDate">{{'reservations.editor.EndDate' | translate}}</label>
+            <div class="col-md-4" [ngClass]="{'has-success': f.submitted && reservationEndDate.valid, 'has-error' : f.submitted && !reservationEndDate.valid}">
+              <input bootstrapDatepicker [disabled]="!canManageReservations" type="text" id="reservationEndDate" name="reservationEndDate" placeholder="" class="form-control" [(ngModel)]="reservationEdit.endDate" #reservationEndDate="ngModel" required />
+              <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': reservationEndDate.valid, 'glyphicon-remove' : !reservationEndDate.valid}"></span>
+            </div>
+
+            <label class="control-label col-md-2" for="endTime">{{'reservations.editor.EndTime' | translate}}</label>
+            <div class="col-md-4" [ngClass]="{'has-success': f.submitted && endTime.valid, 'has-error' : f.submitted && !endTime.valid}">
+              <select [disabled]="disabledTime" id="reservation-endTime-info" name="endTime" [(ngModel)]="reservationEdit.endTime.id" #endTime="ngModel" #allEndTimesSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect required
+                      data-actions-box="false" title="Select time">
+                <option *ngFor="let endTime of allEndTimes" attr.data-content="<span title='{{endTime.description}}'>{{endTime.description}}</span>" attr.value="{{endTime.id}}">
+                  {{endTime.description}}
+                </option>
+              </select>
+              <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': endTime.valid, 'glyphicon-remove' : !endTime.valid}"></span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-sm-12">
+          <mat-checkbox class="col-sm-6 col-xs-12" name="isKiosk" [(ngModel)]="reservationEdit.isKiosk">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Is Digital Kiosk</label>
+          </mat-checkbox>
+          <mat-checkbox class="col-sm-6 col-xs-12" name="isSignage" [(ngModel)]="reservationEdit.isSignage">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Is Digital Signage</label>
+          </mat-checkbox>
+        </div>
+      </div>
+      <div *ngIf="!isEditMode || canManageReservations" class="row">
+        <div class="col-md-12">
+          <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label class="control-label col-md-2 no-padding-top" for="reservationIsAllDay">{{'reservations.editor.IsAllDay' | translate}}</label>
+            <input (click)='toggleTime()' type="checkbox" name="reservationIsAllDay" id="reservationIsAllDay" class="" [(ngModel)]="reservationEdit.isAllDay" />
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label class="control-label col-md-2 no-padding-top">{{'reservations.editor.RepeatType' | translate}}</label>
+            <input type="radio" name="reservationRepeatType" id="reservationRepeatTypeNone" value="None" [(ngModel)]="reservationEdit.repeatType" /> <label class="font-unbold padding-right-10" for="reservationRepeatTypeNone"> None</label>
+            <input type="radio" name="reservationRepeatType" id="reservationRepeatTypeDaily" value="Daily" [(ngModel)]="reservationEdit.repeatType" /> <label class="font-unbold padding-right-10" for="reservationRepeatTypeDaily"> Daily</label>
+            <input type="radio" name="reservationRepeatType" id="reservationRepeatTypeWeekly" value="Weekly" [(ngModel)]="reservationEdit.repeatType" /> <label class="font-unbold padding-right-10" for="reservationRepeatTypeWeekly"> Weekly</label>
+            <input type="radio" name="reservationRepeatType" id="reservationRepeatTypeMonthly" value="Monthly" [(ngModel)]="reservationEdit.repeatType" /> <label class="font-unbold padding-right-10" for="reservationRepeatTypeMonthly"> Monthly</label>
+            <input type="radio" name="reservationRepeatType" id="reservationRepeatTypeYearly" value="Yearly" [(ngModel)]="reservationEdit.repeatType" /> <label class="font-unbold padding-right-10" for="reservationRepeatTypeYearly"> Yearly</label>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <div class="form-group">
+            <label class="control-label col-md-2" for="reservationRepeatEndDateTime">{{'reservations.editor.RepeatEndDateTime' | translate}}</label>
+            <div class="col-md-4" [ngClass]="{'has-success': f.submitted && reservationRepeatEndDateTime.valid, 'has-error' : f.submitted && !reservationRepeatEndDateTime.valid}">
+              <input bootstrapDatepicker [disabled]="!canManageReservations" type="text" id="reservationRepeatEndDateTime" name="reservationRepeatEndDateTime" placeholder="" class="form-control" [(ngModel)]="reservationEdit.repeatEndDate" #reservationRepeatEndDateTime="ngModel" />
+              <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': reservationRepeatEndDateTime.valid, 'glyphicon-remove' : !reservationRepeatEndDateTime.valid}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <hr class="edit-last-separator-hr" />
+        </div>
+      </div>
+
+
+      <div class="form-group">
+        <div class="col-sm-7">
+          <div ngPreserveWhitespaces class="pull-right">
+            <button *ngIf="!canManageReservations" type="button" (click)="cancel()" class="btn btn-default">{{'reservations.editor.Close' | translate}}</button>
+            <button *ngIf="canManageReservations" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'reservations.editor.Cancel' | translate}}</button>
+            <button *ngIf="canManageReservations" type="submit" class="btn btn-primary" [disabled]="isSaving">
+              <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('reservations.editor.Saving' | translate) : ('reservations.editor.Save' | translate)}}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+</form>
+</div>

@@ -1,0 +1,92 @@
+<div>
+  <h1 mat-dialog-title>{{data.header}}</h1>
+  <div mat-dialog-content>
+    <div class="row control-box">
+      <div class="col-sm-8">
+        <div class="form-group search-box">
+          <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
+        </div>
+      </div>
+    </div>
+
+    <ngx-datatable #assetSelector class="material colored-header"
+                   [loadingIndicator]="loadingIndicator"
+                   [rows]="rows"
+                   [rowHeight]="'auto'"
+                   [headerHeight]="'auto'"
+                   [footerHeight]="35"
+                   [columnMode]="'force'"
+                   [limit]="5"
+                   (page)="loadData($event)"
+                   (sort)="loadData($event)"
+                   [selected]="selectedAssets"
+                   [selectionType]="checkbox"
+                   (select)="onSelect($event)"
+                   [rowIdentity]="getId">
+      <ngx-datatable-column [width]="50"
+                            [sortable]="false"
+                            [canAutoResize]="false"
+                            [draggable]="false"
+                            [resizeable]="false">
+        <ng-template ngx-datatable-header-template
+                     let-value="value"
+                     let-allRowsSelected="allRowsSelected"
+                     let-selectFn="selectFn">
+          <input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" />
+        </ng-template>
+        <ng-template ngx-datatable-cell-template
+                     let-value="value"
+                     let-row="row"
+                     let-isSelected="isSelected"
+                     let-onCheckboxChangeFn="onCheckboxChangeFn">
+          <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event);onCheckboxSelect($event, row);" />
+        </ng-template>
+      </ngx-datatable-column>
+      <!--<ngx-datatable-column [width]="50"
+                          [sortable]="false"
+                          [canAutoResize]="false"
+                          [draggable]="false"
+                          [resizeable]="false"
+                          [headerCheckboxable]="true"
+                          [checkboxable]="true">
+    </ngx-datatable-column>-->
+      <ngx-datatable-column name="Serial No." prop="serialNumber"></ngx-datatable-column>
+      <ngx-datatable-column name="Asset Model" prop="assetModelName"></ngx-datatable-column>
+      <ngx-datatable-column name="Asset Type" prop="assetTypeName"></ngx-datatable-column>
+      <ngx-datatable-column name="Purchase Date" prop="purchaseDate">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{row.purchaseDate  | date:"dd/MM/yyyy"}}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Warranty Start" prop="warrantyStart">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{row.warrantyStart  | date:"dd/MM/yyyy"}}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Warranty End" prop="warrantyEnd">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{row.warrantyEnd  | date:"dd/MM/yyyy"}}
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+    <!--<ng-template #checkboxTemplate let-row="row" let-value="value" let-i="index"
+               let-allRowsSelected="allRowsSelected"
+               let-selectFn="selectFn">
+    <input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" />
+  </ng-template>
+  <ng-template ngx-datatable-cell-template
+               let-value="value"
+               let-isSelected="isSelected"
+               let-onCheckboxChangeFn="onCheckboxChangeFn">
+    <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+  </ng-template>-->
+    <br />
+  </div>
+    
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'reservations.editor.Cancel' | translate}}</button>
+      <button type="button" mat-button cdkFocusInitial (click)="save()">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> Select
+      </button>
+    </div>
+  </div>

@@ -1,0 +1,43 @@
+<h1 mat-dialog-title>Create Multiple Account</h1>
+
+
+
+<div mat-dialog-content>
+  <div class="col-xs-6">
+    <input class="form-control" [(ngModel)]="search" (ngModelChange)="searchChanged($event)" type="text" placeholder="Search..." />
+    <div class="col-xs-12" style="    border: solid 1px #0000001c;
+    padding: 10px;
+    height: 315px;
+    overflow-y: auto">
+      <div *ngIf="!rows || rows.length == 0">No data matched.</div>
+      <section *ngFor="let row of rows" class="example-section">
+        <mat-checkbox class="example-margin" [(ngModel)]="row.checked" (change)="checkValue($event.checked, row)">{{row.name}}</mat-checkbox>
+      </section>
+    </div>
+    <!--<section class="example-section">
+      <mat-checkbox class="example-margin">Only Student With Account</mat-checkbox>
+    </section>-->
+
+    <ul class="pagination" style="margin: 0;float:right">
+      <li class="page-item"><a class="page-link">Page <input (ngModelChange)="pageChanged($event)" style="width:40px" min="1" [max]="maxPage || 1" type="number" [(ngModel)]="page" /> / {{maxPage}}</a></li>
+    </ul>
+  </div>
+  <div class="col-xs-6">
+    <h5>Selected Student</h5>
+    <div style="    border: solid 1px #0000001c;
+    padding:10px;
+    max-height: 315px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;" #selectedContainer class="col-xs-12">
+      <section *ngFor="let row of selected" class="example-section">
+        <mat-checkbox class="example-margin" [(ngModel)]="row.checked" (change)="checkSelected($event.checked, row)">{{row.name}}</mat-checkbox>
+      </section>
+    </div>
+  </div>
+
+</div>
+<div mat-dialog-actions style="justify-content: center">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data" (click)="save()" cdkFocusInitial>Create</button>
+</div>

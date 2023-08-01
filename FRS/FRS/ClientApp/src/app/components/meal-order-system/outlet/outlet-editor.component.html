@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="outletEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!outletName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <!--<mat-form-field class="col-xs-12">
+    <mat-label>Outlet Profile</mat-label>
+    <mat-select [disabled]="!canManageOutlets" id="outletProfile" name="outletProfile" [(ngModel)]="outletEdit.outletProfileId" #outletProfile="ngModel" required>
+      <mat-option *ngFor="let outletProfile of outletProfiles" [value]="outletProfile.id">
+        {{outletProfile.label}}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="showValidationErrors && f.submitted">Outlet Profile is required</mat-error>
+  </mat-form-field>-->
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageOutlets" type="text" id="outletName" name="outletName" placeholder="Name" [(ngModel)]="outletEdit.name" #outletName="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageOutlets" type="text" id="outletAddress" name="outletAddress" placeholder="Address" [(ngModel)]="outletEdit.address" #outletAddress="ngModel" required />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageOutlets" type="number" id="daysToFreezeOrdering" name="daysToFreezeOrdering" placeholder="No. of days before ordering is freezed" [(ngModel)]="outletEdit.daysToFreezeOrdering" #amount="ngModel"  />
+        </mat-form-field>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageOutlets" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageOutlets" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageOutlets" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

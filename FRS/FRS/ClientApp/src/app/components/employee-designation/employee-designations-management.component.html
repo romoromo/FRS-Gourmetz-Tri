@@ -1,0 +1,47 @@
+<div>
+  <header class="pageHeader">
+    <h3>Employee Designation</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-8">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'employeeDesignations.management.Search' | translate}}">></search-box>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManageEmployeeDesignations" class="toolbaritem">
+            <a href="javascript:;" (click)="newEmployeeDesignation(row)">
+              <i class="fa fa-plus-circle"></i> {{'employeeDesignations.management.New' | translate}}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [limit]="20">
+  </ngx-datatable>
+
+  <ng-template #indexTemplate let-value="value">
+    <strong>{{value}}</strong>
+  </ng-template>
+
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageEmployeeDesignations" class="btn btn-link btn-xs" href="javascript:;" (click)="editEmployeeDesignation(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'employeeDesignations.management.Edit' | translate}}</a>
+    <a *ngIf="!canManageEmployeeDesignations" class="btn btn-link btn-xs" href="javascript:;" (click)="editEmployeeDesignation(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'employeeDesignations.management.Details' | translate}}</a>
+    <!--{{canManageEmployeeDesignations ? '|' : ''}}-->
+    <a *ngIf="canManageEmployeeDesignations" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteEmployeeDesignation(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'employeeDesignations.management.Delete' | translate}}</a>
+  </ng-template>
+  <employee-designation-editor #employeeDesignationEditor [hidden]="true"></employee-designation-editor>
+</div>

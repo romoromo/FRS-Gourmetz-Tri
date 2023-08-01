@@ -1,0 +1,86 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="voucherEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!voucherName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <mat-label>Voucher Type</mat-label>
+          <mat-select [disabled]="!canManageVouchers" id="voucherType" name="voucherType" [(ngModel)]="voucherEdit.voucherTypeId" #voucherType="ngModel" required>
+            <mat-option *ngFor="let voucherType of voucherTypes" [value]="voucherType.id">
+              {{voucherType.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Payment Type is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="text" id="voucherName" name="voucherName" placeholder="Name" [(ngModel)]="voucherEdit.name" #voucherName="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="text" id="voucherCode" name="voucherCode" placeholder="Code" [(ngModel)]="voucherEdit.code" #voucherCode="ngModel" required minlength="2" maxlength="10" pattern="[a-zA-Z0-9 ]+" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12" appearance="none">
+          <mat-label>Voucher Usage Period</mat-label>
+          <div class="date-picker">
+            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.startDateTime" name="sd">
+          </div>
+          <div class="date-picker-to"> TO </div>
+          <div class="date-picker">
+            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.endDateTime" name="ed">
+          </div>
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <mat-label>Discount Type</mat-label>
+          <mat-select [disabled]="!canManageVouchers" id="discountType" name="discountType" [(ngModel)]="voucherEdit.discountType" #discountType="ngModel" required>
+            <mat-option value="FIXED">Fix Amount</mat-option>
+            <mat-option value="PERCENTAGE">Percentage</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="discountAmount" name="discountAmount" placeholder="Discount Amount" [(ngModel)]="voucherEdit.discountAmount" #discountAmount="ngModel" step='0.01'/>
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="minimumBasketPrice" name="minimumBasketPrice" placeholder="Minimum Basket Price" [(ngModel)]="voucherEdit.minimumBasketPrice" #minimumBasketPrice="ngModel" step='0.01' />
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="usageQuantity" name="usageQuantity" placeholder="Usage Quantity" [(ngModel)]="voucherEdit.usageQuantity" #usageQuantity="ngModel" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="maxDistribution" name="maxDistribution" placeholder="Max Distribution" [(ngModel)]="voucherEdit.maxDistribution" #maxDistribution="ngModel" step='0.01'/>
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <mat-label>Outlet Profile</mat-label>
+          <mat-select [disabled]="!canManageVouchers || voucherEdit.id > 0" id="outletProfileId" name="outletProfileId" [(ngModel)]="voucherEdit.outletProfileId" #outletProfileId="ngModel" required (selectionChange)="onOutletChange($event.value)">
+            <mat-option *ngFor="let outletProfile of outletProfiles" [value]="outletProfile.id">
+              {{outletProfile.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-label class="col-md-12"><h5>Meal Periods</h5></mat-label>
+        <div *ngFor="let period of periods; let i=index" class="col-md-3">
+          <mat-checkbox class="col-sm-6 col-xs-12" [(ngModel)]="period.checked" id="period-{{i}}"
+                        name="period-{{i}}">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">{{period.name}}</label>
+          </mat-checkbox>
+        </div>
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+          <input matInput placeholder="Voucher Display Setting" style="display: none">
+          <mat-radio-group name="isDisplayAllPages" [(ngModel)]="voucherEdit.isDisplayAllPages" [disabled]="!canManageVouchers">
+            <mat-radio-button [value]="true">Display on all pages</mat-radio-button>
+            <mat-radio-button [value]="false">Do not display</mat-radio-button>
+          </mat-radio-group>
+        </mat-form-field>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageVouchers" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageVouchers" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageVouchers" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

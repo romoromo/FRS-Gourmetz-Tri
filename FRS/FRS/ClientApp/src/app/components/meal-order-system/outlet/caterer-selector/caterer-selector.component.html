@@ -1,0 +1,52 @@
+<div>
+  <h1 mat-dialog-title>{{data.header}}</h1>
+  <div mat-dialog-content>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group search-box">
+          <search-box (searchChange)="onSearchChanged($event)" placeholder="Search all columns"></search-box>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Name</th>
+              <th scope="col">Status</th>
+              <th scope="col">Calendar</th>
+              <th scope="col">Dish Cycle Calendar</th>
+              <th scope="col">Sessions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of caterers; let i = index;">
+              <td>
+                <a *ngIf="row.status != 'REQUESTED' && row.status != 'APPROVED'" class="btn btn-link btn-xs" href="javascript:;" (click)="requestCaterer(row)"> Request</a>
+                <!--<input type="checkbox" name="row{{row.id}}" [(ngModel)]="outlets[i].checked">-->
+              </td>
+              <td>{{row.name}}</td>
+              <td>{{row.status}}</td>
+              <td>
+                <a *ngIf="row.status == 'APPROVED'" class="btn btn-link btn-xs" href="javascript:;" (click)="openOutletCalendar(row)"> {{row.status == 'APPROVED' ? 'Calendar' : ''}}</a>
+              </td>
+              <td>
+                <a *ngIf="row.status == 'APPROVED'" class="btn btn-link btn-xs" href="javascript:;" (click)="openOutletDishCycleCalendar(row)"> {{row.status == 'APPROVED' ? 'Calendar' : ''}}</a>
+              </td>
+              <td>
+                <a *ngIf="row.status == 'APPROVED'" class="btn btn-link btn-xs" href="javascript:;" (click)="openMealSession(row)"> Sessions</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions align="center">
+    <button type="button" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'reservations.editor.Cancel' | translate}}</button>
+    <!--<button type="button" mat-button cdkFocusInitial (click)="save()">
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> Choose
+    </button>-->
+  </div>
+</div>

@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<h5>Event Date: <small>{{data.log.eventDateTime | dateTimeOnly}}</small></h5>
+<div>
+  <div>
+    <div [innerHTML]="displayDetails(data.log.details)">
+    </div>
+
+    <div class="clearfix"></div>
+  </div>
+  <div mat-dialog-actions align="center">
+    <button type="button" mat-button (click)="cancel()">{{'departments.editor.Close' | translate}}</button>
+  </div>
+</div>

@@ -1,0 +1,72 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+namespace FRS.Migrations
+{
+    public partial class added_studentcard : Migration
+    {
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "StudentCards",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    IsActive = table.Column<bool>(nullable: false),
+                    CreatedBy = table.Column<int>(nullable: true),
+                    UpdatedBy = table.Column<int>(nullable: true),
+                    UpdatedDate = table.Column<DateTime>(nullable: false),
+                    CreatedDate = table.Column<DateTime>(nullable: false),
+                    CardId = table.Column<string>(nullable: true),
+                    Status = table.Column<string>(nullable: true),
+                    Remarks = table.Column<string>(nullable: true),
+                    StudentId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentCards", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StudentCards_User_CreatedBy",
+                        column: x => x.CreatedBy,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StudentCards_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StudentCards_User_UpdatedBy",
+                        column: x => x.UpdatedBy,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentCards_CreatedBy",
+                table: "StudentCards",
+                column: "CreatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentCards_StudentId",
+                table: "StudentCards",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentCards_UpdatedBy",
+                table: "StudentCards",
+                column: "UpdatedBy");
+        }
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "StudentCards");
+        }
+    }
+}

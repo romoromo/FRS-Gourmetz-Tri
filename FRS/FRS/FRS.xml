@@ -1,0 +1,821 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FRS</name>
+    </assembly>
+    <members>
+        <member name="F:FRS.Authorization.Policies.ViewAllUsersPolicy">
+            <summary>Policy to allow viewing all user records.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllUsersPolicy">
+            <summary>Policy to allow adding, removing and updating all user records.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllRolesPolicy">
+            <summary>Policy to allow viewing details of all roles.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewRoleByRoleNamePolicy">
+            <summary>Policy to allow viewing details of all or specific roles (Requires roleName as parameter).</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllRolesPolicy">
+            <summary>Policy to allow adding, removing and updating all roles.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.AssignAllowedRolesPolicy">
+            <summary>Policy to allow assigning roles the user has access to (Requires new and current roles as parameter).</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllFacilitiesPolicy">
+            <summary>Policy to allow viewing details of all facilities.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewFacilityByFacilityNamePolicy">
+            <summary>Policy to allow viewing details of all or specific facilities (Requires facilityName as parameter).</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllFacilitiesPolicy">
+            <summary>Policy to allow adding, removing and updating all facilities.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllFacilityTypesPolicy">
+            <summary>Policy to allow viewing details of all facility types.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewFacilityTypeByFacilityTypeNamePolicy">
+            <summary>Policy to allow viewing details of all or specific facility types (Requires facilityName as parameter).</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllFacilityTypesPolicy">
+            <summary>Policy to allow adding, removing and updating all facility types.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllReservationsPolicy">
+            <summary>Policy to allow adding, removing and updating all reservations.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.AddReservationPolicy">
+            <summary>Policy to allow adding reservations.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllDevicesPolicy">
+            <summary>Policy to allow viewing details of all devices.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllDevicesPolicy">
+            <summary>Policy to allow adding, removing and updating all devices.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllLocationsPolicy">
+            <summary>Policy to allow viewing details of all locations.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllLocationsPolicy">
+            <summary>Policy to allow adding, removing and updating all locations.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllInstitutionsPolicy">
+            <summary>Policy to allow viewing details of all Institutions.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllInstitutionsPolicy">
+            <summary>Policy to allow adding, removing and updating all Institutions.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllDepartmentsPolicy">
+            <summary>Policy to allow viewing details of all Departments.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllDepartmentsPolicy">
+            <summary>Policy to allow adding, removing and updating all Departments.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllContactGroupsPolicy">
+            <summary>Policy to allow viewing details of all contact groups.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllContactGroupsPolicy">
+            <summary>Policy to allow adding, removing and updating all contact groups.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllUserPhonebooksPolicy">
+            <summary>Policy to allow viewing details of all contacts.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllUserPhonebooksPolicy">
+            <summary>Policy to allow adding, removing and updating all contacts.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ViewAllPIBTemplatesPolicy">
+            <summary>Policy to allow viewing details of all pib templates.</summary>
+        </member>
+        <member name="F:FRS.Authorization.Policies.ManageAllPIBTemplatesPolicy">
+            <summary>Policy to allow adding, removing and updating all pib templates.</summary>
+        </member>
+        <member name="T:FRS.Authorization.AccountManagementOperations">
+            <summary>
+            Operation Policy to allow adding, viewing, updating and deleting general or specific user records.
+            </summary>
+        </member>
+        <member name="M:FRS.Controllers.BookingController.ApiGetBookings(System.Nullable{System.Int32},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            API calls to get bookings
+            </summary>
+            <param name="locationId"></param>
+            <param name="start"></param>
+            <param name="end"></param>
+            <returns>booking list</returns>
+        </member>
+        <member name="M:FRS.Controllers.DeviceManagerController.GetApiPIBDevices(System.Nullable{System.Int32},System.String,System.Boolean,System.Boolean)">
+            <summary>
+            API calls to get devices
+            </summary>
+            <param name="deviceId"></param>
+            <param name="mac_address"></param>
+            <param name="isAutoRegister"></param>
+            <returns>List of pibTemplates</returns>
+        </member>
+        <member name="M:FRS.Controllers.DeviceManagerController.ApiCreateDevice(FRS.ViewModels.DeviceViewModel)">
+            <summary>
+            API calls to create device
+            </summary>
+            <param name="device"></param>
+            <returns>BaseOperationResponse</returns>
+        </member>
+        <member name="M:FRS.Controllers.EmsController.GetApiEmses(System.Nullable{System.Int32})">
+            <summary>
+            API calls to get emses
+            </summary>
+            <param name="emsId"></param>
+            <returns>List of emses</returns>
+        </member>
+        <member name="M:FRS.Controllers.EmsProfileController.ApiCreateEmsProfile(FRS.ViewModels.EmsProfileViewModel)">
+            <summary>
+            API calls to create emsProfile
+            </summary>
+            <param name="emsProfile"></param>
+            <returns>BaseOperationResponse</returns>
+        </member>
+        <member name="M:FRS.Controllers.EmsScheduleController.ApiCreateEmsSchedule(FRS.ViewModels.EmsScheduleViewModel)">
+            <summary>
+            API calls to create emsSchedule
+            </summary>
+            <param name="emsSchedule"></param>
+            <returns>BaseOperationResponse</returns>
+        </member>
+        <member name="M:FRS.Controllers.EpaperController.GetApiEpaperTemplates(System.Nullable{System.Int32},System.String)">
+            <summary>
+            API calls to get epaperTemplates
+            </summary>
+            <param name="epaperTemplateId"></param>
+            <returns>List of epaperTemplates</returns>
+        </member>
+        <member name="M:FRS.Controllers.EpaperController.GetApiEpaperDevices(System.Nullable{System.Int32})">
+            <summary>
+            API calls to get epaperTemplates
+            </summary>
+            <param name="epaperTemplateId"></param>
+            <returns>List of epaperTemplates</returns>
+        </member>
+        <member name="M:FRS.Controllers.FacilityController.GetApiFacilities(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            API calls to get facilities
+            </summary>
+            <param name="facilityId"></param>
+            <returns>List of facilities</returns>
+        </member>
+        <member name="M:FRS.Controllers.InstitutionController.GetDefaultInstitution">
+            <summary>
+            API call to get default institution
+            </summary>
+            <returns>First Default Institution</returns>
+        </member>
+        <member name="M:FRS.Controllers.InstitutionController.GetApiInstitutions(System.Nullable{System.Int32})">
+            <summary>
+            API calls to get institutions
+            </summary>
+            <param name="institutionId"></param>
+            <returns>List of institutions</returns>
+        </member>
+        <member name="M:FRS.Controllers.LocationController.GetApiLocations(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            API calls to get locations
+            </summary>
+            <param name="locationId"></param>
+            <returns>List of locations</returns>
+        </member>
+        <member name="M:FRS.Controllers.MediaController.GetApiMedias(System.Nullable{System.Int32})">
+            <summary>
+            API calls to get medias
+            </summary>
+            <param name="mediaId"></param>
+            <returns>List of medias</returns>
+        </member>
+        <member name="M:FRS.Controllers.ModuleController.GetApiModules(System.Nullable{System.Int32})">
+            <summary>
+            API calls to get modules
+            </summary>
+            <param name="moduleId"></param>
+            <returns>List of modules</returns>
+        </member>
+        <member name="M:FRS.Controllers.PIBController.GetApiPIBTemplates(System.Nullable{System.Int32},System.String)">
+            <summary>
+            API calls to get pibTemplates
+            </summary>
+            <param name="pibTemplateId"></param>
+            <returns>List of pibTemplates</returns>
+        </member>
+        <member name="M:FRS.Controllers.PIBController.MapTemplate(FRS.ViewModels.PIBTemplateViewModel)">
+            <summary>
+            API calls to map template
+            </summary>
+            <param name="template"></param>
+            <returns>List of facilities</returns>
+        </member>
+        <member name="M:FRS.Controllers.PIBController.GetApiPIBDevices(System.Nullable{System.Int32},System.String)">
+            <summary>
+            API calls to get pibTemplates
+            </summary>
+            <param name="deviceId"></param>
+            <param name="mac_address"></param>
+            <returns>List of pibTemplates</returns>
+        </member>
+        <member name="M:FRS.Controllers.ReservationController.ApiGetBookings(System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            API calls to get bookings
+            </summary>
+            <param name="locationId"></param>
+            <param name="start"></param>
+            <param name="end"></param>
+            <returns>booking list</returns>
+        </member>
+        <member name="M:FRS.Controllers.UserGroupController.GetApiUserGroups(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            API calls to get userGroups
+            </summary>
+            <param name="userGroupId"></param>
+            <returns>List of userGroups</returns>
+        </member>
+        <member name="M:FRS.Controllers.VehicleController.UpdateArrival(DAL.Core.DTO.VechicleEventQueryModel)">
+             <summary>
+             Vehicle API to update arrival and departure
+             </summary>
+             <param name="queryModel">Contains a list of objects with season ID for vehicles which arrived/departed in the parking area, a type of entry (ENTRY/EXIT), and the timestamp.</param>
+             <returns>An operation response</returns>
+             <remarks>
+             Sample Request 1:
+            
+                 POST /api/vehicle/arrival
+                 {
+                     "vehicles": [{
+                         "seasonId": "1",
+                         "type": "ENTRY",
+                         "timestamp": "2020-07-01 14:00:00"
+                     },
+                     {
+                         "seasonId": "1",
+                         "type": "EXIT",
+                         "timestamp": "2020-07-01 16:30:00"
+                     },
+                     {
+                         "seasonId": "2",
+                         "type": "ENTRY",
+                         "timestamp": "2020-07-01 09:20:00"
+                     }]
+                 }
+            
+             Response Body for a successful call:
+            
+                 {
+                    "isSuccess" : true, 
+                    "messsage": "Update successful!"
+                 }
+                 
+             Response Body for unsuccessful call:
+            
+                 {
+                    "isSuccess" : false, 
+                    "messsage": "An error occurred during update. Please contact FRS Admin."
+                 }
+            
+             Sample Request 2:
+            
+                 POST /api/vehicle/arrival
+                 {
+                     "vehicles": [{
+                         "seasonId": "",
+                         "type": "ENTRY",
+                         "timestamp": "2020-07-01 14:00:00"
+                     },
+                     {
+                         "seasonId": "2",
+                         "type": "ENTRY",
+                         "timestamp": "2020-07-01 16:30:00"
+                     }]
+                 }
+            
+             Response Body for unsuccessful call:
+            
+                 {
+                    "isSuccess" : false, 
+                    "messsage": "Parameter "seasonId" is null or empty in one of the vehicles"
+                 }
+            
+             Sample Request 3:
+            
+                 POST /api/vehicle/arrival
+                 {
+                     "vehicles": [{
+                         "seasonId": "1",
+                         "type": "",
+                         "timestamp": "2020-07-01 14:00:00"
+                     },
+                     {
+                         "seasonId": "2",
+                         "type": "EXIT",
+                         "timestamp": "2020-07-01 16:30:00"
+                     }]
+                 }
+            
+             Response Body for unsuccessful call:
+            
+                 {
+                    "isSuccess" : false, 
+                    "messsage": "Parameter "type" is null or empty in one of the vehicles"
+                 }
+            
+             </remarks>
+             <response code="200">Success</response>
+             <response code="500">Server internal error</response>
+        </member>
+        <member name="M:FRS.Controllers.VehicleController.PostToVvms(System.Collections.Generic.List{DAL.Core.DTO.VMSVehiclePostRequestModel})">
+             <summary>
+             Vehicle API to insert vehicle records to VVMS
+             </summary>
+             <param name="vehicles">A list of vehicle object to register in VVMS.</param>
+             <returns>An operation response</returns>
+             <remarks>
+             Sample Request 1:
+            
+                 POST /api/vehicle/registration
+                 {
+                    "vehicles": [
+                    {
+                         "seasonId"	:	"1"
+                         "personName": 	"John Doe"
+                         "cardType"	:	"Type 1"
+                         "vehicle"	:	"PLATE NO 1"
+                         "issueDate"	:	"2020-01-01"
+                         "expiryDate":	"2025-01-01"
+                     },
+                     {
+                         "seasonId"	:	"2"
+                         "personName": 	"Lee Min"
+                         "cardType"	:	"Type 1"
+                         "vehicle"	:	"PLATE NO 2"
+                         "issueDate"	:	"2019-12-31"
+                         "expiryDate":	"2024-12-31"
+                     }
+                     ]
+                 }
+            
+             Response Body for a successful call:
+            
+                 {
+                    "isSuccess" : true, 
+                    "messsage": "Registration successful!"
+                 }
+                 
+             Response Body for unsuccessful call:
+            
+                 {
+                    "isSuccess" : false, 
+                    "messsage": "An error occurred during registration. Error details..."
+                 }
+            
+             Sample Request 2:
+            
+                 POST /api/vehicle/registration
+                 {
+                    "vehicles": []
+                 }
+            
+             Response Body for unsuccessful call:
+            
+                 {
+                    "isSuccess" : false, 
+                    "messsage": "Parameter vehicles is null or empty"
+                 }
+            
+             </remarks>
+             <response code="200">Success</response>
+             <response code="500">Server internal error</response>
+             
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXJavascript">
+            <summary>Used to denote the encoding necessary for files containing JavaScript source code. The alternative MIME type for this file type is text/javascript.</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioL24">
+            <summary>24bit Linear PCM audio at 8-48kHz, 1-N channels; Defined in RFC 3190</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXShockwaveFlash">
+            <summary>Adobe Flash files for example with the extension .swf</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationOctetStream">
+            <summary>Arbitrary binary data.[5] Generally speaking this type identifies files that are not associated with a specific application. Contrary to past assumptions by software packages such as Apache this is not a type that should be applied to unknown files. In such a case, a server or application should not indicate a content type, as it may be incorrect, but rather, should omit the type in order to allow the recipient to guess the type.[6]</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationAtomXml">
+            <summary>Atom feeds</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.TextCss">
+            <summary>Cascading Style Sheets; Defined in RFC 2318</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.TextCmd">
+            <summary>commands; subtype resident in Gecko browsers like Firefox 3.5</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.TextCsv">
+            <summary>Comma-separated values; Defined in RFC 4180</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXDeb">
+            <summary>deb (file format), a software package format used by the Debian project</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MultipartEncrypted">
+            <summary>Defined in RFC 1847</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MultipartSigned">
+            <summary>Defined in RFC 1847</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MessageHttp">
+            <summary>Defined in RFC 2616</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ModelExample">
+            <summary>Defined in RFC 4735</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXDvi">
+            <summary>device-independent document in DVI format</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXmlDtd">
+            <summary>DTD files; Defined by RFC 3023</summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:FRS.Helpers.MediaTypeNames.ApplicationJavascript" -->
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationEcmascript">
+            <summary>ECMAScript/JavaScript; Defined in RFC 4329 (equivalent to application/javascript but with stricter processing rules)</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationEdifact">
+            <summary>EDI EDIFACT data; Defined in RFC 1767</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationEdiX12">
+            <summary>EDI X12 data; Defined in RFC 1767</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MessagePartial">
+            <summary>Email; Defined in RFC 2045 and RFC 2046</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MessageRfc822">
+            <summary>Email; EML files, MIME files, MHT files, MHTML files; Defined in RFC 2045 and RFC 2046</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.TextXml">
+            <summary>Extensible Markup Language; Defined in RFC 3023</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXml">
+            <summary>Extensible Markup Language; Defined in RFC 3023</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.VideoXFlv">
+            <summary>Flash video (FLV files)</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ImageGif">
+            <summary>GIF image; Defined in RFC 2045 and RFC 2046</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.TextXGwtRpc">
+            <summary>GoogleWebToolkit data</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXGzip">
+            <summary>Gzip</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.TextHtml">
+            <summary>HTML; Defined in RFC 2854</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ImageVndMicrosoftIcon">
+            <summary>ICO image; Registered[9]</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ModelIges">
+            <summary>IGS files, IGES files; Defined in RFC 2077</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MessageImdnXml">
+            <summary>IMDN Instant Message Disposition Notification; Defined in RFC 5438</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationJson">
+            <summary>JavaScript Object Notation JSON; Defined in RFC 4627</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationJsonPatch">
+            <summary>JavaScript Object Notation (JSON) Patch; Defined in RFC 6902</summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:FRS.Helpers.MediaTypeNames.TextJavascript" -->
+        <member name="F:FRS.Helpers.MediaTypeNames.ImagePjpeg">
+            <summary>JPEG JFIF image; Associated with Internet Explorer; Listed in ms775147(v=vs.85) - Progressive JPEG, initiated before global browser support for progressive JPEGs (Microsoft and Firefox).</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ImageJpeg">
+            <summary>JPEG JFIF image; Defined in RFC 2045 and RFC 2046</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.TextXJqueryTmpl">
+            <summary>jQuery template data</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndGoogleEarthKmlXml">
+            <summary>KML files (e.g. for Google Earth)</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXLatex">
+            <summary>LaTeX files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.VideoXMatroska">
+            <summary>Matroska open media format</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet">
+            <summary>Microsoft Excel 2007 files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndMsExcel">
+            <summary>Microsoft Excel files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndOpenxmlformatsOfficedocumentPresentationmlPresentation">
+            <summary>Microsoft Powerpoint 2007 files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndMsPowerpoint">
+            <summary>Microsoft Powerpoint files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndOpenxmlformatsOfficedocumentWordprocessingmlDocument">
+            <summary>Microsoft Word 2007 files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationMsword">
+            <summary>Microsoft Word files[15]</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MultipartAlternative">
+            <summary>MIME Email; Defined in RFC 2045 and RFC 2046</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MultipartMixed">
+            <summary>MIME Email; Defined in RFC 2045 and RFC 2046</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MultipartRelated">
+            <summary>MIME Email; Defined in RFC 2387 and used by MHTML (HTML mail)</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.MultipartFormData">
+            <summary>MIME Webform; Defined in RFC 2388</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndMozillaXulXml">
+            <summary>Mozilla XUL files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioMpeg">
+            <summary>MP3 or other MPEG audio; Defined in RFC 3003</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioMp4">
+            <summary>MP4 audio</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.VideoMp4">
+            <summary>MP4 video; Defined in RFC 4337</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.VideoMpeg">
+            <summary>MPEG-1 video with multiplexed audio; Defined in RFC 2045 and RFC 2046</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ModelMesh">
+            <summary>MSH files, MESH files; Defined in RFC 2077, SILO files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioBasic">
+            <summary>mulaw audio at 8 kHz, 1 channel; Defined in RFC 2046</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.VideoOgg">
+            <summary>Ogg Theora or other video (with audio); Defined in RFC 5334</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioOgg">
+            <summary>Ogg Vorbis, Speex, Flac and other audio; Defined in RFC 5334</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationOgg">
+            <summary>Ogg, a multimedia bitstream container format; Defined in RFC 5334</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXopXml">
+            <summary>OP</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndOasisOpendocumentGraphics">
+            <summary>OpenDocument Graphics; Registered[14]</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndOasisOpendocumentPresentation">
+            <summary>OpenDocument Presentation; Registered[13]</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndOasisOpendocumentSpreadsheet">
+            <summary>OpenDocument Spreadsheet; Registered[12]</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationVndOasisOpendocumentText">
+            <summary>OpenDocument Text; Registered[11]</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXPkcs12">
+            <summary>p12 files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXPkcs7Certificates">
+            <summary>p7b and spc files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXPkcs7Mime">
+            <summary>p7c files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXPkcs7Certreqresp">
+            <summary>p7r files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXPkcs7Signature">
+            <summary>p7s files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationPdf">
+            <summary>Portable Document Format, PDF has been in use for document exchange on the Internet since 1993; Defined in RFC 3778</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ImagePng">
+            <summary>Portable Network Graphics; Registered,[8] Defined in RFC 2083</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationPostscript">
+            <summary>PostScript; Defined in RFC 2046</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.VideoQuicktime">
+            <summary>QuickTime video; Registered[10]</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXRarCompressed">
+            <summary>RAR archive files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioVndRnRealaudio">
+            <summary>RealAudio; Documented in RealPlayer Customer Support Answer 2559</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationRdfXml">
+            <summary>Resource Description Framework; Defined by RFC 3870</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationRssXml">
+            <summary>RSS feeds</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationSoapXml">
+            <summary>SOAP; Defined by RFC 3902</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXStuffit">
+            <summary>StuffIt archive files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ImageSvgXml">
+            <summary>SVG vector image; Defined in SVG Tiny 1.2 Specification Appendix M</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ImageTiff">
+            <summary>Tag Image File Format (only for Baseline TIFF); Defined in RFC 3302</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXTar">
+            <summary>Tarball files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.TextPlain">
+            <summary>Textual data; Defined in RFC 2046 and RFC 3676</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXFontTtf">
+            <summary>TrueType Font No registered MIME type, but this is the most commonly used</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.TextVcard">
+            <summary>vCard (contact information); Defined in RFC 6350</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioVorbis">
+            <summary>Vorbis encoded audio; Defined in RFC 5215</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioVndWave">
+            <summary>WAV audio; Defined in RFC 2361</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationFontWoff">
+            <summary>Web Open Font Format; (candidate recommendation; use application/x-font-woff until standard is official)</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.VideoWebm">
+            <summary>WebM Matroska-based open media format</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioWebm">
+            <summary>WebM open media format</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioXMsWax">
+            <summary>Windows Media Audio Redirector; Documented in Microsoft help page</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.AudioXMsWma">
+            <summary>Windows Media Audio; Documented in Microsoft KB 288102</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.VideoXMsWmv">
+            <summary>Windows Media Video; Documented in Microsoft KB 288102</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ModelVrml">
+            <summary>WRL files, VRML files; Defined in RFC 2077</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ModelX3DXml">
+            <summary>X3D ISO standard for representing 3D computer graphics, X3D XML files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ModelX3DBinary">
+            <summary>X3D ISO standard for representing 3D computer graphics, X3DB binary files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ModelX3DVrml">
+            <summary>X3D ISO standard for representing 3D computer graphics, X3DV VRML files</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationXhtmlXml">
+            <summary>XHTML; Defined by RFC 3236</summary>
+        </member>
+        <member name="F:FRS.Helpers.MediaTypeNames.ApplicationZip">
+            <summary>ZIP archive files; Registered[7]</summary>
+        </member>
+        <member name="M:FRS.Hubs.FRSDeviceHub.RefreshDeviceData(FRS.ViewModels.PIBDeviceViewModel)">
+            <summary>
+            Initiate the heartbeat callback.
+            </summary>
+        </member>
+        <member name="T:FRS.Middleware.CrossSiteScriptingValidation">
+            <summary>
+            Imported from System.Web.CrossSiteScriptingValidation Class
+            </summary>
+        </member>
+        <member name="P:FRS.ViewModels.TokenPaymentRequestViewModel.PaymentRequestId">
+            
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.getBasicCreditals">
+            
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.GetMinOrderValue">
+            <summary>
+            Min order amount is SGD 0.50 as required by fomopay.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.ProcessPaymentAsync(SMV.FOMOPay.Model.Order,System.Threading.CancellationToken)">
+            <summary>
+             Calls the external API to get payment details.
+             Called in the POST.
+            </summary>
+            <param name="custOrder"></param>
+            <param name="cancelToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.PostPaymentResponseRecord(FRS.ViewModels.TokenPaymentResponseViewModel)">
+                                Main API Methods 
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.CalcHMACSHA256Hash(System.String,System.String)">
+            <summary>
+            Calculates HMACSHA256Hash   using key and generated message values.
+            </summary>
+            <param name="theMessagePassed"></param>
+            <param name="strPSKKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.QueryOrderStatus(System.String)">
+            <summary>
+            We have to do a query on the order status and update our database table.
+            </summary>
+            <param name="orderID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.UpdateOrder(SMV.FOMOPay.Model.BodyPayload,System.String)">
+            <summary>
+            Update the token order status. Make it a return type Task as 
+            no need to return any value to caller.
+            </summary>
+            <param name="orderBodyPayload"></param>
+            <param name="strUpdateStatus"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.UpdateTokenOrder(System.Int32,System.String)">
+            <summary>
+            Linked to the NotifyURL  To set up client side
+            </summary>
+            <param name="id"></param>
+            <param name="updatedStatus"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.QueryAndUpdateOrderStatus(SMV.FOMOPay.Model.BodyPayload)">
+            <summary>
+            Create a method that can be awaited, but does not return any value.
+            In this case we don't need to anything after querying payment and 
+            updating database. Hence mark method as Task. rather than very undesirable
+            void.
+            </summary>
+            <param name="objBodyPayload"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.PostProcessNotifyURL(Newtonsoft.Json.Linq.JObject)">
+            <summary>  for devug only
+            We have received a notificaiton from FOMOpay about our order.
+            We don't really know how long (after our initial POST order) before this method is called 
+            by FOMOPay. But they said should be almost straigght away.
+            PostProcessNotifyURL needs to be public URL, hence need to decorate with
+            [AllowAnonymous]
+            The content type is "application/json" and the request body is a raw JSON string 
+            (not a JSON object).
+            </summary>
+            <param name="rawJsonData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.PostProcessNotifyURLManualUpdate(Newtonsoft.Json.Linq.JObject)">
+            <summary>  for devug only
+            We have received a notificaiton from FOMOpay about our order.
+            We don't really know how long (after our initial POST order) before this method is called 
+            by FOMOPay. But they said should be almost straigght away.
+            PostProcessNotifyURL needs to be public URL, hence need to decorate with
+            [AllowAnonymous]
+            The content type is "application/json" and the request body is a raw JSON string 
+            (not a JSON object).
+            </summary>
+            <param name="rawJsonData"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:MealOrderPayments.Controllers.OrderController.Post(SMV.FOMOPay.Model.Order)" -->
+        <member name="M:MealOrderPayments.Controllers.OrderController.SendInvoice(BAL.DTO.MealOrder.PaymentDTO)">
+            <summary>
+            We have to do a query on the order status and update our database table.
+            </summary>
+            <param name="orderID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MealOrderPayments.Controllers.OrderController.QueryAndUpdatePaymentStatus(System.Nullable{System.Int32})">
+            <summary>
+            Create a method that can be awaited, but does not return any value.
+            In this case we don't need to anything after querying payment and 
+            updating database. Hence mark method as Task. rather than very undersiable
+            void.
+            </summary>
+            <param name="objBodyPayload"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SMV.FOMOPay.LoggerHelper.EventLogger.CreateEventEntry(System.String,System.Diagnostics.EventLogEntryType)">
+            <summary>
+            Writes simple emtry in event viewer under the appliccation sectipn.
+            </summary>
+            <param name="ExceptionMessage"></param>
+            <param name="EntryType"></param>
+        </member>
+        <member name="M:SMV.FOMOPay.LoggerHelper.EventLogger.ReadEventEntry(System.String)">
+            <summary>
+            Reads entries from event log from selected section.
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

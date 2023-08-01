@@ -1,0 +1,116 @@
+<h1 mat-dialog-title>{{'pageHeader.QueueTableMaps' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="queueTableMapEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageQueueTableMaps" type="text" autocomplete="off" name="queueId" id="queueId" key="queueId" placeholder="{{'queueTableMaps.editor.QueueId' | translate}}" [(ngModel)]="queueTableMapEdit.queueId" #queueId="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!queueId.valid || validation.queueId)">{{'queueTableMaps.editor.QueueIdRequired' | translate}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageQueueTableMaps" type="text" autocomplete="off" name="roomName" id="roomName" key="roomName" placeholder="Room Name for FIFO Queue" [(ngModel)]="queueTableMapEdit.roomName" #roomName="ngModel" minlength="1" maxlength="200" />
+      </mat-form-field>
+
+      <h4 class="col-md-12">Device List</h4>
+      <div class="col-md-12">
+        <table class="table table-striped table-hover table-bordered">
+          <tr class="thead-light">
+            <td>
+              <strong>Device Id</strong>
+            </td>
+            <td>
+              <strong>Pair Id / Component Id (FIFO)</strong>
+            </td>
+            <td>
+            </td>
+          </tr>
+          <tr [hidden]="!l.isActive" *ngFor="let l of queueTableMapEdit.list; let i = index">
+            <td>
+              {{l.deviceId}}
+            </td>
+            <td>
+              <input type="text" name="pair{{i}}" class="form-control" placeholder="Pair Id / FIFO Room Name (for multi queue)" [(ngModel)]="l.stationId" />
+            </td>
+            <td>
+              <span class="btn btn-danger btn-xs" (click)="l.isActive = false"><i class='fa fa-times'></i> Remove</span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <mat-form-field class="col-md-12">
+                <mat-select placeholder="Select Device" [(ngModel)]="selectedDevice" name="device">
+                  <mat-option>
+                    <ngx-mat-select-search placeholderLabel="Search" [formControl]="searchDevice"></ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngIf="!searchDevice?.value">None</mat-option>
+                  <mat-option [style.display]="((d.code  || '') + ' - ' + (d.device_label || '') + ' - ' + (d.macAddress || '') + ' - ' + (d.serialNumber || '')).toLowerCase().includes((searchDevice?.value || '').toLowerCase()) ? 'block' : 'none'"
+                              *ngFor="let d of devices" [value]="d">
+                    {{(d.code  || '') + ' - ' + (d.device_label || '') + ' - ' + (d.macAddress || '') + ' - ' + (d.serialNumber || '')}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <!--<input type="text" list="codes" [(ngModel)]="selectedDevice" placeholder="Search..." class="form-control" name="searchDevice">
+          <datalist id="codes">
+            <option *ngFor="let d of devices" [value]="d.code">
+              {{d.code}} - {{d.device_label}} - {{d.macAddress}} - {{d.serialNumber}}
+            </option>
+          </datalist>-->
+              <!--<mat-form-field class="col-md-12">
+            <mat-label>Select Device</mat-label>
+            <mat-select [(ngModel)]="selectedDevice" name="device">
+              <input placeholder="Search..."
+                     type="text"
+                     [(ngModel)]="searchDevice"
+                     class="form-control" name="searchDevice" />
+              <mat-option *ngIf="!searchDevice">None</mat-option>
+              <mat-option [style.display]="(d.code + ' - ' + d.device_label + ' - ' + d.macAddress + ' - ' + d.serialNumber).toLowerCase().includes((searchDevice || '').toLowerCase()) ? 'block' : 'none'" *ngFor="let d of devices" [value]="d">
+                {{d.code}} - {{d.device_label}} - {{d.macAddress}} - {{d.serialNumber}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>-->
+              <!--<select [(ngModel)]="selectedDevice" class="form-control" name="device">
+            <input placeholder="Search ..." />
+            <option [ngValue]="null">-- Select Device --</option>
+            <option *ngFor="let d of devices" [ngValue]="d">
+              {{d.code}} {{d.label}}
+            </option>
+          </select>-->
+            </td>
+            <td>
+              <input type="text" name="pair" class="form-control" placeholder="Pair Id (for multi queue)" [(ngModel)]="selectedPairId" />
+
+            </td>
+            <td>
+              <span class="btn btn-primary btn-xs" (click)="add(selectedDevice, selectedPairId)"><i class='fa fa-plus'></i> Add</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!--<mat-form-field class="col-md-12">
+    <input matInput [disabled]="!canManageQueueTableMaps" type="text" autocomplete="off" name="deviceId" id="deviceId" key="deviceId" placeholder="{{'queueTableMaps.editor.DeviceId' | translate}}" [(ngModel)]="queueTableMapEdit.deviceId" #deviceId="ngModel" required minlength="1" maxlength="200" />
+    <mat-error *ngIf="showValidationErrors && f.submitted && (!deviceId.valid || validation.deviceId)">{{'queueTableMaps.editor.DeviceIdRequired' | translate}}</mat-error>
+  </mat-form-field>
+  <mat-form-field class="col-md-12">
+    <input matInput [disabled]="!canManageQueueTableMaps" type="text" autocomplete="off" name="stationId" id="stationId" key="stationId" placeholder="{{'queueTableMaps.editor.StationId' | translate}}" [(ngModel)]="queueTableMapEdit.stationId" #stationId="ngModel" minlength="1" maxlength="200" />
+    <mat-error *ngIf="showValidationErrors && f.submitted && (!stationId.valid || validation.stationId)">{{'queueTableMaps.editor.StationIdRequired' | translate}}</mat-error>
+  </mat-form-field>-->
+
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="queueTableMapEdit != null">
+    <button *ngIf="!canManageQueueTableMaps" mat-button (click)="cancel()">{{'queueTableMaps.editor.Close' | translate}}</button>
+    <button *ngIf="canManageQueueTableMaps" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'queueTableMaps.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageQueueTableMaps" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('queueTableMaps.editor.Saving' | translate) : ('queueTableMaps.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

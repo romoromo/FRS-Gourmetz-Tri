@@ -1,0 +1,50 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="cartonTypeEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!cartonTypeName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <mat-label>Caterer</mat-label>
+          <mat-select [disabled]="!canManageCartonTypes" id="caterer" name="caterer" [(ngModel)]="cartonTypeEdit.catererInfoId" #catererInfo="ngModel" required>
+            <mat-option *ngFor="let catererInfo of catererInfos" [value]="catererInfo.id">
+              {{catererInfo.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Caterer is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCartonTypes" type="text" id="cartonTypeCode" name="cartonTypeCode" placeholder="Code" [(ngModel)]="cartonTypeEdit.code" #cartonTypeCode="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCartonTypes" type="text" id="cartonTypeDetails" name="cartonTypeDetails" placeholder="Details" [(ngModel)]="cartonTypeEdit.details" #cartonTypeDetails="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCartonTypes" type="number" id="cartonTypeLength" name="cartonTypeLength" placeholder="Length (cm)" [(ngModel)]="cartonTypeEdit.length" #cartonTypeLength="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCartonTypes" type="number" id="cartonTypeWidth" name="cartonTypeWidth" placeholder="Width (cm)" [(ngModel)]="cartonTypeEdit.width" #cartonTypeWidth="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCartonTypes" type="number" id="cartonTypeHeight" name="cartonTypeHeight" placeholder="Height (cm)" [(ngModel)]="cartonTypeEdit.height" #cartonTypeHeight="ngModel" />
+        </mat-form-field>
+
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageCartonTypes" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageCartonTypes" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageCartonTypes" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,64 @@
+<mat-form-field appearance="fill">
+  <mat-label>Font</mat-label>
+  <mat-select [(ngModel)]="configurations.fontFamily">
+    <mat-option [style.font-family]="f" *ngFor="let f of fonts" [value]="f">
+      {{f}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-form-field appearance="fill">
+  <mat-label>Text Align</mat-label>
+  <mat-select [(ngModel)]="configurations.textAlign">
+    <mat-option *ngFor="let a of aligns" [value]="a">
+      {{a}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-form-field appearance="fill">
+  <mat-label>Vertical Align</mat-label>
+  <mat-select [(ngModel)]="configurations.vAlign">
+    <mat-option *ngFor="let a of valigns" [value]="a">
+      {{a}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+
+<mat-form-field>
+  <input matInput type="number" name="textSize" placeholder="Text Size" [(ngModel)]="configurations.textSize" />
+</mat-form-field>
+<mat-form-field>
+  <input matInput name="textColor" placeholder="Text Color" [(colorPicker)]="configurations.textColor" [style.background]="configurations.textColor"/>
+</mat-form-field>
+
+
+<br />
+<mat-form-field *ngIf="!hidePosSize">
+  <mat-label>X</mat-label>
+  <input matInput placeholder="x" value="0" type="number" [(ngModel)]="configurations.x" />
+</mat-form-field>
+<mat-form-field *ngIf="!hidePosSize">
+  <mat-label>Y</mat-label>
+  <input matInput placeholder="y" value="0" type="number" [(ngModel)]="configurations.y" />
+</mat-form-field>
+<mat-form-field *ngIf="!hidePosSize">
+  <mat-label>Width</mat-label>
+  <input matInput placeholder="width" value="0" type="number" [(ngModel)]="configurations.width" />
+</mat-form-field>
+<mat-form-field *ngIf="!hidePosSize">
+  <mat-label>Height</mat-label>
+  <input matInput placeholder="height" value="0" type="number" [(ngModel)]="configurations.height" />
+</mat-form-field>
+
+
+<mat-checkbox [(ngModel)]="configurations.bold">Bold</mat-checkbox>&nbsp;
+<mat-checkbox [(ngModel)]="configurations.italic">Italic</mat-checkbox>&nbsp;
+<mat-checkbox [(ngModel)]="configurations.underline">Underline</mat-checkbox>&nbsp;
+
+<br/>
+
+<mat-form-field>
+  <input matInput placeholder="Field Color" [(colorPicker)]="configurations.fieldColor" [style.background]="configurations.fieldColor" />
+</mat-form-field>
+<mat-checkbox [(ngModel)]="configurations.fieldColorLocation">Field Color Follow Location Theme</mat-checkbox>&nbsp;
+

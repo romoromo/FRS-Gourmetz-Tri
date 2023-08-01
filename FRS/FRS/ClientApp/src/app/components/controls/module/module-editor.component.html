@@ -1,0 +1,77 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="moduleEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!moduleName.valid && showErrorAlert('Module name is required', 'Please enter a module name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageModules" type="text" id="moduleName" name="moduleName" autocomplete="off" placeholder="Name" [(ngModel)]="moduleEdit.name" #moduleName="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageModules" type="text" id="moduleRoute" name="moduleRoute" autocomplete="off" placeholder="Route" [(ngModel)]="moduleEdit.route" #moduleRoute="ngModel" required minlength="1" maxlength="200" />
+          </mat-form-field>
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageModules" type="text" id="moduleUri" name="moduleUri" autocomplete="off" placeholder="URI" [(ngModel)]="moduleEdit.uri" #moduleUri="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-sm-12">
+          <h5>Parameters/API</h5>
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Url</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let param of moduleEdit.moduleParameters; let i = index">
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="!canManageModules" type="text" id="param-name-{{i}}" name="param-name-{{i}}" autocomplete="off" [(ngModel)]="param.name" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="!canManageModules" type="text" id="param-url-{{i}}" name="param-url-{{i}}" autocomplete="off" [(ngModel)]="param.url" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <button class="btn btn-md" type="button" (click)="deleteParameter(i)"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="!canManageModules" type="text" id="newParameter-name-{{i}}" name="newParameter-name-{{i}}" autocomplete="off" [(ngModel)]="newParameter.name" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput [disabled]="!canManageModules" type="text" id="newParameter-url-{{i}}" name="newParameter-url-{{i}}" autocomplete="off" [(ngModel)]="newParameter.url" minlength="1" maxlength="200" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <button class="btn btn-md" type="button" (click)="addParameter()"><i class="fa fa-plus-circle"></i> Add</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageModules" type="button" mat-button (click)="cancel()" >{{'modules.editor.Close' | translate}}</button>
+      <button *ngIf="canManageModules" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageModules" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('modules.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,43 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form class="form-horizontal" name="menuEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="save()">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-md-12 ">
+          <div class="table-responsive" style="clear:both" >
+            <ngx-datatable class="material colored-header" #ngxDatatable
+                           [columnMode]="'force'"
+                           [rowHeight]="50"
+                           [headerHeight]="50"
+                           [footerHeight]="35"
+                           [scrollbarV]="true"
+                           [scrollbarH]="true"
+                           [rows]="rows"
+                           [count]="totalCount"
+                           [limit]="10">
+              <ngx-datatable-column name="Dish" [frozenLeft]="true" prop="dishLabel" >
+              </ngx-datatable-column>
+              <ngx-datatable-column *ngFor="let column of dishMealTypes.columns; let i = index;" name="{{column.colName}}">
+                <ng-template ngx-datatable-cell-template
+                             let-value="value" let-row="row">
+                  <input type="checkbox" [(ngModel)]="row.cells[i].checked" name="cell-{{row.cells[i].dishId}}-{{row.cells[i].mealTypeId}}" />
+                </ng-template>
+              </ngx-datatable-column>
+            </ngx-datatable>
+          </div>
+        </div>
+        
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageMenus" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageMenus" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageMenus" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

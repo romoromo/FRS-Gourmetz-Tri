@@ -1,0 +1,35 @@
+<h1 mat-dialog-title>Viewer</h1>
+<div mat-dialog-content>
+  <!--<div  *ngIf="!(fileType == 'pdf' || fileType == 'ppt' || fileType == 'pptx' || fileType == 'doc' || fileType == 'docx')">-->
+  <div>
+    <img [imageZoom]="thumbnailFilePath" [src]="fullImageFilePath" [style.width.px]="width" [style.height.px]="height"
+         [lensWidth]="lensWidth" [lensHeight]="lensHeight">
+    <h4 class="text-center" style="float:right">Hover the image to zoom</h4>
+  </div>
+  <div *ngIf="(fileType == 'pdf' || fileType == 'ppt' || fileType == 'pptx' || fileType == 'doc' || fileType == 'docx')">
+    <!--<pdf-viewer *ngIf="fileType == 'pdf'" [src]="fullImageFilePath"
+            [original-size]="false"></pdf-viewer>-->
+    <!--<ngx-doc-viewer *ngIf="fileType == 'pdf'" [url]="'http://119.73.206.38/Resources/Images/800ad681-2405-4685-bf39-9eed1ae161ccsample.pdf'"
+                [viewerUrl]="'https://docs.google.com/viewer?url='"
+                viewer="url"
+                style="width:100%;height:50vh;"></ngx-doc-viewer>-->
+
+    <!--<ngx-doc-viewer [url]="fullImageFilePath"
+                    [viewerUrl]="getDocSrc(fullImageFilePath)"
+                    queryParams="hl=Nl"
+                    viewer="office"
+                    googleCheckContentLoaded=true
+                    googleCheckInterval=3000
+                    googleMaxChecks=5
+                    style="width:100%;height:50vh;"
+                    overrideLocalhost="getBaseUrl()"></ngx-doc-viewer>-->
+    <!--<ngx-doc-viewer [url]="fullImageFilePath"
+                    [viewerUrl]="getDocSrc(fullImageFilePath)"
+                    viewer="office"
+                    style="width:100%;height:50vh;"></ngx-doc-viewer>-->
+    <!--<iframe [src]="getDocSrc(fullImageFilePath)" width='100%' height='600px' frameborder='0'></iframe>-->
+  </div>
+</div>
+<div mat-dialog-actions align="center">
+  <button type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+</div>

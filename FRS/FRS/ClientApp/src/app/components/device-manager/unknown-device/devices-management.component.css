@@ -1,0 +1,57 @@
+
+.control-box {
+    margin-bottom: 5px;
+}
+
+.search-box {
+    margin: 0;
+}
+
+.action-box {
+    margin: 0 50px 0 0;
+    min-height: 0;
+}
+
+    .action-box .toolbaritem a {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        min-width: 100px;
+    }
+
+
+@media (max-width: 768px) {
+    .action-box {
+        margin: 0 14px;
+    }
+}
+
+.link{
+  cursor:pointer;
+}
+
+.status_offline {
+  font-size: 20px;
+  color: #f72626 !important;
+}
+
+.status_online {
+  font-size: 20px;
+  color: #08ca08;
+}
+
+.status_sleep {
+  font-size: 20px;
+  color: #f1b224;
+}
+
+.datatable-header {
+  min-width: 100%;
+}
+
+.datatable-body {
+  min-width: 100%;
+}
+
+.datatable-row-detail {
+  width: 100vw;
+} 

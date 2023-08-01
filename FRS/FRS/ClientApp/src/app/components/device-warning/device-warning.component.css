@@ -1,0 +1,66 @@
+.toast.toasta-theme-bootstrap.toasta-type-error {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDIxIDc5LjE1NTc3MiwgMjAxNC8wMS8xMy0xOTo0NDowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTQgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkQyQUI3Q0EzMjJCMTFFNUI4QjZEQkFEN0Q5RUExNzAiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkQyQUI3Q0IzMjJCMTFFNUI4QjZEQkFEN0Q5RUExNzAiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0QTNBMDVFQjMyMkExMUU1QjhCNkRCQUQ3RDlFQTE3MCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0QTNBMDVFQzMyMkExMUU1QjhCNkRCQUQ3RDlFQTE3MCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Po9jTrYAAAKTSURBVHja7Jq/SyNBFMfNuSYB0cbCUzmtTvwbbPwb7KPV/Rmnu5tYWR1XX6WFpYL2giBW/igUFCxEuMJeZMXg3Bt4kcmwiftm3kuG5R58mc0G3ptPZnfmzZtUlFIjZbBKWUC+CPqOQA3QLSjDtoH3+U2PiIBqoE2Vb5v4PWtMCYh6HwgTph4yiO5coopZwgnDCVElQJgw1ZBAIgcIEyYKBSRVfpaGAJIoHkuGCZIqXkuHAdIEvTODvKPfgYG0QG9Kxt7QvziIDvKqZO2VCuMCkRE7dQPawZZiGQWGOjtRIf6AZkCT2KZEH1nR2YwCQX2crkDfcpLJY4fHLPEFifBXbDs854c9fG45TBRt7EfkAqJzoNjjhT0CVXL87nn4jHvlZv2y2Nhz5jnH98L0Owo68fQb52XNvql4P3sArVi+F0HXTOlMvR9IjWEkOvYM+mH5XwU9MfmPzZ2mPexcEB3btkB+Mqc1Mfa7C6QhsELvg8aMGL8FYuh+d1VRNgRqG1OgSbyugeYFYmzY5aAFgSAa4iteVw0oTluwQR6FQKrGiEwIxHi0K41roB3mIC+gM9Bf0AxoGTTOHGMdtMtVQBiWfRQuJNcRaeu5jnCv7GbCd++YeDqv7NwwB6DvoGlsDyQgimS/PjA6p1qyfC555loJNfvl2I+c5vxydbzv8ng670fs+hV1h3gJmrX8zOF96g7x03oXtRhH2W+/4Myi349xbLeJo5sVLdoNoopyAfqFbRBVlFLVtcwCQlsIoo3+B1b7bQnVflvqfzU+DBivwx6uE6umJ0RTBXSGmHqMRDBniJ3cLHWACOpU18ylUgJEkOfspfrnQ5GdZtfOLnSQESzM6eLZHaYcd/h5TCJeaf6v9U+AAQAvyHBRYhRQ4wAAAABJRU5ErkJggg==) !important;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.toast.toasta-theme-bootstrap {
+  font-size: 1em;
+}
+
+.toast.toasta-theme-bootstrap {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.toast {
+  cursor: pointer;
+  margin: 0 0 6px;
+  padding: 0;
+  width: 100%;
+  height: 65px;
+  display: table;
+  background-size: 24px 24px;
+  background-position: 15px center;
+  background-repeat: no-repeat;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
+  opacity: 0.9;
+  position: relative;
+}
+
+  .toast .close-button {
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+    position: absolute;
+    right: 10px;
+    top: 3px;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+  }
+
+  .toast.toasta-theme-bootstrap .toast-text {
+    color: #ffffff;
+  }
+
+  .toast .toast-text {
+    padding: 5px 20px 5px 60px;
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .toast.toasta-theme-bootstrap .toast-text .toast-title {
+    font-size: 1.04em;
+  }
+
+  .toast.toasta-theme-bootstrap .toast-text .toast-title {
+    font-size: 25px;
+  }
+
+  .toast .toast-text .toast-title {
+    font-weight: bold;
+  }

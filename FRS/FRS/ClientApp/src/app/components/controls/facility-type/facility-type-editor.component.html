@@ -1,0 +1,71 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="facilityTypeEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!facilityTypeName.valid && showErrorAlert('Facility type name is required', 'Please enter a facility type name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageFacilityTypes" type="text" id="facilityTypeName" name="facilityTypeName" placeholder="Enter name" [(ngModel)]="facilityTypeEdit.name" #facilityTypeName="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageFacilityTypes" type="text" id="facilityTypeName" name="facilityTypeName" placeholder="Enter description" [(ngModel)]="facilityTypeEdit.description" #facilityTypeDescription="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+          <!--<div class="form-group has-feedback">
+    <label class="control-label col-md-2" for="facilityTypeName">{{'facilityTypes.editor.Name' | translate}}</label>
+    <div class="col-md-10" [ngClass]="{'has-success': f.submitted && facilityTypeName.valid, 'has-error' : f.submitted && !facilityTypeName.valid}">
+      <input [disabled]="!canManageFacilityTypes" type="text" id="facilityTypeName" name="facilityTypeName" placeholder="Enter facilityType name" class="form-control" [(ngModel)]="facilityTypeEdit.name" #facilityTypeName="ngModel" required minlength="2" maxlength="200" />
+      <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': facilityTypeName.valid, 'glyphicon-remove' : !facilityTypeName.valid}"></span>
+    </div>
+  </div>-->
+        </div>
+
+        <!--<div class="col-sm-12">
+          <div class="form-group">
+            <label class="control-label col-md-2" for="facilityTypeDescription">{{'facilityTypes.editor.Description' | translate}}</label>
+            <div class="col-md-10">
+              <input [disabled]="!canManageFacilityTypes" type="text" id="facilityTypeDescription" name="facilityTypeDescription" placeholder="Enter facilityType description" class="form-control" [(ngModel)]="facilityTypeEdit.description" />
+            </div>
+          </div>
+        </div>-->
+      </div>
+
+      <!--<div class="row">
+        <div class="col-md-12">
+          <span *ngIf="showValidationErrors && f.submitted && !facilityTypeName.valid" class="errorMessage facilityTypeErrorMessage">
+            {{'facilityTypes.editor.FacilityTypeNameRequired' | translate}}
+          </span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <hr class="edit-separator-hr" />
+        </div>
+      </div>-->
+
+
+      <!--<div class="form-group">
+
+        <div class="col-sm-7">
+          <div ngPreserveWhitespaces class="pull-right">
+            <button *ngIf="!canManageFacilityTypes" type="button" (click)="cancel()" class="btn btn-default">{{'facilityTypes.editor.Close' | translate}}</button>
+            <button *ngIf="canManageFacilityTypes" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'facilityTypes.editor.Cancel' | translate}}</button>
+            <button *ngIf="canManageFacilityTypes" type="submit" class="btn btn-primary" [disabled]="isSaving">
+              <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('facilityTypes.editor.Saving' | translate) : ('facilityTypes.editor.Save' | translate)}}
+            </button>
+          </div>
+        </div>
+      </div>-->
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageFacilityTypes" type="button" mat-button (click)="cancel()">{{'facilityTypes.editor.Close' | translate}}</button>
+      <button *ngIf="canManageFacilityTypes" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'facilityTypes.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageFacilityTypes" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('facilityTypes.editor.Saving' | translate) : ('facilityTypes.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,431 @@
+
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="deviceEditorForm" #f="ngForm" novalidate canManageDevices
+        (ngSubmit)="f.form.valid ? save() :
+          (!deviceCode.valid && showErrorAlert('Device code is required', 'Please enter a device code (minimum of 2 and maximum of 200 characters)'));">
+
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6">
+            <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceCode" name="deviceCode" placeholder="Device Identifier" [(ngModel)]="deviceEdit.code" #deviceCode="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceCode.valid">{{'devices.editor.DeviceCodeRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6">
+            <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceIpAddress" name="deviceIpAddress" placeholder="IP address" [(ngModel)]="deviceEdit.ipAddress" #deviceIpAddress="ngModel" />
+          </mat-form-field>
+        </div>
+
+        <!--<div class="col-sm-12">
+    <div class="form-group has-feedback">
+      <label class="control-label col-md-2" for="deviceCode">{{'devices.editor.Code' | translate}}</label>
+      <div class="col-md-10" [ngClass]="{'has-success': f.submitted && deviceCode.valid, 'has-error' : f.submitted && !deviceCode.valid}">
+        <input [disabled]="!canManageDevices || isApproval || deviceEdit.status == 'Approved'" type="text" id="deviceCode" name="deviceCode" placeholder="Enter device code" class="form-control" [(ngModel)]="deviceEdit.code" #deviceCode="ngModel" required minlength="2" maxlength="200" />
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': deviceCode.valid, 'glyphicon-remove' : !deviceCode.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !deviceCode.valid" class="errorMessage">
+          {{'devices.editor.DeviceCodeRequired' | translate}}
+        </span>
+      </div>
+    </div>
+  </div>-->
+
+        <div class="col-sm-12">
+
+
+          <!--<div class="form-group has-feedback">
+      <label class="control-label col-md-2" for="deviceIpAddress">{{'devices.editor.IpAddress' | translate}}</label>
+      <div class="col-md-10" [ngClass]="{'has-success': f.submitted && deviceIpAddress.valid, 'has-error' : f.submitted && !deviceIpAddress.valid}">
+        <input [disabled]="!canManageDevices || isApproval || deviceEdit.status == 'Approved'" type="text" id="deviceIpAddress" name="deviceIpAddress" placeholder="Enter device IP address" class="form-control" [(ngModel)]="deviceEdit.ipAddress" #deviceIpAddress="ngModel" />
+      </div>
+    </div>-->
+        </div>
+
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6">
+            <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceLabel" name="deviceLabel" placeholder="Label" [(ngModel)]="deviceEdit.device_label" #device_label="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+          <mat-form-field class="col-md-6">
+            <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceMacAddress" name="deviceMacAddress" placeholder="Enter device mac address" [(ngModel)]="deviceEdit.macAddress" #deviceMacAddress="ngModel" required minlength="2" maxlength="200" />
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceMacAddressRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+
+          <!--<div class="form-group has-feedback">
+      <label class="control-label col-md-2" for="deviceMacAddress">{{'devices.editor.MacAddress' | translate}}</label>
+      <div class="col-md-10" [ngClass]="{'has-success': f.submitted && deviceMacAddress.valid, 'has-error' : f.submitted && !deviceMacAddress.valid}">
+        <input [disabled]="!canManageDevices || isApproval || deviceEdit.status == 'Approved'" type="text" id="deviceMacAddress" name="deviceMacAddress" placeholder="Enter device mac address" class="form-control" [(ngModel)]="deviceEdit.macAddress" #deviceMacAddress="ngModel" required minlength="2" maxlength="200" />
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': deviceMacAddress.valid, 'glyphicon-remove' : !deviceMacAddress.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !deviceCode.valid" class="errorMessage">
+          {{'devices.editor.DeviceMacAddressRequired' | translate}}
+        </span>
+      </div>
+    </div>-->
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-select [disabled]="!canManageDevices || isApproval" placeholder="{{'devices.editor.Module' | translate}}" [(ngModel)]="deviceEdit.moduleId" [formControl]="fcModule" (selectionChange)="onModuleChange($event.value)">
+              <mat-option [value]="">--</mat-option>
+              <mat-option *ngFor="let module of modules" [value]="module.id">
+                {{module.name}}
+              </mat-option>
+            </mat-select>
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcModule.invalid">{{'devices.editor.ModuleRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
+            <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceSerialNumber" name="deviceSerialNumber" placeholder="Serial No." [(ngModel)]="deviceEdit.serialNumber" #deviceSerialNumber="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+        </div>
+        <div class="col-sm-12" *ngIf="deviceEdit.module_path_value == '/signagedisplay'">
+          <!--<mat-form-field class="col-md-6 col-xs-12">
+      <input matInput [disabled]="!canManageDevices || isApproval" autocomplete="off" type="text" id="deviceScheme" name="deviceScheme" placeholder="Scheme" [(ngModel)]="deviceEdit.scheme" #deviceScheme="ngModel" />
+    </mat-form-field>-->
+          <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+            <input matInput placeholder="Scheme" style="display: none">
+            <mat-radio-group name="scheme" [(ngModel)]="deviceEdit.scheme" [disabled]="!canManageDevices || isApproval">
+              <mat-radio-button value="http">http</mat-radio-button>
+              <mat-radio-button value="https">https</mat-radio-button>
+            </mat-radio-group>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
+            <input matInput [disabled]="!canManageDevices || isApproval" autocomplete="off" type="text" id="devicePort" name="devicePort" placeholder="Port" [(ngModel)]="deviceEdit.port" #devicePort="ngModel" />
+          </mat-form-field>
+
+        </div>
+        <!--<div class="col-sm-12">
+    <mat-form-field class="col-md-6">
+      <input matInput [matDatepicker]="startDatePicker" [disabled]="!canManageDevices || isApproval" type="text" id="deviceStartDate" name="deviceStartDate" placeholder="Start Date" [(ngModel)]="deviceEdit.startDate" #deviceStartDate="ngModel" required />
+      <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #startDatePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field class="col-md-6">
+      <input matInput [matDatepicker]="endDatePicker" [disabled]="!canManageDevices || isApproval" type="text" id="deviceEndDate" name="deviceEndDate" placeholder="End Date" [(ngModel)]="deviceEdit.endDate" #deviceEndDate="ngModel" required />
+      <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #endDatePicker></mat-datepicker>
+    </mat-form-field>
+
+  </div>-->
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="deviceEdit.module_path_value == '/signagedisplay'">
+            <mat-select placeholder="Publications" [(ngModel)]="deviceEdit.publicationId" name="pub" [disabled]="!canManageDevices || isApproval">
+              <mat-option>
+                <ngx-mat-select-search placeholderLabel="Search" [formControl]="searchForm"></ngx-mat-select-search>
+              </mat-option>
+              <mat-option [style.display]="(publication.label).toLowerCase().includes((searchForm?.value || '').toLowerCase()) ? 'block' : 'none'" *ngFor="let publication of allPublications" [value]="publication.id">{{publication.label}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="deviceEdit.module_path_value == '/meetingroom' || deviceEdit.module_path_value == '/signagedisplay'">
+            <mat-select [disabled]="!canManageDevices || isApproval" placeholder="{{'devices.editor.Institution' | translate}}" [(ngModel)]="deviceEdit.institutionId" name="institution" (selectionChange)="changeInstitutions($event.value)">
+              <mat-option *ngFor="let institution of allInstitutions" [value]="institution.id">{{institution.label}}</mat-option>
+            </mat-select>
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcLocation.invalid">{{'devices.editor.LocationRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="deviceEdit.module_path_value == '/meetingroom' || deviceEdit.module_path_value == '/signagedisplay'">
+            <mat-select [disabled]="!canManageDevices || isApproval" placeholder="{{'devices.editor.Location' | translate}}" [(ngModel)]="deviceEdit.locationId" name="location">
+              <mat-option>
+                <ngx-mat-select-search placeholderLabel="Search" [formControl]="locationSearchForm"></ngx-mat-select-search>
+              </mat-option>
+              <mat-optgroup *ngFor="let building of buildingList"
+                            [label]="building.name">
+                <mat-option [style.display]="(location.name).toLowerCase().includes((locationSearchForm?.value || '').toLowerCase()) ? 'block' : 'none'" *ngFor="let location of getRoomsByBuildingId(building.id)" [value]="location.id"><b>{{location.name}}</b> - <small><i>{{location.description}}</i></small></mat-option>
+              </mat-optgroup>
+            </mat-select>
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcLocation.invalid">{{'devices.editor.LocationRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="deviceEdit.module_path_value != '/meetingroom' && deviceEdit.module_path_value != '/signagedisplay'">
+            <mat-select *ngIf="deviceEdit.module_path_value != '/meetingroom'" [disabled]="!canManageDevices || isApproval" placeholder="{{'devices.editor.Location' | translate}}" [(ngModel)]="deviceEdit.external_location_id" name="location">
+              <mat-option *ngFor="let location of filteredLocations" [value]="location.location_id">
+                <div *ngIf="deviceEdit.module_path_value != '/nursecheckincounter'"><b *ngIf="location.ancestor">{{location.ancestor.alias}}</b> - <small><i>{{location.alias}}</i></small></div>
+                <div *ngIf="deviceEdit.module_path_value == '/nursecheckincounter' && location.ward">{{location.alias}}</div>
+              </mat-option>
+            </mat-select>
+            <!--<mat-error *ngIf="showValidationErrors && f.submitted && fcLocation.invalid">{{'devices.editor.LocationRequired' | translate}}</mat-error>-->
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="deviceEdit.module_path_value == '/pibdisplay'">
+            <mat-select class="field_name_select" [disabled]="!canManageDevices || isApproval" name="template" placeholder="Template" [(ngModel)]="deviceEdit.pibTemplateId" #template="ngModel">
+              <mat-option [value]="">--</mat-option>
+              <mat-option *ngFor="let v of templates" [value]="v.id">{{v.label}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="deviceEdit.module_path_value == '/communicatorpatientdisplay'">
+            <mat-select [disabled]="!canManageDevices || isApproval" placeholder="Menu" [(ngModel)]="deviceEdit.communicatorMenuId" name="menu">
+              <mat-option [value]="">--</mat-option>
+              <mat-option *ngFor="let menu of menus" [value]="menu.id">
+                {{menu.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="deviceEdit.module_path_value != '/signagedisplay' && deviceEdit.module_path_value != '/meetingroom'">
+            <mat-select class="field_name_select" [disabled]="!canManageDevices || isApproval" name="displayType" placeholder="Display Type" [(ngModel)]="deviceEdit.display_type_id" #displayType="ngModel">
+              <mat-option *ngFor="let v of display_types" [value]="v.id">{{v.label}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="showValidationErrors && f.submitted && !displayType.valid">{{'devices.editor.DisplayTypeRequired' | translate}}</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12" *ngIf="deviceEdit.module_path_value != '/meetingroom'">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <!--<input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceResolution" name="deviceResolution" placeholder="Enter device resolution" [(ngModel)]="deviceEdit.resolution" #deviceResolution="ngModel" minlength="2" maxlength="200" />-->
+            <mat-label>Resolution</mat-label>
+            <mat-select [disabled]="!canManageDevices || isApproval" id="deviceResolution" name="deviceResolution" placeholder="Enter device resolution" [(ngModel)]="deviceEdit.resolution" #deviceResolution="ngModel">
+              <mat-option *ngFor="let res of ress" [value]="res.value">
+                {{res.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-select class="field_name_select" [disabled]="!canManageDevices || isApproval" name="deviceRotation" placeholder="Rotate" [(ngModel)]="deviceEdit.rotation" #displayType="ngModel">
+              <mat-option *ngFor="let v of rotations" [value]="v">{{v}}</mat-option>
+            </mat-select>
+            <!--<input matInput [disabled]="!canManageDevices" type="text" id="deviceRotation" name="deviceRotation" placeholder="Enter device rotation in (°)" [(ngModel)]="deviceEdit.rotation" #deviceRotation="ngModel" />-->
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12" *ngIf="deviceEdit.module_path_value != '/meetingroom'">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <input matInput [disabled]="!canManageDevices || isApproval" type="number" id="deviceBrightness" name="deviceBrightness" placeholder="Brightness" [(ngModel)]="deviceEdit.brightness" min="0" max="10" [formControl]="fcBrightness" />
+            <mat-error *ngIf="showValidationErrors && f.submitted && fcBrightness.invalid">Enter value from 0-10</mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
+            <input matInput [disabled]="!canManageDevices || isApproval" type="number" id="deviceVolume" name="deviceVolume" placeholder="Volume" [(ngModel)]="deviceEdit.volume" min="0" max="100" [formControl]="fcVolume" />
+            <mat-error *ngIf="showValidationErrors && f.submitted && fcVolume.invalid">Enter value from 0-100</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12" *ngIf="deviceEdit.module_path_value != '/meetingroom'">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <input matInput [disabled]="!canManageDevices || isApproval" type="number" id="videoVolume" name="videoVolume" placeholder="Video Volume (optional)" [(ngModel)]="deviceEdit.defaultVolume" min="0" max="100" [formControl]="fcVideoVolume" />
+            <mat-error *ngIf="showValidationErrors && f.submitted && fcVideoVolume.invalid">Enter value from 0-100</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12" *ngIf="deviceEdit.module_path_value != '/meetingroom' && deviceEdit.module_path_value == '/signagedisplay'">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-label>EMS</mat-label>
+            <mat-select [disabled]="!canManageDevices || isApproval" id="deviceEms" name="deviceEms" [(ngModel)]="deviceEdit.ems_id" #deviceEms="ngModel">
+              <mat-option *ngFor="let ems of emses" [value]="ems.id">
+                {{ems.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-label>Media Group</mat-label>
+            <mat-select [disabled]="!canManageDevices || isApproval" id="deviceMedia" name="deviceMedia" [(ngModel)]="deviceEdit.media_id" #deviceMedia="ngModel">
+              <mat-option *ngFor="let media of medias" [value]="media.id">
+                {{media.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12" *ngIf="deviceEdit.module_path_value != '/meetingroom' && deviceEdit.module_path_value != '/signagedisplay'">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-label>EMS</mat-label>
+            <mat-select [disabled]="!canManageDevices || isApproval" id="deviceEms" name="deviceEms" [(ngModel)]="deviceEdit.external_ems_id" #deviceEms="ngModel">
+              <mat-option *ngFor="let ems of emses" [value]="ems.id">
+                {{ems.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-label>Media Group</mat-label>
+            <mat-select [disabled]="!canManageDevices || isApproval" id="deviceMedia" name="deviceMedia" [(ngModel)]="deviceEdit.external_media_id" #deviceMedia="ngModel">
+              <mat-option *ngFor="let media of medias" [value]="media.id">
+                {{media.label}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12" *ngIf="deviceEdit.module_path_value != '/meetingroom'">
+          <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+            <input matInput placeholder="Screen" style="display: none">
+            <mat-radio-group name="isScreenOn" [(ngModel)]="deviceEdit.isScreenOn" [disabled]="!canManageDevices || isApproval">
+              <mat-radio-button [value]="true">On</mat-radio-button>
+              <mat-radio-button [value]="false">Off</mat-radio-button>
+            </mat-radio-group>
+          </mat-form-field>
+          <mat-form-field class="col-md-6">
+            <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="customUrl" name="customUrl" placeholder="Custom URL" [(ngModel)]="deviceEdit.customUrl" #customUrl="ngModel" />
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-label>Device Type</mat-label>
+            <mat-select [disabled]="!canManageDevices || isApproval" id="deviceType" name="deviceType" [(ngModel)]="deviceEdit.deviceTypeId" #deviceType="ngModel">
+              <mat-option *ngFor="let deviceType of deviceTypes" [value]="deviceType.id">
+                {{deviceType.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <!--<div *ngIf="isEditMode && canManageDevices" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && institution.valid, 'has-error' : f.submitted && !institution.valid}">
+      <select [disabled]="!canManageDevices || isApproval || deviceEdit.status == 'Approved'" id="devices-device-info" name="device" [(ngModel)]="deviceEdit.institutionId" #institution="ngModel" #institutionsSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect required
+              data-live-search="true" data-actions-box="false" data-live-search-placeholder="Search..." title="Select institution">
+        <option *ngFor="let institution of allInstitutions" attr.data-content="<span title='{{institution.description}}'><b>{{institution.name}}</b> - <small><i>{{institution.description}}</i></small></span>" attr.value="{{institution.id}}">
+          {{institution.name}}
+        </option>
+      </select>
+      <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': institution.valid, 'glyphicon-remove' : !institution.valid}"></span>
+      <span *ngIf="showValidationErrors && f.submitted && !institution.valid" class="errorMessage">
+        {{'devices.editor.InstitutionRequired' | translate}}
+      </span>
+    </div>-->
+          <!--<mat-form-field class="col-md-12">
+      <mat-select placeholder="{{'devices.editor.Publication' | translate}}" [(ngModel)]="deviceEdit.publicationId" (selectionChange)="changePublications($event.value)" name="pub">
+        <mat-option *ngFor="let publication of allPublications" [value]="publication.id"><b>{{publication.name}}</b> - <small><i>{{publication.description}}<span *ngIf="!publication.approved"> - Not Approved</span></i></small></mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="col-md-12">
+      <mat-select required [disabled]="!canManageDevices || isApproval" placeholder="{{'devices.editor.Institution' | translate}}" [(ngModel)]="deviceEdit.institutionId" [formControl]="fcInstitution">
+        <mat-option *ngFor="let institution of allInstitutions" [value]="institution.id" (selectionChange)="changeInstitutions($event.value)" required><b>{{institution.name}}</b> - <small><i>{{institution.description}}</i></small></mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-md-12">
+      <mat-select required [disabled]="!canManageDevices || isApproval" placeholder="Location" [formControl]="fcLocations" [(ngModel)]="deviceEdit.locationId">
+        <mat-optgroup *ngFor="let building of buildingList"
+                      [label]="building.name">
+          <mat-option *ngFor="let location of getRoomsByBuildingId(building.id)" [value]="location.id"><b>{{location.name}}</b> - <small><i>{{location.description}}</i></small></mat-option>
+        </mat-optgroup>
+      </mat-select>
+    </mat-form-field>-->
+
+
+        </div>
+
+
+
+
+
+        <!--<div class="col-sm-12">
+    <mat-form-field class="col-xs-12">
+      <mat-select [disabled]="!canManageDevices" placeholder="Module" [(ngModel)]="deviceEdit.module_path_value" [formControl]="fcModule">
+        <mat-option [value]="">--</mat-option>
+        <mat-option *ngFor="let module of modules" [value]="module.path">
+          {{module.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>-->
+      </div>
+
+      <div  *ngIf="deviceEdit.module_path_value == '/signagedisplay'">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceMessage1" name="deviceMessage1" placeholder="Message 1" [(ngModel)]="deviceEdit.emergencyMessage1" #deviceMessage1="ngModel" />
+          <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceMacAddressRequired' | translate}}</mat-error>-->
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceMessage2" name="deviceMessage2" placeholder="Message 2" [(ngModel)]="deviceEdit.emergencyMessage2" #deviceMessage2="ngModel" />
+          <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceMacAddressRequired' | translate}}</mat-error>-->
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceMessage3" name="deviceMessage3" placeholder="Message 3" [(ngModel)]="deviceEdit.emergencyMessage3" #deviceMessage3="ngModel" />
+          <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceMacAddressRequired' | translate}}</mat-error>-->
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="!canManageDevices || isApproval" type="text" id="deviceMessage4" name="deviceMessage4" placeholder="Emergency Message (Message 4)" [(ngModel)]="deviceEdit.emergencyMessage4" #deviceMessage4="ngModel" />
+          <!--<mat-error *ngIf="showValidationErrors && f.submitted && !deviceMacAddress.valid">{{'devices.editor.DeviceMacAddressRequired' | translate}}</mat-error>-->
+        </mat-form-field>
+      </div>
+
+        <!--******************************************************************************************************-->
+        <!--<div *ngIf="!isEditMode || canManageDevices" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>-->
+        <!--<div class="row">
+      <div class="col-sm-12">
+        <div class="form-group has-feedback">
+          <label class="control-label col-md-2 col-sm-12" for="deviceStartDate">{{'devices.editor.StartDate' | translate}}</label>
+          <div class="col-md-4 col-sm-12" [ngClass]="{'has-success': f.submitted && deviceStartDate.valid, 'has-error' : f.submitted && !deviceStartDate.valid}">
+            <input bootstrapDatepicker [disabled]="!canManageDevices || isApproval || deviceEdit.status == 'Approved'" type="text" id="deviceStartDate" name="deviceStartDate" placeholder="" class="form-control" [(ngModel)]="deviceEdit.startDate" #deviceStartDate="ngModel" required />
+            <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': deviceStartDate.valid, 'glyphicon-remove' : !deviceStartDate.valid}"></span>
+          </div>
+          <label class="control-label col-md-2 col-sm-12" for="deviceEndDate">{{'devices.editor.EndDate' | translate}}</label>
+          <div class="col-md-4 col-sm-12" [ngClass]="{'has-success': f.submitted && deviceEndDate.valid, 'has-error' : f.submitted && !deviceEndDate.valid}">
+            <input bootstrapDatepicker [disabled]="!canManageDevices || isApproval || deviceEdit.status == 'Approved'" type="text" id="deviceEndDate" name="deviceEndDate" placeholder="" class="form-control" [(ngModel)]="deviceEdit.endDate" #deviceEndDate="ngModel" required />
+            <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': deviceEndDate.valid, 'glyphicon-remove' : !deviceEndDate.valid}"></span>
+          </div>
+        </div>
+      </div>
+    </div>-->
+        <!--<div *ngIf="!isEditMode || canManageDevices" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>-->
+        <!--<div *ngIf="!isEditMode || canManageDevices" class="form-group has-feedback">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="devices-device-info">{{'devices.editor.Institution' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p ngPreserveWhitespaces class="form-control-static">
+          <span>
+            <span title='{{deviceEdit.locationName}}' class="badge">{{deviceEdit.institutionName}}</span>
+          </span>
+        </p>
+      </div>
+      <div *ngIf="isEditMode && canManageDevices" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && institution.valid, 'has-error' : f.submitted && !institution.valid}">
+        <select [disabled]="!canManageDevices || isApproval || deviceEdit.status == 'Approved'" id="devices-device-info" name="device" [(ngModel)]="deviceEdit.institutionId" #institution="ngModel" #institutionsSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect required
+                data-live-search="true" data-actions-box="false" data-live-search-placeholder="Search..." title="Select institution">
+          <option *ngFor="let institution of allInstitutions" attr.data-content="<span title='{{institution.description}}'><b>{{institution.name}}</b> - <small><i>{{institution.description}}</i></small></span>" attr.value="{{institution.id}}">
+            {{institution.name}}
+          </option>
+        </select>
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': institution.valid, 'glyphicon-remove' : !institution.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !institution.valid" class="errorMessage">
+          {{'devices.editor.InstitutionRequired' | translate}}
+        </span>
+      </div>
+    </div>-->
+        <!--<div *ngIf="!isEditMode || canManageDevices" class="form-group has-feedback">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="devices-device-info">{{'devices.editor.Location' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p ngPreserveWhitespaces class="form-control-static">
+          <span>
+            <span title='{{deviceEdit.locationName}}' class="badge">{{deviceEdit.locationName}}</span>
+          </span>
+        </p>
+      </div>
+      <div *ngIf="isEditMode && canManageDevices" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && location.valid, 'has-error' : f.submitted && !location.valid}">
+        <select [disabled]="!canManageDevices || isApproval || deviceEdit.status == 'Approved'" id="locations-device-info" name="location" [(ngModel)]="deviceEdit.locationId" #location="ngModel" #locationsSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect required
+                data-live-search="true" data-actions-box="false" data-live-search-placeholder="Search..." title="Select location">
+          <option *ngFor="let location of allLocations" attr.data-content="<span title='{{location.description}}'><b>{{location.name}}</b> - <small><i>{{location.description}}</i></small></span>" attr.value="{{location.id}}">
+            {{location.name}}
+          </option>
+        </select>
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': location.valid, 'glyphicon-remove' : !location.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !location.valid" class="errorMessage">
+          {{'devices.editor.LocationRequired' | translate}}
+        </span>
+      </div>
+    </div>-->
+        <!--<div class="row">
+      <div class="col-md-12">
+        <hr class="edit-last-separator-hr" />
+      </div>
+    </div>-->
+        <!--<div class="form-group">
+      <div class="col-sm-7">
+        <div ngPreserveWhitespaces class="pull-right">
+          <button *ngIf="!canManageDevices  || deviceEdit.status == 'Approved'" type="button" (click)="cancel()" class="btn btn-default">{{'devices.editor.Close' | translate}}</button>
+          <button *ngIf="canManageDevices && deviceEdit.status != 'Approved'" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'devices.editor.Cancel' | translate}}</button>
+          <button *ngIf="canManageDevices &&  !isApproval && deviceEdit.status != 'Approved'" type="submit" class="btn btn-primary" [disabled]="isSaving">
+            <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('devices.editor.Saving' | translate) : ('devices.editor.Save' | translate)}}
+          </button>
+          <button *ngIf="canManageDevices && isApproval && deviceEdit.status != 'Approved'" (click)="save(true)" type="button" class="btn btn-success" [disabled]="isSaving">
+            <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('devices.editor.Approving' | translate) : ('devices.editor.Approve' | translate)}}
+          </button>
+        </div>
+      </div>
+    </div>-->
+        <div class="clearfix"></div>
+      </div>
+      <div mat-dialog-actions align="center">
+        <button *ngIf="!canManageDevices  || deviceEdit.status == 'Approved'" type="button" mat-button (click)="cancel()">{{'devices.editor.Close' | translate}}</button>
+        <button *ngIf="canManageDevices && deviceEdit.status != 'Approved'" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'devices.editor.Cancel' | translate}}</button>
+        <button *ngIf="canManageDevices &&  !isApproval" mat-button color="primary" type="submit" [disabled]="isSaving">
+          <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('devices.editor.Saving' | translate) : ('devices.editor.Save' | translate)}}
+        </button>
+        <button *ngIf="canApproveDevices && isApproval && deviceEdit.status != 'Approved'" mat-button color="primary" (click)="save(true)" type="button" [disabled]="isSaving" cdkFocusInitial>
+          <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('devices.editor.Approving' | translate) : ('devices.editor.Approve' | translate)}}
+        </button>
+      </div>
+</form>
+</div>

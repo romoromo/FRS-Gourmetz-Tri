@@ -1,0 +1,87 @@
+<div>
+  <header class="pageHeader">
+    <h3>Assets</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-4">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
+
+        
+      </div>
+    </div>
+    <div class="col-sm-8">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <mat-form-field>
+              <mat-select [(ngModel)]="institutionId" placeholder="Institution" (ngModelChange)="loadData()">
+                <mat-option [value]="''">
+                  All Institutions
+                </mat-option>
+                <mat-option *ngFor="let t of allInstitutions" [value]="t.id">
+                  {{t.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </li>
+          <li *ngIf="canManageAssets" class="toolbaritem">
+            <a href="javascript:;" (click)="newAsset(row)">
+              <i class="fa fa-plus-circle"></i> {{'common.New' | translate}}
+            </a>
+          </li>
+          <li *ngIf="canManageAssets" class="toolbaritem">
+            <input type="file" #fileImport placeholder="Choose file" (change)="importedFile(fileImport.files)" style="display:none;" accept="{{fileTypes}}">
+            <a href="javascript:;" (click)="fileImport.click()">
+              <i class="fa fa-upload"></i> Imports
+            </a>
+          </li>
+          <li *ngIf="canManageAssets" class="toolbaritem">
+            <a href="/api/asset/assets/export" target="_blank">
+              <i class="fa fa-download"></i> Export
+            </a>
+          </li>
+          <li *ngIf="canManageAssets" class="toolbaritem">
+            <a href="javascript:;" (click)="selectAll()">
+              <i class="fa fa-reorder"></i> Select All
+            </a>
+          </li>
+          <li *ngIf="canManageAssets" class="toolbaritem">
+            <a href="javascript:;" (click)="deleteSelected()">
+              <i class="fa fa-reorder"></i> Delete Selected
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [externalPaging]="true"
+                 [externalSorting]="true"
+                 [count]="pagedResult.totalCount"
+                 [offset]="pagedResult.filter.page"
+                 [limit]="pagedResult.filter.pageSize"
+                 (page)="loadData($event)"
+                 (sort)="loadData($event)">
+  </ngx-datatable>
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageAssets" class="btn btn-link btn-xs" href="javascript:;" (click)="editAsset(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
+    <a *ngIf="!canManageAssets" class="btn btn-link btn-xs" href="javascript:;" (click)="editAsset(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
+    <!--{{canManageAssets ? '|' : ''}}-->
+    <a *ngIf="canManageAssets" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteAsset(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+    <a *ngIf="canManageAssets" class="btn btn-link btn-xs" href="javascript:;" (click)="openQrDialog(row)"><i class="fa fa-qrcode" aria-hidden="true"></i> {{'Generate Qr Code'}}</a>
+
+    <a class="example-section btn btn-link btn-xs" >
+      <mat-checkbox class="example-margin" [(ngModel)]="row.selected">Select</mat-checkbox>
+    </a>
+  </ng-template>
+</div>

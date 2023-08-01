@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <div>
+    <div>
+      <ngx-datatable class="material colored-header" #dataLogDetailsTable
+                     [loadingIndicator]="loadingIndicator"
+                     [rows]="rows"
+                     [rowHeight]="'auto'"
+                     [headerHeight]="'auto'"
+                     [footerHeight]="35"
+                     [columns]="columns"
+                     [columnMode]="force"
+                     [externalPaging]="true"
+                     [externalSorting]="true"
+                     [count]="pagedResult.totalCount"
+                     [offset]="pagedResult.filter.pageNumber"
+                     (page)="loadData($event)"
+                     (sort)="loadData($event)">
+      </ngx-datatable>
+    </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()">{{'departments.editor.Close' | translate}}</button>
+    </div>
+</div>

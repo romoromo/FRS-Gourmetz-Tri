@@ -1,0 +1,11 @@
+<mwl-day-view-scheduler [viewDate]="viewDate"
+                        [events]="events"
+                        [locations]="locations"
+                        (eventTimesChanged)="eventTimesChanged($event)"
+                        (locationChanged)="locationChanged($event)"
+                        (locationAdded)="locationAdded($event)"
+                        (eventsUpdate)="eventsUpdate($event)"
+                        [dayStartHour]="startHour"
+                        [dayEndHour]="endHour"
+                        #dayViewer>
+</mwl-day-view-scheduler>

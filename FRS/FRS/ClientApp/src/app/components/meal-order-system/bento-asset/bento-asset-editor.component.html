@@ -1,0 +1,77 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="bentoAssetEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!bentoAssetName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageBentoAssets" type="text" id="bentoAssetCode" name="bentoAssetCode" placeholder="Tag Id" [(ngModel)]="bentoAssetEdit.code" #bentoAssetCode="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <mat-label>Bento Box Type</mat-label>
+          <mat-select [disabled]="!canManageBentoAssets" id="bentoBoxType" name="bentoBoxType" [(ngModel)]="bentoAssetEdit.bentoBoxTypeId" #bentoBoxTypeId="ngModel" required>
+            <mat-option *ngFor="let bentoBoxType of bentoBoxTypes" [value]="bentoBoxType.id">
+              {{bentoBoxType.code}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Bento Box Type is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <mat-label>Store</mat-label>
+          <mat-select [disabled]="!canManageBentoAssets" id="storeInfo" name="storeInfo" [(ngModel)]="bentoAssetEdit.storeInfoId" #storeInfoId="ngModel">
+            <mat-option *ngFor="let storeInfo of storeInfos" [value]="storeInfo.id">
+              {{storeInfo.code}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <mat-label>Carton Asset (optional)</mat-label>
+          <mat-select [disabled]="!canManageBentoAssets" [(ngModel)]="bentoAssetEdit.cartonAssetId" [ngModelOptions]="{standalone: true}">
+            <mat-option *ngFor="let cartonAsset of cartonAssets" [value]="cartonAsset.id">
+              {{cartonAsset.code}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <mat-label>Dish  (optional)</mat-label>
+          <mat-select [disabled]="!canManageBentoAssets" [(ngModel)]="bentoAssetEdit.dishId" [ngModelOptions]="{standalone: true}">
+            <mat-option *ngFor="let dish of dishs" [value]="dish.id">
+              {{dish.code}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput type="text" id="bentoAssetRemarks" name="bentoAssetRemarks" placeholder="Asset Remarks" [(ngModel)]="bentoAssetEdit.remarks" #bentoAssetRemarks="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="bentoAssetAssetRegistrationTime" name="bentoAssetAssetRegistrationTime" placeholder="Asset Registration Time" [(ngModel)]="bentoAssetEdit.assetRegistrationTime" #bentoAssetAssetRegistrationTime="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="bentoAssetPackingTime" name="bentoAssetPackingTime" placeholder="Last Packing Time" [(ngModel)]="bentoAssetEdit.lastPackingTime" #bentoAssetPackingTime="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="bentoAssetLastReturnTime" name="bentoAssetLastReturnTime" placeholder="Last Return Time" [(ngModel)]="bentoAssetEdit.lastReturnTime" #bentoAssetLastReturnTime="ngModel" />
+        </mat-form-field>
+
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageBentoAssets" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageBentoAssets" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageBentoAssets" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,38 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="waiverEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!waiverName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <mat-label>Transaction Fee</mat-label>
+          <mat-select [disabled]="!canManageWaivers" id="transactionFeeId" name="transactionFeeId" [(ngModel)]="waiverEdit.transactionFeeId" #transactionFeeId="ngModel" required>
+            <mat-option *ngFor="let transactionFee of transactionFees" [value]="transactionFee.id">
+              {{transactionFee.name}} - {{transactionFee.paymentTypeName}} ({{(transactionFee.isFixed ? '$ ' + transactionFee.amount : transactionFee.amount + '%')}})
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Payment Type is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageWaivers" type="text" id="waiverLabel" name="waiverLabel" placeholder="Label" [(ngModel)]="waiverEdit.label" #waiverLabel="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageWaivers" type="text" id="waiverName" name="waiverName" placeholder="Description" [(ngModel)]="waiverEdit.name" #waiverName="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageWaivers" type="number" id="amount" name="amount" placeholder="Amount to reach to waive fee" [(ngModel)]="waiverEdit.amount" #amount="ngModel" step='0.01' />
+        </mat-form-field>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageWaivers" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageWaivers" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageWaivers" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

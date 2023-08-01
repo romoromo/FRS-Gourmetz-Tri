@@ -1,0 +1,18 @@
+﻿<div>
+  <img src="{img_onboarding}"></img>
+</div>
+<p>Hi there,</p>
+<p>Welcome to Tappee, our new school meal program @YISS Canteen!</p>
+<br />
+<p>Please refer to your User ID and the link to enter your personal password to access our new ordering portal {order_portal}</p>
+<p>User ID : <i>your email address</i></p>
+<p>Password: <a href="{callbackUrl}"><i>Click to set password</i></a></p>
+<p>Meanwhile, we are always here for you if you have any other queries. Reach out to us via email at sats_schoolmeals@sats.com.sg should you face any difficulty logging in to place your orders.</p>
+<p></p>
+<br/>
+<p>Bon Appetit!</p>
+<p>Thanks for registering and welcome to SATS</p>
+
+<p>Tappee</p>
+<p>Powered by SATS</p>
+

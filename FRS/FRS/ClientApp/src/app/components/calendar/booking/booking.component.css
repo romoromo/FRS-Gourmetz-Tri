@@ -1,0 +1,80 @@
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: #f5f5f5;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+
+::ng-deep .mat-chip-list-wrapper .mat-standard-chip, .mat-chip-list-wrapper input.mat-input-element {
+  margin: 2px !important;
+}
+
+.mat-standard-chip {
+  transition: box-shadow 280ms cubic-bezier(.4,0,.2,1);
+  display: inline-flex;
+  padding: 5px 5px;
+  border-radius: 0;
+  align-items: center;
+  cursor: default;
+  min-height: 20px;
+  height: 1px;
+}
+
+.mat-chip {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+::ng-deep .time-class {
+  padding: 0 5px !important;
+  font-size: 11px !important;
+  border-radius: 1px !important;
+  line-height: 20px !important;
+  min-width: 20px !important;
+  margin: 1px !important;
+}
+
+::ng-deep .btn-time-selected {
+  background-color: #e6e6e6 !important;
+}

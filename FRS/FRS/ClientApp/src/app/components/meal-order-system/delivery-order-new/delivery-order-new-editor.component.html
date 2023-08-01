@@ -1,0 +1,177 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="deliveryOrderEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!deliveryOrderName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row col-md-12">
+        <mat-form-field class="col-md-4">
+          <mat-label>From: </mat-label>
+          <mat-select [disabled]="deliveryOrderEdit.completed" id="from" name="from" [(ngModel)]="deliveryOrderEdit.fromStoreId" #from="ngModel" required>
+            <mat-option *ngFor="let storeFrom of storeFroms" [value]="storeFrom.id">
+              {{storeFrom.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Store from is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-4">
+          <input matInput autocomplete="off" [disabled]=true type="text" id="deliveryOrderNumber" name="deliveryOrderNumber" placeholder="DO Number" [(ngModel)]="deliveryOrderEdit.doNumber" #deliveryOrderNumber="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <!--<mat-form-field class="col-md-4">
+    <input matInput autocomplete="off" [disabled]="!canManageDeliveryOrders" type="text" id="deliveryOrderAddress" name="deliveryOrderAddress" placeholder="Delivery Address" [(ngModel)]="deliveryOrderEdit.deliveryAddress" #deliveryOrderAddress="ngModel" />
+  </mat-form-field>-->
+        <mat-form-field class="col-md-4">
+          <mat-label>To: </mat-label>
+          <mat-select [disabled]="deliveryOrderEdit.completed" id="to" name="to" [(ngModel)]="deliveryOrderEdit.toStoreId" #to="ngModel" required>
+            <mat-option *ngFor="let storeTo of storeTos" [value]="storeTo.id">
+              {{storeTo.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Store to is required</mat-error>
+        </mat-form-field>
+
+
+
+        <mat-form-field class="col-md-4">
+          <input matInput [disabled]=true [matDatepicker]="orderDatePicker" placeholder="Date" [value]="deliveryOrderEdit.createdDate">
+          <mat-datepicker-toggle matSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #orderDatePicker></mat-datepicker>
+          <!--<input matInput autocomplete="off" [disabled]=true type="text" id="deliveryOrderCreatedDate" name="deliveryOrderCreatedDate" placeholder="Date" [(ngModel)]="deliveryOrderEdit.createdDate" #deliveryOrderCreatedDate="ngModel" required minlength="2" maxlength="200" />-->
+        </mat-form-field>
+
+        <mat-form-field class="col-md-4">
+          <input *ngIf="deliveryOrderEdit.completed" matInput autocomplete="off" [disabled]=true type="text" id="deliveryOrderStatus" name="deliveryOrderStatus" placeholder="Status" value="Completed" minlength="2" maxlength="200" />
+          <input *ngIf="!deliveryOrderEdit.completed" matInput autocomplete="off" [disabled]=true type="text" id="deliveryOrderStatus" name="deliveryOrderStatus" placeholder="Status" value="Open" minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-4">
+          <input matInput autocomplete="off" [disabled]=true type="text" id="deliveryOrderVehicleNumber" name="deliveryOrderVehicleNumber" placeholder="Vehicle Number" [(ngModel)]="deliveryOrderEdit.vehicleNumber" #deliveryOrderVehicleNumber="ngModel" minlength="2" maxlength="200" />
+        </mat-form-field>
+
+
+        <mat-form-field class="col-md-3">
+          <input matInput autocomplete="off" [disabled]=true type="text" id="deliveryOrderRouteName" name="deliveryOrderRouteName" placeholder="Route" [(ngModel)]="deliveryOrderEdit.routeName" #deliveryOrderRouteName="ngModel" minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-3">
+          <input matInput autocomplete="off" [disabled]=true type="text" id="deliveryOrderPickupTime" name="deliveryOrderPickupTime" placeholder="Pickup Time" [value]="formatTime(deliveryOrderEdit.pickupTime)" minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-3">
+          <input matInput autocomplete="off" [disabled]=true type="text" id="deliveryOrderLoadingTime" name="deliveryOrderLoadingTime" placeholder="Loading Time" [value]="formatTime(deliveryOrderEdit.loadingTime)" minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-3">
+          <input matInput autocomplete="off" [disabled]=true type="text" id="deliveryOrderReceivingTime" name="deliveryOrderReceivingTime" placeholder="Receiving Time" [value]="formatTime(deliveryOrderEdit.receivingTime)" minlength="2" maxlength="200" />
+        </mat-form-field>
+
+
+
+      </div>
+      <div class="row col-md-12">
+        <h4>Details</h4>
+
+        <div>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Scan Carton Asset TID</mat-label>
+            <input matInput #cartonInput [(ngModel)]="cartonAssetCode" [ngModelOptions]="{standalone: true}" (ngModelChange)="cartonChanged($event)">
+          </mat-form-field>
+        </div>
+
+        <div class="container" *ngFor="let detail of deliveryOrderEdit.deliveryDetails; let i = index" style="border:solid 1px;border-radius:5px;padding: 5px 0;" [hidden]="!detail.isActive">
+          <div class="col-md-12">
+            <mat-form-field class="col-md-5">
+              <mat-label>Carton Asset {{i + 1}}</mat-label>
+              <mat-select [disabled]="deliveryOrderEdit.completed" [(ngModel)]="detail.cartonAssetId" [ngModelOptions]="{standalone: true}">
+                <mat-option *ngFor="let cartonAsset of cartonAssets" [value]="cartonAsset.id">
+                  {{cartonAsset.code}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!--<mat-form-field class="col-md-3">
+              <mat-label>Dish</mat-label>
+              <mat-select [disabled]="!canManageDeliveryOrders" [(ngModel)]="detail.dishId" [ngModelOptions]="{standalone: true}" class="two-line-selected">-->
+                <!--<mat-select-trigger>{{foo.value ? foo.value[0] : ''}}</mat-select-trigger>-->
+                <!--<mat-option class="multiline-mat-option" *ngFor="let dish of dishs" [value]="dish.id">
+                  <div>{{dish.label}} </div>
+                  <div style="font-size:70%">{{dish.code}}</div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="col-md-3">
+              <input matInput autocomplete="off" [disabled]="!canManageDeliveryOrders" type="number" placeholder="Qty" [(ngModel)]="detail.qty" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>-->
+
+            <!--<mat-form-field class="col-md-5">
+    <mat-label>Status</mat-label>
+    <mat-select [disabled]="!canManageDeliveryOrders" [(ngModel)]="detail.trackingStatusId" [ngModelOptions]="{standalone: true}">
+      <mat-option *ngFor="let status of trackingStatuss" [value]="status.id">
+        {{status.status}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>-->
+
+            <div class="col-md-1">
+              <span *ngIf="!deliveryOrderEdit.completed" class="btn btn-danger" (click)="detail.isActive = 0">Remove</span>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="container" *ngFor="let bento of detail.deliveryBentos; let j = index" style="border-top:solid 1px;padding: 5px 0 0 0;" [hidden]="!bento.isActive">
+              <mat-form-field class="col-md-3">
+                <mat-label>Bento Asset {{j + 1}}</mat-label>
+                <mat-select [disabled]="deliveryOrderEdit.completed" [(ngModel)]="bento.bentoAssetId" [ngModelOptions]="{standalone: true}">
+                  <mat-option *ngFor="let bentoAsset of bentoAssets" [value]="bentoAsset.id">
+                    {{bentoAsset.code}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="col-md-3">
+                <mat-label>Dish</mat-label>
+                <mat-select [disabled]="deliveryOrderEdit.completed" [(ngModel)]="bento.dishId" [ngModelOptions]="{standalone: true}" class="two-line-selected">
+                  <mat-option class="multiline-mat-option" *ngFor="let dish of dishs" [value]="dish.id">
+                    <div>{{dish.label}} </div>
+                    <div style="font-size:70%">{{dish.code}}</div>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field class="col-md-2">
+                <input matInput autocomplete="off" [disabled]="deliveryOrderEdit.completed" type="number" placeholder="Qty" [(ngModel)]="bento.qty" [ngModelOptions]="{standalone: true}" />
+              </mat-form-field>
+
+              <mat-form-field class="col-md-2">
+                <input matInput autocomplete="off" [disabled]="deliveryOrderEdit.completed" type="number" placeholder="Received Qty" [(ngModel)]="bento.receivedQty" [ngModelOptions]="{standalone: true}" />
+              </mat-form-field>
+
+              <!--<mat-form-field class="col-md-3">
+    <input matInput autocomplete="off" [disabled]="!canManageDeliveryOrders" type="text" placeholder="User Data" [(ngModel)]="bento.userData" [ngModelOptions]="{standalone: true}" />
+  </mat-form-field>-->
+
+              <div class="col-md-2">
+                <span *ngIf="!deliveryOrderEdit.completed" class="btn btn-danger" style="margin: 0 15px;" (click)="bento.isActive = 0">Remove</span>
+              </div>
+            </div>
+
+
+            <span *ngIf="!deliveryOrderEdit.completed" class="btn btn-success btn-xs" (click)="addBento(detail)" style="margin: 5px 0;">Add Bento</span>
+          </div>
+        </div>
+
+        <span *ngIf="!deliveryOrderEdit.completed" class="btn btn-success btn-xs" (click)="addDetail(deliveryOrderEdit)" style="margin: 5px 0;">Add Detail</span>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="deliveryOrderEdit.completed" type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="!deliveryOrderEdit.completed" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="!deliveryOrderEdit.completed" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

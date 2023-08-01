@@ -1,0 +1,50 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="cancelOrderRequestEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() : ''">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="true" type="text" id="cancelOrderRequestName" name="cancelOrderRequestName" placeholder="Name" [(ngModel)]="cancelOrderRequestEdit.userName" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <input matInput autocomplete="off" [disabled]="true" type="text" id="cancellationDate" name="cancellationDate" placeholder="Cancellation Date" [(ngModel)]="cancelOrderRequestEdit.cancellationDate" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <input matInput autocomplete="off" [disabled]="true" type="text" id="submissionDate" name="submissionDate" placeholder="Submission Date" [(ngModel)]="cancelOrderRequestEdit.submissionDate" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <textarea rows="5" matInput autocomplete="off" [disabled]="true" type="text" id="reason" name="reason" placeholder="Reason" [(ngModel)]="cancelOrderRequestEdit.reason"></textarea>
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <textarea rows="5" matInput autocomplete="off" [disabled]="true" type="text" id="note" name="note" placeholder="Note" [(ngModel)]="cancelOrderRequestEdit.note"></textarea>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">
+            <input matInput placeholder="Supporting Document" style="display: none" appearance="none">
+          </label>
+          <a class="btn btn-link btn-xs" style="padding-top:10px;" href="javascript:;" (click)="downloadFile(cancelOrderRequestEdit.filePath)">{{cancelOrderRequestEdit.fileName}}</a>
+        </mat-form-field>
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline col-md-6 col-xs-12" style="padding-left: 15px !important;">
+          <input matInput placeholder="Is Approve" style="display: none">
+          <mat-radio-group name="scheme" [(ngModel)]="cancelOrderRequestEdit.isApproved" [disabled]="cancelOrderRequestEdit.status == 'Approved' || cancelOrderRequestEdit.status == 'Rejected'">
+            <mat-radio-button [value]="true">Approve</mat-radio-button>
+            <mat-radio-button [value]="false">Rejected</mat-radio-button>
+          </mat-radio-group>
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
+          <textarea rows="5" matInput autocomplete="off" type="text" id="response" name="response" placeholder="Response" [(ngModel)]="cancelOrderRequestEdit.response" [disabled]="cancelOrderRequestEdit.status == 'Approved' || cancelOrderRequestEdit.status == 'Rejected'"></textarea>
+        </mat-form-field>
+
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="canManageCancelOrderRequests" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageCancelOrderRequests && !isDisabled" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,55 @@
+<ul class="app-component nav navbar-nav nav-pills navBarPadding" *ngIf="item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+  <ng-container *ngFor="let menu of item.childMenus">
+    <li  routerLinkActive="{{menu.isDefaultActive}}" *ngIf="isAccessAllowed(menu) && (!menu.childMenus || menu.childMenus.length == 0); else branch">
+      <a routerLink="{{menu.link}}">
+        <span *ngIf="menu.showLogo" class="menu-icon {{(menu.logoClass ? menu.logoClass : 'fa fa-book')}}"></span>
+        <span *ngIf="menu.showLabel" class="menu-label">{{menu.label}}</span>
+      </a>
+    </li>
+    <ng-template #branch>
+      <li class="dropdown" *ngIf="isAccessAllowed(menu)">
+        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+          <span *ngIf="menu.showLogo" class="menu-icon {{(menu.logoClass ? menu.logoClass : 'fa fa-book')}}"></span>
+          <span *ngIf="menu.showLabel" class="menu-label">{{menu.label}}</span>
+          <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu multi-level">
+          <ng-container *ngFor="let m of menu.childMenus">
+            <li *ngIf="isAccessAllowed(m) && (!m.childMenus || m.childMenus.length == 0); else leaf">
+              <a routerLink="{{m.link}}">
+                <span *ngIf="m.showLogo" class="menu-icon {{(m.logoClass ? m.logoClass : 'fa fa-book')}}"></span>
+                <span *ngIf="m.showLabel">{{m.label}}</span>
+              </a>
+            </li>
+            <ng-template #leaf>
+              <app-sub-menu-panel [item]="m" (selectMenu)="triggerSelect($event)"></app-sub-menu-panel>
+            </ng-template>
+              
+          </ng-container>
+        </ul>
+      </li>
+    </ng-template>
+
+    <!--<li class="dropdown" *ngIf="menu.childMenus && menu.childMenus.length > 0;">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{menu.label}} <b class="caret"></b></a>
+      <ng-container *ngFor="let m of menu.childMenus">
+        <app-menu-panel [item]="m" (selectMenu)="triggerSelect($event)"></app-menu-panel>
+      </ng-container>
+    </li>-->
+
+
+  </ng-container>
+</ul>
+
+
+
+
+<!--<mat-menu #menu>
+  <ng-container *ngFor="let item of items">
+    <button (click)="selectMenu(item)" *ngIf="!item.childMenus || item.childMenus.length == 0; else branch" mat-menu-item>{{item.label}}</button>
+    <ng-template #branch>
+      <button mat-menu-item [matMenuTriggerFor]="innerPanel.menu">{{item.label}}</button>
+      <app-menu-panel #innerPanel [items]="item.childMenus" (submit)="triggerSelect($event)"></app-menu-panel>
+    </ng-template>
+  </ng-container>
+</mat-menu>-->

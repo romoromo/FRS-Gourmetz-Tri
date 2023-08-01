@@ -1,0 +1,85 @@
+<div>
+  <div>
+    <mat-checkbox class="example-margin" [(ngModel)]="configurations.screenoff">Screen Off When No Event</mat-checkbox>
+  </div>
+  <div>
+    <mat-checkbox class="example-margin" [(ngModel)]="configurations.screenon">Screen On When Event</mat-checkbox>
+  </div>
+  <br /><br />
+  <h5>Location</h5>
+  <mat-select multiple placeholder="-- Select Location --" [(ngModel)]="configurations.locationIds">
+    <input placeholder="Search..." autocomplete="off" matInput type="text" (keyup)="locationSearchOnKeyUp($event.target.value)" class="cal-search-box" [(ngModel)]="locSearchKeyword">
+    <mat-option class="optionGroup" disabled [ngStyle]="{ display : buildingList  && buildingList.length > 0  ? 'none' : 'block' }">No results.</mat-option>
+    <ng-container *ngFor="let building of buildingList">
+      <mat-option class="optionGroup" [value]="building.id" disabled><b>{{building.name}}</b></mat-option>
+      <mat-option class="optionChild" *ngFor="let location of getRoomsByBuildingId(building.id, locSearchKeyword)" [value]="location.id"><small>{{location.name}}</small></mat-option>
+    </ng-container>
+
+  </mat-select>
+  <hr />
+  <mat-form-field style="width: 250px">
+    <input matInput type="number" placeholder="Numbers of rows" [(ngModel)]="configurations.noOfRows" />
+  </mat-form-field>
+  <br />
+  <mat-form-field style="width: 250px">
+    <input matInput type="number" placeholder="Numbers of columns" [(ngModel)]="configurations.noOfColumns" />
+  </mat-form-field>
+  <br />
+  <mat-form-field>
+    <input matInput type="number" placeholder="Border Width" [(ngModel)]="configurations.borderWidth" />
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Border Color" [(colorPicker)]="configurations.borderColor" [style.background]="configurations.borderColor" />
+  </mat-form-field>
+  <br />
+  <mat-form-field>
+    <input matInput type="number" placeholder="Cell Padding" [(ngModel)]="configurations.cellPadding" />
+  </mat-form-field>
+
+  <br />
+
+  <mat-form-field>
+    <input matInput type="number" min="0" placeholder="Page Interval (seconds)" [(ngModel)]="configurations.interval" />
+  </mat-form-field>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.description.hide">Hide Description</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.description?.hide" [(configurations)]="configurations.description"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.contactNo.hide">Hide Contact</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.contactNo?.hide" [(configurations)]="configurations.contactNo"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.location.hide">Hide Location</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.location?.hide" [(configurations)]="configurations.location"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.time.hide">Hide Time</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.time?.hide" [(configurations)]="configurations.time"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.meetingPurpose.hide">Hide Meeting Purpose</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.meetingPurpose?.hide" [(configurations)]="configurations.meetingPurpose"></text-configuration>
+  </div>
+
+</div>

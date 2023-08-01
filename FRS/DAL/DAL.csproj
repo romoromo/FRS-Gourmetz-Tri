@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.7.1</Version>
+    <Description>Data Access Layer for the Quick Application template</Description>
+    <Copyright>Copyright © 2018 www.ebenmonney.com</Copyright>
+    <PackageLicenseUrl>https://github.com/emonney/QuickApp/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/emonney/QuickApp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/emonney/QuickApp.git</RepositoryUrl>
+    <Company>EBENMONNEY</Company>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Repositories\Interfaces\MealOrder\IExternalAppLoginLogRepository.cs" />
+    <Compile Remove="Repositories\MealOrder\ExternalAppLoginLogRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.2-preview-56107813" />
+    <PackageReference Include="Ical.Net" Version="4.2.0" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.3" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.2" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.0.0" />
+    <PackageReference Include="OpenIddict" Version="2.0.0" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="2.0.0" />
+    <PackageReference Include="Sieve" Version="2.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Core\Audit\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,5 @@
+﻿<p>Hello user,</p>
+<p>
+  You seem to forget to order meals for {student_name} from {date_from} until {date_to}.
+</p>
+<p>Please place your meal orders by {date_cutoff}.</p>

@@ -1,0 +1,35 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="notificationEventEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!notificationEventTitle.valid && showErrorAlert('Title is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <mat-label>Type</mat-label>
+          <mat-select [disabled]="!canManageNotificationEvents" id="eventType" name="eventType" [(ngModel)]="notificationEventEdit.type" #eventType="ngModel" required>
+            <mat-option *ngFor="let eventType of eventTypes" [value]="eventType">
+              {{eventType}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Type is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageNotificationEvents" type="text" id="notificationEventTitle" name="notificationEventTitle" placeholder="Title" [(ngModel)]="notificationEventEdit.title" #notificationEventTitle="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <textarea rows="5" matInput type="text" [disabled]="!canManageNotificationEvents" id="notificationEventTemplate" autocomplete="off" name="notificationEventTemplate" placeholder="Title" #notificationEventTemplate="ngModel" [(ngModel)]="notificationEventEdit.template" required></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageNotificationEvents" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageNotificationEvents" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageNotificationEvents" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

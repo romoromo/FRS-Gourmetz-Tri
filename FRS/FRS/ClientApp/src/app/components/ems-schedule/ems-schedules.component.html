@@ -1,0 +1,131 @@
+<div class="container-fluid">
+  <header class="pageHeader">
+    <h3><i class="fa fa-handshake fa-lg page-caption" aria-hidden="true"></i> {{'pageHeader.EmsSchedules' | translate}}</h3>
+  </header>
+
+  <div [@fadeInOut]>
+    <div>
+      <div class="row control-box">
+        <div class="col-sm-8">
+          <!--<div class="form-group search-box">
+            <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'emsSchedules.management.Search' | translate}}">></search-box>
+          </div>-->
+        </div>
+        <div class="col-sm-4">
+          <div class="navbar action-box">
+            <ul class="nav navbar-nav navbar-right">
+              <li *ngIf="canManageEmsSchedules" class="toolbaritem">
+                <a href="javascript:;" (click)="newEmsSchedule(row)">
+                  <i class="fa fa-plus-circle"></i> {{'emsSchedules.management.NewEmsSchedule' | translate}}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="row text-center">
+        <div class="col-md-4">
+          <div class="btn-group">
+            <div class="btn btn-primary"
+                 mwlCalendarPreviousView
+                 [view]="view"
+                 [(viewDate)]="viewDate"
+                 (viewDateChange)="viewDateChange.next(viewDate)">
+              Previous
+            </div>
+            <div class="btn btn-outline-secondary"
+                 mwlCalendarToday
+                 [(viewDate)]="viewDate"
+                 (viewDateChange)="viewDateChange.next(viewDate)">
+              Today
+            </div>
+            <div class="btn btn-primary"
+                 mwlCalendarNextView
+                 [view]="view"
+                 [(viewDate)]="viewDate"
+                 (viewDateChange)="viewDateChange.next(viewDate)">
+              Next
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <h3>{{ viewDate | calendarDate: ((view === 'list' ? 'day' : view) + 'ViewTitle'):locale }}</h3>
+        </div>
+        <div class="col-md-4">
+          <div class="btn-group">
+            <div class="btn btn-primary"
+                 (click)="view = 'month';"
+                 [class.active]="view === 'month'">
+              Month
+            </div>
+            <div class="btn btn-primary"
+                 (click)="view = 'week';"
+                 [class.active]="view === 'week'">
+              Week
+            </div>
+            <div class="btn btn-primary"
+                 (click)="view = 'day';"
+                 [class.active]="view === 'day'">
+              Day
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+
+      <div [ngSwitch]="view">
+        <mwl-calendar-month-view *ngSwitchCase="'month'"
+                                 [viewDate]="viewDate"
+                                 [activeDayIsOpen]="true"
+                                 [weekStartsOn]="1"
+                                 [events]="calendarEvents"
+    (beforeViewRender)="updateCalendarEvents($event)">
+        </mwl-calendar-month-view>
+        <mwl-calendar-week-view *ngSwitchCase="'week'"
+                                [viewDate]="viewDate"
+                                [weekStartsOn]="1"
+                                [events]="calendarEvents"
+    (beforeViewRender)="updateCalendarEvents($event)">
+        </mwl-calendar-week-view>
+        <mwl-calendar-day-view *ngSwitchCase="'day'"
+                               [viewDate]="viewDate"
+                               [events]="calendarEvents"
+    (beforeViewRender)="updateCalendarEvents($event)">
+        </mwl-calendar-day-view>
+      </div>
+
+      <ng-template #indexTemplate let-value="value">
+        <strong>{{value}}</strong>
+      </ng-template>
+
+
+      <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+        <div>
+          <a *ngIf="canManageEmsSchedules" class="btn btn-link btn-xs" href="javascript:;" (click)="editEmsSchedule(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>{{'emsSchedules.management.Edit' | translate}}</a>
+          <a *ngIf="!canManageEmsSchedules" class="btn btn-link btn-xs" href="javascript:;" (click)="editEmsSchedule(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'emsSchedules.management.Details' | translate}}</a>
+        </div>
+        <div><a *ngIf="canManageEmsSchedules" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteEmsSchedule(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'emsSchedules.management.Delete' | translate}}</a></div>
+      </ng-template>
+
+
+      <div class="modal fade" bsModal #editorModal="bs-modal" (onHidden)="onEditorModalHidden()" [config]="{backdrop: 'static'}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 *ngIf="!canManageEmsSchedules" class="modal-title pull-left"><i class="fa fa-shield"></i> {{'emsSchedules.management.EmsScheduleDetails' | translate:editingEmsScheduleName}}</h4>
+              <h4 *ngIf="canManageEmsSchedules" class="modal-title pull-left"><i class="fa fa-shield"></i> {{editingEmsScheduleName ? ('emsSchedules.management.EditEmsSchedule' | translate:editingEmsScheduleName) : ('emsSchedules.management.NewEmsSchedule' | translate)}}</h4>
+              <button type="button" class="close pull-right" title="Close" (click)="editorModal.hide()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <ems-schedule-editor #emsScheduleEditor></ems-schedule-editor>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

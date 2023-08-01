@@ -1,0 +1,60 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="mealPeriodEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!mealPeriodName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-xs-12">
+          <mat-label>Outlet Profile</mat-label>
+          <mat-select [disabled]="!canManageMealPeriods || mealPeriodEdit.id > 0" id="outletProfile" name="outletProfile" [(ngModel)]="mealPeriodEdit.outletProfileId" #outletProfile="ngModel" required>
+            <mat-option *ngFor="let outletProfile of outletProfiles" [value]="outletProfile.id">
+              {{outletProfile.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageMealPeriods" type="text" id="mealPeriodName" name="mealPeriodName" placeholder="Enter name" [(ngModel)]="mealPeriodEdit.name" #mealPeriodName="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageMealPeriods" type="number" id="mealPeriodSequence" name="mealPeriodSequence" placeholder="Sequence" [(ngModel)]="mealPeriodEdit.sequence" #mealPeriodSequence="ngModel" required />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput type="time" id="startDate" datetime="startDate" placeholder="Start Time" name="startDate" [ngModel]="mealPeriodEdit.startDate | date:  'HH:mm'" (ngModelChange)="mealPeriodEdit.startDate = $event" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput type="time" id="endDate" datetime="endDate" placeholder="End Time" name="endDate" [ngModel]="mealPeriodEdit.endDate | date:  'HH:mm'" (ngModelChange)="mealPeriodEdit.endDate = $event" />
+        </mat-form-field>
+
+        <!--<mat-form-field class="col-md-12" [floatLabel]="never">
+          <input matInput placeholder="Start" type="time" id="detail-start-{{x}}-{{i}}" name="detail-start-{{x}}-{{i}}" [(ngModel)]="mealPeriodEdit.sTime" required />
+        </mat-form-field>
+        <mat-form-field class="col-md-12" [floatLabel]="never">
+          <input matInput placeholder="End" type="time" id="detail-start-{{x}}-{{i}}" name="detail-start-{{x}}-{{i}}" [(ngModel)]="mealPeriodEdit.sTime" required />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [value]="start"
+                 (dateChange)="onChangeDate('start', $event)" required [disabled]="!canManageMealPeriods">
+          <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+          <mat-datepicker #startpicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="endpicker" placeholder="End Date" [value]="end"
+                 (dateChange)="onChangeDate('end', $event)" required [disabled]="!canManageMealPeriods">
+          <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+          <mat-datepicker #endpicker></mat-datepicker>
+        </mat-form-field>-->
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageMealPeriods" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageMealPeriods" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageMealPeriods" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

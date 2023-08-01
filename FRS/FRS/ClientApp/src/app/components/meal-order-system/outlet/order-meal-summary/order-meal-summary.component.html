@@ -1,0 +1,34 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form class="form-horizontal" name="storeSelectorForm" #f="ngForm" novalidate
+        (ngSubmit)="save() ">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-xs-12" style="min-height:300px">
+          <mat-form-field class="col-xs-12">
+            <input matInput [matDatepicker]="startDate" placeholder="Select Date" [value]="startDate"
+                   (dateChange)="onChangeDate('start', $event)" required>
+            <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+            <mat-datepicker #startDate></mat-datepicker>
+          </mat-form-field>
+          <!--<mat-form-field class="col-xs-6">
+            <input matInput [matDatepicker]="endDate" placeholder="End Date" [value]="endDate"
+                   (dateChange)="onChangeDate('end', $event)" required>
+            <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+            <mat-datepicker #endDate></mat-datepicker>
+          </mat-form-field>-->
+          <button type="button" mat-button (click)="downloadReport()" style="margin-top:20px">
+            <mat-icon>
+              save
+            </mat-icon> Save Report
+          </button>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+    </div>
+  </form>
+</div>
+

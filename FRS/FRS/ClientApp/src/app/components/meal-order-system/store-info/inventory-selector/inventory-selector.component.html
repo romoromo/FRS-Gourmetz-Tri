@@ -1,0 +1,48 @@
+<div>
+  <h1 mat-dialog-title>{{data.header}}</h1>
+  <div mat-dialog-content>
+    <div class="row">
+      <!--<div class="col-md-12">
+        <div class="form-group search-box">
+          <search-box (searchChange)="onSearchChanged($event)" placeholder="Search all columns"></search-box>
+        </div>
+      </div>-->
+      <div class="col-md-12">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Time Received</th>
+              <th scope="col">Dish Code</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Delivered By</th>
+              <th scope="col">Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let row of dos; let i = index;">
+              <tr *ngIf="row.dishId && row.cartonId">
+                <td>
+                  <a class="btn btn-link btn-xs" href="javascript:;" (click)="seeDetail(row)">Details</a>
+                  <!--<input type="checkbox" name="row{{row.id}}" [(ngModel)]="outlets[i].checked">-->
+                </td>
+                <td>{{row.timeReceived | date:  'd-MM-y, HH:mm':'UTC +14'}}</td>
+                <td>{{row.dish.code }}</td>
+                <td>{{row.qtyReceived }}</td>
+                <td>{{row.storeInventory.deliveredBy}}</td>
+                <td>{{row.remarks}}</td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions align="center">
+    <button type="button" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'reservations.editor.Cancel' | translate}}</button>
+    <!--<button type="button" mat-button cdkFocusInitial (click)="save()">
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> Choose
+    </button>-->
+  </div>
+</div>

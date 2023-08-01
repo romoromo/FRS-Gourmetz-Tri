@@ -1,0 +1,64 @@
+<h1 mat-dialog-title style="overflow-wrap: anywhere;">{{data.header}} for {{menuCycle.label}} {{day > 0 ? '(Day ' + day + ')' : ''}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="viewMenuEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!menuCycleLabel.valid && showErrorAlert('Label is required', 'Please enter label (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div *ngFor="let period of periods; let x=index" class="col-xs-12">
+          <div style="margin-top: 10px">
+            <div class="col-sm-4 menu-select">
+              <mat-select id="schedule-{{i}}-{{period.id}}" name="schedule-{{i}}-{{period.id}}" style="border: 1px solid #dddddd;padding: 5px;"
+                          [(ngModel)]="period.selectedMenu">
+                <mat-option>
+                  <ngx-mat-select-search placeholderLabel="Search" [formControl]="searchForm"></ngx-mat-select-search>
+                </mat-option>
+                <mat-option [style.display]="(menu.label).toLowerCase().includes((searchForm?.value || '').toLowerCase()) ? 'block' : 'none'" *ngFor="let menu of menus" [value]="menu">
+                  {{menu.label}}-{{menu.code}}
+                </mat-option>
+              </mat-select>
+            </div>
+            <div class="col-sm-1">
+              <a class="btn btn-link btn-xs" href="javascript:;" (click)="addMenu(period, period.selectedMenu)">
+                <i class="fa fa-plus-square" aria-hidden="true"></i> Add Menu
+              </a>
+            </div>
+          </div>
+          <table class="table table-sm table-condensed table-bordered" style="margin-top: 10px">
+            <thead>
+              <tr>
+                <th colspan="3" class="text-center">{{period.mealPeriodName}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let menu of period.menus">
+                <td>
+                  {{menu.label}}
+                </td>
+                <td>
+                  {{menu.code}}
+                </td>
+                <td style="width:30px">
+                  <a class="btn btn-link btn-xs" href="javascript:;" (click)="EditMenu(period, menu.menuId)">
+                    <i class="fa" aria-hidden="true"></i>
+                  </a>
+                  <a class="btn btn-link btn-xs" href="javascript:;" (click)="removeMenu(period, menu.menuId)">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+      <button type="submit" mat-button [disabled]="isSaving" *ngIf="day > 0">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

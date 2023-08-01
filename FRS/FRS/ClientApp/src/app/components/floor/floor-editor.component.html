@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>{{'pageHeader.Floors' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="floorEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageFloors" type="text" autocomplete="off" name="code" id="code" key="code" placeholder="{{'floors.editor.Code' | translate}}" [(ngModel)]="floorEdit.code" #code="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!code.valid || validation.code)">{{'floors.editor.CodeRequired' | translate}}</mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageFloors" type="text" autocomplete="off" name="label" id="label" key="label" placeholder="{{'floors.editor.Label' | translate}}" [(ngModel)]="floorEdit.label" #label="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!label.valid || validation.label)">{{'floors.editor.LabelRequired' | translate}}</mat-error>
+      </mat-form-field>
+     
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="floorEdit != null">
+    <button *ngIf="!canManageFloors" mat-button (click)="cancel()">{{'floors.editor.Close' | translate}}</button>
+    <button *ngIf="canManageFloors" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'floors.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageFloors" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('floors.editor.Saving' | translate) : ('floors.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

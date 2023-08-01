@@ -1,0 +1,83 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="institutionEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!institutionName.valid && showErrorAlert('Institution name is required', 'Please enter a institution name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageInstitutions" type="text" id="institutionName" name="institutionName" placeholder="Enter institution name" [(ngModel)]="institutionEdit.name" #institutionName="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageInstitutions" type="text" id="institutionDescription" name="institutionDescription" placeholder="Enter institution description" [(ngModel)]="institutionEdit.description" #institutionDescription="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+          <mat-form-field class="col-md-6">
+            <input matInput [disabled]="!canManageInstitutions" type="number" id="institutionStartTime" name="institutionStartTime" placeholder="Time Start (24-hr)" [(ngModel)]="institutionEdit.startTime" #institutionStartTime="ngModel" required min="1" max="24" />
+          </mat-form-field>
+
+          <mat-form-field class="col-md-6">
+            <input matInput [disabled]="!canManageInstitutions" type="number" id="institutionEndTime" name="institutionEndTime" placeholder="Time End (24-hr)" [(ngModel)]="institutionEdit.endTime" #institutionEndTime="ngModel" required min="1" max="24" />
+          </mat-form-field>
+          <div class="col-md-12">
+            <mat-checkbox name="isRestrictDuplicateBooking" [(ngModel)]="institutionEdit.isRestrictDuplicateBooking">
+              <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Restrict duplicate booking of location per unit number</label>
+            </mat-checkbox>
+          </div>
+          <mat-form-field class="col-md-12" *ngIf="institutionEdit.isRestrictDuplicateBooking">
+            <mat-select [required]="institutionEdit.isRestrictDuplicateBooking" placeholder="Restriction" [(ngModel)]="institutionEdit.restriction" name="restriction">
+              <mat-option *ngFor="let r of restrictions" [value]="r">{{r}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!--<div class="col-sm-12">
+          <div class="form-group">
+            <label class="control-label col-md-2" for="institutionDescription">{{'institutions.editor.Description' | translate}}</label>
+            <div class="col-md-10">
+              <input [disabled]="!canManageInstitutions" type="text" id="institutionDescription" name="institutionDescription" placeholder="Enter institution description" class="form-control" [(ngModel)]="institutionEdit.description" />
+            </div>
+          </div>
+        </div>-->
+      </div>
+
+      <!--<div class="row">
+        <div class="col-md-12">
+          <span *ngIf="showValidationErrors && f.submitted && !institutionName.valid" class="errorMessage institutionErrorMessage">
+            {{'institutions.editor.InstitutionNameRequired' | translate}}
+          </span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <hr class="edit-separator-hr" />
+        </div>
+      </div>-->
+
+
+      <!--<div class="form-group">
+
+        <div class="col-sm-7">
+          <div ngPreserveWhitespaces class="pull-right">
+            <button *ngIf="!canManageInstitutions" type="button" (click)="cancel()" class="btn btn-default">{{'institutions.editor.Close' | translate}}</button>
+            <button *ngIf="canManageInstitutions" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'institutions.editor.Cancel' | translate}}</button>
+            <button *ngIf="canManageInstitutions" type="submit" class="btn btn-primary" [disabled]="isSaving">
+              <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('institutions.editor.Saving' | translate) : ('institutions.editor.Save' | translate)}}
+            </button>
+          </div>
+        </div>
+      </div>-->
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageInstitutions" type="button" mat-button (click)="cancel()" >{{'institutions.editor.Close' | translate}}</button>
+      <button *ngIf="canManageInstitutions" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'institutions.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageInstitutions" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('institutions.editor.Saving' | translate) : ('institutions.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

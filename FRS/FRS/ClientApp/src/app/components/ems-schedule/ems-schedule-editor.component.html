@@ -1,0 +1,185 @@
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="emsScheduleEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!emsScheduleShortDescription.valid && showErrorAlert('EmsSchedule description is required', 'Please enter a ems schedule name (minimum of 2 and maximum of 200 characters)'));">
+
+    <div class="row">
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsScheduleLabel">{{'emsSchedules.editor.Label' | translate}}</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageEmsSchedules" type="text" id="emsScheduleLabel" name="emsScheduleLabel" placeholder="Enter label" class="form-control" [(ngModel)]="emsScheduleEdit.label" />
+          </div>
+        </div>
+      </div>
+
+      <!--<div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsScheduleLocation">{{'emsSchedules.editor.Location' | translate}}</label>
+          <div class="col-md-10">
+            <select [disabled]="!canManageEmsSchedules" class="form-control" [(ngModel)]="emsScheduleEdit.locationId" name="emsScheduleLocation">
+              <option value="">-- Select Location --</option>
+              <option *ngFor="let location of allLocations" [value]="location.location_id" required>
+                {{location.label}}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>-->
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsScheduleEmsGroup">{{'emsSchedules.editor.EmsGroup' | translate}}</label>
+          <div class="col-md-10">
+            <select [disabled]="!canManageEmsSchedules" class="form-control" [(ngModel)]="emsScheduleEdit.emsGroupId" name="emsScheduleEmsGroup">
+              <option value="">-- Select EmsGroup --</option>
+              <option *ngFor="let emsGroup of allEmsGroups" [value]="emsGroup.id" required>
+                {{emsGroup.name}}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsScheduleProfile">{{'emsSchedules.editor.Profile' | translate}}</label>
+          <div class="col-md-10">
+            <select [disabled]="!canManageEmsSchedules" class="form-control" [(ngModel)]="emsScheduleEdit.emsProfileId" name="emsScheduleProfile">
+              <option value="">-- Select Profile --</option>
+              <option *ngFor="let profile of allProfiles" [value]="profile.id" required>
+                {{profile.label}}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsScheduleEffectiveDate">{{'emsSchedules.editor.EffectiveDate' | translate}}</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageEmsSchedules" type="date" id="emsScheduleEffectiveDate" datetime="emsScheduleEffectiveDate" placeholder="Enter effectiveDate" class="form-control" [(ngModel)]="emsScheduleEdit.effectiveDate" name="emsScheduleEffectiveDate" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsScheduleIneffectiveDate">{{'emsSchedules.editor.IneffectiveDate' | translate}}</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageEmsSchedules" type="date" id="emsScheduleIneffectiveDate" datetime="emsScheduleIneffectiveDate" placeholder="Enter ineffectiveDate" class="form-control" [(ngModel)]="emsScheduleEdit.ineffectiveDate" name="emsScheduleIneffectiveDate" />
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsScheduleStartTime">{{'emsSchedules.editor.StartTime' | translate}}</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageEmsSchedules" type="time" id="emsScheduleStartTime" datetime="emsScheduleStartTime" placeholder="Enter startTime" class="form-control" [(ngModel)]="emsScheduleEdit.startTime" name="emsScheduleStartTime" />
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2" for="emsScheduleEndTime">{{'emsSchedules.editor.EndTime' | translate}}</label>
+          <div class="col-md-10">
+            <input [disabled]="!canManageEmsSchedules" type="time" id="emsScheduleEndTime" datetime="emsScheduleEndTime" placeholder="Enter endTime" class="form-control" [(ngModel)]="emsScheduleEdit.endTime" name="emsScheduleEndTime" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2">{{'emsSchedules.editor.Weekdays' | translate}}</label>
+          <div class="col-md-10">
+            <span>
+              <input name="monday" [(ngModel)]="emsScheduleEdit.monday" type="checkbox"> Monday
+            </span>
+            &nbsp;
+            <span>
+              <input name="tuesday" [(ngModel)]="emsScheduleEdit.tuesday" type="checkbox"> Tuesday
+            </span>
+            &nbsp;
+            <span>
+              <input name="wednesday" [(ngModel)]="emsScheduleEdit.wednesday" type="checkbox"> Wednesday
+            </span>
+            &nbsp;
+            <span>
+              <input name="thursday" [(ngModel)]="emsScheduleEdit.thursday" type="checkbox"> Thursday
+            </span>
+            &nbsp;
+            <span>
+              <input name="friday" [(ngModel)]="emsScheduleEdit.friday" type="checkbox"> Friday
+            </span>
+            &nbsp;
+            <span>
+              <input name="saturday" [(ngModel)]="emsScheduleEdit.saturday" type="checkbox"> Saturday
+            </span>
+            &nbsp;
+            <span>
+              <input name="sunday" [(ngModel)]="emsScheduleEdit.sunday" type="checkbox"> Sunday
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!--<div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-md-2">{{'emsSchedules.editor.Exception' | translate}}</label>
+          <div class="col-md-10">
+            <span>
+              <input name="holiday" [(ngModel)]="emsScheduleEdit.exceptHoliday" type="checkbox"> Except Holiday
+            </span>
+          </div>
+        </div>
+      </div>-->
+
+    </div>
+
+
+
+    <!--******************************************************************************************************-->
+
+    <div *ngIf="!isEditMode || canManageEmsSchedules" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+
+    <div class="row">
+
+    </div>
+    <div *ngIf="!isEditMode || canManageEmsSchedules" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr class="edit-last-separator-hr" />
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <div class="col-sm-7">
+        <div ngPreserveWhitespaces class="pull-right">
+          <button *ngIf="!canManageEmsSchedules" type="button" (click)="cancel()" class="btn btn-default">{{'emsSchedules.editor.Close' | translate}}</button>
+          <button *ngIf="canManageEmsSchedules" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'emsSchedules.editor.Cancel' | translate}}</button>
+          <button *ngIf="canManageEmsSchedules" type="submit" class="btn btn-primary" [disabled]="isSaving">
+            <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('emsSchedules.editor.Saving' | translate) : ('emsSchedules.editor.Save' | translate)}}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </form>
+</div>

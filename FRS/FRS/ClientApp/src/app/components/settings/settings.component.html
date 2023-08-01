@@ -1,0 +1,369 @@
+<div class="container">
+  
+
+  <div [@fadeInOut] class="row" style="margin-top: 10px;">
+    <div class="col-sm-2 side-menu" style="overflow-y: scroll;height: 85vh;" [hidden]="hideMenu">
+      <header class="pageHeader">
+        <h3><i class="fa fa-cog fa-lg page-caption" aria-hidden="true" (click)="hideMenu = !hideMenu"></i> {{'pageHeader.Settings' | translate}}</h3>
+      </header>
+      <ul bootstrapTab #tab="bootstrap-tab" class="nav nav-tabs tabs-left" (showBSTab)="onShowTab($event)">
+        <li class="active">
+          <a id="profileTab" [routerLink]="[]" fragment="profile" href="#profile" data-toggle="tab"><i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> {{'settings.tab.Profile' | translate}}</a>
+        </li>
+        <!--<li>
+    <a id="phonebookTab" [routerLink]="[]" fragment="phonebook" href="#phonebook" data-toggle="tab"><i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> {{'settings.tab.Phonebook' | translate}}</a>
+  </li>-->
+        <li>
+          <a id="preferencesTab" [routerLink]="[]" fragment="preferences" href="#preferences" data-toggle="tab"><i class="fa fa-sliders fa-fw" aria-hidden="true"></i> {{'settings.tab.Preferences' | translate}}</a>
+        </li>
+        <li [hidden]="!canViewUsers">
+          <a id="usersTab" [routerLink]="[]" fragment="users" href="#users" data-toggle="tab"><i class="fa fa-users fa-fw" aria-hidden="true"></i> {{'settings.tab.Users' | translate}}</a>
+        </li>
+        <li [hidden]="!canViewUserGroups">
+          <a id="userGroupsTab" [routerLink]="[]" fragment="userGroups" href="#userGroups" data-toggle="tab"><i class="fa fa-users fa-fw" aria-hidden="true"></i> {{'settings.tab.UserGroups' | translate}}</a>
+        </li>
+        <li [hidden]="!canViewRoles">
+          <a id="rolesTab" [routerLink]="[]" fragment="roles" href="#roles" data-toggle="tab"><i class="fa fa-shield fa-fw" aria-hidden="true"></i> {{'settings.tab.Roles' | translate}}</a>
+        </li>
+        <!--<li [hidden]="!canViewLocations">
+    <a id="locationsTab" [routerLink]="[]" fragment="locations" href="#locations" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> {{'settings.tab.Locations' | translate}}</a>
+  </li>-->
+        <li [hidden]="!canViewLocations">
+          <a id="locationsTreeTab" [routerLink]="[]" fragment="locationsTree" href="#locationsTree" data-toggle="tab"><i class="fa fa-university fa-fw" aria-hidden="true"></i> Location Tree </a>
+        </li>
+        <li [hidden]="!canViewFacilities">
+          <a id="facilitiesTab" [routerLink]="[]" fragment="facilities" href="#facilities" data-toggle="tab"><i class="fa fa-chain fa-fw" aria-hidden="true"></i> {{'settings.tab.Facilities' | translate}}</a>
+        </li>
+        <li [hidden]="!canViewFacilityTypes">
+          <a id="facilityTypesTab" [routerLink]="[]" fragment="facilityTypes" href="#facilityTypes" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> {{'settings.tab.FacilityTypes' | translate}}</a>
+        </li>
+        <li [hidden]="!canViewInstitutions">
+          <a id="institutionsTab" [routerLink]="[]" fragment="institutions" href="#institutions" data-toggle="tab"><i class="fa fa-building fa-fw" aria-hidden="true"></i> {{'settings.tab.Institutions' | translate}}</a>
+        </li>
+        <li [hidden]="!canManageDepartments">
+          <a id="departmentsTab" [routerLink]="[]" fragment="departments" href="#departments" data-toggle="tab"><i class="fa fa-bank fa-fw" aria-hidden="true"></i> {{'settings.tab.Departments' | translate}}</a>
+        </li>
+        <li [hidden]="!canManageEpaperTemplates">
+          <a id="epaperTemplatesTab" [routerLink]="[]" fragment="epaperTemplates" href="#epaperTemplates" data-toggle="tab"><i class="fa fa-sticky-note-o fa-fw" aria-hidden="true"></i> {{'settings.tab.TemplateEditor' | translate}}</a>
+        </li>
+        <li [hidden]="!canManageEpaperDevices">
+          <a id="epaperDevicesTab" [routerLink]="[]" fragment="epaperDevices" href="#epaperDevices" data-toggle="tab"><i class="fa fa-tv fa-fw" aria-hidden="true"></i> {{'settings.tab.EpaperDevices' | translate}}</a>
+        </li>
+        <li>
+          <a id="applicationSettingTab" [routerLink]="[]" class="tab-link" fragment="applicationSetting" href="#applicationSetting" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.ApplicationSetting' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="mediaTab" [routerLink]="[]" class="tab-link" fragment="medias" href="#medias" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.Media' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="imageUploadsTab" [routerLink]="[]" fragment="imageUploads" href="#imageUploads" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> Media Upload</a>
+        </li>
+        <li>
+          <a id="playlistsTab" [routerLink]="[]" fragment="playlists" href="#playlists" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> Playlist </a>
+        </li>
+        <li>
+          <a id="NeoSettingsTab" [routerLink]="[]" fragment="neoSettings" href="#neoSettings" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i>Neo App Settings</a>
+        </li>
+
+        <li [hidden]="!canManageSignageComponents">
+          <a id="signageComponentsTab" [routerLink]="[]" fragment="signageComponents" href="#signageComponents" data-toggle="tab"><i class="fa fa-tv fa-fw" aria-hidden="true"></i> {{'settings.tab.SignageComponents' | translate}}</a>
+        </li>
+
+        <li [hidden]="!canManageSignageCompilations">
+          <a id="signageCompilationsTab" [routerLink]="[]" fragment="signageCompilations" href="#signageCompilations" data-toggle="tab"><i class="fa fa-tv fa-fw" aria-hidden="true"></i> {{'settings.tab.SignageCompilations' | translate}}</a>
+        </li>
+
+        <li [hidden]="!canManageSignagePublications">
+          <a id="signagePublicationsTab" [routerLink]="[]" fragment="signagePublications" href="#signagePublications" data-toggle="tab"><i class="fa fa-tv fa-fw" aria-hidden="true"></i> {{'settings.tab.SignagePublications' | translate}}</a>
+        </li>
+        <li>
+          <a id="directoryListingCategoryTab" [routerLink]="[]" class="tab-link" fragment="directoryListingCategory" href="#directoryListingCategory" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.DirectoryListingCategory' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="directoryListingTab" [routerLink]="[]" class="tab-link" fragment="directoryListing" href="#directoryListing" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.DirectoryListing' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="occupancyLogTab" [routerLink]="[]" class="tab-link" fragment="occupancyLog" href="#occupancyLog" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.OccupancyLog' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="buildingTab" [routerLink]="[]" class="tab-link" fragment="building" href="#building" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.Building' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="floorTab" [routerLink]="[]" class="tab-link" fragment="floor" href="#floor" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.Floor' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="mapTab" [routerLink]="[]" class="tab-link" fragment="map" href="#map" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.Map' | translate}}</span></a>
+        </li>
+        <li [hidden]="!canManageModules">
+          <a id="moduleTab" [routerLink]="[]" class="tab-link" fragment="modules" href="#modules" data-toggle="tab"><i class="fa fa-bars fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.Module' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="employeeDesignationTab" [routerLink]="[]" class="tab-link" fragment="employeeDesignation" href="#employeeDesignation" data-toggle="tab"><i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.EmployeeDesignation' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="employeeDataTab" [routerLink]="[]" class="tab-link" fragment="employeeData" href="#employeeData" data-toggle="tab"><i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.EmployeeData' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="employeeScheduleTab" [routerLink]="[]" class="tab-link" fragment="employeeSchedule" href="#employeeSchedule" data-toggle="tab"><i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.EmployeeSchedule' | translate}}</span></a>
+        </li>
+        <li>
+          <a id="kioskSettingsTab" [routerLink]="[]" fragment="kioskSettings" href="#kioskSettings" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> Kiosk Settings </a>
+        </li>
+        <li [hidden]="!canManageEmses">
+          <a id="emsTab" [routerLink]="[]" class="tab-link" fragment="emses" href="#emses" data-toggle="tab"><i class="fa fa-bars fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.Ems' | translate}}</span></a>
+        </li>
+        <li [hidden]="!canManageEmsProfiles">
+          <a id="emsProfileTab" [routerLink]="[]" class="tab-link" fragment="emsProfile" href="#emsProfile" data-toggle="tab"><i class="fa fa-bars fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.EmsProfile' | translate}}</span></a>
+        </li>
+        <li [hidden]="!canManageEmsSchedules">
+          <a id="emsScheduleTab" [routerLink]="[]" class="tab-link" fragment="emsSchedule" href="#emsSchedule" data-toggle="tab"><i class="fa fa-bars fa-fw" aria-hidden="true"></i> <span class="menu-text"> {{'settings.tab.EmsSchedule' | translate}}</span></a>
+        </li>
+        <!--<li [hidden]="!canManageContactGroups">
+    <a id="contactGroupsTab" [routerLink]="[]" fragment="contactGroups" href="#contactGroups" data-toggle="tab"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> {{'settings.tab.ContactGroups' | translate}}</a>
+  </li>-->
+      </ul>
+    </div>
+    <div [ngClass]="hideMenu ? 'col-sm-12' : 'col-sm-10'">
+      <div class="tab-content">
+        <div class="tab-pane active" *ngIf="isProfileActivated" id="profile">
+          <!--<h4>
+            {{
+'settings.header.UserProfile' | translate
+            }}
+          </h4>
+          <hr class="separator-hr" />-->
+          <div [@fadeInOut] class="content-container">
+            <user-info></user-info>
+          </div>
+        </div>
+        <div class="tab-pane" id="phonebook">
+
+
+
+          <!--<h4>{{'settings.header.Phonebook' | translate}}</h4>
+    <hr class="separator-hr" />-->
+          <div [@fadeInOut] *ngIf="isPhonebookActivated" class="content-container">
+            <userphonebooks-management></userphonebooks-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isPreferencesActivated" id="preferences">
+          <h4>{{'settings.header.UserPreferences' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <user-preferences></user-preferences>
+          </div>
+        </div>
+
+        <div class="tab-pane" *ngIf="canViewUsers && isUsersActivated" id="users">
+          <h4>{{'settings.header.UsersManagements' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <users-management></users-management>
+          </div>
+        </div>
+
+        <div class="tab-pane" *ngIf="canViewUserGroups && isUserGroupsActivated" id="userGroups">
+          <h4>{{'settings.header.UserGroupsManagements' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <user-groups-management></user-groups-management>
+          </div>
+        </div>
+
+        <div class="tab-pane" *ngIf="canViewRoles && isRolesActivated" id="roles">
+          <h4>{{'settings.header.RolesManagement' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <roles-management></roles-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canViewLocations && isLocationsActivated" id="locations">
+          <h4>{{'settings.header.LocationsManagement' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <locations-management></locations-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canViewLocations && isLocationsTreeActivated" id="locationsTree">
+          <h4>{{'settings.header.LocationsManagement' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <locations-tree-management></locations-tree-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canViewFacilities && isFacilitiesActivated" id="facilities">
+          <h4>{{'settings.header.FacilitiesManagement' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <facilities-management></facilities-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canViewFacilityTypes && isFacilityTypesActivated" id="facilityTypes">
+          <h4>{{'settings.header.FacilityTypesManagement' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <facility-types-management></facility-types-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canViewInstitutions && isInstitutionsActivated" id="institutions">
+          <h4>{{'settings.header.InstitutionsManagement' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <institutions-management></institutions-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canManageDepartments && isDepartmentsActivated" id="departments">
+          <h4>{{'settings.header.DepartmentsManagement' | translate}}</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <departments-management></departments-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isMediaActivated" id="medias">
+          <div [@fadeInOut] class="content-container">
+            <medias-management></medias-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isApplicationSettingActivated" id="applicationSetting">
+          <div [@fadeInOut] class="content-container">
+            <application-settings-management></application-settings-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isUploadImagesActivated" id="imageUploads">
+          <h4>Media Upload</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <image-lists></image-lists>
+          </div>
+        </div>
+
+        <div class="tab-pane" *ngIf="isPlaylistsActivated" id="playlists">
+          <h4>Playlist</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <playlists-management></playlists-management>
+          </div>
+        </div>
+
+        <div class="tab-pane" *ngIf="isNeoSettingsActivated" id="neoSetting">
+          <h4>Neo App Setting</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <image-uploads></image-uploads>
+          </div>
+        </div>
+        <div class="tab-pane" id="contactGroups">
+
+
+
+          <!--<h4>{{'settings.header.ContactGroupsManagement' | translate}}</h4>
+    <hr class="separator-hr" />-->
+          <div [@fadeInOut] *ngIf="canManageContactGroups && isContactGroupsActivated" class="content-container">
+            <contactgroups-management></contactgroups-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canManageEpaperTemplates && isEpaperTemplatesActivated" id="epaperTemplates">
+          <div [@fadeInOut] class="content-container">
+            <frs-template-editor></frs-template-editor>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canManageEpaperDevices && isEpaperDevicesActivated" id="epaperDevices">
+          <div [@fadeInOut] class="content-container">
+            <frs-devices-management></frs-devices-management>
+          </div>
+        </div>
+
+        <div class="tab-pane" *ngIf="canManageSignageComponents && isSignageComponentsActivated" id="signageComponents">
+          <div [@fadeInOut] class="content-container">
+            <signage-components-management></signage-components-management>
+          </div>
+        </div>
+
+        <div class="tab-pane" *ngIf="canManageSignageCompilations && isSignageCompilationsActivated" id="signageCompilations">
+          <div [@fadeInOut] class="content-container">
+            <signage-compilations-management></signage-compilations-management>
+          </div>
+        </div>
+
+        <div class="tab-pane" *ngIf="canManageSignagePublications && isSignagePublicationsActivated" id="signagePublications">
+          <div [@fadeInOut] class="content-container">
+            <signage-publications-management></signage-publications-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isDirectoryListingCategoryActivated" id="directoryListingCategory">
+          <div [@fadeInOut] class="content-container">
+            <directory-listing-categorys-management></directory-listing-categorys-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isDirectoryListingActivated" id="directoryListing">
+          <div [@fadeInOut] class="content-container">
+            <directory-listings-management></directory-listings-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isOccupancyLogActivated" id="occupancyLog">
+          <div [@fadeInOut] class="content-container">
+            <occupancy-logs-management></occupancy-logs-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isBuildingActivated" id="building">
+          <div [@fadeInOut] class="content-container">
+            <buildings-management></buildings-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isFloorActivated" id="floor">
+          <div [@fadeInOut] class="content-container">
+            <floors-management></floors-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isMapActivated" id="map">
+          <div [@fadeInOut] class="content-container">
+            <maps-management></maps-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canManageModules && isModulesActivated" id="modules">
+          <div [@fadeInOut] class="content-container">
+            <modules-management></modules-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isEmployeeDesignationActivated" id="employeeDesignation">
+          <div [@fadeInOut] class="content-container">
+            <employee-designations-management></employee-designations-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isEmployeeDataActivated" id="employeeData">
+          <div [@fadeInOut] class="content-container">
+            <employee-datas-management></employee-datas-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isEmployeeScheduleActivated" id="employeeSchedule">
+          <div [@fadeInOut] class="content-container">
+            <employee-schedules-management></employee-schedules-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="isKioskSettingsActivated" id="kioskSettings">
+          <h4>Kiosk Settings</h4>
+          <hr class="separator-hr" />
+          <div [@fadeInOut] class="content-container">
+            <kiosk-settings-list></kiosk-settings-list>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canManageEmses && isEmsActivated" id="emses">
+          <div [@fadeInOut] class="content-container">
+            <emses-management></emses-management>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canManageEmsProfiles && isEmsProfileActivated" id="emsProfile">
+          <div [@fadeInOut] class="content-container">
+            <ems-profiles></ems-profiles>
+          </div>
+        </div>
+        <div class="tab-pane" *ngIf="canManageEmsSchedules && isEmsScheduleActivated" id="emsSchedule">
+          <div [@fadeInOut] class="content-container">
+            <ems-schedules></ems-schedules>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

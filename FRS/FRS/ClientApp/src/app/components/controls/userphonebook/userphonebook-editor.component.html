@@ -1,0 +1,105 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="userPhonebookEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!userPhonebookName.valid && showErrorAlert('Contact name is required', 'Please enter a userPhonebook name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-xs-12">
+            <input matInput [disabled]="!canManageUserPhonebooks" type="text" id="userPhonebookName" name="userPhonebookName" placeholder="Enter name" [(ngModel)]="userPhonebookEdit.name" #userPhonebookName="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+          <mat-form-field class="col-xs-12">
+            <input matInput [disabled]="!canManageUserPhonebooks" type="text" id="userPhonebookEmail" name="userPhonebookEmail" placeholder="Enter email" [(ngModel)]="userPhonebookEdit.email" #userPhonebookEmail="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput [disabled]="!canManageUserPhonebooks" type="text" id="userPhonebookPhoneNumber" name="userPhonebookPhoneNumber" placeholder="Enter phone number" [(ngModel)]="userPhonebookEdit.phoneNumber" #userPhonebookPhoneNumber="ngModel" />
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput [disabled]="!canManageUserPhonebooks" type="text" id="userPhonebookHomeNo" name="userPhonebookHomeNo" placeholder="Enter home number" [(ngModel)]="userPhonebookEdit.homeNo" #userPhonebookHomeNo="ngModel" />
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput [disabled]="!canManageUserPhonebooks" type="text" id="userPhonebookMobileNo" name="userPhonebookMobileNo" placeholder="Enter mobile number" [(ngModel)]="userPhonebookEdit.mobileNo" #userPhonebookMobileNo="ngModel" />
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput [disabled]="!canManageUserPhonebooks" type="text" id="userPhonebookDesignation" name="userPhonebookDesignation" placeholder="Enter Designation" [(ngModel)]="userPhonebookEdit.designation" #userPhonebookDesignation="ngModel" />
+          </mat-form-field>
+
+          <div *ngIf="canManageUserPhonebooks" class="col-xs-12">
+            <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="facilities-facility-icon">Photo</label>
+            <div class="col-md-7">
+              <file-upload (onUploadFinished)="uploadFinished($event)" fileTypes="image/*"></file-upload>
+            </div>
+
+            <div *ngIf="userPhonebookEdit.filePath" class="col-md-3" style="padding:10px; border: 1px dashed #808080;text-align:center">
+              <img [src]="getFileImage(userPhonebookEdit.filePath)" alt="icon" style="width:50px; height:50px;" />
+            </div>
+
+            <!--<span *ngIf="fileUploadResponse != null">{{fileUploadResponse.fileName}}</span>-->
+          </div>
+        </div>
+        <!--<br />
+        <hr class="separator-hr" />
+        <div class="col-md-12">
+          <button type="button" mat-button [matMenuTriggerFor]="menu">
+            <mat-icon>
+              person_add
+            </mat-icon> Add Members
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item type="button" (click)="openFromAddressBook()">
+              <mat-icon>
+                assignment
+              </mat-icon>From Address Book
+            </button>
+            <button mat-menu-item type="button" (click)="openNewEmailContact()">
+              <mat-icon>
+                person_add
+              </mat-icon>New Email Contact
+            </button>
+          </mat-menu>
+        </div>
+        <div class="col-sm-12">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Department</th>
+                <th scope="col">Designation</th>
+                <th scope="col">Phone No</th>
+                <th scope="col">Company</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of userPhonebookEdit.members">
+                <td>{{row.name}}</td>
+                <td>{{row.email}}</td>
+                <td>{{row.department}}</td>
+                <td>{{row.designation}}</td>
+                <td>{{row.phoneNumber}}</td>
+                <td>{{row.company}}</td>
+                <td>
+                  <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteMember(row)">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>-->
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageUserPhonebooks" type="button" mat-button (click)="cancel()">{{'userPhonebooks.editor.Close' | translate}}</button>
+      <button *ngIf="canManageUserPhonebooks" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'userPhonebooks.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageUserPhonebooks" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('userPhonebooks.editor.Saving' | translate) : ('userPhonebooks.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

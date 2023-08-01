@@ -1,0 +1,24 @@
+<div>
+  <header class="pageHeader">
+    <h3>{{'mainMenu.Reports' | translate}}</h3>
+  </header>
+  <hr class="separator-hr" />
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <mat-form-field floatLabel="always" class="filter">
+        <mat-label>Report Type</mat-label>
+        <mat-select id="reportType" name="reportType" [(ngModel)]="reportType">
+          <mat-option *ngFor="let t of types" [value]="t">
+            {{t}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-xs-12" *ngIf="reportType == RESERVATION">
+      <reports-reservation-list></reports-reservation-list>
+    </div>
+    <div class="col-xs-12" *ngIf="reportType == VEHICLE_LOG">
+      <reports-vehicle-log-list></reports-vehicle-log-list>
+    </div>
+  </div>
+</div>

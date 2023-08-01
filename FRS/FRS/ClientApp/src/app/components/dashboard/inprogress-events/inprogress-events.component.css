@@ -1,0 +1,37 @@
+.mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+mat-form-field {
+  margin-right: 12px;
+}
+
+.upcoming-event-title div {
+  width: 50%;
+  float: left;
+  font-size: medium;
+}
+
+  .upcoming-event-title div mat-icon {
+    vertical-align: bottom;
+  }
+
+::ng-deep .mat-card-header-text{
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.mat-card {
+  margin-bottom: 10px;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  min-height: 140px;
+}
+
+
+
+.mat-content {
+  display: block;
+}

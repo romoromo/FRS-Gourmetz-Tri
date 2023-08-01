@@ -1,0 +1,42 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="mediaEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!mediaName.valid && showErrorAlert('Media name is required', 'Please enter a media name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageMedias" type="text" id="mediaName" name="mediaName" autocomplete="off" placeholder="Enter media name" [(ngModel)]="mediaEdit.name" #mediaName="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageMedias" type="text" id="mediaDescription" name="mediaDescription" autocomplete="off" placeholder="Enter media description" [(ngModel)]="mediaEdit.description" #mediaDescription="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+          <!--<mat-form-field appearance="fill">
+            <mat-label>Roless</mat-label>
+            <mat-select name="roles" [(ngModel)]="mediaEdit.rolesArr" multiple>
+              <mat-option *ngFor="let role of allRoles" [value]="role.name">{{role.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>-->
+
+          <mat-form-field appearance="fill" class="col-md-12">
+            <mat-label>User Groups</mat-label>
+            <mat-select name="userGroups" [(ngModel)]="mediaEdit.userGroupsArr" multiple>
+              <mat-option *ngFor="let ug of allUserGroups" [value]="ug.name">{{ug.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageMedias" type="button" mat-button (click)="cancel()" >{{'medias.editor.Close' | translate}}</button>
+      <button *ngIf="canManageMedias" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageMedias" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('medias.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

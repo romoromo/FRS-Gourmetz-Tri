@@ -1,0 +1,114 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="menuCycleEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!menuCycleLabel.valid && showErrorAlert('Label is required', 'Please enter label (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-label class="col-md-12"><h5>General Information</h5></mat-label>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <mat-label>Outlet Profile</mat-label>
+          <mat-select [disabled]="!canManageMenuCycles || menuCycleEdit.id > 0" id="outletProfileId" name="outletProfileId" [(ngModel)]="menuCycleEdit.outletProfileId" #outletProfileId="ngModel" required  (selectionChange)="onOutletChange($event.value)">
+            <mat-option *ngFor="let outletProfile of outletProfiles" [value]="outletProfile.id">
+              {{outletProfile.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageMenuCycles" type="text" id="menuCycleLabel" name="menuCycleLabel" placeholder="Enter label" [(ngModel)]="menuCycleEdit.label" #menuCycleLabel="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [value]="start"
+                 (dateChange)="onChangeDate('start', $event)" required>
+          <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+          <mat-datepicker #startpicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="endpicker" placeholder="End Date" [value]="end"
+                 (dateChange)="onChangeDate('end', $event)" required>
+          <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+          <mat-datepicker #endpicker></mat-datepicker>
+        </mat-form-field>
+        <mat-label class="col-md-12"><h5>Schedules</h5></mat-label>
+        <div class="col-sm-12">
+          <div class="form-group row">
+            <div class="col-md-12">
+              <button type="button" mat-button (click)="addSchedule()" [disabled]="!menuCycleEdit.outletProfileId">
+                <mat-icon>
+                  add
+                </mat-icon> Add Day
+              </button>
+            </div>
+            <div class="col-sm-12">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col" style="width: 100px;"></th>
+                    <th scope="col" *ngFor="let period of periods; let i=index">{{period.name}}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let schedule of menuCycleEdit.schedules;let i = index">
+                    <td>
+                      Day {{schedule.day}}
+                      <div>
+                        <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteSchedule(schedule.day)">
+                          <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        </a>
+                      </div>
+
+                    </td>
+                    <td *ngFor="let period of schedule.periods; let x=index">
+                      <mat-form-field class="col-xs-10 filter" appearance="outline" floatLabel="always">
+                        <mat-select [disabled]="!canManageMenuCycles" id="schedule-{{i}}-{{period.id}}" name="schedule-{{i}}-{{period.id}}"
+                                    [(ngModel)]="period.selectedMenu">
+                          <mat-option *ngFor="let menu of menus" [value]="menu">
+                            {{menu.label}} - {{menu.code}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <div class="col-xs-2">
+                        <a class="btn btn-link btn-xs" href="javascript:;" (click)="addMenu(period, period.selectedMenu)">
+                          <i class="fa fa-plus-square" aria-hidden="true"></i>
+                        </a>
+                      </div>
+                      <mat-nav-list class="col-xs-12 list">
+                        <mat-list-item *ngFor="let menu of period.menus">
+                          <div class="col-xs-10">{{menu.label}} - {{menu.code}}</div>
+                          <div class="col-xs-2">
+                            <!--<button type="button" class="btn btn-link btn-xs" mat-icon-button (click)="removeMenu(period, menu.id)">
+                        <mat-icon>delete</mat-icon>
+                      </button>-->
+                            <a class="btn btn-link btn-xs" href="javascript:;" (click)="removeMenu(period, menu.menuId)">
+                              <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+                          </div>
+                        </mat-list-item>
+                      </mat-nav-list>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div *ngFor="let dish of dishes; let i=index" class="col-md-6">
+          <mat-checkbox class="col-sm-6 col-xs-12" [(ngModel)]="dish.checked" id="dish-{{i}}"
+                        name="dish-{{i}}">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">{{dish.label}}</label>
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageMenuCycles" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageMenuCycles" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageMenuCycles" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

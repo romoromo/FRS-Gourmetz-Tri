@@ -1,0 +1,88 @@
+<div>
+  <header class="pageHeader">
+    <h3>Student Directory</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-8">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <!--<li *ngIf="canManageStudents" class="toolbaritem">
+    <a href="javascript:;" (click)="fileImport.click()">
+      <i class="fa fa-upload"></i> Import
+    </a>
+    <input type="file" #fileImport placeholder="Choose file" (change)="importedFile(fileImport.files)" style="display:none;" accept="{{fileTypes}}">
+
+  </li>-->
+          <li *ngIf="canManageStudents" class="toolbaritem">
+            <a href="javascript:;" (click)="fileStudentCardImport.click()">
+              <i class="fa fa-upload"></i> Import
+            </a>
+            <input type="file" #fileStudentCardImport placeholder="Choose file" (change)="importedStudentCardFile(fileStudentCardImport.files)" style="display:none;" accept="{{fileTypes}}">
+
+          </li>
+          <li *ngIf="canManageStudents" class="toolbaritem">
+            <a href="javascript:;" (click)="downloadResults()">
+              <i class="fa fa-download"></i> Download Results
+            </a>
+          </li>
+          <li *ngIf="canManageStudents" class="toolbaritem">
+            <a href="javascript:;" (click)="downloadTemplate()">
+              <i class="fa fa-download"></i> Download Template
+            </a>
+          </li>
+          <li *ngIf="canManageStudents" class="toolbaritem">
+            <a href="javascript:;" (click)="createAccount()">
+              <i class="fa fa-plus-circle"></i> Create Account
+            </a>
+          </li>
+          <li *ngIf="canManageStudents" class="toolbaritem">
+            <a href="javascript:;" (click)="newStudent(row)">
+              <i class="fa fa-plus-circle"></i> {{'common.New' | translate}}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [externalPaging]="true"
+                 [externalSorting]="true"
+                 [count]="pagedResult.totalCount"
+                 [limit]="pagedResult.filter.pageSize"
+                 (page)="loadData($event)"
+                 (sort)="loadData($event)">
+  </ngx-datatable>
+
+  <ng-template #iconTemplate let-row="row" let-value="value" let-i="index">
+    <div *ngIf="row.filePath">
+      <img [src]="getFileImage(row.filePath)" alt="icon" style="width:50px; height:50px;" />
+    </div>
+  </ng-template>
+
+  <ng-template #fasTemplate let-row="row" let-value="value" let-i="index">
+    {{(row.isFAS ? 'YES' : 'NO')}}
+  </ng-template>
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="editStudent(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
+    <a *ngIf="!canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="studentCalendar(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteStudent(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="openTokenOrder(row)"><i class="fa" aria-hidden="true"></i> Meal Order</a>
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="openStudentCalendar(row)"><i class="fa" aria-hidden="true"></i> Calendar </a>
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addVoucher(row)"><i class="fa" aria-hidden="true"></i> Add Voucher </a>
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="triggerNotification(row)"><i class="fa" aria-hidden="true"></i> Send Notification </a>
+  </ng-template>
+</div>

@@ -1,0 +1,71 @@
+<div class="container-fluid">
+  <header class="pageHeader">
+    <h3><i class="fa fa-handshake fa-lg page-caption" aria-hidden="true"></i> {{'pageHeader.EmsProfiles' | translate}}</h3>
+  </header>
+
+  <div [@fadeInOut]>
+    <div>
+      <div class="row control-box">
+        <div class="col-sm-8">
+          <div class="form-group search-box">
+            <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'emsProfiles.management.Search' | translate}}">></search-box>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="navbar action-box">
+            <ul class="nav navbar-nav navbar-right">
+              <li *ngIf="canManageEmsProfiles" class="toolbaritem">
+                <a href="javascript:;" (click)="newEmsProfile(row)">
+                  <i class="fa fa-plus-circle"></i> {{'emsProfiles.management.NewEmsProfile' | translate}}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <ngx-datatable class="material colored-header"
+                     [loadingIndicator]="loadingIndicator"
+                     [rows]="rows"
+                     [rowHeight]="'auto'"
+                     [headerHeight]="'auto'"
+                     [footerHeight]="50"
+                     [columns]="columns"
+                     [columnMode]="'force'"
+                     [reorderable]="'reorderable'"
+                     [limit]="20">
+      </ngx-datatable>
+
+      <ng-template #indexTemplate let-value="value">
+        <strong>{{value}}</strong>
+      </ng-template>
+
+
+      <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+        <div><a *ngIf="canManageEmsProfiles" class="btn btn-link btn-xs" href="javascript:;" (click)="editEmsProfile(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>{{'emsProfiles.management.Edit' | translate}}</a>
+        <a *ngIf="!canManageEmsProfiles" class="btn btn-link btn-xs" href="javascript:;" (click)="editEmsProfile(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'emsProfiles.management.Details' | translate}}</a>
+        </div>
+        <div><a *ngIf="canManageEmsProfiles" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteEmsProfile(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'emsProfiles.management.Delete' | translate}}</a></div>
+      </ng-template>
+
+
+      <div style="z-index:1000" class="modal fade" bsModal #editorModal="bs-modal" (onHidden)="onEditorModalHidden()" [config]="{backdrop: 'static'}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 *ngIf="!canManageEmsProfiles" class="modal-title pull-left"><i class="fa fa-shield"></i> {{'emsProfiles.management.EmsProfileDetails' | translate:editingEmsProfileName}}</h4>
+              <h4 *ngIf="canManageEmsProfiles" class="modal-title pull-left"><i class="fa fa-shield"></i> {{editingEmsProfileName ? ('emsProfiles.management.EditEmsProfile' | translate:editingEmsProfileName) : ('emsProfiles.management.NewEmsProfile' | translate)}}</h4>
+              <button type="button" class="close pull-right" title="Close" (click)="editorModal.hide()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <ems-profile-editor #emsProfileEditor></ems-profile-editor>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

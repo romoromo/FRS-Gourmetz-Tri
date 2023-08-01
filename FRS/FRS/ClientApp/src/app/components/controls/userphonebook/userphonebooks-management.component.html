@@ -1,0 +1,72 @@
+
+<div>
+  <header class="pageHeader">
+    <h3>{{'settings.header.Phonebook' | translate}}</h3>
+  </header>
+  <hr class="separator-hr" />
+  <div class="row control-box">
+
+    <div class="col-sm-8">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'userPhonebooks.management.Search' | translate}}">></search-box>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManageUserPhonebooks" class="toolbaritem">
+            <a href="javascript:;" (click)="newUserPhonebook()">
+              <i class="fa fa-plus-circle"></i> {{'userPhonebooks.management.NewUserPhonebook' | translate}}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [limit]="20">
+  </ngx-datatable>
+
+  <ng-template #indexTemplate let-value="value">
+    <strong>{{value}}</strong>
+  </ng-template>
+
+  <ng-template #photoTemplate let-row="row" let-value="value">
+    <div *ngIf="row.filePath">
+      <img [src]="getFileImage(row.filePath)" alt="icon" style="width:25px; height:25px;" />
+    </div>
+  </ng-template>
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageUserPhonebooks" class="btn btn-link btn-xs" href="javascript:;" (click)="editUserPhonebook(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'userPhonebooks.management.Edit' | translate}}</a>
+    <a *ngIf="!canManageUserPhonebooks" class="btn btn-link btn-xs" href="javascript:;" (click)="editUserPhonebook(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'userPhonebooks.management.Details' | translate}}</a>
+    <!--{{canManageUserPhonebooks ? '|' : ''}}-->
+    <a *ngIf="canManageUserPhonebooks" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteUserPhonebook(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'userPhonebooks.management.Delete' | translate}}</a>
+  </ng-template>
+
+
+  <div class="modal fade" bsModal #editorModal="bs-modal" (onHidden)="onEditorModalHidden()" [config]="{backdrop: 'static'}" tabindex="-1">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 *ngIf="!canManageUserPhonebooks" class="modal-title pull-left"><i class="fa fa-shield"></i> {{'userPhonebooks.management.UserPhonebookDetails' | translate:editingUserPhonebookName}}</h4>
+          <h4 *ngIf="canManageUserPhonebooks" class="modal-title pull-left"><i class="fa fa-shield"></i> {{editingUserPhonebookName ? ('userPhonebooks.management.EditUserPhonebook' | translate:editingUserPhonebookName) : ('userPhonebooks.management.NewUserPhonebook' | translate)}}</h4>
+          <button type="button" class="close pull-right" title="Close" (click)="editorModal.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <userphonebook-editor #userPhonebookEditor></userphonebook-editor>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

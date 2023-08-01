@@ -1,0 +1,4 @@
+﻿<p>Hello {user},</p>
+<p>
+  We noticed you missed to collect the order for {date}.
+</p>

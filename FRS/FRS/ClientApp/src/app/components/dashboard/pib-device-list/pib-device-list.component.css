@@ -1,0 +1,41 @@
+.mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+mat-form-field {
+  margin-right: 12px;
+}
+
+.device-for-approval-title div {
+  width: 50%;
+  float: left;
+  font-size: medium;
+}
+
+  .device-for-approval-title div mat-icon {
+    vertical-align: bottom;
+  }
+
+::ng-deep .mat-card-header-text{
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.mat-card {
+  margin-bottom: 10px;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  min-height: 140px;
+}
+
+.status_offline {
+  font-size: 20px;
+  color: #f72626 !important;
+}
+
+.status_online {
+  font-size: 20px;
+  color: #08ca08;
+}

@@ -1,0 +1,41 @@
+<h1 mat-dialog-title>{{'pageHeader.DirectoryListingCategorys' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="directoryListingCategoryEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageDirectoryListingCategorys" type="text" autocomplete="off" name="code" id="code" key="code" placeholder="{{'directoryListingCategorys.editor.Code' | translate}}" [(ngModel)]="directoryListingCategoryEdit.code" #code="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!code.valid || validation.code)">{{'directoryListingCategorys.editor.CodeRequired' | translate}}</mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageDirectoryListingCategorys" type="text" autocomplete="off" name="label" id="label" key="label" placeholder="{{'directoryListingCategorys.editor.Label' | translate}}" [(ngModel)]="directoryListingCategoryEdit.label" #label="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!label.valid || validation.label)">{{'directoryListingCategorys.editor.LabelRequired' | translate}}</mat-error>
+      </mat-form-field>
+      <div class="form-group">
+        <div class="col-md-12">
+          <label [class.col-md-2] class="control-label" for="facilities-facility-icon">Kiosk Icon</label>
+          <div class="col-md-12">
+            <file-upload (onUploadFinished)="uploadFinished($event)" fileTypes="image/*"></file-upload>
+          </div>
+
+          <div *ngIf="directoryListingCategoryEdit.icon" class="col-md-9" style="padding:10px; border: 1px dashed #808080;text-align:center">
+            <img [src]="getFileImage(directoryListingCategoryEdit.icon)" alt="icon" style="height:150px;" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="directoryListingCategoryEdit != null">
+    <button *ngIf="!canManageDirectoryListingCategorys" mat-button (click)="cancel()">{{'directoryListingCategorys.editor.Close' | translate}}</button>
+    <button *ngIf="canManageDirectoryListingCategorys" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'directoryListingCategorys.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageDirectoryListingCategorys" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('directoryListingCategorys.editor.Saving' | translate) : ('directoryListingCategorys.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

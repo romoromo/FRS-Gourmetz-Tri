@@ -1,0 +1,26 @@
+<!--<div class="row hide">
+  <h5>Preview</h5>
+  <br />
+  <div id="dup-stage-parent" [style.height.px]="origHeight" [style.width.px]="origWidth" style="border:1px solid red">
+    <div id="dup-container"></div>
+  </div>
+</div>
+<img src="{{imgSrc}}" class="print-preview" />
+
+<div class="preview-stage-parent hide">
+  <h5 style="text-align: center">Preview</h5>
+  <br />
+  <div id="preview-stage-parent" [style.height.px]="origHeight" [style.width.px]="origWidth">
+    <div id="preview-container"></div>
+  </div>
+</div>-->
+
+<!--<div id="preview-stage-parent" [style.height.px]="origHeight" [style.width.px]="origWidth">
+  <div id="preview-container">
+    <img [src]="previewImgUri" [style.height.px]="origHeight" [style.width.px]="origWidth" />
+  </div>
+</div>-->
+
+<div class="preview-container" [hidden]="!previewImgUri">
+  <img [src]="previewImgUri"  alt="PIB Display">
+</div>

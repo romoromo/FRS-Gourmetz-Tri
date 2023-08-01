@@ -1,0 +1,33 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="contactUsDetailEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!contactUsDetailName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <mat-label>Subject</mat-label>
+          <mat-select [disabled]="!canManageContactUsDetails" id="contactUsSubject" name="contactUsSubject" [(ngModel)]="contactUsDetailEdit.contactUsSubjectId" #contactUsSubject="ngModel" required>
+            <mat-option *ngFor="let contactUsSubject of contactUsSubjects" [value]="contactUsSubject.id">
+              {{contactUsSubject.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Subject is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <textarea matInput [disabled]="!canManageContactUsDetails" type="text" autocomplete="off" name="contactUsDetailLabel" id="contactUsDetailLabel" contactUsDetailLabelplaceholder="Label" [(ngModel)]="contactUsDetailEdit.label" #contactUsDetailLabel="ngModel" required minlength="1" rows="4"></textarea>
+          <!--<input matInput autocomplete="off" [disabled]="!canManageContactUsDetails" type="text" id="contactUsDetailLabel" name="contactUsDetailLabel" placeholder="Label" [(ngModel)]="contactUsDetailEdit.label" #contactUsDetailLabel="ngModel" required />-->
+        </mat-form-field>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageContactUsDetails" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageContactUsDetails" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageContactUsDetails" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,66 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="storeInfoEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!storeInfoName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageStoreInfos" type="text" id="storeInfoCode" name="storeInfoCode" placeholder="Code" [(ngModel)]="storeInfoEdit.code" #storeInfoCode="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageStoreInfos" type="text" id="storeInfoName" name="storeInfoName" placeholder="Label" [(ngModel)]="storeInfoEdit.name" #storeInfoName="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageStoreInfos" type="text" id="storeInfoAddress" name="storeInfoAddress" placeholder="Address" [(ngModel)]="storeInfoEdit.address" #storeInfoAddress="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <mat-label>Store Type</mat-label>
+          <mat-select [disabled]="!canManageStoreInfos" id="storeType" name="storeType" [(ngModel)]="storeInfoEdit.storeType" storeType="ngModel">
+            <mat-option [value]="''">
+            </mat-option>
+            <mat-option [value]="'Kitchen'">
+              Kitchen
+            </mat-option>
+            <mat-option [value]="'Inventory'">
+              Inventory
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <mat-label>Caterer</mat-label>
+          <mat-select [disabled]="!canManageStoreInfos" id="caterer" name="caterer" [(ngModel)]="storeInfoEdit.catererInfoId" #catererInfo="ngModel">
+            <mat-option [value]="''">
+            </mat-option>
+            <mat-option *ngFor="let catererInfo of catererInfos" [value]="catererInfo.id">
+              {{catererInfo.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="storeInfoEdit.storeType == 'Kitchen'" class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageStoreInfos" type="time" id="storeInfoCutoffTime" name="storeInfoCutoffTime" placeholder="CutoffTime" [(ngModel)]="storeInfoEdit.cutoffTime" #storeInfoCutoffTime="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field *ngIf="storeInfoEdit.storeType == 'Kitchen'" class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageStoreInfos" type="number" id="storeInfoCalendarDays" name="storeInfoCalendarDays" placeholder="CalendarDays" [(ngModel)]="storeInfoEdit.calendarDays" #storeInfoCalendarDays="ngModel" />
+        </mat-form-field>
+
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageStoreInfos" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageStoreInfos" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageStoreInfos" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,14 @@
+<div>
+  <mat-form-field>
+    <input matInput type="text" placeholder="Free Text" [(ngModel)]="configurations.freetext" />
+  </mat-form-field>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.name.hide">Hide Free Text</mat-checkbox>
+    </section>
+
+    <text-configuration *ngIf="!configurations.name.hide" [(configurations)]="configurations.name"></text-configuration>
+  </div>
+
+</div>

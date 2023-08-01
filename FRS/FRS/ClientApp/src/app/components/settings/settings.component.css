@@ -1,0 +1,16 @@
+.side-menu {
+  min-width: 120px;
+}
+
+.separator-hr {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+[hidden] {
+  display: none;
+}
+
+.tab-content > .tab-pane {
+  display: block;
+}

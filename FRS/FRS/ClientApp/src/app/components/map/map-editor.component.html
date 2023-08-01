@@ -1,0 +1,142 @@
+<form *ngIf="formResetToggle" class="form-horizontal" key="mapEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageMaps" type="text" autocomplete="off" name="code" id="code" key="code" placeholder="{{'maps.editor.Code' | translate}}" [(ngModel)]="mapEdit.code" #code="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!code.valid || validation.code)">{{'maps.editor.CodeRequired' | translate}}</mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageMaps" type="text" autocomplete="off" name="label" id="label" key="label" placeholder="{{'maps.editor.Label' | translate}}" [(ngModel)]="mapEdit.label" #label="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!label.valid || validation.label)">{{'maps.editor.LabelRequired' | translate}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="col-md-12">
+        <mat-label>Floor</mat-label>
+        <mat-select [(ngModel)]="mapEdit.floorId" name="floor">
+          <mat-option *ngFor="let f of allFloor" [value]="f.id">
+            {{f.code}} - {{f.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="col-md-12">
+        Map Picture <file-upload (onUploadFinished)="uploadFinished($event)"></file-upload>
+      </div>
+
+      <div [hidden]="!mapEdit.map_url">
+        <div class="col-md-3">
+          - To add point use right click. <br />
+          - To connect points use right click. <br />
+          - To drag point use left click. <br />
+          - To delete line use left click.
+        </div>
+        <div class="col-md-6" *ngIf="selectedPointObj">
+          <span class="btn btn-warning" (click)="showEditInfo = true">Edit Point Info</span>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{selectedPointObj.id}}
+          <span class="btn btn-danger" (click)="deletePoint(selectedPoint, selectedPointObj)">Delete Point</span>
+        </div>
+        <div id="mapdiv" class="map col-md-12"></div>
+      </div>
+
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="mapEdit != null">
+    <button *ngIf="!canManageMaps" mat-button (click)="cancel()">{{'maps.editor.Close' | translate}}</button>
+    <button *ngIf="canManageMaps" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'maps.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageMaps" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('maps.editor.Saving' | translate) : ('maps.editor.Save' | translate)}}
+    </button>
+  </div>
+
+  <div *ngIf="showEditInfo && selectedPointObj" style="display: block;position: fixed;z-index: 1;padding-top: 120px; top: 0;right: 300px;width: 40%;height: 100%;overflow: auto;">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+
+      <div class="modal-body container">
+        id {{selectedPointObj.id}}
+        <mat-form-field class="col-md-12">
+
+          <mat-label>Point Name</mat-label>
+          <input matInput [(ngModel)]="selectedPointObj.label" name="pointlabel">
+        </mat-form-field>
+
+        <div class="col-md-12">
+          <mat-checkbox class="example-margin" [(ngModel)]="selectedPointObj.noWheelchair" name="wheelchair">Not Suitable For Wheelchair</mat-checkbox>
+          <mat-checkbox class="example-margin" [(ngModel)]="selectedPointObj.noSheltered" name="sheltered">Not Sheltered</mat-checkbox>
+        </div>
+
+        <div class="col-md-12" style="border: solid 1px;border-radius: 10px;margin:5px">
+          <mat-checkbox class="example-margin" [(ngModel)]="selectedPointObj.isFloorConnector" [disabled]="!selectedPointObj.label" name="pointconnector">Is Floor Connector</mat-checkbox>
+          <br />Floor connector require Point Name not empty.
+
+          <div *ngIf="selectedPointObj.isFloorConnector">
+            <h2>Floor Connectors</h2>
+            <mat-form-field appearance="fill">
+              <mat-label>Select Floor Connectors</mat-label>
+              <mat-select [(ngModel)]="selectedConnector" name="connectors">
+                <mat-option [ngStyle]="{ display : mapEdit.id == c.mapId ? 'none' : 'block' }" *ngFor="let c of allConnector" [value]="c">
+                  {{c.label}}
+                </mat-option>
+              </mat-select>
+
+            </mat-form-field>
+            <span class="btn btn-primary" (click)="addConnector(selectedPointObj, selectedConnector)"><i class='fa fa-plus'></i> Add</span>
+
+            <div *ngFor="let d of selectedPointObj.connectors;let index = index;trackBy:trackByIndex;" [hidden]="!d.isActive" style="margin-bottom:10px">
+              <i class="fa fa-circle"></i> {{d.displayLabel}} <span class="btn-xs" (click)="d.isActive = 0"><i class='fa fa-times'></i> Remove</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12" style="border: solid 1px;border-radius: 10px;margin:5px">
+          <h2>Directories</h2>
+          <mat-form-field appearance="fill">
+            <mat-label>Select Directories</mat-label>
+            <mat-select [(ngModel)]="selected" name="pointdirectory">
+              <mat-option *ngFor="let d of allDirectory" [value]="d">
+                {{d.code}} - {{d.label}}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+          <span class="btn btn-primary" (click)="add(selected, selectedPointObj)"><i class='fa fa-plus'></i> Add</span>
+
+          <div [hidden]="!d.isActive" *ngFor="let d of selectedPointObj.directorys;let index = index;trackBy:trackByIndex;" style="margin-bottom:10px">
+            <i class="fa fa-circle"></i> {{d.code}} - {{d.label}} <span class="btn-xs" (click)="d.isActive = 0"><i class='fa fa-times'></i> Remove</span>
+          </div>
+        </div>
+
+        <div class="col-md-12" style="border: solid 1px;border-radius: 10px;margin:5px">
+          <h2>Node Availability</h2>
+          <div class="col-md-3">
+            Start Date
+          </div>
+          <div class="col-md-9">
+            <input class="form-control" type="datetime-local" />
+          </div>
+          <div class="col-md-3">
+            End Date
+          </div>
+          <div class="col-md-9">
+            <input class="form-control" type="datetime-local" />
+          </div>
+        </div>
+        <br />
+
+        <div class="col-md-12" style="text-align: center">
+          <span (click)="okClicked()" class="btn btn-primary">OK</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</form>

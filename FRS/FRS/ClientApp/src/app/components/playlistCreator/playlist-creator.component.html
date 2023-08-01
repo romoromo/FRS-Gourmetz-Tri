@@ -1,0 +1,176 @@
+<div class="container">
+  <header class="pageHeader">
+    <div class="row">
+      <div class="col-md-8">
+        <h3><i class="fa fa-handshake fa-lg page-caption" aria-hidden="true"></i>Playlist</h3>
+      </div>
+      <div class="col-md-4" style="text-align: right;margin-top: 20px;">
+        <button mat-button  class="btn btn-sm" (click)="cancel()">Cancel</button>
+        <button type="button" mat-flat-button class="btn btn-sm btn-info" (click)="save()">Save</button>
+
+        <!--<button type="button" mat-button class="btn btn-sm" (click)="cancel()">Cancel</button>
+        <button type="button" mat-button class="btn btn-sm btn-info" (click)="save()">Save</button>-->
+      </div>
+    </div>
+  </header>
+  <div [@fadeInOut]>
+    <div class="col-md-6">
+      <div class="col-sm-6">
+        <h5>Playlist Items</h5>
+      </div>
+
+      <hr class="separator-hr" />
+      <mat-form-field>
+        <input matInput type="text" id="playlistName" name="playlistName" placeholder="Enter name" [(ngModel)]="playlistEdit.name" #contactGroupName="ngModel" required minlength="2" maxlength="200" />
+      </mat-form-field>
+      <div *ngIf="selectedImageList.length > 0" style="max-height: 75vh;overflow-y: auto;" cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+        <div style="border:solid 1px;padding:10px;border-radius:15px" *ngFor="let image of selectedImageList" cdkDrag>
+          <div class="row">
+            <div class="col-md-3">
+              <img *ngIf="!image.isVideo" [src]="image.imageLocation" [alt]="image.title" style="max-height:50px">
+              <video *ngIf="image.isVideo" [src]="image.imageLocation + '#t=0.1'" style="max-height:50px"></video>
+            </div>
+            <div class="col-md-7">
+              {{image.title}}
+            </div>
+            <div class="col-md-2">
+              <mat-icon aria-hidden="false" aria-label="Example home icon" (click)="removeImage(image)">close</mat-icon>
+            </div>
+          </div>
+          <div class="row">
+
+            <div class="col-md-6">
+              <input class="form-control" placeholder="Duration" type="number" [(ngModel)]="image.duration">
+            </div>
+            <div class="col-md-6">
+              <select class="form-control" [(ngModel)]="image.animation">
+                <option value="">-- Animation --</option>
+                <option *ngFor="let anim of animations" [value]="anim">
+                  {{anim | titlecase}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <ul style="margin-bottom: 5px;" class="nav navbar-nav">
+        <li class="toolbaritem">
+          <div style="width:100%">
+            <input class="form-control" type="text" id="" name="searchInput" placeholder="Search" [(ngModel)]="search"
+                   (ngModelChange)="refresh(search, mediaGroup, sort, asc, fileType, ext)" #searchInput="ngModel" />
+          </div>
+
+        </li>
+
+        <li class="toolbaritem">
+          <div appearance="fill" style="width:100%">
+            <!--<mat-label>Media Group</mat-label>-->
+            <select class="form-control"
+                    (change)="refresh(search, mediaGroup, sort, asc, fileType, ext)" [(ngModel)]="mediaGroup" name="Media Group">
+              <option value="">
+                -- Media Group --
+              </option>
+              <option *ngFor="let m of allMedias" [value]="m.id">
+                {{m.name}}
+              </option>
+            </select>
+
+          </div>
+
+        </li>
+
+        <li class="toolbaritem">
+          <div appearance="fill" style="width:100%">
+            <select class="form-control"
+                    (change)="refresh(search, mediaGroup, sort, asc, fileType, ext)" [(ngModel)]="ext" name="Extension">
+              <option value="">
+                -- Extension --
+              </option>
+              <option *ngFor="let m of allMediaExtensions" [value]="m.extension">
+                {{m.extension}}
+              </option>
+            </select>
+
+          </div>
+
+        </li>
+
+        <li class="toolbaritem">
+          <div appearance="fill" style="width:100%">
+            <select style="width: auto;display: inline;" class="form-control"
+                    (change)="refresh(search, mediaGroup, sort, asc, fileType, ext)" [(ngModel)]="fileType" name="Type">
+              <option value="">
+                -- File Type --
+              </option>
+              <option [value]="1">
+                Image
+              </option>
+              <option [value]="2">
+                Video
+              </option>
+            </select>
+          </div>
+
+        </li>
+
+        <li class="toolbaritem">
+          <div appearance="fill" style="width:100%">
+            <!--<mat-label>Media Group</mat-label>-->
+            <select style="width: auto;display: inline;" class="form-control"
+                    (change)="refresh(search, mediaGroup, sort, asc, fileType, ext)" [(ngModel)]="sort" name="Sort">
+              <option value="">
+                -- Sort By --
+              </option>
+              <option [value]="1">
+                Last Added
+              </option>
+              <option [value]="2">
+                Title
+              </option>
+              <option [value]="3">
+                Description
+              </option>
+            </select>
+
+            <i *ngIf="!asc" (click)="asc = true; refresh(search, mediaGroup, sort, asc, fileType, ext)" class="fa fa-sort-amount-desc" aria-hidden="true"></i>
+            <i *ngIf="asc" (click)="asc = false; refresh(search, mediaGroup, sort, asc, fileType, ext)" class="fa fa-sort-amount-asc" aria-hidden="true"></i>
+
+          </div>
+
+        </li>
+
+
+
+
+      </ul>
+      <div fxLayout="row wrap" style="display: flex; flex-wrap: wrap; width: 100%;align-items:stretch">
+        <ng-container *ngFor="let image of imagePage" >
+          <div class="col-md-4" style="text-align: center; padding: 5px; display: flex; justify-content: space-between; flex-direction: column; border: dashed 1px lightgray;" (click)="addImage(image)">
+            <div style="width:100%;max-height:250px;overflow:hidden">
+              <img style="width:100%" *ngIf="!image.isVideo" [src]="image.imageLocation"  />
+              <video style="width:100%" controls *ngIf="image.isVideo" [src]="image.imageLocation + '#t=0.1'"></video>
+            </div>
+            <div style="    width: 100%;max-height: 38px;overflow: hidden;">
+              {{image.title}} <span class="btn btn-primary btn-sm" style="float: right;">+</span><br />
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <mat-paginator class="col-md-12" [length]="length"
+                     [pageSize]="size"
+                     [pageIndex]="page"
+                     [pageSizeOptions]="[4, 8, 12]"
+                     (page)="getData($event)">
+      </mat-paginator>
+
+    </div>
+  </div>
+  <div class="col-md-12" style="text-align:right">
+
+    
+  </div>
+</div>

@@ -1,0 +1,168 @@
+<!--<h1 mat-dialog-title>{{data.header}}</h1>-->
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="signagePublicationEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!signagePublicationName.valid && showErrorAlert('Signage component name is required', 'Please enter a signage publication name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageSignagePublications" type="text" id="signagePublicationName" name="signagePublicationName" placeholder="Enter name" [(ngModel)]="signagePublicationEdit.name" #signagePublicationName="ngModel" required />
+          </mat-form-field>
+          <mat-form-field class="col-md-12">
+            <input matInput [disabled]="!canManageSignagePublications" type="text" id="signagePublicationDescription" name="signagePublicationDescription" placeholder="Enter description" [(ngModel)]="signagePublicationEdit.description" #signagePublicationDescription="ngModel" required />
+          </mat-form-field>
+          <div class="col-md-6">
+            <mat-checkbox matInput [disabled]="!canApproveSignagePublications" (change)="approvedClicked()" type="checkbox" id="signagePublicationApproved" name="signagePublicationApproved" [(ngModel)]="signagePublicationEdit.approved" #signagePublicationApproved="ngModel" class="custom-frame">Approved</mat-checkbox>
+            &nbsp;&nbsp;
+            <mat-checkbox matInput [disabled]="!canApproveSignagePublications" (change)="rejectedClicked()" type="checkbox" id="signagePublicationRejected" name="signagePublicationRejected" [(ngModel)]="signagePublicationEdit.rejected" #signagePublicationRejected="ngModel"  class="custom-frame">Rejected</mat-checkbox>
+          </div>
+
+          <mat-form-field *ngIf="signagePublicationEdit.approved || signagePublicationEdit.rejected" class="col-md-12" appearance="fill">
+            <mat-label>Remark</mat-label>
+            <textarea rows="6" matInput placeholder="Remark ..." class="form-control" name="signagePublicationRemark" [(ngModel)]="signagePublicationEdit.remark"></textarea>
+          </mat-form-field>
+
+          <br />
+
+          <br />
+
+          <br />
+
+          <div style="margin-top:20px" class="col-md-12">
+            <span class="btn btn-primary" (click)="add()"><i class='fa fa-plus'></i> Add Schedule</span>
+          </div>
+
+          <div [hidden]="!s.isActive" class="col-md-12" *ngFor="let s of signagePublicationEdit.schedules;let index = index;trackBy:trackByIndex;" style="padding: 10px;margin: 5px;border: solid 1px;border-radius: 10px;">
+            <div class="col-md-6">
+              <div class="col-md-12">
+
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Effective date</mat-label>
+                  <input matInput [matDatepicker]="effectiveDate" [(ngModel)]="s.effectiveDate" name="effectiveDate{{index}}">
+                  <mat-datepicker-toggle matSuffix [for]="effectiveDate"></mat-datepicker-toggle>
+                  <mat-datepicker #effectiveDate></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Ineffective date</mat-label>
+                  <input matInput [matDatepicker]="ineffectiveDate" [(ngModel)]="s.ineffectiveDate" name="ineffectiveDate{{index}}">
+                  <mat-datepicker-toggle matSuffix [for]="ineffectiveDate"></mat-datepicker-toggle>
+                  <mat-datepicker #ineffectiveDate></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-12">
+                <mat-checkbox name="monday{{index}}" [(ngModel)]="s.monday">Monday</mat-checkbox>&nbsp;
+                <mat-checkbox name="tuesday{{index}}" [(ngModel)]="s.tuesday">Tuesday</mat-checkbox>&nbsp;
+                <mat-checkbox name="wednesday{{index}}" [(ngModel)]="s.wednesday">Wednesday</mat-checkbox>&nbsp;
+                <mat-checkbox name="thursday{{index}}" [(ngModel)]="s.thursday">Thursday</mat-checkbox>&nbsp;
+                <mat-checkbox name="friday{{index}}" [(ngModel)]="s.friday">Friday</mat-checkbox>&nbsp;
+                <mat-checkbox name="saturday{{index}}" [(ngModel)]="s.saturday">Saturday</mat-checkbox>&nbsp;
+                <mat-checkbox name="sunday{{index}}" [(ngModel)]="s.sunday">Sunday</mat-checkbox>
+              </div>
+
+              <div class="col-md-12">
+                <span class="btn btn-danger btn-xs" (click)="s.isActive = 0"><i class='fa fa-times'></i> Remove</span>&nbsp;
+                <mat-label>Start Time</mat-label>&nbsp;
+                <input type="time" [(ngModel)]="s.startTime" name="startTime{{index}}">
+                &nbsp;
+
+
+                <mat-label>End Time</mat-label>&nbsp;
+                <input type="time" [(ngModel)]="s.endTime" name="endTime{{index}}">&nbsp;
+
+              </div>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="fill" style="width: 90%;">
+                <mat-label>Select Compilations</mat-label>
+                <mat-select [(ngModel)]="s.selected" name="signageCompilation{{index}}">
+                  <mat-option>
+                    <ngx-mat-select-search placeholderLabel="Search" [formControl]="searchForm"></ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option [style.display]="(sc.name).toLowerCase().includes((searchForm?.value || '').toLowerCase()) ? 'block' : 'none'" *ngFor="let sc of signageCompilations" [value]="sc">
+                    {{sc.name}}
+                  </mat-option>
+                </mat-select>
+
+              </mat-form-field>
+              <span class="btn btn-primary" (click)="addCompilation(s.selected, s)"><i class='fa fa-plus'></i> Add</span>
+              <br />
+
+              <div [hidden]="!c.isActive" class="col-md-12" *ngFor="let c of s.compilations;let idx = index;trackBy:trackByIndex;">
+                <i class='fa fa-times' (click)="c.isActive = 0"></i> {{c.name}} - <input type="number" placeholder="interval (seconds)" name="interval{{index}}c{{idx}}" [(ngModel)]="c.interval" />
+              </div>
+            </div>
+          </div>
+
+
+
+          <!--<div class="col-md-12 example-boundary" >
+    <div class="example-box" cdkDragBoundary=".example-boundary" cdkDrag>
+      I can only be dragged using the handle
+
+      <div class="example-handle" cdkDragHandle>
+        <svg width="24px" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path>
+          <path d="M0 0h24v24H0z" fill="none"></path>
+        </svg>
+      </div>
+    </div>
+  </div>-->
+          <!--<div class="form-group has-feedback">
+    <label class="control-label col-md-2" for="signagePublicationName">{{'signagePublications.editor.Name' | translate}}</label>
+    <div class="col-md-10" [ngClass]="{'has-success': f.submitted && signagePublicationName.valid, 'has-error' : f.submitted && !signagePublicationName.valid}">
+      <input [disabled]="!canManageSignagePublications" type="text" id="signagePublicationName" name="signagePublicationName" placeholder="Enter signagePublication name" class="form-control" [(ngModel)]="signagePublicationEdit.name" #signagePublicationName="ngModel" required minlength="2" maxlength="200" />
+      <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': signagePublicationName.valid, 'glyphicon-remove' : !signagePublicationName.valid}"></span>
+    </div>
+  </div>-->
+        </div>
+
+        <!--<div class="col-sm-12">
+          <div class="form-group">
+            <label class="control-label col-md-2" for="signagePublicationDescription">{{'signagePublications.editor.Description' | translate}}</label>
+            <div class="col-md-10">
+              <input [disabled]="!canManageSignagePublications" type="text" id="signagePublicationDescription" name="signagePublicationDescription" placeholder="Enter signagePublication description" class="form-control" [(ngModel)]="signagePublicationEdit.description" />
+            </div>
+          </div>
+        </div>-->
+      </div>
+
+      <!--<div class="row">
+        <div class="col-md-12">
+          <span *ngIf="showValidationErrors && f.submitted && !signagePublicationName.valid" class="errorMessage signagePublicationErrorMessage">
+            {{'signagePublications.editor.SignagePublicationNameRequired' | translate}}
+          </span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <hr class="edit-separator-hr" />
+        </div>
+      </div>-->
+      <!--<div class="form-group">
+
+        <div class="col-sm-7">
+          <div ngPreserveWhitespaces class="pull-right">
+            <button *ngIf="!canManageSignagePublications" type="button" (click)="cancel()" class="btn btn-default">{{'signagePublications.editor.Close' | translate}}</button>
+            <button *ngIf="canManageSignagePublications" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'signagePublications.editor.Cancel' | translate}}</button>
+            <button *ngIf="canManageSignagePublications" type="submit" class="btn btn-primary" [disabled]="isSaving">
+              <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('signagePublications.editor.Saving' | translate) : ('signagePublications.editor.Save' | translate)}}
+            </button>
+          </div>
+        </div>
+      </div>-->
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageSignagePublications" type="button" mat-button (click)="cancel()">{{'signagePublications.editor.Close' | translate}}</button>
+      <button *ngIf="canManageSignagePublications" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'signagePublications.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageSignagePublications" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('signagePublications.editor.Saving' | translate) : ('signagePublications.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

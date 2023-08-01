@@ -1,0 +1,61 @@
+
+.bottom-space {
+    margin-bottom: 40px;
+}
+
+.no-bottom-space {
+    margin-bottom: 0;
+}
+
+.statistics-close-btn {
+}
+
+.todo-close-btn {
+    margin: 0 10px -25px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.banner-close-btn {
+    margin: 0 10px -25px 0;
+    position: relative;
+    z-index: 1;
+}
+.choices {
+  padding-top: 20px;
+}
+  .choices .mat-icon {
+    font-size: 80px !important;
+    height: 80px !important;
+    width: 80px !important;
+    padding-top: 20px !important;
+  }
+
+  .choices .mat-icon-button {
+    padding: 20px !important;
+    min-width: 0;
+    /* width: 40px; */
+    /* height: 40px; */
+    /* flex-shrink: 0; */
+    line-height: 40px;
+    border-radius: 50%;
+    width: 100% !important;
+    height: 100% !important;
+    border: 1px solid black;
+    border-radius: 0;
+    background: #f1f1f1;
+  }
+
+  .choices a {
+    text-decoration: underline;
+    outline: none;
+  }
+
+    .choices a:focus, .choices a:active, .choices a:hover, .choices a.selected {
+      background: #007f7b;
+      color: white;
+    }
+
+    .mat-card{
+      box-shadow: none !important;
+    }

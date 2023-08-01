@@ -1,0 +1,172 @@
+<div>
+  <div [@fadeInOut]>
+
+    <div style="width:100%">
+      <div class="col-sm-2">
+        <div class="form-group search-box">
+          <h5>Media Gallery</h5>
+        </div>
+      </div>
+      <div class="col-sm-10" style="padding-top: 10px;">
+        <div class="navbar action-box">
+          <ul class="nav navbar-nav">
+
+
+            <li class="toolbaritem">
+              <div appearance="fill" style="width:100%">
+                <!--<mat-label>Media Group</mat-label>-->
+                <select class="form-control"
+                        (change)="refresh(search, mediaGroup, sort, asc, fileType, ext)" [(ngModel)]="mediaGroup" name="Media Group">
+                  <option value="">
+                    -- Media Group --
+                  </option>
+                  <option *ngFor="let m of allMedias" [value]="m.id">
+                    {{m.name}}
+                  </option>
+                </select>
+
+              </div>
+
+            </li>
+            <li class="toolbaritem">
+              <div appearance="fill" style="width:100%">
+                <select class="form-control"
+                        (change)="refresh(search, mediaGroup, sort, asc, fileType, ext)" [(ngModel)]="ext" name="Extension">
+                  <option value="">
+                    -- Extension --
+                  </option>
+                  <option *ngFor="let m of allMediaExtensions" [value]="m.extension">
+                    {{m.extension}}
+                  </option>
+                </select>
+
+              </div>
+
+            </li>
+
+            <li class="toolbaritem">
+              <div appearance="fill" style="width:100%">
+                <select style="width: auto;display: inline;" class="form-control"
+                        (change)="refresh(search, mediaGroup, sort, asc, fileType, ext)" [(ngModel)]="fileType" name="Type">
+                  <option value="">
+                    -- File Type --
+                  </option>
+                  <option [value]="1">
+                    Image
+                  </option>
+                  <option [value]="2">
+                    Video
+                  </option>
+                </select>
+              </div>
+
+            </li>
+
+            <li class="toolbaritem">
+              <div appearance="fill" style="width:100%">
+                <!--<mat-label>Media Group</mat-label>-->
+                <select style="width: auto;display: inline;" class="form-control"
+                        (change)="refresh(search, mediaGroup, sort, asc, fileType, ext)" [(ngModel)]="sort" name="Sort">
+                  <option value="">
+                    -- Sort By --
+                  </option>
+                  <option [value]="1">
+                    Last Added
+                  </option>
+                  <option [value]="2">
+                    Title
+                  </option>
+                  <option [value]="3">
+                    Description
+                  </option>
+                </select>
+
+                <i *ngIf="!asc" (click)="asc = true; refresh(search, mediaGroup, sort, asc, fileType, ext)" class="fa fa-sort-amount-desc" aria-hidden="true"></i>
+                <i *ngIf="asc" (click)="asc = false; refresh(search, mediaGroup, sort, asc, fileType, ext)" class="fa fa-sort-amount-asc" aria-hidden="true"></i>
+
+              </div>
+
+            </li>
+
+            <li class="toolbaritem">
+              <div style="width: 350px;margin-left: 15px;">
+                <input class="form-control" type="text" id="" name="searchInput" placeholder="Search by Name, Description, or Tags" [(ngModel)]="search"
+                       (ngModelChange)="refresh(search, mediaGroup, sort, asc, fileType, ext)" #searchInput="ngModel" />
+              </div>
+
+            </li>
+
+
+
+
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="toolbaritem">
+              <a href="javascript:;" (click)="newImage()">
+                <i class="fa fa-plus-circle"></i> Upload Media
+              </a>
+            </li>
+          </ul>
+
+          <mat-paginator class="col-md-12" [length]="length"
+                         [pageSize]="size"
+                         [pageIndex]="page"
+                         (page)="getData($event)">
+          </mat-paginator>
+        </div>
+
+        
+      </div>
+      <div fxLayout="row wrap" style="display: flex; flex-wrap: wrap; width: 100%;align-items:stretch">
+        <h4 *ngIf="imagePage.length <= 0">If no media shown, change the filter value first.</h4>
+        <ng-container *ngFor="let image of imagePage">
+          <div class="col-md-1" style="text-align: center; padding: 5px; display: flex; justify-content: space-between; flex-direction: column; border: dashed 1px lightgray;">
+            <div (click)="editImage(image)" style="width:100%;max-height:250px;overflow:hidden">
+              <img style="width:100%" *ngIf="!image.isVideo" [src]="image.imageLocation" (click)="addImage(image)" />
+              <video style="width:100%" *ngIf="image.isVideo" [src]="image.imageLocation + '#t=0.1'" (click)="addImage(image)"></video>
+              <br />
+            </div>
+            <div style="width:100%">
+              <div style="max-height: 38px;overflow: hidden;">{{image.title}}</div> <br/>
+              <button class="btn btn-primary btn-sm" (click)="editImage(image)"><i class="fa fa-pencil"></i></button>
+              <button class="btn btn-danger btn-sm" (click)="deleteDbConfirm(image.id, true)"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <br />
+
+      <mat-paginator class="col-md-12" [length]="length"
+                     [pageSize]="size"
+                     [pageIndex]="page"
+                     (page)="getData($event)">
+      </mat-paginator>
+
+    </div>
+
+    <div class="col-md-5" *ngIf="false">
+      <div class="col-sm-6">
+        <h5>To Delete Items</h5>
+      </div>
+      <div class="col-sm-4">
+        <button *ngIf="selectedImageList.length > 0" type="button" mat-flat-button color="warn" (click)="delete()">Delete</button>
+      </div>
+      <hr class="separator-hr" />
+      <div *ngIf="selectedImageList.length > 0" cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+        <div class="example-box" *ngFor="let image of selectedImageList" cdkDrag>
+          <div class="col-md-3">
+            <img *ngIf="!image.isVideo" [src]="image.imageLocation" [alt]="image.title">
+            <video *ngIf="image.isVideo" [src]="image.imageLocation + '#t=0.1'" style="max-height:50px"></video>
+          </div>
+          <div class="col-md-7">
+            {{image.title}}
+          </div>
+          <div class="col-md-2">
+            <mat-icon aria-hidden="false" aria-label="Example home icon" (click)="removeImage(image)">close</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

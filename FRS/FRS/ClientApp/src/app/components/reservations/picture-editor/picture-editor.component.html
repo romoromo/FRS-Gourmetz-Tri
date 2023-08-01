@@ -1,0 +1,29 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form class="form-horizontal" name="pictureEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="save()">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="form-group">
+          <div class="col-md-12">
+            <label [class.col-md-2] class="control-label" for="facilities-facility-icon">Add Pictures</label>
+            <div class="col-md-12">
+              <file-upload (onUploadFinished)="uploadFinished($event)" fileTypes="image/*"></file-upload>
+            </div>
+            <div *ngIf="pictureEdit.pictureUrl" class="col-md-9" style="padding:10px; border: 1px dashed #808080;text-align:center">
+              <img [src]="getFileImage(pictureEdit.pictureUrl)" alt="icon" style="height:150px;" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'contactGroups.editor.Cancel' | translate}}</button>
+      <button type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('contactGroups.editor.Saving' | translate) : ('contactGroups.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

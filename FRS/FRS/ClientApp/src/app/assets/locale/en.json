@@ -1,0 +1,1197 @@
+{
+  "app": {
+    "Welcome": "Welcome",
+    "Notifications": "Notifications",
+    "Language": "Language",
+    "New": "New",
+    "Login": "Login",
+    "Email": "Email / Login ID",
+    "Password": "Password",
+    "RememberMe": "Remember Me",
+    "EmailPlaceholder": "Please enter your login ID",
+    "PasswordPlaceholder": "Please enter password",
+    "EmailRequired": "Email is required",
+    "PasswordRequired": "Password is required",
+    "LoggingIn": "Logging in..."
+  },
+  "common": {
+    "Name": "Name",
+    "Description": "Description",
+    "Search": "Search",
+    "New": "New",
+    "Submit": "Submit",
+    "Processing": "Processing",
+    "RowAction": {
+      "Edit": "Edit",
+      "Delete": "Delete",
+      "Details": "Details"
+    },
+    "editor": {
+      "Save": "Save",
+      "Saving": "Saving",
+      "Cancel": "Cancel",
+      "Close": "Close"
+    }
+  },
+  "mainMenu": {
+    "Facilities": "Equipments",
+    "Reservations": "Reservations",
+    "Calendar": "Calendar",
+    "Book": "Book",
+    "Devices": "Devices",
+    "ContactGroups": "Contact Groups",
+    "Phonebooks": "My Contacts",
+    "Reports": "Reports",
+    "TemplateEditor": "Template Editor",
+    "PIBDevices": "PIB Devices",
+    "Vehicles": "Vehicles",
+    "About": "About",
+    "Logout": "Logout",
+    "QueueMonitor": "Queue Monitor"
+  },
+  "pageHeader": {
+    "Dashboard": "Dashboard",
+    "Facilities": "Equipments",
+    "Reservations": "Reservations",
+    "Calendar": "Calendar",
+    "Book": "Book",
+    "NotFound": "Not-Found",
+    "About": "About",
+    "Settings": "Settings",
+    "DeviceManager": "Device Manager",
+    "Vehicles": "Vehicle Management",
+    "ApplicationSettings": "Application Setting",
+    "DirectoryListingCategorys": "Directory Listing Category",
+    "MediaExtensions": "Media Extension",
+    "EmployeeDesignations": "Employee Designation",
+    "EmployeeSchedules": "Employee Schedule",
+    "EmployeeDatas": "Employee",
+    "QueueTableMaps": "Queue Table Maps",
+    "OccupancyLogs": "Occupancy Log",
+    "DirectoryListings": "Directory Listing",
+    "Feedback": "Feedback",
+    "Buildings": "Building",
+    "Floors": "Floor",
+    "Maps": "Map",
+    "EmsProfiles": "Ems Profiles",
+    "EmsSchedules": "Ems Schedules"
+
+  },
+  "home": {
+    "NoWidgets1": "You have no widgets displayed. Goto",
+    "NoWidgets2": "to configure available widgets",
+    "StatisticsTitle": "Some Important Stuff"
+  },
+  "notFound": {
+    "404": "404",
+    "pageNotFound": "The page you are looking for does not exist",
+    "backToHome": "Back to home"
+  },
+  "settings": {
+    "tab": {
+      "Profile": "Profile",
+      "Phonebook": "My Contacts",
+      "Preferences": "Preferences",
+      "Users": "Users",
+      "Roles": "Roles",
+      "Locations": "Locations",
+      "Facilities": "Equipments",
+      "FacilityTypes": "Facility Types",
+      "UnknownDevice": "Devices",
+      "ApproveDevice": "Approval",
+      "Institutions": "Institutions",
+      "Departments": "Departments",
+      "ContactGroups": "Contact Groups",
+      "TemplateEditor": "Templates",
+      "EpaperDevices": "Epaper Devices",
+      "ApplicationSetting": "Application Setting",
+      "DirectoryListingCategory": "Directory Listing Category",
+      "OccupancyLog": "Occupancy Log",
+      "DirectoryListing": "Directory Listing",
+      "Media": "Media Group",
+      "SignageComponents": "Signage Components",
+      "SignageCompilations": "Signage Compilations",
+      "SignagePublications": "Signage Publications",
+      "Building": "Building",
+      "Floor": "Floor",
+      "Map": "Map",
+      "EmployeeDesignation": "Employee Designation",
+      "EmployeeSchedule": "Employee Schedule",
+      "EmployeeData": "Employee",
+      "Module": "Modules",
+      "UserGroups": "UserGroups",
+      "Ems": "EMS",
+      "EmsProfile": "EMS Profile",
+      "EmsSchedule": "EMS Schedule"
+    },
+    "header": {
+      "UserProfile": "User Profile",
+      "Phonebook": "My Contacts",
+      "UserPreferences": "User Preferences",
+      "UserDepartments": "User Departments",
+      "UsersManagements": "Users Management",
+      "UserGroupsManagements": "User Groups Management",
+      "RolesManagement": "Roles Management",
+      "LocationsManagement": "Locations Management",
+      "FacilitiesManagement": "Equipments Management",
+      "FacilityTypesManagement": "Facility Types Management",
+      "UnknownDevice": "Unknown Devices",
+      "ApproveDevice": "Approval",
+      "InstitutionsManagement": "Institutions",
+      "DepartmentsManagement": "Departments",
+      "ContactGroupsManagement": "Contact Groups",
+      "SignageComponents": "Signage Components",
+      "SignageCompilations": "Signage Compilations",
+      "SignagePublications": "Signage Publications"
+    }
+  },
+  "preferences": {
+    "ReloadPreferences": "Reload Preferences:",
+    "ReloadPreferencesHint": "Load default preferences (local changes are discarded)",
+    "Language": "Language:",
+    "English": "English",
+    "French": "French",
+    "German": "German",
+    "Portuguese": "Portuguese",
+    "Arabic": "Arabic",
+    "Korean": "Korean",
+    "LanguageHint": "Select the preferred language for your account",
+    "HomePage": "Home Page:",
+    "Dashboard": "Dashboard",
+    "Reservations": "Reservations",
+    "About": "About",
+    "Settings": "Settings",
+    "HomePageHint": "Select the default page to navigate to on login",
+    "Theme": "Theme:",
+    "DefaultColor": "<span class='default-theme-option'>Default</span>",
+    "RedColor": "<span class='red-theme-option'>Red</span>",
+    "OrangeColor": "<span class='orange-theme-option'>Orange</span>",
+    "GreenColor": "<span class='green-theme-option'>Green</span>",
+    "GrayColor": "<span class='gray-theme-option'>Gray</span>",
+    "BlackColor": "<span class='black-theme-option'>Black</span>",
+    "ThemeHint": "Select the default color theme for your account",
+    "DashboardStatistics": "Dashboard Statistics:",
+    "DashboardStatisticsHint": "Show graph widget on the dashboard",
+    "DashboardNotifications": "Dashboard Notifications:",
+    "DashboardNotificationsHint": "Show application notifications on the dashboard",
+    "DashboardTodo": "Dashboard Todo:",
+    "DashboardTodoHint": "Shows todo widget on the dashboard",
+    "DashboardBanner": "Dashboard Banner:",
+    "DashboardBannerHint": "Show information banner widget on the dashboard",
+    "ResetDefault": "Reset default",
+    "SetDefault": "Set as default"
+  },
+  "users": {
+    "management": {
+      "Search": "Search for user...",
+      "NewUser": "New User",
+      "UploadCSV": "Upload CSV",
+      "SyncADUsers": "Sync AD Users",
+      "Edit": "Edit",
+      "Delete": "Delete",
+      "AddRewardPoints": "Add Points",
+      "EditUser": "Edit User \"{{name}}\"",
+      "Title": "Title",
+      "UserName": "User Name",
+      "FullName": "Full Name",
+      "Email": "Email",
+      "Roles": "Roles",
+      "Department": "Department",
+      "PhoneNumber": "Phone Number",
+      "HomeNumber": "Home #:",
+      "MobileNumber": "Mobile #:",
+      "Institution": "Institution"
+    },
+    "editor": {
+      "JobTitle": "Job Title: ",
+      "UserName": "User Name:",
+      "UserNameRequired": "User name is required (minimum of 2 and maximum of 200 characters)",
+      "Password": "Password:",
+      "PasswordHint": "Your password is required when changing user name",
+      "CurrentPasswordRequired": "Current password is required",
+      "Email": "Email:",
+      "EmailRequired": "Email address is required (maximum of 200 characters)",
+      "InvalidEmail": "Specified email is not valid",
+      "ChangePassword": "Change Password",
+      "CurrentPassword": "Current Password:",
+      "NewPassword": "New Password:",
+      "NewPasswordRequired": "New password is required (minimum of 8 characters)",
+      "ConfirmPassword": "Confirm Password:",
+      "ConfirmationPasswordRequired": "Confirmation password is required",
+      "PasswordMismatch": "New password and confirmation password do not match",
+      "Roles": "Roles:",
+      "Department": "Department:",
+      "UserGroups": "User Groups",
+      "InstitutionRequired": "Institution Code is required",
+      "Institution": "Institution Code:",
+      "FullName": " Full Name:",
+      "RoleRequired": " Role is required",
+      "DepartmentRequired": " Department is required",
+      "PhoneNumberRequired": " Phone number is required",
+      "PinRequired": " PIN must be a 6-digit number",
+      "FullNameRequired": " Your name is required",
+      "PhoneNumber": "Phone #:",
+      "HomeNumber": "Home #:",
+      "MobileNumber": "Mobile #:",
+      "UnitNumber": "Unit #:",
+      "EmployeeId": "Employee ID:",
+      "RegisteredDepartment": "Reg. Department:",
+      "Pin": "PIN (6-digit number used for event check-in only):",
+      "Enabled": "Enabled",
+      "Unblock": "Unblock",
+      "Close": "Close",
+      "Edit": "Edit",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving...",
+      "Register": "Register",
+      "Processing": "Processing..."
+    }
+  },
+  "roles": {
+    "management": {
+      "Search": "Search for role...",
+      "NewRole": "New Role",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "RoleDetails": "Role Details \"{{name}}\"",
+      "EditRole": "Edit Role \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description",
+      "Users": "Users",
+      "Institution": "Institution"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "RoleNameRequired": "Role name is required (minimum of 2 and maximum of 200 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "userPhonebooks": {
+    "management": {
+      "Search": "Search for contact...",
+      "NewUserPhonebook": "New Contact",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "ContactDetails": "Contact Details \"{{name}}\"",
+      "EditContact": "Edit Contact \"{{name}}\"",
+      "Name": "Name",
+      "Email": "Email",
+      "PhoneNumber": "Phone No",
+      "HomeNo": "Home No",
+      "MobileNo": "Mobile No",
+      "Designation": "Designation"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Email": "Email:",
+      "ContactNameRequired": "Contact name is required (minimum of 2 and maximum of 200 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "applicationSettings": {
+    "management": {
+      "Search": "Search for setting...",
+      "NewApplicationSetting": "New application setting",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Key": "Key",
+      "Value": "Value",
+      "Description": "Description",
+      "Institution": "Institution"
+    },
+    "editor": {
+      "Key": "Key:",
+      "Value": "Value:",
+      "Description": "Description",
+      "Institution": "Institution:",
+      "KeyRequired": "Key is required (minimum of 1 and maximum of 200 characters)",
+      "ValueRequired": "Value is required (minimum of 1 and maximum of 200 characters)",
+      "DescriptionRequired": "Description is required (minimum of 1 and maximum of 200 characters)",
+      "InstitutionRequired": "Institution is required",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "maps": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Code": "Code",
+      "Label": "Label"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Label": "Label:",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "directoryListingCategorys": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Code": "Code",
+      "Label": "Label"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Label": "Label:",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "mediaExtensions": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Code": "Extension",
+      "Label": "Label",
+      "Min": "Min Size (KB)",
+      "Max": "Max Size (KB)"
+    },
+    "editor": {
+      "Code": "Extension:",
+      "Label": "Label:",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "employeeDesignations": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Code": "Code",
+      "Label": "Label"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Label": "Label:",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "employeeSchedules": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "AssignEmployee": "Assign Employee",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Code": "Code",
+      "Label": "Label"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Label": "Label:",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "employeeDatas": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Code": "Code",
+      "Name": "Name",
+      "Designation": "Designation",
+      "DisplayName": "Display Name"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Name": "Name",
+      "Designation": "Designation",
+      "DisplayName": "Display Name",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "emsProfiles": {
+    "management": {
+      "Search": "Search for Ems Profiles...",
+      "Code": "Code",
+      "Label": "Label",
+      "NewEmsProfile": "New Ems Profile",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "EditEmsProfile": "Edit Ems Profile"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Label": "Label",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "emsSchedules": {
+    "management": {
+      "Search": "Search for Ems Schedules...",
+      "Code": "Code",
+      "Label": "Label",
+      "NewEmsSchedule": "New Ems Schedule",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "EditEmsSchedule": "Edit Ems Schedule"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Label": "Label",
+      "Location": "Location",
+      "Profile": "EMS Profile",
+      "EffectiveDate": "Effective Date",
+      "IneffectiveDate": "Ineffective Date",
+      "Weekdays": "Weekdays",
+      "StartTime": "Start Time",
+      "EndTime": "End Time",
+      "Exception": "Exception",
+      "EmsGroup": "Ems Group",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "emses": {
+    "management": {
+      "Search": "Search for EMS record...",
+      "NewEms": "New EMS Record",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "EmsDetails": "Ems Details \"{{name}}\"",
+      "EditEms": "Edit Ems \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "EmsNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "EmsDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "queueTableMaps": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Simulator": "Simulator",
+      "QueueId": "Station Id/Queue Id",
+      "DeviceId": "Device Id",
+      "StationId": "Pair Id",
+      "CurrentDisplay": "Current Display",
+      "LastCall": "Last Call",
+      "LastReturn": "Last Return",
+      "Details": "Details",
+      "Delete": "Delete"
+    },
+    "editor": {
+      "QueueId": "Station Id/Queue Id",
+      "DeviceId": "Device Id",
+      "StationId": "Pair Id",
+      "CurrentDisplay": "Current Display",
+      "LastCall": "Last Call",
+      "LastReturn": "Last Return",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "occupancyLogs": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Datetime": "Datetime",
+      "DeviceId": "Device Id",
+      "SensorId": "Sensor Id",
+      "Status": "Status"
+    },
+    "editor": {
+      "Datetime": "Datetime",
+      "DeviceId": "Device Id",
+      "SensorId": "Sensor Id",
+      "Status": "Status",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "directoryListings": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Code": "Code",
+      "Label": "Label"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Label": "Label:",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "buildings": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Code": "Code",
+      "Label": "Label"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Label": "Label:",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "floors": {
+    "management": {
+      "Search": "Search...",
+      "New": "New",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Code": "Code",
+      "Label": "Label"
+    },
+    "editor": {
+      "Code": "Code:",
+      "Label": "Label:",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+
+  "playlists": {
+    "management": {
+      "Search": "Search for template...",
+      "NewPlaylist": "New playlist",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "Name": "Name",
+      "Description": "Description"
+    },
+    "editor": {
+      "Name": "Name",
+      "Description": "Description",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "medias": {
+    "management": {
+      "Search": "Search for media group...",
+      "NewMedia": "New media group",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "MediaDetails": "Media Group Details \"{{name}}\"",
+      "EditMedia": "Edit Media Group \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description",
+      "NumberOfFiles": "Contains",
+      "Size": "Size (bytes)"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "MediaNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "MediaDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "facilities": {
+    "management": {
+      "Search": "Search for equipment...",
+      "NewFacility": "New Equipment",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "FacilityDetails": "Equipment Details \"{{name}}\"",
+      "EditFacility": "Edit Equipment \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description",
+      "FacilityType": "Facility Type",
+      "Capacity": "Capacity",
+      "Institution": "Institution",
+      "Link": "External Link"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "Capacity": "Capacity:",
+      "FacilityType": "Facility Type:",
+      "Institution": "Institution:",
+      "FacilityNameRequired": "Equipment name is required (minimum of 2 and maximum of 200 characters)",
+      "FacilityTypeRequired": "Facility type is required",
+      "InstitutionRequired": "Institution is required",
+      "CapacityRequired": "Please enter a value bigger than 0",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "facilityTypes": {
+    "management": {
+      "Search": "Search for facility type...",
+      "NewFacilityType": "New Facility Type",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "FacilityDetails": "Facility Type Details \"{{name}}\"",
+      "EditFacilityType": "Edit Facility Type \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "FacilityTypeNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "FacilityTypeDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "signageComponents": {
+    "management": {
+      "Search": "Search for signage component...",
+      "NewSignageComponent": "New Signage Component",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "SignageComponentDetails": "Signage Component Details \"{{name}}\"",
+      "EditSignageComponent": "Edit Signage Component \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "SignageComponentNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "SignageComponentDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "signageCompilations": {
+    "management": {
+      "Search": "Search for signage compilation...",
+      "NewSignageCompilation": "New Signage Compilation",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "SignageCompilationDetails": "Signage Compilation Details \"{{name}}\"",
+      "EditSignageCompilation": "Edit Signage Compilation \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "SignageCompilationNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "SignageCompilationDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "signagePublications": {
+    "management": {
+      "Search": "Search for signage publication...",
+      "NewSignagePublication": "New Signage Publication",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "SignagePublicationDetails": "Signage Publication Details \"{{name}}\"",
+      "EditSignagePublication": "Edit Signage Publication \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description",
+      "CreatedBy": "Created By",
+      "Status": "Status"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "SignagePublicationNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "SignagePublicationDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "institutions": {
+    "management": {
+      "Search": "Search for institution...",
+      "NewInstitution": "New institution",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "InstitutionDetails": "Institution Details \"{{name}}\"",
+      "EditInstitution": "Edit Institution \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "InstitutionNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "InstitutionDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "departments": {
+    "management": {
+      "Search": "Search for department...",
+      "NewDepartment": "New department",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "DepartmentDetails": "Department Details \"{{name}}\"",
+      "EditDepartment": "Edit Department \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "DepartmentNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "DepartmentDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "reservations": {
+    "management": {
+      "Search": "Search for reservation...",
+      "NewReservation": "New Reservation",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "ReservationDetails": "Reservation Details \"{{shortDescription}}\"",
+      "EditReservation": "Edit Reservation \"{{shortDescription}}\"",
+      "ShortDescription": "Brief Description / Meeting Title",
+      "LongDescription": "Description",
+      "StartDateTime": "Start",
+      "EndDateTime": "End",
+      "FacilityName": "Equipment",
+      "LocationName": "Location",
+      "BookedBy": "Booked By",
+      "IsAllDay": "All Day",
+      "Status": "Status",
+      "Location": "Location",
+      "Facilities": "Equipments",
+      "SelectLocation": "--",
+      "SelectFacilities": "--",
+      "SelectStart": "--",
+      "SelectEnd": "--",
+      "RepeatType": "Repeat",
+      "RepeatEndDateTime": "Repeat End",
+      "DownloadAttendance": "Download",
+      "AddAttendance": "Add"
+    },
+    "editor": {
+      "ShortDescription": "Brief Description / Meeting Title:",
+      "LongDescription": "Description / Meeting Purpose:",
+      "StartDate": "Start Date",
+      "EndDate": "End Date",
+      "StartTime": "Time",
+      "EndTime": "Time",
+      "Facility": "Equipment",
+      "Location": "Location / Directory ",
+      "FacilityName": "Equipment",
+      "IsAllDay": "All Day",
+      "Status": "Status",
+      "RepeatType": "Repeat",
+      "RepeatEndDateTime": "Repeat End",
+      "ReservationDescriptionRequired": "Short description is required",
+      "ReservationLongDescriptionRequired": "Description is required",
+      "FacilityRequired": "Equipment is required",
+      "LocationRequired": "Location is required",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    },
+    "calendar": {
+      "ApplyFilter": "Apply",
+      "ClearFilter": "Clear"
+    }
+  },
+  "devices": {
+    "management": {
+      "Search": "Search for device...",
+      "NewDevice": "New Device",
+      "Edit": "Edit",
+      "Approve": "Approve",
+      "Details": "Details",
+      "Delete": "Delete",
+      "DeviceDetails": "Device Details \"{{code}}\"",
+      "EditDevice": "Edit Device \"{{code}}\"",
+      "ApproveDevice": "Approve Device \"{{code}}\"",
+      "Code": "Code",
+      "IpAddress": "IP Address",
+      "Location": "Location",
+      "MacAddress": "Mac Address",
+      "SerialNumber": "Serial Number",
+      "StartDate": "Start Date",
+      "EndDate": "End Date",
+      "Institution": "Institution",
+      "Facility": "Equipment",
+      "Status": "Status",
+      "EMS": "EMS",
+      "Label": "Label"
+    },
+    "editor": {
+      "Code": "Code:",
+      "IpAddress": "IP Address",
+      "Institution": "Institution",
+      "Publication": "Publication",
+      "MacAddress": "Mac Address",
+      "SerialNumber": "Serial Number",
+      "Module": "Assigned Module",
+      "StartDate": "Start Date",
+      "EndDate": "End Date",
+      "Location": "Location:",
+      "InstitutionRequired": "Institution is required",
+      "DeviceStartDateRequired": "Start Date is required",
+      "DeviceEndDateRequired": "End Date is required",
+      "DeviceLabelRequired": "Device label is required,",
+      "DeviceCodeRequired": "Device code is required,",
+      "DeviceMacAddressRequired": "Mac Address is required",
+      "DeviceSerialNumberRequired": "Serial Number is required",
+      "LocationRequired": "Location is required",
+      "CapacityRequired": "Please enter a value bigger than 0",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving...",
+      "Approve": "Approve",
+      "Approving": "Approving..."
+    }
+  },
+  "locations": {
+    "management": {
+      "Search": "Search for location...",
+      "NewLocation": "New Location",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "LocationDetails": "Location Details \"{{name}}\"",
+      "EditLocation": "Edit Location \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description",
+      "Capacity": "Capacity",
+      "Institution": "Institution",
+      "Facilities": "Equipments"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "Capacity": "Capacity:",
+      "LocationType": "Location Type:",
+      "Institution": "Institution:",
+      "LocationNameRequired": "Location name is required (minimum of 2 and maximum of 200 characters)",
+      "LocationTypeRequired": "Location type is required",
+      "InstitutionRequired": "Institution is required",
+      "FacilitiesRequired": "Equipment is required",
+      "LocationCapacityRequired": "Capacity is required",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "contactGroups": {
+    "management": {
+      "Search": "Search for contact group...",
+      "NewContactGroup": "New contact group",
+      "SyncLdap": "Sync from LDAP",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "ContactGroupDetails": "Contact Group Details \"{{name}}\"",
+      "EditContactGroup": "Edit Contact Group \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description",
+      "Department": "Department",
+      "Institution": "Institution"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "ContactGroupNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "ContactGroupDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving...",
+      "Department": "Department"
+    }
+  },
+  "notifications": {
+    "Delete": "Delete notification",
+    "Pin": "Pin notification",
+    "Date": "Date",
+    "Notification": "Notification"
+  },
+  "todoDemo": {
+    "management": {
+      "Search": "Search for task...",
+      "HideCompleted": "Hide Completed",
+      "AddTask": "Add Task",
+      "Delete": "Delete task",
+      "Important": "Mark as important",
+      "Task": "Task",
+      "Description": "Description"
+    },
+    "editor": {
+      "NewTask": "New Task",
+      "Name": "Name",
+      "TaskNameRequired": "Task name is required",
+      "Description": "Description",
+      "Important": "Mark as important",
+      "AddTask": "Add Task"
+    }
+  },
+  "templates": {
+    "management": {
+      "Search": "Search for template...",
+      "NewTemplate": "New template",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "TemplatenDetails": "Template Details \"{{name}}\"",
+      "EditTemplate": "Edit Template \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description"
+    },
+    "editor": {
+      "NewTemplate": "New Template",
+      "Name": "Name",
+      "TemplateNameRequired": "Template name is required",
+      "Description": "Description",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving"
+    }
+  },
+  "userVehicles": {
+    "management": {
+      "Search": "Search for vehicle...",
+      "NewVehicle": "New Vehicle",
+      "Edit": "Edit",
+      "Approve": "Approve",
+      "Revoke": "Revoke",
+      "Details": "Details",
+      "Delete": "Delete",
+      "FacilityDetails": "Vehicle Details \"{{name}}\"",
+      "EditFacility": "Edit Vehicle \"{{name}}\"",
+      "PlateNumber": "Plate Number",
+      "Status": "Status",
+      "Owner": "Owner",
+      "BookingDescription": "Booking",
+      "CardType": "Card Type"
+
+    },
+    "editor": {
+      "PlateNumber": "PlateNumber:",
+      "Status": "Status:",
+      "Owner": "Owner",
+      "PlateNumberRequired": "Plate Number is required (minimum of 2 and maximum of 200 characters)",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "modules": {
+    "management": {
+      "Search": "Search for Module...",
+      "NewModule": "New Module",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "ModuleDetails": "Module Details \"{{name}}\"",
+      "EditModule": "Edit Module \"{{name}}\"",
+      "Name": "Name",
+      "Route": "Route",
+      "Uri": "URI"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Route": "Route:",
+      "ModuleNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "ModuleRouteRequired": "Route is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "userGroups": {
+    "management": {
+      "Search": "Search for user group...",
+      "NewUserGroup": "New user group",
+      "Edit": "Edit",
+      "Details": "Details",
+      "Delete": "Delete",
+      "UserGroupDetails": "User Group Details \"{{name}}\"",
+      "EditUserGroup": "Edit User Group \"{{name}}\"",
+      "Name": "Name",
+      "Description": "Description"
+    },
+    "editor": {
+      "Name": "Name:",
+      "Description": "Description:",
+      "UserGroupNameRequired": "Name is required (minimum of 2 and maximum of 200 characters)",
+      "UserGroupDescriptionRequired": "Description is required (minimum of 2 and maximum of 500 characters)",
+      "SelectAll": "Select all",
+      "SelectNone": "Select none",
+      "Close": "Close",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Saving": "Saving..."
+    }
+  },
+  "paymentOption": {
+    "Payment": "Payment"
+  },
+  "paymentSucesss": {
+    "Thankyou": "Thank You",
+    "PaymentConfirmed": "Payment for your order has been successfully processed!",
+    "ReturnLink": "Close & Return to outlets page"
+  },
+  "paymentPopup": {
+    "Close": "Close",
+    "Title": "Token Order Payment",
+    "OrderNumber": "Order Number",
+    "DiscountedPayment": "Discounted Payment",
+    "OrderPayment": "Payment",
+    "Select": "Select",
+    "BelowMinOrderValue": "Order total is below minimum order value or no data to display",
+    "ApologiesErrorOccurred": "Apologies a system error occurred. Please contact support for assistance.",
+    "NoOrderNumberFound": "No order number found!"
+  }
+
+
+}

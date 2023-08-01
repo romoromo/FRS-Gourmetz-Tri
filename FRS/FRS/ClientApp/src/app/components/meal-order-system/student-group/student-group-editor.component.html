@@ -1,0 +1,53 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="studentEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() : invalidate()">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <h4>Student Group Information</h4>
+        </div>
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="groupCode" name="groupCode" placeholder="Enter code" [(ngModel)]="groupEdit.code" #groupCode="ngModel" required minlength="2" maxlength="200" />
+            <mat-error *ngIf="showValidationErrors && f.submitted">Name is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="groupName" name="groupName" placeholder="Enter name" [(ngModel)]="groupEdit.name" #groupName="ngModel" required minlength="2" maxlength="200" />
+            <mat-error *ngIf="showValidationErrors && f.submitted">Name is required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-xs-12" style="min-height:300px">
+          <input matInput type="text" [hidden]="true" />
+          <button type="button" mat-button (click)="addStudentSel()" style="margin-top:20px">
+            <mat-icon>
+              add
+            </mat-icon> Add Student
+          </button>
+          <table class="table table-sm table-bordered">
+            <thead class="text-center">
+              <tr>
+                <td>Student Name</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let details of groupEdit.sgdetails; let x=index">
+                <td>{{getName(details.studentId)}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageStudents" type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageStudents" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageStudents" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

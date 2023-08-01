@@ -1,0 +1,63 @@
+<div class="container">
+  <header class="pageHeader">
+    <h3><i class="fa fa-cog fa-lg page-caption" aria-hidden="true"></i> PIB Device Management</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-6">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'devices.management.Search' | translate}}">></search-box>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManagePIBDevices" class="toolbaritem">
+            <a href="javascript:;" (click)="loadData()">
+              <i class="fa fa-refresh"></i> Refresh
+            </a>
+          </li>
+          <li *ngIf="canManagePIBDevices" class="toolbaritem">
+            <a href="javascript:;" (click)="syncLocations()">
+              <i class="fa fa-refresh"></i> Sync PIB Locations
+            </a>
+          </li>
+          <li *ngIf="canManagePIBDevices" class="toolbaritem">
+            <a href="javascript:;" (click)="newPIBDevice(row)">
+              <i class="fa fa-plus-circle"></i> {{'devices.management.NewDevice' | translate}}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [limit]="20">
+  </ngx-datatable>
+
+  <ng-template #indexTemplate let-value="value">
+    <strong>{{value}}</strong>
+  </ng-template>
+  <ng-template #statusTemplate let-row="row" let-value="value" let-i="index">
+    <span *ngIf="row.status_display =='ONLINE'" title="Device is online">
+      <i class="status_online material-icons">fiber_manual_record</i>
+    </span>
+    <span *ngIf="row.status_display !='ONLINE'" title="Device is offline">
+      <i class="status_offline material-icons" >fiber_manual_record</i>
+    </span>
+  </ng-template>
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManagePIBDevices" class="btn btn-link btn-xs" href="javascript:;" (click)="editPIBDevice(row, false)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'devices.management.Edit' | translate}}</a>
+    <!--{{canManagePIBDevices ? '|' : ''}}-->
+    <a *ngIf="canManagePIBDevices" class="btn btn-link btn-xs" href="javascript:;" (click)="deletePIBDevice(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'devices.management.Delete' | translate}}</a>
+  </ng-template>
+  <pib-device-editor #pibDeviceEditor class="hide"></pib-device-editor>
+</div>

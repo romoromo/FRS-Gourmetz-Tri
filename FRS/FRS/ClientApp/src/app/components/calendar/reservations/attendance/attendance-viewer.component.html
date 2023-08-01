@@ -1,0 +1,154 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" name="reservationEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() :
+          (!reservationShortDescription.valid && showErrorAlert('Reservation name is required', 'Please enter a reservation name (minimum of 2 and maximum of 200 characters)'));">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <div class="col-sm-6 col-xs-12">
+        <div>
+          <mat-form-field class="col-md-12" [floatLabel]="always">
+            <input matInput [disabled]="!canManageReservations" type="text" id="reservationShortDescription" name="reservationShortDescription" placeholder="{{'reservations.editor.ShortDescription' | translate}}" [(ngModel)]="reservationEdit.shortDescription" #reservationShortDescription="ngModel" required minlength="2" maxlength="200" />
+            <mat-error *ngIf="showValidationErrors && f.submitted && !reservationShortDescription.valid">{{'reservations.editor.ReservationDescriptionRequired' | translate}}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xs-12">
+        <div>
+          <mat-form-field class="col-md-6" [floatLabel]="always">
+            <input matInput disabled type="text" id="reservationStartDate" name="reservationStartDate" placeholder="Date" [(ngModel)]="startDate" #reservationStartDate="ngModel" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <mat-form-field class="col-md-12" [floatLabel]="always">
+          <input matInput disabled placeholder="Location" type="text" id="locationName" name="locationName" [(ngModel)]="reservationEdit.locationName" />
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field class="col-md-12 mat-form-field--no-underline" [floatLabel]="always" id="timeIntervalsWrapper">
+          <mat-chip-list #chipListTimeInterval>
+            <mat-chip class="selected-time-chip" *ngFor="let timeInterval of reservationEdit.timeIntervals">{{timeInterval.description}}</mat-chip>
+          </mat-chip-list>
+          <input [matChipInputFor]="chipListTimeInterval" style="display:none" matInput disabled type="text" id="reservationTimeIntervals" name="reservationTimeIntervals" placeholder="Selected Time" />
+        </mat-form-field>
+      </div>
+      <!--<div class="col-md-3">
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline" style="padding-left: 15px !important;">
+          <input matInput placeholder="Start" style="display: none">
+          <mat-select #selectStart placeholder="{{'reservations.management.SelectStart' | translate}}" [formControl]="fcStartTimes" [(ngModel)]="selectStartTimeId">
+            <mat-option *ngFor="let start of allStartTimes" [value]="start.id">{{start.description}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline" style="padding-left: 15px !important;">
+          <input matInput placeholder="End" style="display: none">
+          <mat-select #selectEnd placeholder="{{'reservations.management.SelectEnd' | translate}}" [formControl]="fcEndTimes" [(ngModel)]="selectEndTimeId">
+            <mat-option *ngFor="let end of allEndTimes" [value]="end.id">{{end.description}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>-->
+    </div>
+    <hr />
+    <div class="row">
+
+      <div class="col-md-6">
+        <mat-form-field class="col-md-12 mat-form-field--no-underline" [floatLabel]="always" id="reservationFacilitiesWrapper">
+          <mat-chip-list #chipList>
+            <mat-chip *ngFor="let facility of reservationEdit.facilities">{{facility.name}}</mat-chip>
+          </mat-chip-list>
+          <input [matChipInputFor]="chipList" style="display:none" matInput disabled type="text" id="reservationFacilities" name="reservationFacilities" placeholder="Facilities" />
+        </mat-form-field>
+        <div class="col-xs-3">
+          <mat-form-field [floatLabel]="always">
+            <input matInput disabled placeholder="Capacity" type="text" id="locationCapacity" name="locationCapacity" [(ngModel)]="locationCapacity" />
+          </mat-form-field>
+        </div>
+        <div class="col-xs-3" style="padding-top:15px">
+          <mat-checkbox name="isAttendee" [(ngModel)]="reservationEdit.isAttendee">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Is Attendee</label>
+          </mat-checkbox>
+        </div>
+      </div>
+
+
+      <div class="col-md-6">
+        <mat-form-field floatPlaceholder="always" class="mat-form-field--no-underline" style="padding-left: 15px !important;">
+          <input matInput placeholder="{{'reservations.editor.RepeatType' | translate}}" style="display: none">
+          <mat-radio-group name="test" [(ngModel)]="reservationEdit.repeatType">
+            <mat-radio-button value="None"> None </mat-radio-button>
+            <mat-radio-button value="Daily"> Daily </mat-radio-button>
+            <mat-radio-button value="Weekly"> Weekly </mat-radio-button>
+            <mat-radio-button value="Monthly"> Monthly </mat-radio-button>
+            <mat-radio-button value="Yearly"> Yearly </mat-radio-button>
+
+          </mat-radio-group>
+        </mat-form-field>
+        <div class="col-md-6 col-sm-12">
+          <mat-form-field [floatLabel]="always">
+            <input matInput disabled [matDatepicker]="picker" id="reservationRepeatEndDateTime" name="reservationRepeatEndDateTime" placeholder="{{'reservations.editor.RepeatEndDateTime' | translate}}" [(ngModel)]="reservationEdit.repeatEndDateTime" #reservationRepeatEndDateTime="ngModel">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker disabled="false"></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div class="row">
+
+      <div class="col-md-12">
+        <mat-form-field class="col-md-12" [floatLabel]="always">
+          <textarea rows="5" matInput type="text" id="reservationDescription" name="reservationDescription" placeholder="Enter reservation description" #reservationDescription="ngModel" [(ngModel)]="reservationEdit.longDescription" required></textarea>
+          <mat-error *ngIf="showValidationErrors && f.submitted && !reservationDescription.valid">{{'reservations.editor.ReservationLongDescriptionRequired' | translate}}</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <mat-form-field class="col-md-4" [floatLabel]="always">
+          <!--<input matInput type="text" id="reservationInvitees" name="reservationInvitees" style="display:none;" placeholder="Participants" />-->
+          <div class="col-md-6">
+            <input matInput type="text" id="addReservationInvitees" name="addReservationInvitees" placeholder="Add participants"
+                   [formControl]="fcReservationInvitees" [matAutocomplete]="auto" aria-label="Invitee" [(ngModel)]="inputInvitee" />
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selectInvitee($event)">
+              <mat-option *ngFor="let option of filteredReservationInvitees | async" [value]="option">
+                {{option.fullName}}
+              </mat-option>
+            </mat-autocomplete>
+          </div>
+        </mat-form-field>
+        <div>
+          <h6 style="padding-left: 15px;">Invitees</h6>
+          <mat-list dense>
+            <mat-list-item *ngFor="let invitee of inviteeList">
+              <span>
+                {{invitee.fullName}} - {{invitee.email}}
+                <button type="button" mat-icon-button (click)="removeInvitee(invitee)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </span>
+
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <hr class="edit-last-separator-hr" />
+      </div>
+    </div>
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center">
+    <button type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'reservations.editor.Cancel' | translate}}</button>
+    <button type="submit" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('reservations.editor.Saving' | translate) : ('reservations.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

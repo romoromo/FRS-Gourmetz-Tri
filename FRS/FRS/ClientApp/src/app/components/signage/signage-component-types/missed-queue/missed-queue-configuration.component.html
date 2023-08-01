@@ -1,0 +1,60 @@
+<div>
+  <mat-form-field style="width: 250px">
+    <input matInput type="number" placeholder="Numbers of queue no vertically" [(ngModel)]="configurations.noOfRows" />
+  </mat-form-field>
+  Will auto add 1 row at the top for header
+  <br />
+  <mat-form-field style="width: 250px">
+    <input matInput type="number" placeholder="Numbers of queue no horizontally" [(ngModel)]="configurations.noOfColumns" />
+  </mat-form-field>
+  <br />
+  <mat-form-field>
+    <input matInput type="number" placeholder="Border Width" [(ngModel)]="configurations.borderWidth" />
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Border Color" [(colorPicker)]="configurations.borderColor" [style.background]="configurations.borderColor" />
+  </mat-form-field>
+  <br />
+  <mat-form-field>
+    <input matInput type="number" placeholder="Cell Padding" [(ngModel)]="configurations.cellPadding" />
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput type="number" placeholder="Header Height" [(ngModel)]="configurations.headerHeight" />
+  </mat-form-field>
+  Leave blank for header height auto fit content height
+  <br />
+  <mat-form-field>
+    <input matInput type="text" placeholder="Label Header Text" [(ngModel)]="configurations.labelText" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput type="text" placeholder="Second Label Header Text" [(ngModel)]="configurations.secondLabelText" />
+  </mat-form-field>
+
+  <br />
+
+  <mat-form-field>
+    <input matInput type="number" min="0" placeholder="Page Interval (seconds)" [(ngModel)]="configurations.interval" />
+  </mat-form-field>
+  <mat-checkbox class="example-margin" [(ngModel)]="configurations.hideHeader">Hide Header</mat-checkbox>
+
+  <br />
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <h5>Label Header</h5>
+
+    <text-configuration [hidePosSize]="true" [(configurations)]="configurations.labelHeaderStyle"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <h5>Second Label Header</h5>
+
+    <text-configuration [hidePosSize]="true" [(configurations)]="configurations.secondLabelHeaderStyle"></text-configuration>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <h5>Queue No </h5>
+
+    <text-configuration [hidePosSize]="true" [(configurations)]="configurations.queueNoStyle"></text-configuration>
+  </div>
+</div>

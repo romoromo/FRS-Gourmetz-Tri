@@ -1,0 +1,44 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="userGroupEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!userGroupName.valid && showErrorAlert('UserGroup name is required', 'Please enter a userGroup name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageUserGroups" type="text" id="userGroupName" name="userGroupName" placeholder="Enter name" [(ngModel)]="userGroupEdit.name" #userGroupName="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageUserGroups" type="text" id="userGroupDescription" name="userGroupDescription" placeholder="Enter description" [(ngModel)]="userGroupEdit.description" #userGroupDescription="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageUserGroups" type="text" id="userGroupEmails" name="userGroupEmails" placeholder="Device Down Notification Emails (semicolon ';' as delimiter)" [(ngModel)]="userGroupEdit.emails" #userGroupEmails="ngModel"  />
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12">
+          <tree [tree]="tree"
+                #treeComponent
+                [settings]="treeSettings"
+                (nodeChecked)="nodeChecked($event)"
+                (nodeUnchecked)="nodeUnchecked($event)"
+                (nodeSelected)="handleSelected($event)"></tree>
+            <!--<tree-root *ngIf="nodes" #tree (initialized)="onTreeLoad()" [focused]="true" [options]="options" [nodes]="nodes" (select)="onActivate($event)"
+                       (deselect)="onDeactivate($event)"
+                       (updateData)="updateData()"></tree-root>-->
+        </div>
+      </div>
+      
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageUserGroups" type="button" mat-button (click)="cancel()" >{{'userGroups.editor.Close' | translate}}</button>
+      <button *ngIf="canManageUserGroups" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'userGroups.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageUserGroups" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('userGroups.editor.Saving' | translate) : ('userGroups.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form class="form-horizontal" name="mealSessionEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="save()">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="do-number" placeholder="DO Number" name="do-number" autocomplete="off" [(ngModel)]="editInventory.storeInventory.deliveryOrder.doNumber" minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="do-time" placeholder="Received Time" name="do-time" autocomplete="off" [ngModel]="editInventory.timeReceived | date:  'd-MM-y, HH:mm':'UTC +14'" minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="sid-cart" placeholder="Carton Code" name="sid-cart" autocomplete="off" [(ngModel)]="editInventory.carton.code" minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="sid-dish" placeholder="Dish Code" name="sid-dish" autocomplete="off" [(ngModel)]="editInventory.dish.code" minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="sid-dish-name" placeholder="Dish Name" name="sid-dish-name" autocomplete="off" [(ngModel)]="editInventory.dish.label" minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="sid-qty" placeholder="Quantity Received" name="sid-qty" autocomplete="off" [(ngModel)]="editInventory.qtyReceived" minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="si-remarks" placeholder="Remarks" name="si-remarks" autocomplete="off" [(ngModel)]="editInventory.remarks" minlength="1" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput [disabled]="true" type="text" id="si-deliv" placeholder="Delivered By" name="si-deliv" autocomplete="off" [(ngModel)]="editInventory.storeInventory.deliveredBy" minlength="1" maxlength="200" />
+        </mat-form-field>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+      <div mat-dialog-actions align="center">
+        <button *ngIf="!canManageReceive" type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+        <button *ngIf="canManageReceive" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Close' | translate}}</button>
+      </div>
+</form>
+</div>

@@ -1,0 +1,5 @@
+@import '~video.js/dist/video-js.css';
+
+.video-js {
+  position: inherit !important;
+}

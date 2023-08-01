@@ -1,0 +1,63 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="bentoBoxTypeEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!bentoBoxTypeName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <mat-label>Caterer</mat-label>
+          <mat-select [disabled]="!canManageBentoBoxTypes" id="caterer" name="caterer" [(ngModel)]="bentoBoxTypeEdit.catererInfoId" #catererInfo="ngModel" required>
+            <mat-option *ngFor="let catererInfo of catererInfos" [value]="catererInfo.id">
+              {{catererInfo.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Caterer is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageBentoBoxTypes" type="text" id="bentoBoxTypeCode" name="bentoBoxTypeCode" placeholder="Code" [(ngModel)]="bentoBoxTypeEdit.code" #bentoBoxTypeCode="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageBentoBoxTypes" type="text" id="bentoBoxTypeDetails" name="bentoBoxTypeDetails" placeholder="Details" [(ngModel)]="bentoBoxTypeEdit.details" #bentoBoxTypeDetails="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageBentoBoxTypes" type="number" id="bentoBoxTypeLength" name="bentoBoxTypeLength" placeholder="Length (cm)" [(ngModel)]="bentoBoxTypeEdit.length" #bentoBoxTypeLength="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageBentoBoxTypes" type="number" id="bentoBoxTypeWidth" name="bentoBoxTypeWidth" placeholder="Width (cm)" [(ngModel)]="bentoBoxTypeEdit.width" #bentoBoxTypeWidth="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageBentoBoxTypes" type="number" id="bentoBoxTypeHeight" name="bentoBoxTypeHeight" placeholder="Height (cm)" [(ngModel)]="bentoBoxTypeEdit.height" #bentoBoxTypeHeight="ngModel" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput placeholder="Is RFID" style="display: none">
+          <mat-radio-group name="Is RFID" [(ngModel)]="bentoBoxTypeEdit.isRFID">
+            <mat-radio-button [value]="true">Yes</mat-radio-button>&nbsp;
+            <mat-radio-button [value]="false">No</mat-radio-button>&nbsp;
+          </mat-radio-group>
+        </mat-form-field>
+
+        <div class="col-md-12">
+          Picture <file-upload (onUploadFinished)="uploadFinished($event)"></file-upload>
+          <img [hidden]="!bentoBoxTypeEdit.picture" [src]="bentoBoxTypeEdit.picture" style="max-width: 300px; max-height: 300px;padding:2px" />
+        </div>
+
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageBentoBoxTypes" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageBentoBoxTypes" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageBentoBoxTypes" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

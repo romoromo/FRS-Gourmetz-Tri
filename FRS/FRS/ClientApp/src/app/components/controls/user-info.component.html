@@ -1,0 +1,750 @@
+<header *ngIf="!isGeneralEditor" class="pageHeader" style="    border-bottom: 1px solid #e8e8e8;">
+  <h3>Profile</h3>
+</header>
+<div>
+  <form *ngIf="formResetToggle" [attr.autocomplete]="isGeneralEditor ? NaN : null" class="form-horizontal" name="userInfoForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+
+          (!userName.valid && showErrorAlert('User name is required', 'Please enter a user name (minimum of 2 and maximum of 200 characters)'));
+
+          (userPassword && !userPassword.valid && showErrorAlert('Password is required', 'Please enter the current password'));
+
+          (email.errors?.required && showErrorAlert('Email is required', 'Please enter an email address (maximum of 200 characters)'));
+          (email.errors?.pattern && showErrorAlert('Invalid Email', 'Please enter a valid email address'));
+
+          (isChangePassword && isEditingSelf && !currentPassword.valid && showErrorAlert('Current password is required', 'Please enter the current password'));
+
+          ((isChangePassword || isNewUser) && !newPassword.valid && showErrorAlert('New password is required', 'Please enter the new password (minimum of 8 characters)'));
+
+          ((isChangePassword || isNewUser) && newPassword.valid && confirmPassword.errors?.required && showErrorAlert('Confirmation password is required', 'Please enter the confirmation password'));
+          ((isChangePassword || isNewUser) && newPassword.valid && confirmPassword.errors?.validateEqual && showErrorAlert('Passwword mismatch', 'New password and comfirmation password do not match'));
+
+          (canAssignRoles && !roles.valid && showErrorAlert('Roles is required', 'Please select a minimum of 1 role'));">
+    <div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="employeeId-{{uniqueId}}">{{'users.editor.EmployeeId' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.employeeId}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input autofocus type="text" attr.id="employeeId-{{uniqueId}}" name="employeeId" placeholder="Enter Employee ID" class="form-control" [(ngModel)]="userEdit.employeeId" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="jobTitle-{{uniqueId}}">{{'users.editor.JobTitle' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.jobTitle}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input autofocus type="text" attr.id="jobTitle-{{uniqueId}}" name="jobTitle" placeholder="Enter Job Title" class="form-control" [(ngModel)]="userEdit.jobTitle" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group has-feedback">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="userName-{{uniqueId}}">{{'users.editor.UserName' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.userName}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && userName.valid, 'has-error' : f.submitted && !userName.valid}">
+        <input type="text" attr.id="userName-{{uniqueId}}" name="userName" [attr.autocomplete]="isGeneralEditor ? new-password : null" placeholder="Enter user name"
+               class="form-control" [(ngModel)]="userEdit.userName" #userName="ngModel" required minlength="2" maxlength="200" />
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': userName.valid, 'glyphicon-remove' : !userName.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !userName.valid" class="errorMessage">
+          {{'users.editor.UserNameRequired' | translate}}
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="isEditMode && isEditingSelf && !isChangePassword && user.userName != userEdit.userName" class="row">
+      <div class="col-md-12">
+        <hr class="password-separator-hr" />
+      </div>
+    </div>
+    <div *ngIf="isEditMode && isEditingSelf && !isChangePassword && user.userName != userEdit.userName" class="form-group has-feedback">
+      <label class="control-label col-md-2" for="userPassword-{{uniqueId}}">{{'users.editor.Password' | translate}}</label>
+      <div class="col-md-10" [ngClass]="{'has-success': f.submitted && userPassword.valid, 'has-error' : f.submitted && !userPassword.valid}">
+        <input type="password" attr.id="userPassword-{{uniqueId}}" name="userPassword" [attr.autocomplete]="isGeneralEditor ? new-password : null" placeholder="Enter password"
+               class="form-control" [(ngModel)]="userEdit.currentPassword" #userPassword="ngModel" required />
+        <small class="hint-sm">{{'users.editor.PasswordHint' | translate}}</small>
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': userPassword.valid, 'glyphicon-remove' : !userPassword.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !userPassword.valid" class="errorMessage">
+          {{'users.editor.CurrentPasswordRequired' | translate}}
+        </span>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group has-feedback">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="email-{{uniqueId}}">{{'users.editor.Email' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.email}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && email.valid, 'has-error' : f.submitted && !email.valid}">
+        <input type="text" attr.id="email-{{uniqueId}}" name="email" placeholder="Enter email address" class="form-control" [(ngModel)]="userEdit.email" #email="ngModel"
+               required maxlength="200" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" />
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': email.valid, 'glyphicon-remove' : !email.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && email.errors?.required" class="errorMessage">
+          {{'users.editor.EmailRequired' | translate}}
+        </span>
+        <span *ngIf="showValidationErrors && f.submitted && email.errors?.pattern" class="errorMessage">
+          {{'users.editor.InvalidEmail' | translate}}
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="isEditMode" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <!--<div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="isAD-{{uniqueId}}">Active Directory</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <mat-slide-toggle [checked]="user.isAD"
+                          [disabled]="true"
+                          attr.id="isAD-{{uniqueId}}" name="isAD"
+                          [(ngModel)]="user.isAD" #isAD="ngModel">
+        </mat-slide-toggle>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <mat-slide-toggle [checked]="userEdit.isAD"
+                          [disabled]="isViewOnly"
+                          attr.id="isAD-{{uniqueId}}" name="isAD"
+                          [(ngModel)]="userEdit.isAD" #isAD="ngModel">
+        </mat-slide-toggle>
+      </div>
+    </div>-->
+
+
+    <div *ngIf="isEditMode" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="(userEdit && !userEdit.isAD) && isEditMode" class="form-group">
+      <label for="newPassword-{{uniqueId}}" class="control-label col-md-2">{{'users.editor.Password' | translate}}</label>
+      <div *ngIf="!isChangePassword && !isNewUser" class="col-md-10">
+        <button type="button" (click)="changePassword()" class="btn btn-link">{{'users.editor.ChangePassword' | translate}}</button>
+      </div>
+
+      <div *ngIf="(userEdit && !userEdit.isAD) && (isChangePassword || isNewUser)" class="col-md-10">
+        <div class="password-well well well-sm">
+          <div *ngIf="isEditingSelf" class="form-group has-feedback">
+            <label class="control-label col-md-3" for="currentPassword-{{uniqueId}}">{{'users.editor.CurrentPassword' | translate}}</label>
+            <div class="col-md-9" [ngClass]="{'has-success': f.submitted && currentPassword.valid, 'has-error' : f.submitted && !currentPassword.valid}">
+              <input type="password" attr.id="currentPassword-{{uniqueId}}" name="currentPassword" [attr.autocomplete]="isGeneralEditor ? new-password : null" placeholder="Enter current password" class="form-control" [(ngModel)]="userEdit.currentPassword" #currentPassword="ngModel"
+                     required />
+              <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': currentPassword.valid, 'glyphicon-remove' : !currentPassword.valid}"></span>
+              <span *ngIf="showValidationErrors && f.submitted && !currentPassword.valid" class="errorMessage">
+                {{'users.editor.CurrentPasswordRequired' | translate}}
+              </span>
+            </div>
+          </div>
+
+          <div *ngIf="!isNewUser" class="row">
+            <div class="col-md-12">
+              <hr class="password-separator-hr" />
+            </div>
+          </div>
+
+          <div class="form-group has-feedback">
+            <label class="control-label col-md-3" for="newPassword-{{uniqueId}}">{{'users.editor.NewPassword' | translate}}</label>
+            <div class="col-md-9" [ngClass]="{'has-success': f.submitted && newPassword.valid, 'has-error' : f.submitted && !newPassword.valid}">
+              <input type="password" attr.id="newPassword-{{uniqueId}}" name="newPassword" [attr.autocomplete]="isGeneralEditor ? new-password : null" placeholder="Enter new password" class="form-control" [(ngModel)]="userEdit.newPassword" #newPassword="ngModel"
+                     required minlength="6" validateEqual="confirmPassword" reverse="true" />
+              <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': newPassword.valid, 'glyphicon-remove' : !newPassword.valid}"></span>
+              <span *ngIf="showValidationErrors && f.submitted && !newPassword.valid" class="errorMessage">
+                {{'users.editor.NewPasswordRequired' | translate}}
+              </span>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <hr class="password-separator-hr" />
+            </div>
+          </div>
+
+          <div class="form-group has-feedback">
+            <label class="control-label col-md-3" for="confirmPassword-{{uniqueId}}">{{'users.editor.ConfirmPassword' | translate}}</label>
+            <div class="col-md-9" [ngClass]="{'has-success': f.submitted && confirmPassword.valid, 'has-error' : f.submitted && !confirmPassword.valid}">
+              <input type="password" attr.id="confirmPassword-{{uniqueId}}" name="confirmPassword" [attr.autocomplete]="isGeneralEditor ? new-password : null" placeholder="Confirm new password" class="form-control" [(ngModel)]="userEdit.confirmPassword" #confirmPassword="ngModel"
+                     required validateEqual="newPassword" />
+              <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': confirmPassword.valid, 'glyphicon-remove' : !confirmPassword.valid}"></span>
+              <span *ngIf="showValidationErrors && f.submitted && confirmPassword.errors?.required" class="errorMessage">
+                {{'users.editor.ConfirmationPasswordRequired' | translate}}
+              </span>
+              <span *ngIf="showValidationErrors && f.submitted && confirmPassword.errors?.validateEqual && !confirmPassword.errors?.required" class="errorMessage">
+                {{'users.editor.PasswordMismatch' | translate}}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--******************************************************************************************************-->
+
+    <div *ngIf="!isEditMode || canAssignRoles" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="!isEditMode || canAssignRoles" class="form-group has-feedback">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="roles-user-info">{{'users.editor.Roles' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p ngPreserveWhitespaces class="form-control-static">
+          <span *ngFor="let role of user.roles">
+            <span title='{{getRoleByName(role)?.description}}' class="badge">{{role}}</span>
+          </span>
+        </p>
+      </div>
+      <div *ngIf="isEditMode && canAssignRoles" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && roles.valid, 'has-error' : f.submitted && !roles.valid}">
+        <select id="roles-user-info" name="roles" [(ngModel)]="userEdit.roles" #roles="ngModel" #rolesSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect required multiple
+                data-live-search="true" data-actions-box="false" data-live-search-placeholder="Search..." title="Select Roles">
+          <option *ngFor="let role of allRoles" attr.data-content="<span title='{{role.description}}'>{{role.name}}</span>" attr.value="{{role.name}}">
+            {{role.name}}
+          </option>
+        </select>
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': roles.valid, 'glyphicon-remove' : !roles.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !roles.valid" class="errorMessage">
+          {{'users.editor.RoleRequired' | translate}}
+        </span>
+      </div>
+    </div>
+
+    <!--******************************************************************************************************-->
+    <div class="row" *ngIf="(user && !user.departmentId) || (userEdit && !userEdit.departmentId)">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group" *ngIf="(user && !user.departmentId) || (userEdit && !userEdit.departmentId)">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="registeredDepartment-{{uniqueId}}">{{'users.editor.RegisteredDepartment' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.registeredDepartment}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input type="text" readonly attr.id="registeredDepartment-{{uniqueId}}" name="registeredDepartment" class="form-control" [(ngModel)]="userEdit.registeredDepartment" />
+      </div>
+    </div>
+
+    <div *ngIf="!isEditMode || canManageDepartments" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="!isEditMode || canManageDepartments" class="form-group has-feedback">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="departments-user-info">{{'users.editor.Department' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p ngPreserveWhitespaces class="form-control-static">
+          <span>
+            <span title='{{user.departmentName}}' class="badge">{{user.departmentName}}</span>
+          </span>
+        </p>
+      </div>
+      <div *ngIf="isEditMode && canManageDepartments" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && departments.valid, 'has-error' : f.submitted && !departments.valid}">
+        <select id="departments-user-info" name="departments" [(ngModel)]="userEdit.departmentId" #departments="ngModel" #departmentsSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect 
+                data-live-search="false" data-actions-box="false" data-live-search-placeholder="Search..." title="Select Department">
+          <option *ngFor="let department of allDepartments" attr.data-content="<span title='{{department.description}}'>{{department.name}}</span>" attr.value="{{department.id}}">
+            {{department.name}}
+          </option>
+        </select>
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': departments.valid, 'glyphicon-remove' : !departments.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !departments.valid" class="errorMessage">
+          {{'users.editor.DepartmentRequired' | translate}}
+        </span>
+      </div>
+    </div>
+
+    <!--******************************************************************************************************-->
+
+    <div *ngIf="!isEditMode || canAssignUserGroups" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <!--<div class="form-group">
+    <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="ugs-{{uniqueId}}">User Groups</label>
+    <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+      <p ngPreserveWhitespaces class="form-control-static">
+        <span *ngFor="let ug of user.userGroupMembers">
+          <span title='{{ug.userGroupName}}' class="badge">{{ug.userGroupName}}</span>
+        </span>
+      </p>
+    </div>
+
+
+    <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+      <select id="ugs-user-info-{{uniqueId}}" name="ugs-{{uniqueId}}" [(ngModel)]="selectedUserGroupIds" class="selectpicker form-control" bootstrapSelect multiple
+              data-live-search="false">
+        <option *ngFor="let ug of allUserGroups" [value]="ug.id">
+          {{ug.name}}
+        </option>
+      </select>
+      <select class="form-control selectpicker" [(ngModel)]="selectedUserGroupIds"  multiple  [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let ug of allUserGroups" [attr.value]="ug.id">
+          {{ug.name}}
+        </option>
+      </select>
+      <mat-form-field *ngIf="isEditMode && canAssignUserGroups" class="col-md-12  mat-form-field--no-underline" floatPlaceholder="always" >
+        <mat-select multiple [(ngModel)]="selectedUserGroupIds" class="form-control selectpicker">
+          <mat-option *ngFor="let ug of allUserGroups" [value]="ug.id">
+            {{ug.name}}
+          </mat-option>
+        </mat-select>
+
+      </mat-form-field>
+    </div>
+  </div>-->
+
+    <div *ngIf="!isEditMode || canAssignUserGroups" class="form-group has-feedback">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="usergroups-user-info-{{uniqueId}}">{{'users.editor.UserGroups' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p ngPreserveWhitespaces class="form-control-static">
+          <span *ngFor="let ug of user.userGroupMembers">
+            <span title='{{ug.userGroupName}}' class='badge'>{{ug.userGroupName}}</span>
+          </span>
+        </p>
+      </div>
+      <div *ngIf="isEditMode && canAssignUserGroups" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted }">
+        <select id="usergroups-user-info" name="usergroups-user-info" [ngModel]="userEdit.userGroupIds" (ngModelChange)="selectUserGroup($event)" class="selectpicker form-control" bootstrapSelect multiple
+                data-live-search="false" data-actions-box="false" data-live-search-placeholder="Search..." title="Select User Groups">
+          <option *ngFor="let ug of allUserGroups" attr.data-content="<span title='{{ug.description}}'>{{ug.name}}</span>" attr.value="{{ug.id}}">
+            {{ug.name}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!--******************************************************************************************************-->
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="fullName-{{uniqueId}}">{{'users.editor.FullName' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.fullName}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input type="text" attr.id="fullName-{{uniqueId}}" name="fullName" placeholder="Enter full name" class="form-control" [(ngModel)]="userEdit.fullName" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="status-{{uniqueId}}">Status</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.status}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <select id="statuses-user-info" name="statuses" [(ngModel)]="selectedStatus" #statuses="ngModel" #statusesSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect
+                data-live-search="false" (change)="changeStatus($event.target.value)">
+          <option *ngFor="let status of allStatuses" attr.value="{{status}}">
+            {{status}}
+          </option>
+        </select>
+      </div>
+      <div *ngIf="isEditMode && selectedStatus == 'CUSTOM'" [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly"></div>
+      <div *ngIf="isEditMode && selectedStatus == 'CUSTOM'" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input type="text" attr.id="status-{{uniqueId}}" name="status" placeholder="" class="form-control" [(ngModel)]="userEdit.status" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="pin-{{uniqueId}}">PIN (6-digit)</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.pin}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input type="password" pattern="[0-9]*" #pin="ngModel" inputmode="numeric" minlength="6" maxlength="6" attr.id="pin-{{uniqueId}}" name="pin" placeholder="Enter numeric PIN" class="form-control" [(ngModel)]="userEdit.pin" />
+        <span *ngIf="showValidationErrors && f.submitted && !pin.valid" class="errorMessage">
+          {{'users.editor.PinRequired' | translate}}
+        </span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="phoneNumber-{{uniqueId}}">{{'users.editor.PhoneNumber' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.phoneNumber}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input type="text" attr.id="phoneNumber-{{uniqueId}}" name="phoneNumber" placeholder="Enter phone number" class="form-control" [(ngModel)]="userEdit.phoneNumber" />
+      </div>
+    </div>
+
+    <div *ngIf="!isViewOnly" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="homeNo-{{uniqueId}}">{{'users.editor.HomeNumber' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.homeNo}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input type="text" attr.id="homeNo-{{uniqueId}}" name="homeNo" placeholder="Enter home number" class="form-control" [(ngModel)]="userEdit.homeNo" />
+      </div>
+    </div>
+
+    <div *ngIf="!isViewOnly" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="mobileNo-{{uniqueId}}">{{'users.editor.MobileNumber' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.mobileNo}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input type="text" attr.id="mobileNo-{{uniqueId}}" name="mobileNo" placeholder="Enter mobile number" class="form-control" [(ngModel)]="userEdit.mobileNo" />
+      </div>
+    </div>
+
+    <div *ngIf="!isViewOnly" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="unitNumber-{{uniqueId}}">{{'users.editor.UnitNumber' | translate}}</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p class="form-control-static">{{user.unitNumber}}</p>
+      </div>
+      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <input type="text" attr.id="unitNumber-{{uniqueId}}" name="unitNumber" placeholder="Enter unit number" class="form-control" [(ngModel)]="userEdit.unitNumber" />
+      </div>
+    </div>
+    <div *ngIf="!isViewOnly" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-xs-12">
+        <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="facilities-facility-icon">Photo</label>
+        <div class="col-md-7" *ngIf="isEditMode">
+          <file-upload (onUploadFinished)="uploadFinished($event)" fileTypes="image/*"></file-upload>
+        </div>
+
+        <div *ngIf="isEditMode && userEdit.filePath" class="col-md-3" style="padding:10px; border: 1px dashed #808080;text-align:center">
+          <img [src]="getFileImage(userEdit.filePath)" alt="icon" style="width:50px; height:50px;" />
+        </div>
+        <div *ngIf="!isEditMode && user.filePath" class="col-md-3" style="padding:10px; border: 1px dashed #808080;text-align:center">
+          <img [src]="getFileImage(user.filePath)" alt="icon" style="width:50px; height:50px;" />
+        </div>
+      </div>
+    </div>
+    <!--<div *ngIf="!isViewOnly" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-xs-12 col-md-2 control-label">
+        <label class="control-label" for="wallet-{{uniqueId}}">Wallet :</label>
+      </div>
+      <div class="col-md-10" style="padding:10px;">
+        <div *ngIf="!isEditMode" class="col-md-1">
+          <p class="form-control-static">{{walletAmount}}</p>
+        </div>
+        <div *ngIf="isEditMode" class="col-md-1">
+          <p class="form-control-static">{{walletAmount}}</p>
+        </div>
+        <button *ngIf="(user && user.id > 0) || (userEdit && userEdit.id > 0 )" type="button" mat-button (click)="isTopUp = true; topUpAmount = 0" class="col-md-2">
+          <mat-icon>
+            account_balance_wallet
+          </mat-icon> Top Up
+        </button>
+
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div *ngIf="isTopUp" class="col-md-offset-2 col-md-2">
+        <input autofocus type="number" attr.id="topup-{{uniqueId}}" name="topup" placeholder="Enter Amount" class="form-control col-md-8" [(ngModel)]="topUpAmount" />
+      </div>
+      <div class="clearfix"></div>
+      <div *ngIf="isTopUp" class="col-md-offset-2 col-md-6" style="padding:10px;">
+        <button type="button" mat-button (click)="isTopUp = false; topUpWallet()" color="primary">
+          <mat-icon>
+            save
+          </mat-icon>Submit
+        </button>
+        <button type="button" mat-button (click)="isTopUp = false;topUpAmount = 0;">
+          <mat-icon>
+            close
+          </mat-icon>Cancel
+        </button>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-xs-12 col-md-2 control-label">
+        <label class="control-label" for="reward-{{uniqueId}}">Reward Points : </label>
+      </div>
+      <div class="col-md-10" style="padding:10px;">
+        <div *ngIf="!isEditMode" class="col-md-1">
+          <p class="form-control-static">{{(user.userRewards && user.userRewards.length > 0 ?  user.userRewards[0].balance : 0)}}</p>
+        </div>
+        <div *ngIf="isEditMode" class="col-md-1">
+          <p class="form-control-static">{{(userEdit.userRewards && userEdit.userRewards.length > 0 ?  userEdit.userRewards[0].balance : 0)}}</p>
+        </div>
+
+      </div>
+    </div>-->
+    <!--<div class="form-group row">
+      <div class="col-md-2 text-align-right">
+        <label class="control-label">Vehicles</label>
+      </div>
+      <div class="col-md-10"></div>
+      <div class="col-md-2"></div>
+      <div class="col-md-10">
+        <button type="button" mat-button (click)="addVehicle()" *ngIf="isEditMode">
+          <mat-icon>
+            directions_car
+          </mat-icon> Add Vehicle
+        </button>
+      </div>
+      <div class="col-md-2"></div>
+      <div class="col-sm-10">
+        <table class="table table-sm" *ngIf="isEditMode">
+          <thead>
+            <tr>
+              <th scope="col">Plate No</th>
+              <th scope="col">Status</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of userEdit.userVehicles">
+              <td>{{row.plateNumber}}</td>
+              <td>{{row.vehicleStatus}}</td>
+              <td>
+                <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteVehicle(row)">
+                  <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="table table-sm" *ngIf="!isEditMode">
+          <thead>
+            <tr>
+              <th scope="col">Plate No</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of user.userVehicles">
+              <td>{{row.plateNumber}}</td>
+              <td>{{row.vehicleStatus}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>-->
+
+    <div class="form-group row">
+      <div class="col-md-2 text-align-right">
+        <label class="control-label">Card Id</label>
+      </div>
+      <div class="col-md-10"></div>
+      <div class="col-md-2"></div>
+      <div class="col-md-10">
+        <button type="button" mat-button (click)="addCardId()" *ngIf="isEditMode">
+          <mat-icon>
+            card_membership
+          </mat-icon> Add Card Id
+        </button>
+      </div>
+      <div class="col-md-2"></div>
+      <div class="col-sm-10">
+        <table class="table table-sm" *ngIf="isEditMode">
+          <thead>
+            <tr>
+              <th scope="col">Card Id</th>
+              <th scope="col">Status</th>
+              <th scope="col">Remarks</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of userEdit.userCardIds;let i = index">
+              <td>{{row.cardId}}</td>
+              <td>{{row.status}}</td>
+              <td>{{row.remarks}}</td>
+              <td>
+                <a class="btn btn-link btn-xs" href="javascript:;" (click)="activateCardId(row,i)">
+                  <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                </a>
+                <a class="btn btn-link btn-xs" href="javascript:;" (click)="editCardId(row,i)">
+                  <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                </a>
+                <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteCardId(row)">
+                  <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="table table-sm" *ngIf="!isEditMode">
+          <thead>
+            <tr>
+              <th scope="col">Card Id</th>
+              <th scope="col">Status</th>
+              <th scope="col">Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of user.userVehicles">
+              <td>{{row.cardId}}</td>
+              <td>{{row.status}}</td>
+              <td>{{row.remarks}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="form-group row" *ngIf="userEdit && userEdit.id">
+      <div class="col-md-2 text-align-right">
+        <label class="control-label">Manage Students</label>
+      </div>
+      <div class="col-md-10"></div>
+      <div class="col-md-2"></div>
+      <div class="col-md-10">
+        <mat-form-field>
+          <mat-label>Add Student</mat-label>
+          <mat-select id="student" name="student" [(ngModel)]="studentId" #student="ngModel">
+            <mat-option>
+              <ngx-mat-select-search placeholderLabel="Search" [formControl]="searchForm"></ngx-mat-select-search>
+            </mat-option>
+            <mat-option [style.display]="(student.name).toLowerCase().includes((searchForm?.value || '').toLowerCase()) ? 'block' : 'none'" *ngFor="let student of students" [value]="student.id">
+              {{student.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        &nbsp;
+        <span class="btn btn-primary" (click)="addStudent()">Add</span>
+      </div>
+      <div class="col-md-2">
+
+      </div>
+      <div class="col-sm-10">
+        <table class="table table-sm" *ngIf="isEditMode">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of userEdit.students;let i = index" [hidden]="!row.isActive">
+              <td>{{row.name}}</td>
+              <td>
+                <a class="btn btn-link btn-xs" href="javascript:;" (click)="row.isActive = false">
+                  <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="table table-sm" *ngIf="!isEditMode">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of user.students">
+              <td>{{row.name}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+    <div *ngIf="!isViewOnly" class="row">
+      <div class="col-md-12">
+        <hr [class.last-separator-hr]="!isEditMode" [class.edit-last-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="!isViewOnly" class="form-group">
+      <div class="col-sm-5">
+        <div *ngIf="isGeneralEditor && isEditMode" class="pull-left">
+          <div class="checkbox user-enabled">
+            <label>
+              <input type="checkbox" name="isEnabled" [(ngModel)]="userEdit.isEnabled">
+              {{'users.editor.Enabled' | translate}}
+            </label>
+          </div>
+          <button *ngIf="userEdit.isLockedOut" type="button" (click)="unlockUser()" class="btn btn-warning unblock-user" [disabled]="isSaving"><i class='fa fa-unlock-alt'></i> {{'users.editor.Unblock' | translate}}</button>
+        </div>
+      </div>
+      <div class="col-sm-7">
+        <div ngPreserveWhitespaces class="pull-right">
+          <button *ngIf="!isEditMode && isGeneralEditor" type="button" (click)="close()" class="btn btn-default"><i class='fa fa-close'></i> {{'users.editor.Close' | translate}}</button>
+          <button *ngIf="!isEditMode && !isGeneralEditor" type="button" (click)="edit()" class="btn btn-default"><i class='fa fa-edit'></i> {{'users.editor.Edit' | translate}}</button>
+          <button *ngIf="isEditMode" type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving"><i class='fa fa-times'></i> {{'users.editor.Cancel' | translate}}</button>
+          <button *ngIf="isEditMode" type="submit" class="btn btn-primary" [disabled]="isSaving">
+            <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('users.editor.Saving' | translate) : ('users.editor.Save' | translate)}}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </form>
+</div>

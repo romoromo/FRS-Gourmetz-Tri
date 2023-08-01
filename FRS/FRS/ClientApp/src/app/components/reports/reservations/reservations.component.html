@@ -1,0 +1,60 @@
+<div>
+  <!--<header class="pageHeader">
+    <h3>{{'mainMenu.Reports' | translate}}</h3>
+  </header>
+  <hr class="separator-hr" />-->
+  <div [@fadeInOut]>
+    <div>
+      <div class="row control-box">
+        <div class="col-md-2 col-xs-6">
+          <mat-form-field>
+            <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [value]="filter.start"
+                   (dateChange)="loadData('start', $event)">
+            <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+            <mat-datepicker #startpicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-md-2 col-xs-6">
+          <mat-form-field>
+            <input matInput [matDatepicker]="endpicker" placeholder="End Date" [value]="filter.end"
+                   (dateChange)="loadData('end',$event)">
+            <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+            <mat-datepicker #endpicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <div class="form-group search-box">
+            <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'reservations.management.Search' | translate}}">></search-box>
+          </div>
+        </div>
+      </div>
+
+      <ngx-datatable class="material colored-header"
+                     [loadingIndicator]="loadingIndicator"
+                     [rows]="rows"
+                     [rowHeight]="'auto'"
+                     [headerHeight]="'auto'"
+                     [footerHeight]="50"
+                     [columns]="columns"
+                     [columnMode]="'force'"
+                     [reorderable]="'reorderable'"
+                     [limit]="20">
+      </ngx-datatable>
+
+      <ng-template #indexTemplate let-value="value">
+        <strong>{{value}}</strong>
+      </ng-template>
+
+
+      <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+        <div><!--<a *ngIf="canManageReservations" class="btn btn-link btn-xs" target="_blank" href="/attendance?reservationId={{row.id}}"><i class="fa fa-user" aria-hidden="true"></i> {{'reservations.management.AddAttendance' | translate}}</a>--></div>
+        <div><a *ngIf="canManageReservations" class="btn btn-link btn-xs" href="/Download/GenerateAttendanceXls?reservationId={{row.id}}"><i class="fa fa-download" aria-hidden="true"></i> {{'reservations.management.DownloadAttendance' | translate}}</a></div>
+        <!--<div><a *ngIf="canManageReservations" class="btn btn-link btn-xs" href="javascript:;" (click)="editReservation(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'reservations.management.Edit' | translate}}</a>
+        <a *ngIf="!canManageReservations" class="btn btn-link btn-xs" href="javascript:;" (click)="editReservation(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'reservations.management.Details' | translate}}</a>
+        </div>
+        <div><a *ngIf="canManageReservations" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteReservation(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'reservations.management.Delete' | translate}}</a></div>-->
+      </ng-template>
+    </div>
+
+  </div>
+</div>

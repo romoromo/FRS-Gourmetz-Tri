@@ -1,0 +1,243 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="dishEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!dishLabel.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-label class="col-md-12"><h5>General Information</h5></mat-label>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="text" id="dishCode" name="dishCode" placeholder="Code" [(ngModel)]="dishEdit.code" #dishCode="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="text" id="dishLabel" name="dishLabel" placeholder="Label" [(ngModel)]="dishEdit.label" #dishLabel="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="text" id="dishRRPrice" name="dishRRPrice" placeholder="RRP" [(ngModel)]="dishEdit.rrPrice" #dishRRPrice="ngModel" required />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="text" id="dishCost" name="dishCost" placeholder="Cost" [(ngModel)]="dishEdit.cost" #dishCost="ngModel" required />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <mat-label>Dish Type</mat-label>
+          <mat-select [disabled]="!canManageDishes" id="dishType" name="dishType" [(ngModel)]="dishEdit.dishTypeId" #dishType="ngModel" required>
+            <mat-option *ngFor="let dishType of dishTypes" [value]="dishType.id">
+              {{dishType.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Dish Type is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <mat-label>Bento Box Type</mat-label>
+          <mat-select [disabled]="!canManageDishes" id="bentoBoxType" name="bentoBoxType" [(ngModel)]="dishEdit.bentoBoxTypeId" #bentoBoxType="ngModel" required>
+            <mat-option *ngFor="let bentoBoxType of bentoBoxTypes" [value]="bentoBoxType.id">
+              {{bentoBoxType.code}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Bento Box Type is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-6 col-xs-12">
+          <mat-label>Cuisine</mat-label>
+          <mat-select [disabled]="!canManageDishes" id="cuisine" name="cuisine" [(ngModel)]="dishEdit.cuisineId" #cuisine="ngModel">
+            <mat-option *ngFor="let cuisine of cuisines" [value]="cuisine.id">
+              {{cuisine.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="text" id="dishCookedWeight" name="dishCookedWeight" placeholder="Cooked Weight (grams)" [(ngModel)]="dishEdit.cookedWeight" #dishCookedWeight="ngModel" required />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-6 col-xs-12">
+          <mat-label>Kitchen</mat-label>
+          <mat-select [disabled]="!canManageDishes" id="storeInfo" name="storeInfo" [(ngModel)]="dishEdit.storeInfoId" #cuisine="ngModel">
+            <mat-option *ngFor="let storeInfo of storeInfos" [value]="storeInfo.id">
+              {{storeInfo.code}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="text" id="sapCode" name="sapCode" placeholder="SAP Code" [(ngModel)]="dishEdit.sapCode" #dishCookedWeight="ngModel" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="number" id="protein" name="protein" placeholder="Protein (g)" [(ngModel)]="dishEdit.protein" #protein="ngModel" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="number" id="sugar" name="sugar" placeholder="Sugar (g)" [(ngModel)]="dishEdit.sugar" #sugar="ngModel" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="number" id="totalFat" name="totalFat" placeholder="Total Fat (g)" [(ngModel)]="dishEdit.totalFat" #totalFat="ngModel" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="number" id="totalCarb" name="totalCarb" placeholder="Total Carb (g)" [(ngModel)]="dishEdit.totalCarb" #totalCarb="ngModel" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="number" id="calories" name="calories" placeholder="Calories (kcal)" [(ngModel)]="dishEdit.calories" #calories="ngModel" />
+        </mat-form-field>
+
+        <div class="col-md-6 col-xs-12">
+          <mat-checkbox [(ngModel)]="dishEdit.isEnabled" id="isEnabled" name="isEnabled">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Is Enabled</label>
+          </mat-checkbox>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+          <mat-label><h5>Extra Notes</h5></mat-label>
+          <mat-form-field appearance="outline" style="width: 100%">
+            <!--<angular-editor [(ngModel)]="dishEdit.extraNotes" [config]="config"></angular-editor>-->
+            <!--<input type="text" matInput [hidden]="true"/>
+      <div contenteditable="true" [disabled]="!canManageDishes" id="extraNotes" name="extraNotes" placeholder="" [(ngModel)]="dishEdit.extraNotes" #extraNotes="ngModel"></div>-->
+            <textarea matInput autocomplete="off" rows="5" [disabled]="!canManageDishes" type="text" id="extraNotes" name="extraNotes" placeholder="" [(ngModel)]="dishEdit.extraNotes" #extraNotes="ngModel"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6 col-xs-12">
+          <mat-label><h5>Icon</h5></mat-label>
+          <div *ngIf="canManageDishes">
+            <div>
+              <file-upload showTxt="false" (onUploadFinished)="uploadFinished($event)" [fileName]="dishEdit.code" [useOriginalFilename]="true"></file-upload>
+            </div>
+          </div>
+          <div *ngIf="dishEdit.filePath" class="col-md-6" style="padding:10px; border: 1px dashed #808080;text-align:center">
+            <img [src]="getFileImage(dishEdit.filePath)" alt="icon" style="width:100px; height:100px;" />
+          </div>
+          <div class="clearfix"></div>
+          <div class="col-md-6 text-center" *ngIf="dishEdit.filePath">
+            <a *ngIf="canManageDishes" class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="removePhoto()"><i class="fa fa-trash-o" aria-hidden="true"></i> Remove</a>
+          </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+          <mat-label><h5>Production Picture</h5></mat-label>
+          <div *ngIf="canManageDishes">
+            <div>
+              <file-upload showTxt="false" (onUploadFinished)="productionPictureUploadFinished($event)"></file-upload>
+            </div>
+          </div>
+          <div *ngIf="dishEdit.productionPicturePath" class="col-md-3" style="padding:10px; border: 1px dashed #808080;text-align:center">
+            <img [src]="getFileImage(dishEdit.productionPicturePath)" alt="icon" style="width:100px; height:100px;" />
+          </div>
+          <div class="clearfix"></div>
+          <div class="col-md-6 text-center" *ngIf="dishEdit.productionPicturePath">
+            <a *ngIf="canManageDishes" class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="removeProductionPhoto()"><i class="fa fa-trash-o" aria-hidden="true"></i> Remove</a>
+          </div>
+        </div>
+
+        <!--<mat-label class="col-md-12"><h5>Meal Period</h5></mat-label>
+  <div *ngFor="let period of periods; let i=index" class="col-md-6">
+    <mat-checkbox class="col-sm-6 col-xs-12" [(ngModel)]="period.checked" id="period-{{i}}"
+                  name="period-{{i}}">
+      <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">{{period.name}}</label>
+    </mat-checkbox>
+  </div>-->
+        <hr />
+        <div class="col-sm-12">
+          <h5>Restrictions</h5>
+        </div>
+        <div *ngFor="let restriction of restrictions; let i=index" class="col-md-6">
+          <mat-checkbox class="col-sm-6 col-xs-12" [(ngModel)]="restriction.checked" id="restriction-{{i}}"
+                        name="restriction-{{i}}">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">{{restriction.label}}</label>
+          </mat-checkbox>
+        </div>
+      </div>
+      <hr />
+      <div class="col-sm-12">
+        <h5>Components</h5>
+      </div>
+      <div class="col-md-12">
+        <button type="button" mat-button (click)="addComponent()">
+          <mat-icon>
+            add
+          </mat-icon> Add Component
+        </button>
+      </div>
+      <div class="col-md-12">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col">Category</th>
+              <th scope="col">Component</th>
+              <th scope="col">Weight (g)</th>
+              <th scope="col">Quantity (pcs)</th>
+              <th scope="col">SAP Product Code</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tr *ngFor="let item of dishEdit.dishComponents; let i = index;">
+            <td [hidden]="item.editMode">{{ item.category }}</td>
+            <td [hidden]="item.editMode">{{ item.component }}</td>
+            <td [hidden]="item.editMode">{{ item.weight }}</td>
+            <td [hidden]="item.editMode">{{ item.quantity }}</td>
+            <td [hidden]="item.editMode">{{ item.sapProductCode }}</td>
+
+            <td *ngIf="item.editMode">
+              <input type="text" [(ngModel)]="item.category" name="component-category" required>
+            </td>
+            <td *ngIf="item.editMode">
+              <input type="text" [(ngModel)]="item.component" name="component-component" required>
+            </td>
+            <td *ngIf="item.editMode">
+              <input type="number" [(ngModel)]="item.weight" name="component-weight" required>
+            </td>
+            <td *ngIf="item.editMode">
+              <input type="number" [(ngModel)]="item.quantity" name="component-quantity" required>
+            </td>
+            <td *ngIf="item.editMode">
+              <input type="text" [(ngModel)]="item.sapProductCode" name="component-sap-product-code" required>
+            </td>
+            <td *ngIf="item.editMode">
+              <a *ngIf="canManageDishes" class="btn btn-link btn-xs" href="javascript:;" (click)="saveDishComponent(item)"><i class="fa" aria-hidden="true"></i> Apply</a>
+            </td>
+            <td *ngIf="!item.editMode">
+              <a *ngIf="canManageDishes" class="btn btn-link btn-xs" href="javascript:;" (click)="item.editMode = true;"><i class="fa fa-pencil" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
+            </td>
+            <td>
+              <a *ngIf="canManageDishes" class="btn btn-link btn-xs" href="javascript:;" (click)="removeComponent(item)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <hr />
+      <div class="col-sm-12">
+        <h5>Sub Dishes</h5>
+      </div>
+      <div class="col-md-12">
+        <button type="button" mat-button (click)="addSubdish()">
+          <mat-icon>
+            add
+          </mat-icon> Add Sub Dish
+        </button>
+      </div>
+      <div class="col-md-12">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col">Code</th>
+              <th scope="col">Label</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of dishEdit.subDishes; let i = index;">
+              <td>{{row.code}}</td>
+              <td>{{row.label}}</td>
+              <td>
+                <a *ngIf="canManageDishes" class="btn btn-link btn-xs" href="javascript:;" (click)="removeSubdish(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageDishes" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageDishes" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageDishes" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

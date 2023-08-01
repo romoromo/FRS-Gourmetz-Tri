@@ -1,0 +1,140 @@
+<div>
+  <div>
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.fifoMode">FIFO Mode (First In First Out)</mat-checkbox>
+      <br />
+    </section>
+  </div>
+
+  <mat-form-field style="width: 250px">
+    <input matInput type="number" placeholder="Numbers of queue no vertically" [(ngModel)]="configurations.noOfRows" (ngModelChange)="rowColumnChanged()" />
+  </mat-form-field>
+  Will auto add 1 row at the top for header
+  <br />
+  <mat-form-field style="width: 250px">
+    <input matInput type="number" placeholder="Numbers of queue no horizontally" [(ngModel)]="configurations.noOfColumns" (ngModelChange)="rowColumnChanged()" />
+  </mat-form-field>
+  Will auto multiply by 2 for Queue Label
+
+  <br />
+  <mat-form-field>
+    <input matInput type="number" placeholder="Border Width" [(ngModel)]="configurations.borderWidth" />
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Border Color" [(colorPicker)]="configurations.borderColor" [style.background]="configurations.borderColor" />
+  </mat-form-field>
+  <br />
+  <mat-form-field>
+    <input matInput type="number" placeholder="Cell Padding" [(ngModel)]="configurations.cellPadding" />
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput type="number" placeholder="Header Height" [(ngModel)]="configurations.headerHeight" />
+  </mat-form-field>
+  Leave blank for header height auto fit content height
+  <br />
+
+
+
+  <mat-form-field>
+    <input matInput type="number" min="0" max="100" placeholder="Queue Label Width" [(ngModel)]="configurations.labelWidth" />
+  </mat-form-field>
+  in percentage
+  <mat-checkbox class="example-margin" [(ngModel)]="configurations.hideHeader">Hide Header</mat-checkbox>
+  &nbsp;
+  <mat-checkbox class="example-margin" [(ngModel)]="configurations.swapLabel">Swap Label and Queue No</mat-checkbox>
+  <br />
+
+
+
+  <!--<mat-form-field>
+    <input matInput type="text" placeholder="Label Header Text" [(ngModel)]="configurations.labelText" />
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput type="text" placeholder="Queue No Header Text" [(ngModel)]="configurations.queueNoText" />
+  </mat-form-field>-->
+
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <h5>Input Header Label</h5>
+    <table>
+      <tr>
+        <td *ngFor="let y of getArrays(configurations.noOfColumns); let j = index" style="padding:5px;border">
+          <input [(ngModel)]="configurations.headerlabels[j]" type="text" placeholder="Label Header Text" />
+          <input [(ngModel)]="configurations.queuenolabels[j]" type="text" placeholder="Queue No Header Text" />
+        </td>
+      </tr>
+    </table>
+  </div>
+  <br />
+
+  <div>
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.roomInfoAsLabel">Room Info as Labels</mat-checkbox>
+    </section>
+  </div>
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+
+    <h5>Input {{configurations.fifoMode ? 'Component' : 'Pair'}} Id</h5>
+    <span *ngIf="duplicate" [style.color]="'red'">{{duplicate}}</span>
+    <table>
+      <tr *ngFor="let x of getArrays(configurations.noOfRows); let i = index">
+        <td *ngFor="let y of getArrays(configurations.noOfColumns); let j = index" style="padding:5px;border">
+
+          <span *ngIf="(i < 1 && j < 1) || !configurations.fifoMode">
+            <!--{{i + '-' + j}}-->
+            <input [(ngModel)]="configurations.stationids[i + '-' + j]" type="text" (ngModelChange)="checkDuplicate()" [placeholder]="configurations.fifoMode ? 'component id' : 'pair id'" />
+            <input *ngIf="!configurations.fifoMode" [(ngModel)]="configurations.stationlabels[i + '-' + j]" type="text" placeholder="label" />
+          </span>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <br />
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <mat-form-field>
+      <input matInput placeholder="Flash Color" [(colorPicker)]="configurations.flashColor" [style.background]="configurations.flashColor" />
+    </mat-form-field>
+    &nbsp;
+    <mat-form-field>
+      <input matInput type="number" placeholder="Flash Duration (seconds)" [(ngModel)]="configurations.flashDuration" />
+    </mat-form-field>
+    <br />
+
+    Queue Sound
+
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="configurations.noSound">No Sound</mat-checkbox>
+    </section>
+    <div *ngIf="!configurations.noSound">
+      <file-upload (onUploadFinished)="uploadSoundFinished($event)"></file-upload>
+      <!--<span [hidden]="!configurations.queueSound">{{configurations.queueSound}}</span>-->
+      <span *ngIf="!configurations.queueSound">If no sound uploaded, default sound will be played <br /></span>
+      <span class="btn btn-success" [hidden]="!configurations.queueSound" (click)="play()">Play</span>
+      <span *ngIf="configurations.queueSound" (click)="configurations.queueSound = null" class="btn btn-danger">Remove</span>
+    </div>
+  </div>
+  <br />
+
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <h5>Queue Label Header</h5>
+
+    <text-configuration [hidePosSize]="true" [(configurations)]="configurations.labelHeaderStyle"></text-configuration>
+  </div>
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <h5>Queue No Header</h5>
+
+    <text-configuration [hidePosSize]="true" [(configurations)]="configurations.queueNoHeaderStyle"></text-configuration>
+  </div>
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <h5>Queue Label </h5>
+
+    <text-configuration [hidePosSize]="true" [(configurations)]="configurations.labelStyle"></text-configuration>
+  </div>
+  <div style="padding: 10px;border: solid 1px;border-radius: 10px;">
+    <h5>Queue No </h5>
+
+    <text-configuration [hidePosSize]="true" [(configurations)]="configurations.queueNoStyle"></text-configuration>
+  </div>
+</div>

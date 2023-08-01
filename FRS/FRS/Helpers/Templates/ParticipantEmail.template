@@ -1,0 +1,45 @@
+﻿<h3>{subject}</h3>
+<p>{description}</p>
+<br />
+<table>
+  <tr>
+    <td>
+      <b>When</b>
+    </td>
+    <td>{meetingDate}</td>
+  </tr>
+  <tr>
+    <td>
+      <b>Where</b>
+    </td>
+    <td>{location}</td>
+  </tr>
+  <tr>
+    <td>
+      <b>Who</b>
+    </td>
+    <td>{bookedBy}</td>
+  </tr>
+  <tr>
+    <td>
+      <b>Notes</b>
+    </td>
+    <td>{notes}</td>
+  </tr>
+  <tr>
+    <td>
+      <b>Going?</b>
+    </td>
+    <td>
+      <span>
+        <a href="{urlResponse}&amp;status=Accepted">Yes</a>
+      </span>/
+      <span>
+        <a href="{urlResponse}&amp;status=Maybe">Maybe</a>
+      </span>/
+      <span>
+        <a href="{urlResponse}&amp;status=Declined">No</a>
+      </span>
+    </td>
+  </tr>
+</table>

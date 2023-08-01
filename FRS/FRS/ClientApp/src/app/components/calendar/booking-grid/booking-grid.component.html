@@ -1,0 +1,126 @@
+<div class="container-fluid">
+  <header class="pageHeader">
+    <!--<h3><i class="fa fa-handshake fa-lg page-caption" aria-hidden="true"></i> {{'pageHeader.Calendar' | translate}}</h3>-->
+
+  </header>
+  <div>
+    <button mat-icon-button (click)="sideBarOpened = !sideBarOpened">
+      <mat-icon aria-label="Filter">list</mat-icon> Filter
+    </button>
+  </div>
+
+  <div class="col-md-2" style="max-height:90vh; overflow:auto" *ngIf="sideBarOpened" [@slideInOut]>
+
+    <div><mat-calendar #calendar [selected]="selectedDate" (selectedChange)="selectedDate = $event"></mat-calendar></div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <h5>Location</h5>
+      <mat-select multiple placeholder="{{'reservations.management.SelectLocation' | translate}}" [formControl]="fcLocations" [(ngModel)]="filter.locationIds">
+        <mat-optgroup *ngFor="let building of buildingList"
+                      [label]="building.name">
+          <mat-option *ngFor="let location of getRoomsByBuildingId(building.id)" [value]="location.id"><b>{{location.name}}</b> - <small><i>{{location.description}}</i></small></mat-option>
+        </mat-optgroup>
+      </mat-select>
+    </div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <h5>Facility</h5>
+      <mat-select multiple placeholder="{{'reservations.management.SelectFacilities' | translate}}" [formControl]="fcFacilities" [(ngModel)]="filter.facilityIds">
+        <mat-option *ngFor="let facility of facilityList" [value]="facility.id"><b>{{facility.name}}</b> - <small><i>{{facility.description}}</i></small></mat-option>
+      </mat-select>
+    </div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <h5>Min. Capacity</h5>
+
+      <mat-slider [max]="100"
+                  [min]="1"
+                  [step]="1"
+                  [thumbLabel]="true"
+                  [(ngModel)]="filter.capacity" style="width:100%">
+      </mat-slider>
+    </div>
+    <div class="hide">
+      <h5>Start</h5>
+      <mat-select #selectStart placeholder="{{'reservations.management.SelectStart' | translate}}" [formControl]="fcStartTimes" [(ngModel)]="selectStartTimeId">
+        <mat-option *ngFor="let start of allStartTimes" [value]="start.id">{{start.description}}</mat-option>
+      </mat-select>
+    </div>
+    <div class="hide">
+      <h5>End</h5>
+      <mat-select #selectEnd placeholder="{{'reservations.management.SelectEnd' | translate}}" [formControl]="fcEndTimes" [(ngModel)]="selectEndTimeId">
+        <mat-option *ngFor="let end of allEndTimes" [value]="end.id">{{end.description}}</mat-option>
+      </mat-select>
+    </div>
+    <hr [class.separator-hr]="true" />
+    <div>
+      <button mat-raised-button (click)="apply()" style="margin:5px">{{'reservations.calendar.ApplyFilter' | translate}}</button>
+      <button mat-raised-button (click)="clear()" style="margin:5px" color="warn">{{'reservations.calendar.ClearFilter' | translate}}</button>
+    </div>
+  </div>
+  <div [ngClass]="sideBarOpened ? 'col-md-10' : 'col-md-12'">
+    <div class="col-md-10 col-xs-8">
+      <h3><i class="fa fa-handshake fa-lg page-caption" aria-hidden="true"></i> Available Booking Slots</h3>
+
+    </div>
+    <div class="col-md-2 col-xs-4"><button mat-stroked-button color="primary" (click)=book()>Book</button></div>
+    <div class="clearfix"></div>
+    <div class="zui-wrapper">
+      <div class="zui-scroller">
+        <table class="zui-table">
+          <thead>
+            <tr>
+              <th class="zui-sticky-col">Location</th>
+              <th *ngFor="let ti of allTimes">{{ti.description}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let b of buildings; let x = index;">
+              <tr>
+                <td class="zui-sticky-col building">
+                  <span>
+                    <a>
+                      <i class="fa fa-caret-down fa-lg"></i>
+                    </a>
+                  </span>
+                  <span class="building-name"> {{b.name}}</span>
+                </td>
+                <td class="building" colspan="48"></td>
+              </tr>
+              <tr *ngFor="let row of filterByParentLocationId(b.id)" class="row-values">
+                <td class="zui-sticky-col">
+                  <div style="height: 20px;"> {{row.location.name}}</div>
+                </td>
+                <ng-container *ngFor="let col of row.locationTimeIntervals; let i = index;">
+                  <td *ngIf="!col.skip" [attr.colspan]="getColspan(row, col, i)" [ngClass]="col.selected ? 'col-booked' : col.isNewSelected ? 'col-new-booked' : ''" (click)="selectTiming(row, col)">
+                    <div *ngIf="col.reservation != null" style="float: right; padding:0; display:inline">
+                    <a href="javascript:;" style="padding:5px;color: #FFFF99"><i class="fa fa-pencil"></i></a>
+                    <a href="javascript:;" style="padding:5px;color: #FFFF99"><i class="fa fa-trash-o"></i></a>
+                    </div>
+                    <div style="height: 20px;" [class.ellipsis]="true" [class.ellipsis-long]="getColspan(row, col, i) > 1" [class.ellipsis-short]="getColspan(row, col, i) == 1"
+                         matTooltip="{{getTooltip(col.reservation)}}"
+                         [matTooltipPosition]="'right'">
+
+                      <span *ngIf="col.reservation != null"><small>{{col.reservation != null ? col.reservation.shortDescription : ''}}</small></span>
+                      <span *ngIf="col.reservation != null"><small><b> by {{col.reservation != null ? col.reservation.bookedBy : ''}}</b></small></span>
+                    </div>
+                  </td>
+                </ng-container>
+              </tr>
+            </ng-container>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <ng-template #indexTemplate let-value="value">
+      <strong>{{value}}</strong>
+    </ng-template>
+
+
+    <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+      <button mat-stroked-button color="primary" (click)=book(row)>Book</button>
+    </ng-template>
+  </div>
+
+</div>

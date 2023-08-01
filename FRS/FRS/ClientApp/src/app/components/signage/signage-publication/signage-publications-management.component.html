@@ -1,0 +1,100 @@
+<div>
+  <header class="pageHeader">
+    <h3>Publications</h3>
+  </header>
+  <div [hidden]="showEditor">
+    <div class="row control-box">
+      <div class="col-sm-8">
+        <div class="form-group search-box">
+          <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'signagePublications.management.Search' | translate}}">></search-box>
+          
+        </div>
+        
+      </div>
+      <div class="col-sm-4">
+        
+        <div class="navbar action-box">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <div>
+                <!--<input class="form-check-input" [(ngModel)]="pending" (ngModelChange)="onSearchChanged(keyword)" type="checkbox" value="" id="cPending">
+  <label class="form-check-label" for="cPending">
+    Pending Only
+  </label>-->
+                <mat-form-field appearance="fill">
+                  <mat-label >Status Filter</mat-label>
+                  <mat-select (ngModelChange)="onSearchChanged(keyword, $event)" name="statusfilter" [(ngModel)]="status">
+                    <mat-option [value]="''">
+                      All
+                    </mat-option>
+                    <mat-option [value]="'pending'">
+                      Pending
+                    </mat-option>
+                    <mat-option [value]="'rejected'">
+                      Rejected
+                    </mat-option>
+                    <mat-option [value]="'approved'">
+                      Approved
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </li>
+            <li *ngIf="canCreateSignagePublications" class="toolbaritem">
+              <a href="javascript:;" (click)="newSignagePublication(row)">
+                <i class="fa fa-plus-circle"></i> {{'signagePublications.management.NewSignagePublication' | translate}}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <ngx-datatable class="material colored-header"
+                   [loadingIndicator]="loadingIndicator"
+                   [rows]="rows"
+                   [rowHeight]="'auto'"
+                   [headerHeight]="'auto'"
+                   [footerHeight]="35"
+                   [columns]="columns"
+                   [columnMode]="'force'"
+                   [limit]="20">
+    </ngx-datatable>
+
+    <ng-template #indexTemplate let-value="value">
+      <strong>{{value}}</strong>
+    </ng-template>
+
+
+    <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+
+      <a *ngIf="canUpdateSignagePublications" class="btn btn-link btn-xs" href="javascript:;" (click)="editSignagePublication(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'signagePublications.management.Edit' | translate}}</a>
+      <!--<a *ngIf="!canManageSignagePublications" class="btn btn-link btn-xs" href="javascript:;" (click)="editSignagePublication(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'signagePublications.management.Details' | translate}}</a>-->
+      <!--{{canManageSignagePublications ? '|' : ''}}-->
+      <a *ngIf="canDeleteSignagePublications" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteSignagePublication(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'signagePublications.management.Delete' | translate}}</a>
+      <a *ngIf="canUpdateSignagePublications" class="btn btn-link btn-xs" href="{{row.exporthistory}}"><i class="fa fa-download" aria-hidden="true"></i> View History</a>
+      <a href="{{row.linkPreview}}" class="btn btn-link btn-xs" target="_blank" style="white-space: nowrap;"><i class="fa fa-desktop" aria-hidden="true"></i> Preview</a>
+    </ng-template>
+  </div>
+  <div [hidden]="!showEditor">
+    <h3>{{header}}</h3>
+    <signage-publication-editor #signagePublicationEditor></signage-publication-editor>
+  </div>
+
+  <!--<div class="modal fade" bsModal #editorModal="bs-modal" (onHidden)="onEditorModalHidden()" [config]="{backdrop: 'static'}" tabindex="-1">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 *ngIf="!canManageSignagePublications" class="modal-title pull-left"><i class="fa fa-shield"></i> {{'signagePublications.management.SignagePublicationDetails' | translate:editingSignagePublicationName}}</h4>
+          <h4 *ngIf="canManageSignagePublications" class="modal-title pull-left"><i class="fa fa-shield"></i> {{editingSignagePublicationName ? ('signagePublications.management.EditSignagePublication' | translate:editingSignagePublicationName) : ('signagePublications.management.NewSignagePublication' | translate)}}</h4>
+          <button type="button" class="close pull-right" title="Close" (click)="editorModal.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <signage-publication-editor #signagePublicationEditor></signage-publication-editor>
+        </div>
+      </div>
+    </div>
+  </div>-->
+</div>

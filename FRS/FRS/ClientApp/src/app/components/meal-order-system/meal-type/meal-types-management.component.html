@@ -1,0 +1,54 @@
+<div>
+  <header class="pageHeader" *ngIf="!isHideHeader">
+    <h3>Meal Types</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-sm-8">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManageMealTypes" class="toolbaritem">
+            <a href="javascript:;" (click)="newMealType(row)">
+              <i class="fa fa-plus-circle"></i> {{'common.New' | translate}}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header"  #mealTypesTable
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [externalPaging]="true"
+                 [externalSorting]="true"
+                 [count]="pagedResult.totalCount"
+                 [limit]="pagedResult.filter.pageSize"
+                 (page)="loadData($event)"
+                 (sort)="loadData($event)">
+  </ngx-datatable>
+
+  <ng-template #chargeByTemplate let-row="row" let-value="value" let-i="index">
+    <div>{{(row.chargeType == 'sku' ? 'SKU' : (row.chargeType == 'mealtype' ? 'Meal Type' : ''))}}</div>
+  </ng-template>
+
+  <ng-template #submenuTemplate let-row="row" let-value="value" let-i="index">
+    <div>{{(row.isSubMenu ? 'Yes' : 'No')}}</div>
+  </ng-template>
+
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageMealTypes" class="btn btn-link btn-xs" href="javascript:;" (click)="editMealType(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
+    <a *ngIf="!canManageMealTypes" class="btn btn-link btn-xs" href="javascript:;" (click)="editMealType(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
+    <a *ngIf="canManageMealTypes" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteMealType(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+  </ng-template>
+</div>

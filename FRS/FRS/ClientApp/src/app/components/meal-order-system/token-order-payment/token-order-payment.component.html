@@ -1,0 +1,117 @@
+<div>
+   
+  <header>
+
+    <div class="row">
+      <div class="col-sm-8">
+        <h3>{{'paymentPopup.Title' | translate}}       </h3>
+      </div>
+      <div class="col-sm-4" style="text-align:right">
+        <button type="button" mat-button (click)="close()"><i class="fa fa-times-circle-o" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <div>
+    <span class="boldtext">{{'paymentPopup.OrderNumber' | translate}} : </span>{{displayOrderNumber}}
+  </div>
+
+  <div>
+    <span class="boldtext">{{userMessage}}</span>
+  </div>
+
+  <div>
+    <span class="boldtext">{{errorMessageDisplay}}</span>
+  </div>
+
+  <br/>
+
+  <mat-dialog-content class="mat-typography">
+
+    <form [formGroup]="formdata" >
+
+      <table cellpadding="0" cellspacing="0" class="center faintboxborder-container" width="100%" border="0">
+
+        <tr>
+
+          <td colspan="2" align="center">
+
+            <!-- Each group of controls -->
+            <div class="container ">
+
+              <ng-container *ngFor="let paymode of paymentList; let rd = index;">
+
+                <div id="innercontainer itembox " class="fixcol box2 topspacer">
+
+                  <div class="clearfix">
+                    <img class="resizeimg" src="{{paymode.imageSrc}}" alt="{{imageAlt}}" title=" {{paymode.paymentName}}" />
+                  </div>
+
+                  <div class="center fixedbox clearfix paymentdesc highlight">
+                    <span title="{{paymode.paymentName}}">{{paymode.paymentName}}</span>
+                  </div>
+
+                  <div class="center1 fixedbox1 bigfont2 clearfix1 subtitlespacer">
+                    <span class="highlight" title="Payment">{{'paymentPopup.OrderPayment' | translate}}  </span>
+                  </div>
+
+                  <div class="highlight bigfont">
+                    <span title="SGD {{paymode.discountedPaymentAmount}}">SGD {{paymode.discountedPaymentAmount}}   </span>
+                  </div>
+
+                  <!--
+                    <span >Discounted Payment Rate :   {{paymode.paymentDiscount}} </span>
+                  -->
+
+                  <div class="topspacer">
+
+                    <input id="{{paymode.paymentCode}}"
+                           class="bigbutton1 gruende-button bigbuttontext filler filler--bordered centerbox"
+                           type="button"
+                           name="{{ paymode.paymentCode }}+1"
+                           value="{{'paymentPopup.Select' | translate}}"
+                           title="{{'paymentPopup.Select' | translate}}"
+                           formControlName="paymentchosen"
+                           (click)="onClickSubmitAction($event,formdata)" />
+                  </div>
+
+                </div>
+                <div class="center clearfix" *ngIf="(rd+1) > 0 && (rd+1) % 6  === 0 " style="width: 100%">
+                  <br />
+
+                </div>
+
+              </ng-container>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+        <tr>
+          <td colspan="2" align="center">
+
+            <div class="center centertxt fixedbox topspacer box">
+              <mat-dialog-actions align="end">
+                <button cdkFocusInitial class="mat-button mat-raised-button bigfont" (click)="close()" title="{{'paymentPopup.Close' | translate}}"> {{'paymentPopup.Close' | translate}}    </button>
+              </mat-dialog-actions>
+            </div>
+ 
+          </td>
+        </tr>
+
+
+
+      </table>
+
+    </form>
+
+  </mat-dialog-content>
+
+</div>
+
+
+
+
+

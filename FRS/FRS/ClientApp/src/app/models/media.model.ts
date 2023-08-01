@@ -1,0 +1,16 @@
+
+export class Media {
+
+  constructor(id?: string, name?: string, description?: string) {
+
+    this.id = id;
+    this.name = name;
+    this.description = description;
+  }
+
+  public id: string;
+  public name: string;
+  public description: string;
+  public institutionId?: string;
+  public institutionName?: string;
+}

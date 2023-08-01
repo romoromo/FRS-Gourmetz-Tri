@@ -1,0 +1,954 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using DAL.Models;
+using DAL.Repositories.Interfaces;
+using DAL.Core;
+using Sieve.Services;
+using DAL.Filters;
+using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces.MealOrder;
+using System.Transactions;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using DAL.Core.Interfaces;
+using DAL.Core.DTO;
+using System.ComponentModel.DataAnnotations;
+using DAL.Core.Helpers;
+using DAL.Core.Logging;
+using Microsoft.Extensions.Logging;
+using DAL.Models.StoredProcedures;
+using System.Data.SqlClient;
+
+
+namespace DAL.Repositories.MealOrder
+{
+    public class TokenOrderRepository : Repository<TokenOrder>, ITokenOrderRepository
+    {
+        private ISieveProcessor _sieveProcessor;
+        private int? _currentUserId;
+        private int? _currentInstitutionId;
+        private readonly ILogger _logger;
+
+        public TokenOrderRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId) : base(context)
+        {
+            this._sieveProcessor = sieveProcessor;
+            this._currentInstitutionId = currentInstitutionId;
+            this._currentUserId = currentInstitutionId;
+            _logger = Logger.CreateLogger<TokenOrderRepository>();
+        }
+
+        #region Sieved
+        public async Task<List<spSalesOrderReport>> GetSalesOrders(SalesOrderReportFilter filter)
+        {
+            var from = new SqlParameter("@ReportDateFrom", System.Data.SqlDbType.Date);
+            var to = new SqlParameter("@ReportDateTo", System.Data.SqlDbType.Date);
+            var status = new SqlParameter("@Status", System.Data.SqlDbType.VarChar);
+            var isFas = new SqlParameter("@IsFAS", System.Data.SqlDbType.Bit);
+            var page = new SqlParameter("@Page", System.Data.SqlDbType.Int);
+            var pageSize = new SqlParameter("@PageSize", System.Data.SqlDbType.Int);
+            var keywords = new SqlParameter("@Keywords", System.Data.SqlDbType.VarChar);
+            var sortByCol = new SqlParameter("@SortBy", System.Data.SqlDbType.VarChar);
+            var sortBy = new SqlParameter("@SortDirection", System.Data.SqlDbType.Bit);
+            var reportType = new SqlParameter("@ReportType", System.Data.SqlDbType.Int);
+
+            from.Value = filter.ReportDateFrom;
+            to.Value = filter.ReportDateTo;
+            status.Value = (object)filter.Status ?? DBNull.Value;
+            isFas.Value = (object)filter.IsFas ?? DBNull.Value;
+            page.Value = (object)filter.Page ?? 1;
+            pageSize.Value = (object)filter.PageSize ?? int.MaxValue;
+            keywords.Value = (object)filter.Keyword ?? DBNull.Value;
+            reportType.Value = (object)filter.ReportType ?? 1;
+
+            bool isDesc = filter.Sorts.Contains("-");
+            sortByCol.Value = isDesc ? filter.Sorts.Substring(1) : filter.Sorts;
+            sortBy.Value = isDesc;
+
+            var orders = await _appContext.spSalesOrderReport
+                            .FromSql($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType",
+                                    from, to, status, isFas, page, pageSize, keywords, sortByCol, sortBy, reportType).ToListAsync();
+
+            return orders;
+        }
+
+        public async Task<PagedEntity<TokenOrder>> GetTokenOrdersAsync(BaseFilter filter)
+        {
+            IQueryable<TokenOrder> query = _appContext.TokenOrders.Include(e => e.Tokens);
+            var result = await this._sieveProcessor.GetPagedAsync(query, filter);
+
+            return result;
+        }
+
+        public async Task<PagedEntity<TokenOrder>> GetCancellationOrdersAsync(OrderCancellationFilter filter)
+        {
+            IQueryable<TokenOrder> query = _appContext.TokenOrders.Include(e => e.Tokens);
+
+            if (filter.OutletId.HasValue)
+            {
+                query = query.Where(e => e.Student.OutletId == filter.OutletId);
+            }
+
+            if (!string.IsNullOrEmpty(filter.InvoiceNumber))
+            {
+                query = query.Where(e => e.Payment.InvoiceNumber.Trim() == filter.InvoiceNumber.Trim());
+            }
+
+            if (!string.IsNullOrEmpty(filter.OrderNumber))
+            {
+                query = query.Where(e => e.Payment.PaymentNumber.Trim() == filter.OrderNumber.Trim());
+            }
+
+            var result = await this._sieveProcessor.GetPagedAsync(query, filter);
+
+            return result;
+        }
+
+        #endregion
+
+        public async Task<BaseOperationResponse> CancelOrders(List<int> orderIds, int cancelledById, string reason)
+        {
+            var result = new BaseOperationResponse();
+
+            IQueryable<TokenOrder> orders = _appContext.TokenOrders.Where(t => orderIds.Any(f => f == t.Id));
+
+            foreach (var order in orders)
+            {
+                order.Status = "cancelled";
+                order.CancelledById = cancelledById;
+                order.CancelledOn = DateTime.Now;
+                order.CancellationReason = reason;
+                Update(order);
+            }
+
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+            }
+            else
+            {
+                result.Message = "Failed to save!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> BulkCancelCart()
+        {
+            var result = new BaseOperationResponse();
+            IQueryable<TokenOrder> orders = _appContext.TokenOrders.Where(t => t.IsActive && t.Status == "pending" && t.Payment == null &&
+                                            (DateTime.Now.Date.Subtract(t.DeliveryDate.Date).TotalDays > 3 ||
+                                            t.DeliveryDate.Date.Subtract(DateTime.Now.Date).TotalDays <= 3));
+
+            foreach(var order in orders)
+            {
+                order.Status = "cancelled";
+                order.CancelledOn = DateTime.Now;
+                order.CancellationReason = "cancelled by the system - Payment Not made before cutoff Time";
+                Update(order);
+            }
+
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+            }
+            else
+            {
+                result.Message = "Failed to save!";
+                result.IsSuccess = false;
+            }
+
+            result.IsSuccess = true;
+            return result;
+        }
+
+        public async Task<List<TokenOrder>> GetUnupdatedTokenOrdersAsync()
+        {
+            IQueryable<TokenOrder> query = _appContext.TokenOrders.Where(t => t.Status != "paid" && t.Status != "cancelled" && t.Payment != null && t.Payment.Status == "SUCCESS");
+
+            return query.ToList();
+        }
+
+        public async Task<TokenOrder> GetByIdAsync(int id)
+        {
+            return await GetAsync(id);
+        }
+
+        public async Task<BaseOperationResponse> CreateAsync( TokenOrder order, List<TokenOrdered> tokenOrders)
+        {
+            var result = new BaseOperationResponse();
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                            new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
+                            TransactionScopeAsyncFlowOption.Enabled))
+            {
+                if (order.Status == "paid" && Math.Abs(order.TotalPayment) < 0.01) order.TotalPayment = order.TotalAmount;
+
+                var f = await AddAsync(order);
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    result.Data = f;
+                    scope.Complete();
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+
+                }
+            }
+            return result;
+
+        }
+
+        public async Task<BaseOperationResponse> UpdateAsync(TokenOrder order, List<TokenOrdered> tokenOrders)
+        {
+            var result = new BaseOperationResponse();
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                            new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
+                            TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var f = await GetSingleOrDefaultAsync(e => e.Id == order.Id);
+
+                var tokensToDelete = this._appContext.TokenOrdereds.Where(x => x.OrderId == f.Id &&
+                                    (tokenOrders == null || !tokenOrders.Any(a => a.TokenId == x.TokenId)));
+
+                this._appContext.TokenOrdereds.RemoveRange(tokensToDelete);
+
+                if (tokenOrders != null)
+                {
+                    tokenOrders.ForEach(e =>
+                    {
+                        if (e.TokenId != null && e.TokenId > 0)
+                        {
+
+                            var sc = this._appContext.TokenOrdereds.FirstOrDefault(x => x.Id == e.Id);
+                            if (sc != null)
+                            {
+                                sc.TokenId = e.TokenId;
+                                sc.MealTypeId = e.MealTypeId;
+                                sc.TokenDesc = e.TokenDesc;
+                                sc.Qty = e.Qty;
+                                this._appContext.TokenOrdereds.Update(sc);
+                            }
+                            else
+                            {
+                                this._appContext.TokenOrdereds.Add(e);
+                            }
+                            var dishToDelete = this._appContext.TokenOrderDishes.Where(x => x.TokenOrderedId == e.Id &&
+                                        (e.SelectedDishes == null || !e.SelectedDishes.Any(a => a.DishId == x.DishId)));
+
+                            this._appContext.TokenOrderDishes.RemoveRange(dishToDelete);
+
+                            var altDishToDelete = this._appContext.TokenAltDishes.Where(x => x.TokenOrderedId == e.Id &&
+                                        (e.TokenAltDishes == null || !e.TokenAltDishes.Any(a => a.DishId == x.DishId)));
+
+                            this._appContext.TokenAltDishes.RemoveRange(altDishToDelete);
+
+                            e.SelectedDishes.ToList().ForEach(d =>
+                            {
+                                if(d.DishId != null && d.DishId > 0)
+                                {
+                                    var sd = this._appContext.TokenOrderDishes.FirstOrDefault(x => x.Id == d.Id);
+                                    if (sd != null)
+                                    {
+                                        sd.TokenOrderedId = d.TokenOrderedId;
+                                        sd.DishId = d.DishId;
+                                        sd.Qty = d.Qty;
+                                        this._appContext.TokenOrderDishes.Update(sd);
+                                    }
+                                    else
+                                    {
+                                        this._appContext.TokenOrderDishes.Add(d);
+                                    }
+                                }
+                            });
+
+                            e.TokenAltDishes.ToList().ForEach(d =>
+                            {
+                                var ad = this._appContext.TokenAltDishes.FirstOrDefault(x => x.Id == d.Id);
+                                if (ad != null)
+                                {
+                                    ad.TokenOrderedId = d.TokenOrderedId;
+                                    ad.DishId = d.DishId;
+                                    this._appContext.TokenAltDishes.Update(ad);
+                                }
+                                else
+                                {
+                                    this._appContext.TokenAltDishes.Add(d);
+                                }
+                            });
+                        }
+                    });
+                }
+
+                f.CopyFrom(order);
+
+
+                if (f.Status == "paid" && Math.Abs(f.TotalPayment) < 0.01) f.TotalPayment = f.TotalAmount;
+
+                Update(f);
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    result.Data = f;
+
+                    scope.Complete();
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+                    result.IsSuccess = false;
+                }
+
+            }
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateAsync(TokenOrder order)
+        {
+            var result = new BaseOperationResponse();
+
+            var f = await GetSingleOrDefaultAsync(e => e.Id == order.Id);
+
+            f.CopyFrom(order);
+
+            if (f.Status == "paid" && Math.Abs(f.TotalPayment) < 0.01) f.TotalPayment = f.TotalAmount;
+
+            Update(f);
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+                result.Data = f;
+            }
+            else
+            {
+                result.Message = "Failed to save!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateOrderCancelRequestStatus(int orderId, string status)
+        {
+            var result = new BaseOperationResponse();
+
+            var f = await GetSingleOrDefaultAsync(e => e.Id == orderId);
+
+            f.CancelRequestStatus = status;
+
+            Update(f);
+
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+                result.Data = f;
+            }
+            else
+            {
+                result.Message = "Failed to save!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateCancellationStatus(int orderId, bool isApproved, string response)
+        {
+            var result = new BaseOperationResponse();
+
+            var f = await GetSingleOrDefaultAsync(e => e.Id == orderId);
+
+            if (!isApproved)
+                f.CancelRequestStatus = null;
+            else
+            {
+                f.CancelledOn = DateTime.Now;
+                f.CancellationReason = response;
+                f.Status = "cancelled";
+            }
+
+            Update(f);
+
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+                result.Data = f;
+            }
+            else
+            {
+                result.Message = "Failed to save!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> BulkCollectAsync(List<OrderCollectionDTO> orders)
+        {
+            var result = new BaseOperationResponse();
+
+            if(orders != null && orders.Any())
+            {
+                foreach(var order in orders)
+                {
+                    var f = await GetSingleOrDefaultAsync(e => e.Id == order.OrderId);
+                    if(f != null)
+                    {
+                        f.CollectionTime = order.TimeCollected;
+                        Update(f);
+                    }
+                }
+
+                
+            }
+
+
+            await _appContext.SaveChangesAsync();
+
+            result.Message = "Successfully saved!";
+            result.IsSuccess = true;
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> BulkReturnAsync(List<OrderReturnDTO> orders)
+        {
+            var result = new BaseOperationResponse();
+
+            if (orders != null && orders.Any())
+            {
+                foreach (var order in orders)
+                {
+                    var f = await GetSingleOrDefaultAsync(e => e.Id == order.OrderId);
+                    if (f != null)
+                    {
+                        f.BentoCode = order.BentoCode;
+                        f.ReturnTime = order.TimeReturned;
+                        Update(f);
+                    }
+                }
+
+
+            }
+
+
+            await _appContext.SaveChangesAsync();
+
+            result.Message = "Successfully saved!";
+            result.IsSuccess = true;
+
+            return result;
+        }
+
+
+        public async Task<BaseOperationResponse> DeleteAsync(int orderId)
+        {
+            var result = new BaseOperationResponse();
+            var order = await GetSingleOrDefaultAsync(r => r.Id == orderId);
+
+            if (order != null)
+                return await Delete(order);
+
+            result.IsSuccess = false;
+            result.Message = "Order not found.";
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> Delete(TokenOrder order)
+        {
+            var result = new BaseOperationResponse();
+            SoftDelete(order);
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+            }
+            else
+            {
+                result.Message = "Failed to delete!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> CreateFasTokenOrdersAsync(int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear)
+        {
+            var result = new BaseOperationResponse();
+            try
+            {
+                string invoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmssffffff");
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                                    new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+                                    TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var outlet = await _appContext.Outlets.FindAsync(outletId);
+                    if (outlet == null)
+                    {
+                        result.Message = "Outlet not found!";
+                        return result;
+                    }
+
+                    var fasStudents = outlet.Students.Where(e => e.OutletId == outletId && e.IsActive && e.IsFAS).ToList();
+                    var studentIds = fasStudents.Select(e => e.Id).ToList();
+                    bool hasOrder = _appContext.TokenOrders.Any(e =>
+                                                studentIds.Contains(e.ProfileId.GetValueOrDefault()) &&
+                                                e.IsActive && e.Status != "cancelled" &&
+                                                e.DeliveryDate.Date >= deliveryDate.Date &&
+                                                e.DeliveryDate.Date <= deliveryDateTo.Date &&
+                                                e.StoreId == storeId &&
+                                                e.Session.MealSessionId == mealSessionId);
+
+                    if(hasOrder)
+                    {
+                        result.Message = "Please cancel previous orders for the selected date range before assigning new orders.";
+                        return result;
+                    }
+
+                    while (deliveryDate.Date <= deliveryDateTo.Date)
+                    {
+                        var sessionDetail = _appContext.MealSessionDetails.FirstOrDefault(e => e.IsActive && e.MealSessionId == mealSessionId);
+
+                        var activeDishCycles = _appContext.DishCycles.Where(e => e.IsActive &&
+                                            e.OutletProfile.Caterer.CatererOutlets.Any(o => o.IsActive && o.OutletId == outletId) &&
+                                            (deliveryDate.Date >= e.StartDate.Date &&
+                                            (!e.EndDate.HasValue || e.EndDate.Value.Date >= deliveryDate.Date)) &&
+                                            //e.DishTypeId == dishTypeId &&
+                                            e.DishCyclePeriods.Any(d => d.MealPeriodId == sessionDetail.MealSession.MealPeriodId) &&
+                                            e.CycleType == "Main Menu");
+
+                        if (activeDishCycles == null || !activeDishCycles.Any())
+                        {
+                            result.Message = "Dish Cycle not found!";
+                            return result;
+                        }
+
+                        //MealTypeId, DishId, Price, Label
+                        var classDishKeyPair = new Dictionary<int, Tuple<int?, int?, float, string>>();
+                        foreach (var student in fasStudents)
+                        {
+                            var existingOrders = _appContext.TokenOrders.Where(e =>
+                                                    e.ProfileId == student.Id && 
+                                                    e.IsActive && e.Status != "cancelled" &&
+                                                    e.DeliveryDate.Date == deliveryDate &&
+                                                    e.StoreId == storeId &&
+                                                    e.Session.MealSessionId == mealSessionId);
+
+                            if (clear || (existingOrders != null && existingOrders.Any()))
+                            {
+                                foreach (var existingOrder in existingOrders)
+                                {
+                                    if (existingOrder.IsFAS)
+                                    {
+                                        //remove token orders made
+                                        existingOrder.Status = "deleted";
+                                        if (existingOrder.Payment != null)
+                                        {
+                                            existingOrder.Payment.IsActive = false;
+                                        }
+
+                                        SoftDelete(existingOrder);
+                                    }
+
+                                }
+
+                                if(clear) continue;
+                            }
+
+                            bool hasSelectedDish = false;
+                            var order = new TokenOrder
+                            {
+                                DeliveryDate = deliveryDate,
+                                TransactionTime = DateTime.Now,
+                                MealSessionDetailId = sessionDetail.Id,
+                                ProfileId = student.Id,
+                                Status = "paid",
+                                StoreId = storeId,
+                                CreatedBy = createdBy,
+                                IsFAS = true
+                            };
+
+                            if (!classDishKeyPair.Keys.Any(e => e == student.ClassId))
+                            {
+                                var allDetailMenus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive).ToList();
+                                foreach (var cycle in activeDishCycles)
+                                {
+                                    var detailMenus = allDetailMenus.ToList();
+                                    if (cycle.StartDate.Date > deliveryDate.Date)
+                                        continue;
+
+                                    //identify what day from the date passed
+                                    var span = deliveryDate.Date.Subtract(cycle.StartDate.Date);
+                                    int day = span.Days + 1;
+                                    int d = day == 0 ? 1 : ((day % cycle.NumOfDays) == 0 ? cycle.NumOfDays : (day % cycle.NumOfDays));
+                                    //var schedule = _appContext.DishCycleSchedules.FirstOrDefault(e => e.IsActive &&
+                                    //                                                         e.DishCycleId == cycle.Id &&
+                                    //                                                         e.Day == d);
+                                    //get details and loop according to the number of sets
+                                    //for (int i = 1; i <= cycle.NumOfSets; i++)
+                                    //{
+                                    var cycleSets = _appContext.DishCycleScheduleSets.Where(e => e.IsActive &&
+                                                                                    e.DishCycleId == cycle.Id && //e.Sequence == i && 
+                                                                                    e.DishCycleType.DishTypeId == dishTypeId);
+
+                                    if (cycleSets != null)
+                                    {
+                                        _logger.LogInformation($"CreateFasTokenOrdersAsync INFO Day: {d}");
+                                        foreach (var cycleSet in cycleSets)
+                                        {
+                                            _logger.LogInformation($"CreateFasTokenOrdersAsync INFO 1: {cycleSet.Label} - {cycleSet.CycleTypeId} -  {cycleSet.CycleTypeSequence}");
+
+                                            var subSchedules = _appContext.DishCycleSchedules.Where(e => e.IsActive && e.DishCycleId == cycleSet.CycleTypeId);
+
+                                            if (subSchedules != null && subSchedules.Any())
+                                            {
+                                                int subScheduleDays = subSchedules.Count();
+                                                _logger.LogInformation($"CreateFasTokenOrdersAsync INFO subSchedules: {subScheduleDays}");
+
+                                                int subDay = d;
+                                                if (d > subScheduleDays)
+                                                {
+                                                    subDay = d % subScheduleDays;
+                                                }
+
+                                                _logger.LogInformation($"CreateFasTokenOrdersAsync INFO Sub Day: {subDay}");
+
+                                                var subSchedule = subSchedules.FirstOrDefault(e => e.Day == subDay);
+                                                if (subSchedule != null && subSchedule.Details != null)
+                                                {
+                                                    var subScheduleDetail = subSchedule.Details.FirstOrDefault(e => e.Sequence == cycleSet.CycleTypeSequence);
+                                                    if (subScheduleDetail != null)
+                                                    {
+                                                        detailMenus = subScheduleDetail.Menus.ToList();
+                                                        _logger.LogInformation($"CreateFasTokenOrdersAsync INFO 2: {subScheduleDetail.Label} - {subScheduleDetail.DishCycleId} - {subScheduleDetail.DishCycleScheduleId} - Menu COUNT: {detailMenus.Count}");
+                                                        _logger.LogInformation($"CreateFasTokenOrdersAsync INFO 2a: Menus: {string.Join(",", detailMenus.Select(e => e.Dish.Label))}");
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                _logger.LogInformation($"CreateFasTokenOrdersAsync INFO subSchedules: subSchedules is null or empty");
+                                            }
+
+
+                                            if (detailMenus.Any())
+                                            {
+                                                var tuple = new Tuple<int?, int?, float, string>(cycle.MealTypeId, detailMenus.First().DishId, (float)cycleSet.Price, cycleSet.Label);
+                                                classDishKeyPair.Add(student.ClassId, tuple);
+                                                hasSelectedDish = true;
+                                                break;
+                                            }
+                                        }
+
+                                    }
+
+                                    if (hasSelectedDish) break;
+                                }
+                            }
+
+                            if (classDishKeyPair.Keys.Any(e => e == student.ClassId))
+                            {
+                                var kp = classDishKeyPair[student.ClassId];
+                                order.TotalAmount = kp.Item3;
+                                order.TotalPayment = kp.Item3;
+                                order.Tokens = new List<TokenOrdered>
+                            {
+                                new TokenOrdered
+                                {
+                                    TokenId = kp.Item1.Value,
+                                    Qty = 1,
+                                    TokenDesc = kp.Item4,
+                                    SelectedDishes = new List<TokenOrderDish>
+                                    {
+                                            new TokenOrderDish
+                                            {
+                                                DishId = kp.Item2,
+                                                Qty = 1
+                                            }
+                                    }
+                                }
+                            };
+
+                                var payment = new Payment
+                                {
+                                    StudentId = order.ProfileId,
+                                    email = student.Email,
+                                    subtotal = (decimal)order.TotalAmount,
+                                    total = (decimal)order.TotalAmount,
+                                    UserId = createdBy,
+                                    InvoiceNumber = invoiceNumber,
+                                    Status = "SUCCESS"
+                                };
+
+                                order.Payment = payment;
+                                await _appContext.TokenOrders.AddAsync(order);
+                            }
+                        }
+
+                        deliveryDate = deliveryDate.Date.AddDays(1);
+                    }
+                    
+
+                    await _appContext.SaveChangesAsync();
+
+                    result.Message = "Successfully processed!";
+                    result.IsSuccess = true;
+                    scope.Complete();
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = "Failed to process orders!";
+                _logger.LogError($"CreateFasTokenOrdersAsync EXCEPTION : {ex.InnerException?.StackTrace} - {ex.Message} - {ex.StackTrace}");
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+        public async Task<FasTokenOrderSummaryDTO> GetFasTokenOrderSummaryAsync(int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails)
+        {
+            var outlet = await _appContext.Outlets.FindAsync(outletId);
+            var fasStudents = outlet.Students.Where(e => e.OutletId == outletId && e.IsActive && e.IsFAS).ToList();
+
+            var fasOrders = _appContext.TokenOrders.Where(t => t.StoreId == storeId && t.IsFAS && t.Status != "cancelled" &&
+                                           (t.DeliveryDate.Date >= deliveryDate.Date && t.DeliveryDate.Date <= deliveryDateTo.Date)
+                                           && t.IsActive && fasStudents.Any(f => f.Id == t.ProfileId)).ToList();
+
+            var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
+            var tokenOrderSelectedDishes = _appContext.TokenOrderDishes.Where(e => e.IsActive && fasOrders.Any(f => f.Id == e.TokenOrdered.OrderId)).ToList();
+
+            var mealSessionIds = mealSessionDetails.Select(e => e.MealSessionId).ToList();
+            var mealSessions = _appContext.MealSessions.Where(e => mealSessionIds.Any(f => f == e.Id)).Select(e => e.Name).ToList();
+            var summary = new FasTokenOrderSummaryDTO { Total = new FasTokenOrderRowDTO { Cells = new List<string>() } };
+
+            summary.Cols.Add("Session");
+            foreach (var dishType in dishTypes)
+            {
+                summary.Cols.Add(dishType.Name);
+            }
+
+            
+            foreach (var mealSession in mealSessions)
+            {
+                var row = new FasTokenOrderRowDTO();
+                row.Cells.Add(string.Format("{0}" , mealSession));
+                
+                foreach (var dishType in dishTypes)
+                {
+                    //var tokens = fasOrders.Where(e => e.MealSessionDetailId == mealSessionDetail.Id).SelectMany(e => e.Tokens);
+                    var totalByDishType = tokenOrderSelectedDishes.Where(e => e.TokenOrdered.Order.Session.MealSession.Name == mealSession &&
+                                                            e.Dish.DishTypeId == dishType.Id).Sum(f => (int) f.Qty);
+                    
+                    row.Cells.Add(totalByDishType.ToString());
+                }
+
+                summary.Rows.Add(row);
+            }
+
+            summary.Total.Cells.Add("Total Quantity");
+            if(summary.Rows.Any() && summary.Rows.First().Cells.Any())
+            {
+                for (int i = 1; i < summary.Rows.First().Cells.Count; i++)
+                {
+                    var totalByCol = summary.Rows.Select(e => int.Parse(e.Cells[i])).Sum();
+                    summary.Total.Cells.Add(totalByCol.ToString());
+                }
+            }
+
+            return summary;
+        }
+
+        //public async Task<BaseOperationResponse> ImportStudentAsync(IAccountManager accountManager, List<StudentImportDTO> rows)
+        //{
+        //    var result = new BaseOperationResponse();
+        //    try
+        //    {
+        //        if (rows.Count > 0)
+        //        {
+        //            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+        //                    new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted, Timeout = new System.TimeSpan(24, 0, 0) },
+        //                    TransactionScopeAsyncFlowOption.Enabled))
+        //            {
+        //                List<int> studentIds = new List<int>();
+
+        //                foreach (var row in rows)
+        //                {
+        //                    var sClass = await _appContext.Classes.FirstOrDefaultAsync(e => e.IsActive && e.Name.Equals(row.Class, StringComparison.InvariantCultureIgnoreCase));
+        //                    if (sClass == null)
+        //                    {
+        //                        throw new Exception(string.Format("Class not found. Please check the imported file."));
+        //                    }
+
+        //                    var batch = await _appContext.ClassBatches.FirstOrDefaultAsync(e => e.IsActive && e.Name.Equals(row.Batch, StringComparison.InvariantCultureIgnoreCase));
+
+        //                    var student = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive &&
+        //                                        e.Name.Equals(row.Name, StringComparison.InvariantCultureIgnoreCase));
+
+        //                    ApplicationUser user = null;
+        //                    //check if student exists using account
+        //                    if (student == null)
+        //                    {
+        //                        if (!string.IsNullOrEmpty(row.Email) && new EmailAddressAttribute().IsValid(row.Email))
+        //                        {
+        //                            user = await accountManager.GetUserByEmailAsync(row.Email);
+        //                            if (user != null && user.Account != null)
+        //                            {
+        //                                student = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive && e.Id == user.Account.StudentId);
+        //                            }
+        //                        }
+        //                    }
+
+        //                    if (student != null)
+        //                    {
+        //                        //update
+        //                        student.Name = row.Name;
+        //                        student.ClassBatchId = batch?.Id;
+        //                        student.ClassId = sClass.Id;
+        //                        student.Gender = row.Gender;
+        //                        student.IsFAS = row.IsFAS;
+        //                        student.Weight = row.Weight;
+        //                        student.Height = row.Height;
+
+        //                        //check if account exists
+        //                        if (user == null && !string.IsNullOrEmpty(row.Email) && new EmailAddressAttribute().IsValid(row.Email))
+        //                        {
+        //                            //create account
+        //                            user = await accountManager.GetUserByEmailAsync(row.Email);
+        //                            if (user == null)
+        //                            {
+        //                                if (student.Account != null)
+        //                                {
+        //                                    if (student.Account.User != null)
+        //                                    {
+        //                                        student.Account.User.Email = row.Email;
+        //                                        _appContext.StudentAccounts.Update(student.Account);
+        //                                    }
+        //                                }
+        //                                else
+        //                                {
+        //                                    user = new ApplicationUser();
+        //                                    user.IsEnabled = true;
+        //                                    user.EmailConfirmed = true;
+        //                                    user.UserName = row.Email.Substring(0, row.Email.IndexOf('@'));
+        //                                    user.Email = row.Email;
+        //                                    string newPassword = PasswordHelper.GenerateRandomPassword();
+        //                                    var createUserResult = await accountManager.CreateUserAsync(user, new List<string>(), newPassword);
+        //                                    if (createUserResult.Item1)
+        //                                    {
+        //                                        if (student.Account == null)
+        //                                        {
+        //                                            student.Account = new StudentAccount();
+        //                                        }
+
+        //                                        student.Account.UserId = user.Id;
+        //                                        student.Account.StudentId = student.Id;
+        //                                        await _appContext.StudentAccounts.AddAsync(student.Account);
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        result.Message = "Failed to create an account!";
+        //                                        return result;
+        //                                    }
+        //                                }
+        //                            }
+        //                        }
+
+        //                        await _appContext.SaveChangesAsync();
+        //                        studentIds.Add(student.Id);
+        //                    }
+        //                    else
+        //                    {
+        //                        //no student record and no account yet
+        //                        student = new Student
+        //                        {
+        //                            ClassBatchId = batch?.Id,
+        //                            ClassId = sClass.Id,
+        //                            Name = row.Name,
+        //                            Gender = row.Gender,
+        //                            IsFAS = row.IsFAS,
+        //                            Weight = row.Weight,
+        //                            Height = row.Height
+        //                        };
+
+        //                        if (user == null && !string.IsNullOrEmpty(row.Email) && new EmailAddressAttribute().IsValid(row.Email))
+        //                        {
+        //                            //create account
+        //                            user = await accountManager.GetUserByEmailAsync(row.Email);
+        //                            if (user == null)
+        //                            {
+        //                                user = new ApplicationUser();
+        //                                user.IsEnabled = true;
+        //                                user.EmailConfirmed = true;
+        //                                user.UserName = row.Email.Substring(0, row.Email.IndexOf('@'));
+        //                                user.Email = row.Email;
+        //                                user.IsActive = true;
+        //                                user.InstitutionId = (await accountManager.GetCurrentInstitution())?.Id;
+        //                                string newPassword = PasswordHelper.GenerateRandomPassword();
+        //                                var createUserResult = await accountManager.CreateUserAsync(user, new List<string>(), newPassword);
+        //                                if (createUserResult.Item1)
+        //                                {
+        //                                    if (student.Account == null)
+        //                                    {
+        //                                        student.Account = new StudentAccount();
+        //                                    }
+
+        //                                    student.Account.User = user;
+        //                                }
+        //                                else
+        //                                {
+        //                                    result.Message = "Failed to create an account!";
+        //                                    return result;
+        //                                }
+        //                            }
+        //                        }
+
+        //                        var stud = await AddAsync(student);
+        //                        await _appContext.SaveChangesAsync();
+        //                        studentIds.Add(stud.Id);
+        //                    }
+        //                }
+
+        //                //disable removed students
+        //                var studentsToDisable = _appContext.Students.Where(e => studentIds.All(f => f != e.Id));
+
+        //                foreach (var stud in studentsToDisable)
+        //                {
+        //                    stud.IsActive = false;
+        //                    Update(stud);
+        //                    await _appContext.SaveChangesAsync();
+        //                }
+
+        //                scope.Complete();
+        //                result.IsSuccess = true;
+        //                result.Message = "File Imported!";
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result.IsSuccess = false;
+        //        result.Message = ex.Message;
+        //    }
+
+
+
+        //    return result;
+        //}
+
+        private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
+    }
+}

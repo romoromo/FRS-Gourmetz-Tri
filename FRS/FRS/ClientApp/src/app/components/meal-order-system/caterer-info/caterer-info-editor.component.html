@@ -1,0 +1,32 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="catererInfoEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!catererInfoName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoCode" name="catererInfoCode" placeholder="Enter code" [(ngModel)]="catererInfoEdit.code" #catererInfoCode="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoName" name="catererInfoName" placeholder="Enter name" [(ngModel)]="catererInfoEdit.name" #catererInfoName="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoAddress" name="catererInfoAddress" placeholder="Address" [(ngModel)]="catererInfoEdit.address" #catererInfoAddress="ngModel" />
+        </mat-form-field>
+
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageCatererInfos" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageCatererInfos" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageCatererInfos" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

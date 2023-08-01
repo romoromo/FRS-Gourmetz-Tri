@@ -1,0 +1,46 @@
+<h1 mat-dialog-title>New Multiple</h1>
+
+
+
+<div mat-dialog-content>
+  <mat-form-field class="col-md-12">
+    <mat-label>Bento Box Type</mat-label>
+    <mat-select id="bentoBoxType" name="bentoBoxType" [(ngModel)]="bentoBoxType" #bentoBoxTypeId="ngModel" required>
+      <mat-option *ngFor="let bentoBoxType of bentoBoxTypes" [value]="bentoBoxType.id">
+        {{bentoBoxType.code}}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="showValidationErrors && f.submitted">Bento Box Type is required</mat-error>
+  </mat-form-field>
+
+  <div class="col-sm-12">
+    <mat-form-field style="width: 100%;" class="example-full-width" appearance="fill">
+      <mat-label>Bento Asset TID</mat-label>
+      <input matInput #bentoInput [(ngModel)]="bentoAssetCode" (ngModelChange)="bentoChanged($event)">
+    </mat-form-field>
+  </div>
+
+  <!--<div class="col-sm-12" style="border:solid 1px">
+
+  </div>-->
+  <div class="col-sm-12">
+    <h1 mat-dialog-title>Bento Assets</h1>
+
+    <div style="    border: solid 1px;padding: 0;max-height: 385px;overflow: auto;" class="col-sm-12">
+      <div *ngFor="let row of rows" [hidden]="!row.isActive" style="padding: 5px">
+        <div class="col-sm-8">
+          <h5>{{row.code}}</h5>
+        </div>
+        <div class="col-sm-4">
+          <h5 style="color:red;float:right" (click)="row.isActive = false">Remove</h5>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+<div mat-dialog-actions style="justify-content: center">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data" (click)="save()" cdkFocusInitial>Save</button>
+</div>

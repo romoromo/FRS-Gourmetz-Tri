@@ -1,0 +1,37 @@
+<h1 mat-dialog-title>{{'pageHeader.OccupancyLogs' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="occupancyLogEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageOccupancyLogs" type="text" autocomplete="off" name="deviceId" id="deviceId" key="deviceId" placeholder="{{'occupancyLogs.editor.DeviceId' | translate}}" [(ngModel)]="occupancyLogEdit.deviceId" #deviceId="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!deviceId.valid || validation.deviceId)">{{'occupancyLogs.editor.DeviceIdRequired' | translate}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageOccupancyLogs" type="text" autocomplete="off" name="sensorId" id="sensorId" key="sensorId" placeholder="{{'occupancyLogs.editor.SensorId' | translate}}" [(ngModel)]="occupancyLogEdit.sensorId" #sensorId="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!sensorId.valid || validation.sensorId)">{{'occupancyLogs.editor.SensorIdRequired' | translate}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageOccupancyLogs" type="text" autocomplete="off" name="status" id="status" key="status" placeholder="{{'occupancyLogs.editor.Status' | translate}}" [(ngModel)]="occupancyLogEdit.status" #status="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!status.valid || validation.status)">{{'occupancyLogs.editor.StatusRequired' | translate}}</mat-error>
+      </mat-form-field>
+
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="occupancyLogEdit != null">
+    <button *ngIf="!canManageOccupancyLogs" mat-button (click)="cancel()">{{'occupancyLogs.editor.Close' | translate}}</button>
+    <button *ngIf="canManageOccupancyLogs" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'occupancyLogs.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageOccupancyLogs" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('occupancyLogs.editor.Saving' | translate) : ('occupancyLogs.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>

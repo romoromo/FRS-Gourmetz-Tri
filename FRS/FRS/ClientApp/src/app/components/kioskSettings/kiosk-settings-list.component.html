@@ -1,0 +1,44 @@
+<div>
+  <div class="row control-box">
+    <div class="col-sm-8">
+      <div class="form-group search-box">
+        <search-box (searchChange)="onSearchChanged($event)" placeholder="Search">></search-box>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="navbar action-box">
+        <ul class="nav navbar-nav navbar-right">
+          <li *ngIf="canManageKioskSettings" class="toolbaritem">
+            <a href="javascript:;" (click)="newKioskSettings()">
+              <i class="fa fa-plus-circle"></i> New Kiosk Settings
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header sm table table-striped table-hover"
+                 [loadingIndicator]="loadingIndicator"
+                 [rows]="rows"
+                 [rowHeight]="'auto'"
+                 [headerHeight]="'auto'"
+                 [footerHeight]="35"
+                 [columns]="columns"
+                 [columnMode]="'force'"
+                 [limit]="20">
+  </ngx-datatable>
+
+  <ng-template #indexTemplate let-value="value">
+    <strong>{{value}}</strong>
+  </ng-template>
+
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageKioskSettings" class="btn btn-link btn-xs" href="javascript:;" (click)="editKioskSettings(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
+    <a *ngIf="!canManageKioskSettings" class="btn btn-link btn-xs" href="javascript:;" (click)="editKioskSettings(row)"><i class="fa fa-eye" aria-hidden="true"></i> Details</a>
+    <!--{{canManageKioskSettings ? '|' : ''}}-->
+    <a *ngIf="canManageKioskSettings" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteKioskSettings(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</a>
+  </ng-template>
+  <kiosk-settings-edit #kioskSettingsEdit [hidden]="true"></kiosk-settings-edit>
+</div>

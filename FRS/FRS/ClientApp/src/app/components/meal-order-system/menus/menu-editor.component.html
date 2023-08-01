@@ -1,0 +1,105 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="menuEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!menuLabel.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-label class="col-md-12"><h5>General Information</h5></mat-label>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageMenus" type="text" id="menuCode" name="menuCode" placeholder="Enter code" [(ngModel)]="menuEdit.code" #menuCode="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageMenus" type="text" id="menuLabel" name="menuLabel" placeholder="Enter label" [(ngModel)]="menuEdit.label" #menuLabel="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [value]="start"
+                 (dateChange)="onChangeDate('start', $event)" required>
+          <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+          <mat-datepicker #startpicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="endpicker" placeholder="End Date" [value]="end"
+                 (dateChange)="onChangeDate('end',$event)" required>
+          <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+          <mat-datepicker #endpicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12">
+          <mat-label>Cuisine</mat-label>
+          <mat-select id="cuisine" name="cuisine" [(ngModel)]="menuEdit.cuisineId" #cuisine="ngModel">
+            <mat-option *ngFor="let cuisine of cuisines" [value]="cuisine.id">
+              {{cuisine.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!--<hr />
+        <mat-label class="col-md-12"><h5>Dishes</h5></mat-label>
+        <div class="table-responsive" style="clear:both" *ngIf="totalCount > 0">
+          <ngx-datatable class="material colored-header"
+                         [columnMode]="'force'"
+                         [rowHeight]="50"
+                         [headerHeight]="50"
+                         [footerHeight]="35"
+                         [scrollbarV]="true"
+                         [scrollbarH]="true"
+                         [rows]="rows"
+                         [count]="totalCount"
+                         [limit]="10">
+            <ngx-datatable-column name="Dish"  [frozenLeft]="true" prop="dishLabel">
+            </ngx-datatable-column>
+            <ngx-datatable-column *ngFor="let column of dishMealTypes.columns; let i = index;" name="{{column.colName}}">
+              <ng-template ngx-datatable-cell-template
+                           let-value="value" let-row="row">
+                <input type="checkbox" [(ngModel)]="row.cells[i].checked" name="cell-{{row.cells[i].dishId}}-{{row.cells[i].mealTypeId}}"/>
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+        </div>-->
+        <hr />
+        <mat-label class="col-md-12"><h5>Dishes</h5></mat-label>
+        <div class="col-xs-12" style="min-height:300px">
+          <input matInput type="text" [hidden]="true" />
+          <mat-tab-group>
+            <mat-tab [label]="mealTypeMenuDish.mealTypeName" *ngFor="let mealTypeMenuDish of menuEdit.mealTypeMenuDishes; let i=index" class="tab-title">
+              <ng-template mat-tab-label>{{mealTypeMenuDish.mealTypeName}}</ng-template>
+              <button type="button" mat-button (click)="addDishBySelection()" style="margin-top:20px">
+                <mat-icon>
+                  add
+                </mat-icon> Add Dish
+              </button>
+              <table class="table table-sm table-bordered">
+                <thead class="text-center">
+                  <tr>
+                    <td>Dish Name</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let menuDish of mealTypeMenuDish.menuDishes; let x=index">
+                    <td *ngIf="menuDish.checked">{{menuDish.dishName}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+
+        <!--<mat-label class="col-md-12"><h5>Dishes</h5></mat-label>
+  <div *ngFor="let dish of dishes; let i=index" class="col-md-6">
+    <mat-checkbox class="col-sm-6 col-xs-12" [(ngModel)]="dish.checked" id="dish-{{i}}"
+                  name="dish-{{i}}">
+      <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">{{dish.label}}</label>
+    </mat-checkbox>
+  </div>-->
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageMenus" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageMenus" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageMenus" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

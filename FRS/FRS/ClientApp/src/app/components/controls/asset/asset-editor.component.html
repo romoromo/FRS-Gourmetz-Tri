@@ -1,0 +1,76 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="assetEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!assetName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-xs-12">
+            <input matInput placeholder="Asset Model *" style="display: none">
+            <mat-select required [disabled]="!canManageAssets" name="assetModel" [(ngModel)]="assetEdit.assetModelId" placeholder="Asset Model">
+              <mat-option *ngFor="let t of assetModels" [value]="t.id">
+                {{t.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-xs-12" *ngIf="assetEdit.assetModelId">
+            <input matInput [hidden]="true" type="text" name="assetType" placeholder="Asset Type" [disabled]="true" />
+            {{getAssetTypeName(assetEdit.assetModelId)}}
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input autocomplete="off" matInput required [disabled]="!canManageAssets" type="text" name="serialNumber" placeholder="Serial Number" [(ngModel)]="assetEdit.serialNumber" />
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput [matDatepicker]="purchaseDatePicker" [disabled]="!canManageAssets" id="purchaseDate" name="purchaseDate" placeholder="Purchase Date" [value]="assetEdit.purchaseDate"
+                   (dateChange)="onChangeDatePurchase('purchase', $event)">
+            <mat-datepicker-toggle matSuffix [for]="purchaseDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #purchaseDatePicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput [matDatepicker]="warrantyStartPicker" [disabled]="!canManageAssets" id="warrantyStart" name="warrantyStart" placeholder="Warranty Start" [value]="assetEdit.warrantyStart"
+                   (dateChange)="onChangeDateStart('start', $event)">
+            <mat-datepicker-toggle matSuffix [for]="warrantyStartPicker"></mat-datepicker-toggle>
+            <mat-datepicker #warrantyStartPicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <input matInput [matDatepicker]="warrantyEndPicker" [disabled]="!canManageAssets" id="warrantyEnd" name="warrantyEnd" placeholder="Warranty End" [value]="assetEdit.warrantyEnd"
+                   (dateChange)="onChangeDateEnd('end', $event)">
+            <mat-datepicker-toggle matSuffix [for]="warrantyEndPicker"></mat-datepicker-toggle>
+            <mat-datepicker #warrantyEndPicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="col-xs-12">
+            <mat-select [disabled]="!canManageAssets" name="assetLocation" [(ngModel)]="assetEdit.locationId" placeholder="Location">
+              <mat-option *ngFor="let t of allLocations" [value]="t.id">
+                {{t.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="col-xs-12">
+            <mat-select [disabled]="!canManageAssets" name="assetInstitution" [(ngModel)]="assetEdit.institutionId" placeholder="Institution">
+              <mat-option *ngFor="let t of allInstitutions" [value]="t.id">
+                {{t.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="col-xs-12">
+            <input autocomplete="off" matInput [disabled]="!canManageAssets" type="text" name="poNumber" placeholder="PO Number (optional)" [(ngModel)]="assetEdit.poNumber" />
+          </mat-form-field>
+
+        </div>
+        
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageAssets" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageAssets" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageAssets" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

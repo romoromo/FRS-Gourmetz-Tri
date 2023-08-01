@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>{{'pageHeader.EmployeeDesignations' | translate}}</h1>
+<form *ngIf="formResetToggle" class="form-horizontal" key="employeeDesignationEditorForm" #f="ngForm" novalidate
+      (ngSubmit)="f.form.valid ? save() : ''">
+
+  <div mat-dialog-content>
+
+    <div class="row">
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageEmployeeDesignations" type="text" autocomplete="off" name="code" id="code" key="code" placeholder="{{'employeeDesignations.editor.Code' | translate}}" [(ngModel)]="employeeDesignationEdit.code" #code="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!code.valid || validation.code)">{{'employeeDesignations.editor.CodeRequired' | translate}}</mat-error>
+      </mat-form-field>
+      <mat-form-field class="col-md-12">
+        <input matInput [disabled]="!canManageEmployeeDesignations" type="text" autocomplete="off" name="label" id="label" key="label" placeholder="{{'employeeDesignations.editor.Label' | translate}}" [(ngModel)]="employeeDesignationEdit.label" #label="ngModel" required minlength="1" maxlength="200" />
+        <mat-error *ngIf="showValidationErrors && f.submitted && (!label.valid || validation.label)">{{'employeeDesignations.editor.LabelRequired' | translate}}</mat-error>
+      </mat-form-field>
+     
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+
+  <div mat-dialog-actions align="center" *ngIf="employeeDesignationEdit != null">
+    <button *ngIf="!canManageEmployeeDesignations" mat-button (click)="cancel()">{{'employeeDesignations.editor.Close' | translate}}</button>
+    <button *ngIf="canManageEmployeeDesignations" type="button" [disabled]="isSaving" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'employeeDesignations.editor.Cancel' | translate}}</button>
+    <button type="submit" *ngIf="canManageEmployeeDesignations" [disabled]="isSaving" mat-button cdkFocusInitial>
+      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('employeeDesignations.editor.Saving' | translate) : ('employeeDesignations.editor.Save' | translate)}}
+    </button>
+  </div>
+</form>
