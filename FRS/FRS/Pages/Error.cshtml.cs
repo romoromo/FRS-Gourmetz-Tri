@@ -33,4 +33,12 @@ namespace FRS.Pages
         public int UserId { get; set; }
         public string Token { get; set; }
     }
+
+    public class AdminPortal2FA
+    {
+        public int UserId { get; set; }
+        [Required]
+        public string Code { get; set; }
+        public int Retry { get; set; }
+    }
 }

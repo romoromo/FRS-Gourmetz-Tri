@@ -78,6 +78,7 @@ export class User {
   public userGroupIds: string[];
   public userWallets: UserWallet[];
   public userRewards: UserReward[];
+  public last2FAValidatedTime: string;
   public isAD: boolean;
 }
 

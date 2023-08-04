@@ -21,3 +21,7 @@ export interface IdToken {
   configuration: string;
   institutionId: string;
 }
+
+export interface Login2FAResponse {
+  validated: boolean;
+}

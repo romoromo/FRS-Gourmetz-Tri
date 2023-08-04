@@ -68,6 +68,9 @@ namespace DAL.Models
 
         public DateTime? DeletedDate { get; set; }
 
+        [SkipTracking]
+        public DateTime? Last2FAValidatedTime { get; set; }
+
         [ForeignKey("InstitutionId")]
         public virtual Institution Institution { get; set; }
 

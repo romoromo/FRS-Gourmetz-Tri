@@ -1,0 +1,37 @@
+<div class="vertical-center-flex">
+
+    <div class="login-container center-block">
+        <div class="panel panel-primary boxshadow">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-lock"></span> Confirmation Code
+            </div>
+            <div class="panel-body">
+                <div class="col-md-8 col-md-offset-2">
+                  <form *ngIf="formResetToggle" class="form-horizontal login" name="loginForm" #f="ngForm" novalidate
+                        (ngSubmit)="f.form.valid ? login() :
+                          (!code.valid && showErrorAlert('Code is required', 'Please enter the code'));
+                          ">
+                    <div class="form-group has-feedback">
+                      <label class="control-label col-md-4" for="login-code">Code:</label>
+                      <div class="col-md-8" [ngClass]="{'has-success': f.submitted && code.valid, 'has-error' : f.submitted && !code.valid}">
+                        <input type="text" id="login-code" name="code" placeholder="Two-Factor Authentication" autocomplete="off" class="form-control" [(ngModel)]="userLogin.code" #code="ngModel" required />
+                        <span *ngIf="f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': code.valid, 'glyphicon-remove' : !code.valid}" aria-hidden="true"></span>
+                        <span class="errorMessage" *ngIf="f.submitted && !code.valid">
+                          Please enter the code
+                        </span>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-md-offset-4 col-md-8">
+                        <button type="submit" class="btn btn-primary" [disabled]="isLoading"><i *ngIf="isLoading" class='fa fa-circle-o-notch fa-spin'></i> {{isLoading ? ("Confirming...")  : "Confirm" }}</button>
+                      </div>
+                    </div>
+                    <br />
+                    <div class="form-group text-center">
+                    </div>
+                  </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

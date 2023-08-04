@@ -3,6 +3,7 @@ export const environment = {
     baseUrl: '', //Change this to the address of your backend API if different from frontend address
     loginUrl: "/login",
     registerUrl: "/register",
-    resetPasswordUrl: "/resetpassword",
+    resetPasswordUrl: "/resetpassword"
+    multifactorUrl: "/multifactor",
     domainUrl: ""
 };

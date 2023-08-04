@@ -24,3 +24,12 @@ export class ResetPassword {
   institutionCode: string;
   code: string;
 }
+export class UserLogin2FA {
+  constructor(userId?: string, code?: string) {
+    this.userId = userId;
+    this.code = code;
+  }
+
+  userId: string;
+  code: string;
+}

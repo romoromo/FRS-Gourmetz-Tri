@@ -33,6 +33,7 @@ export class ConfigurationService {
   public loginUrl = environment.loginUrl;
   public registerUrl = environment.registerUrl;
   public resetPasswordUrl = environment.resetPasswordUrl;
+  public multifactorUrl = environment.multifactorUrl;
   public fallbackBaseUrl = "http://localhost";
 
   //***Specify default configurations here***

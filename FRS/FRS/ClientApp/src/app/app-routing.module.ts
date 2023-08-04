@@ -147,6 +147,7 @@ import { OrderCancellationsManagementComponent } from './components/meal-order-s
 import { UserRolesReportManagementComponent } from './components/reports/user-role/user-roles-management.component';
 import { OrderCancellationReportManagementComponent } from './components/reports/order-cancellation/order-cancellations-management.component';
 import { NotificationSettingComponent } from './components/notification-setting/notification-settings.component';
+import { MultiFactorLoginComponent } from './components/multi-factor-login/multi-factor-login.component';
 
  
 
@@ -333,6 +334,7 @@ const routes: Routes = [
       { path: "register", component: RegisterComponent, data: { title: "Register" } },
       { path: "resetpassword", component: ResetPasswordComponent, data: { title: "ResetPassword" } },
       { path: "login", component: LoginComponent, data: { title: "Login" } },
+      { path: "multifactor", component: MultiFactorLoginComponent, data: { title: "Two-Factor Login" } },
       { path: "externallogin", component: ExternalLoginComponent, data: { title: "Login" } },
       { path: "feedback", component: FeedbackComponent, data: { title: "Feedback" } },
       { path: "signagedisplay/:mac_address", component: SignageDisplayComponent, data: { title: "Signage Display" } },

@@ -6,11 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.environment = void 0;
 exports.environment = {
     production: true,
-    baseUrl: 'https://uat.tappeemeals.com/gateway',
+    baseUrl: '',
     //baseUrl: 'http://localhost:53334/gateway',
     loginUrl: "/login",
     registerUrl: "/register",
     resetPasswordUrl: "/resetpassword",
+    multifactorUrl: "/multifactor",
     domainUrl: "http://smv360.com"
 };
 /*

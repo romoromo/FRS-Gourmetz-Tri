@@ -9,7 +9,7 @@ import { ConfigurationService } from './configuration.service';
 import { DBkeys } from './db-Keys';
 import { JwtHelper } from './jwt-helper';
 import { Utilities } from './utilities';
-import { LoginResponse, IdToken } from '../models/login-response.model';
+import { LoginResponse, IdToken, Login2FAResponse } from '../models/login-response.model';
 import { FRSHubConnections, User } from '../models/user.model';
 import { Permission, PermissionNames, PermissionValues } from '../models/permission.model';
 import { ResetPassword } from '../models/user-login.model';
@@ -20,6 +20,7 @@ import { connect } from 'tls';
 export class AuthService {
 
   public get loginUrl() { return this.configurations.loginUrl; }
+  public get login2FAUrl() { return this.configurations.multifactorUrl; }
   public get homeUrl() { return this.configurations.homeUrl; }
   public get registerUrl() { return this.configurations.registerUrl; }
   public get resetPasswordUrl() { return this.configurations.resetPasswordUrl; }
@@ -97,6 +98,16 @@ export class AuthService {
     this.router.navigate([this.registerUrl]);
   }
 
+  redirectForLogin2FA() {
+    this.loginRedirectUrl = this.router.url;
+    this.router.navigate([this.login2FAUrl]);
+  }
+
+  redirectToHome() {
+    this.loginRedirectUrl = this.router.url;
+    this.router.navigate([this.homeUrl]);
+  }
+
   reLogin() {
 
     this.localStorage.deleteData(DBkeys.TOKEN_EXPIRES_IN);
@@ -126,6 +137,11 @@ export class AuthService {
       map(response => this.processLoginResponse(response, rememberMe)));
   }
 
+  login2FA(userId: string, code: string) {
+    return this.endpointFactory.getLogin2FAEndpoint<Login2FAResponse>(userId, code).pipe(
+      map(response => this.processLogin2FAResponse(response)));
+  }
+
   loginExternal(userName: string) {
 
     return this.endpointFactory.getLoginEndpoint<LoginResponse>(userName, null, null, 'true').pipe(
@@ -146,6 +162,20 @@ export class AuthService {
       this.logout();
 
     return this.endpointFactory.getResetPasswordEndpoint<any>(resetPassword);
+  }
+
+  private processLogin2FAResponse(response: Login2FAResponse) {
+
+    if (!response.validated)
+      throw new Error("Invalid code");
+
+    var user = this.getCurrentUser(true);
+    user.last2FAValidatedTime = (new Date()).toString();
+
+    this.localStorage.savePermanentData(user, DBkeys.CURRENT_USER);
+    this.reevaluateLoginStatus(user);
+
+    return user;
   }
 
   private processLoginResponse(response: LoginResponse, rememberMe: boolean) {
@@ -185,7 +215,7 @@ export class AuthService {
       Array.isArray(decodedIdToken.role) ? decodedIdToken.role : [decodedIdToken.role],
       decodedIdToken.institutionId);
     user.isEnabled = true;
-
+    user.last2FAValidatedTime = null;
     this.saveUserDetails(user, permissions, accessToken, idToken, refreshToken, accessTokenExpiry, rememberMe);
 
     this.reevaluateLoginStatus(user);
@@ -240,9 +270,11 @@ export class AuthService {
 
 
   private reevaluateLoginStatus(currentUser?: User) {
+    let d = new Date();
+    d.setMinutes(d.getMinutes() - 5); //5 minutes ago
 
     let user = currentUser || this.localStorage.getDataObject<User>(DBkeys.CURRENT_USER);
-    let isLoggedIn = user != null;
+    let isLoggedIn = user != null && user.last2FAValidatedTime && (new Date(user.last2FAValidatedTime) > d);
 
     if (this.previousIsLoggedInCheck != isLoggedIn) {
       setTimeout(() => {
@@ -258,6 +290,14 @@ export class AuthService {
     return this._loginStatus.asObservable();
   }
 
+  getCurrentUser(skipEvaluation?: boolean): User {
+
+    let user = this.localStorage.getDataObject<User>(DBkeys.CURRENT_USER);
+    if (!skipEvaluation)
+      this.reevaluateLoginStatus(user);
+
+    return user;
+  }
 
   get currentUser(): User {
 
@@ -307,7 +347,7 @@ export class AuthService {
   }
 
   get isLoggedIn(): boolean {
-    return this.currentUser != null;
+    return this.currentUser != null && typeof (this.currentUser.last2FAValidatedTime) != typeof (undefined);
   }
 
   get rememberMe(): boolean {
@@ -322,19 +362,23 @@ export class AuthService {
     //}
     //else {
     if (this.currentUser != null || skipAuth) {
-      if (!connection && !currentConnection) {
-        connection = new coreSignalR.HubConnectionBuilder()
-          .withUrl(url, {
-            transport: coreSignalR.HttpTransportType.WebSockets | coreSignalR.HttpTransportType.LongPolling
-          })
-          .configureLogging(coreSignalR.LogLevel.Trace)
-          .configureLogging({
-            log: function (logLevel, message) {
-              //console.log(logLevel);
-              console.log(url + " - " + new Date().toISOString() + ": " + message);
-            }
-          })
-          .build();
+      if (!connection) {
+        if (!currentConnection) {
+          connection = new coreSignalR.HubConnectionBuilder()
+            .withUrl(url, {
+              transport: coreSignalR.HttpTransportType.WebSockets | coreSignalR.HttpTransportType.LongPolling
+            })
+            .configureLogging(coreSignalR.LogLevel.Trace)
+            .configureLogging({
+              log: function (logLevel, message) {
+                //console.log(logLevel);
+                console.log(url + " - " + new Date().toISOString() + ": " + message);
+              }
+            })
+            .build();
+        } else {
+          connection = currentConnection;
+        }
       }
 
       this.connections[url] = connection;

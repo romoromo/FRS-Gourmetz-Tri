@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResetPassword = exports.UserLogin = void 0;
+exports.UserLogin2FA = exports.ResetPassword = exports.UserLogin = void 0;
 var UserLogin = /** @class */ (function () {
     function UserLogin(email, password, rememberMe) {
         this.email = email;
@@ -19,4 +19,12 @@ var ResetPassword = /** @class */ (function () {
     return ResetPassword;
 }());
 exports.ResetPassword = ResetPassword;
+var UserLogin2FA = /** @class */ (function () {
+    function UserLogin2FA(userId, code) {
+        this.userId = userId;
+        this.code = code;
+    }
+    return UserLogin2FA;
+}());
+exports.UserLogin2FA = UserLogin2FA;
 //# sourceMappingURL=user-login.model.js.map

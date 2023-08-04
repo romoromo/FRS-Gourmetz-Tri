@@ -95,7 +95,7 @@ namespace FRS.Controllers
 
         [HttpPost("~/connect/token")]
         [Produces("application/json")]
-        public async Task<IActionResult> Exchange(OpenIdConnectRequest request = null, string institutionCode = null, bool isExternal = false, bool isExternalLogin = false, bool isAD = false, bool needConfirmationCode = false, string appId = null)
+        public async Task<IActionResult> Exchange(OpenIdConnectRequest request = null, string institutionCode = null, bool isExternal = false, bool isExternalLogin = false, bool isAD = false, bool needConfirmationCode = false, string appId = null, bool mfa = false)
         {
             var uaParser = Parser.GetDefault();
             ClientInfo c = uaParser.Parse(_httpAccessor.HttpContext.Request.Headers["User-Agent"]);
@@ -277,7 +277,14 @@ namespace FRS.Controllers
                     await _auditLogService.CreateExternalLoginLogAsync(externalAppLog);
                     await _userManager.UpdateAsync(user);
 
-                    var isSuccess = await _emailSender.SendEmailAsync("Tappee", "smv.notification@gmail.com", user.FullName, user.Email, "Tappee Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+                    if (mfa)
+                    {
+                        await _emailSender.SendEmailAsync("Web Admin Portal", "smv.notification@gmail.com", user.FullName, user.Email, "Web Admin Portal Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+                    }
+                    else
+                    {
+                        var isSuccess = await _emailSender.SendEmailAsync("Tappee", "smv.notification@gmail.com", user.FullName, user.Email, "Tappee Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+                    }
 
                     //await _emailController.SendEmailFromQueue();
                 }
@@ -385,6 +392,123 @@ namespace FRS.Controllers
                 Error = OpenIdConnectConstants.Errors.UnsupportedGrantType,
                 ErrorDescription = "The specified grant type is not supported"
             });
+        }
+
+        [HttpPost("~/login/multi-fa")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ValidateLogin2FA(string userId, string code)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                    throw new Exception("User not found.");
+
+                if (user.ConfirmationCode == code)
+                {
+                    user.Last2FAValidatedTime = DateTime.Now;
+                    await _userManager.UpdateAsync(user);
+                    return Ok(new { validated = true });
+                }
+                else
+                {
+                    return BadRequest(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidToken,
+                        ErrorDescription = "Invalid code."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> MultiFactorLogin(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if(user == null)
+            {
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.RequestNotSupported,
+                    ErrorDescription = "User not found."
+                });
+            }
+
+            var uaParser = Parser.GetDefault();
+            ClientInfo c = uaParser.Parse(_httpAccessor.HttpContext.Request.Headers["User-Agent"]);
+            string message = string.Format(" sign in with access to the web admin portal");
+            string ip = _httpAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            if (c.Device != null && !string.IsNullOrEmpty(c.Device.Family))
+            {
+                message += string.Format(" .Device: {0}, OS: {1}, Agent: {2}, IP: {3}", c.Device.ToString(), c.OS.ToString(), c.UserAgent.ToString(), ip);
+            }
+            else
+            {
+                message += string.Format(" with IP {0}", ip);
+            }
+
+            Random generator = new Random();
+            string code = generator.Next(0, 1000000).ToString("D6");
+
+            user.ConfirmationCode = code;
+
+            var externalAppLog = new ExternalAppLoginLogDTO
+            {
+                Email = user.Email,
+                EventDateTime = DateTime.Now,
+                UserId = user.Id,
+                Message = "Successful",
+                Username = user.UserName
+            };
+
+            await _auditLogService.CreateExternalLoginLogAsync(externalAppLog);
+            await _userManager.UpdateAsync(user);
+
+            var isSuccess = await _emailSender.SendEmailAsync("Web Admin Portal", "smv.notification@gmail.com", user.FullName, user.Email, "Web Admin Portal Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+
+
+            if (!isSuccess.success)
+                return View("Error");
+
+            var model = new AdminPortal2FA { Code = code, UserId = userId };
+
+            return View("AdminPortal2FA", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MultiFactorLogin(AdminPortal2FA model)
+        {
+            if (!ModelState.IsValid)
+                return View("AdminPortal2FA", model);
+
+            var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+            if (user == null)
+                RedirectToAction(nameof(MultiFactorLogin));
+
+            if(user.ConfirmationCode == model.Code)
+            {
+                user.Last2FAValidatedTime = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+
+                return Redirect("/");
+            }
+            else
+            {
+                ModelState.TryAddModelError("602", "Invalid code");
+                model.Retry++;
+                if(model.Retry > 5)
+                {
+                    return Redirect("/");
+                }
+
+                return View("AdminPortal2FA", model);
+            }
         }
 
         public async Task<ActionResult> ConfirmEmail(string userId, string code, string passwordSetCode)
