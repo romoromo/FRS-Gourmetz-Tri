@@ -8,15 +8,62 @@
           <h4>Student Group Information</h4>
         </div>
         <div class="col-sm-12">
-          <mat-form-field class="col-md-12">
+          <mat-form-field class="col-md-6 col-xs-12">
             <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="groupCode" name="groupCode" placeholder="Enter code" [(ngModel)]="groupEdit.code" #groupCode="ngModel" required minlength="2" maxlength="200" />
-            <mat-error *ngIf="showValidationErrors && f.submitted">Name is required</mat-error>
+            <mat-error *ngIf="showValidationErrors && f.submitted">Code is required</mat-error>
           </mat-form-field>
-
-          <mat-form-field class="col-md-12">
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-label>Type</mat-label>
+            <mat-select id="outletProfileId" name="type" [(ngModel)]="groupEdit.type" #type="ngModel" required (selectionChange)="onTypeChange($event.value)">
+              <mat-option *ngFor="let type of types" [value]="type">
+                {{type}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12">
             <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="groupName" name="groupName" placeholder="Enter name" [(ngModel)]="groupEdit.name" #groupName="ngModel" required minlength="2" maxlength="200" />
             <mat-error *ngIf="showValidationErrors && f.submitted">Name is required</mat-error>
           </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+            <!--<mat-label>Price</mat-label>-->
+            <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="price" name="price" placeholder="Price" [(ngModel)]="groupEdit.price" #price="ngModel" required />
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+            <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [(ngModel)]="groupEdit.startDate" required [ngModelOptions]="{standalone: true}">
+            <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+            <mat-datepicker #startpicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+            <input matInput [matDatepicker]="endpicker" placeholder="End Date" [(ngModel)]="groupEdit.endDate" required [ngModelOptions]="{standalone: true}">
+            <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+            <mat-datepicker #endpicker></mat-datepicker>
+          </mat-form-field>
+
+          <!--<div class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+    &nbsp;
+  </div>-->
+          <mat-form-field class="col-sm-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+            <input matInput [matDatepicker]="delvdatepicker" placeholder="Delivery Date From" [(ngModel)]="groupEdit.deliveryStartDate" required [ngModelOptions]="{standalone: true}" (dateChange)="onChangeDeliveryDate($event, 'from')">
+            <mat-datepicker-toggle matSuffix [for]="delvdatepicker"></mat-datepicker-toggle>
+            <mat-datepicker #delvdatepicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="col-sm-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+            <input matInput [matDatepicker]="delvdateTopicker" placeholder="Delivery Date To" [(ngModel)]="groupEdit.deliveryEndDate" required [ngModelOptions]="{standalone: true}" (dateChange)="onChangeDeliveryDate($event, 'to')">
+            <mat-datepicker-toggle matSuffix [for]="delvdateTopicker"></mat-datepicker-toggle>
+            <mat-datepicker #delvdateTopicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="col-sm-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+            <mat-label>Session</mat-label>
+            <mat-select id="mealSessionId" name="mealSessionId" [(ngModel)]="groupEdit.mealSessionId" #mealSessionId="ngModel" required (selectionChange)="onMealSessionChange($event.value)">
+              <mat-option *ngFor="let mealSessionDetail of mealSessions" [value]="mealSessionDetail.mealSessionId">
+                {{mealSessionDetail.mealSessionName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-checkbox class="col-sm-6 col-xs-12" [(ngModel)]="groupEdit.isPublished" id="isPublished"
+                        name="isPublished" *ngIf="groupEdit.type == 'Meal Plan'">
+            <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Publish</label>
+          </mat-checkbox>
         </div>
         <div class="col-xs-12" style="min-height:300px">
           <input matInput type="text" [hidden]="true" />

@@ -209,6 +209,50 @@ namespace FRS.Controllers
         }
         #endregion
 
+        #region Meal Plan
+        [HttpGet("mealplans/student")]
+        [AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllStudentsPolicy)]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetStudentMealPlan(int studentId, DateTime orderDate)
+        {
+            var dto = await this._service.GetStudentMealPlanAsync(studentId, orderDate);
+            return Ok(dto);
+        }
+
+        [HttpGet("tokenorders/mealplan")]
+        [ProducesResponseType(201, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateMealPlan(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear)
+        {
+            if (outletId == 0)
+                return BadRequest("Outlet not found.");
+
+            var result = await this._service.CreateMealPlanAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, clear);
+            if (!result.IsSuccess)
+                return BadRequest("The following errors occurred while processing: " + string.Join(", ", result.Message));
+
+            return Ok(result);
+        }
+
+
+        [HttpGet("tokenorders/mealplan/ordersummary")]
+        //[Authorize(Authorization.Policies.ViewAllMealSessionsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetMealPlanSummary(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int mealSessionId)
+        {
+            var mealSessions = await this._menuService.GetOutletMealSessions(outletId, deliveryDate, null, null, deliveryDateTo);
+            mealSessions = mealSessions.Where(e => e.MealSessionId == mealSessionId).ToList();
+            var results = await this._service.GetMealPlanOrderSummaryAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, mealSessions);
+            return Ok(results);
+        }
+
+        #endregion
+
         #region Sieved
         //[ApiKeyAuthorize]
         [HttpGet("tokenorders/cancelorder/sieve/list")]

@@ -3,9 +3,9 @@ import { Component, ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { DateAdapter, MatDatepickerInputEvent, MatDialog, MatDialogRef, MAT_DATE_FORMATS, MAT_DIALOG_DATA } from '@angular/material';
 import { Student, StudentCard, StudentInterestGroup, StudentRestriction } from 'src/app/models/meal-order/student.model';
-import { StudentGroup, StudentGroupDetail } from 'src/app/models/meal-order/student-group.model';
+import { StudentGroup, StudentGroupDetail, StudentGroupType } from 'src/app/models/meal-order/student-group.model';
 import { StudentService } from 'src/app/services/meal-order/student.service';
 import { CommonFilter, Filter } from 'src/app/models/sieve-filter.model';
 import { ClassService } from 'src/app/services/meal-order/class.service';
@@ -18,12 +18,29 @@ import { RestrictionService } from 'src/app/services/meal-order/restriction.serv
 import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
 import { FormControl } from '@angular/forms';
 import { StudentSelectorComponent } from './student-selector/student-selector.component'
+import { MomentUtcDateAdapter } from 'src/app/helpers/moment-utc-adapter';
+import { MenuService } from 'src/app/services/meal-order/menu.service';
 
+export const CUSTOM_DATE_FORMAT = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'DD/MM/YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @Component({
   selector: 'student-group-editor',
   templateUrl: './student-group-editor.component.html',
-  styleUrls: ['./student-group-editor.component.css']
+  styleUrls: ['./student-group-editor.component.css'],
+  providers: [
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMAT },
+    { provide: DateAdapter, useClass: MomentUtcDateAdapter },
+  ]
 })
 export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   private subscription: Subscription = new Subscription();
@@ -39,9 +56,18 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   private validation = { name: false, gender: false, classLevel: false, class: false, fas: false };
   private isAddAccount = false;
   private outletId;
+  mealSessionDetails: any[] = [];
+  mealSessions: any[] = [];
+
+  start = new Date();
+  end = new Date();
+  original_type = '';
+  original_mealSessionId = '';
+  original_start = new Date();
+  original_end = new Date();
 
   public students = [];
-
+  public types = [StudentGroupType.OTHERS, StudentGroupType.MEAL_PLAN];
   public searchForm: FormControl = new FormControl();
   groupId: any;
 
@@ -55,7 +81,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
 
   constructor(private alertService: AlertService, private studentService: StudentService, private accountService: AccountService, private classService: ClassService,
     private userService: UserService, private restrictionService: RestrictionService, private deliveryService: DeliveryService,
-    public dialogRef: MatDialogRef<StudentGroupEditorComponent>, public dialog: MatDialog, 
+    public dialogRef: MatDialogRef<StudentGroupEditorComponent>, public dialog: MatDialog, private menuService: MenuService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.outletId) != typeof (undefined)) {
       this.outletId = data.outletId;
@@ -70,6 +96,9 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit() {
+
+    this.onChangeDeliveryDate();
+
     this.alertService.resetStickyMessage();
   }
 
@@ -218,6 +247,8 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
     this.editingStudentName = null;
     this.selectedValues = {};
     this.groupEdit = new StudentGroup();
+    this.groupEdit.deliveryStartDate = this.getCutoffDate();
+    this.groupEdit.deliveryEndDate = this.getCutoffDate();
     return this.groupEdit;
   }
 
@@ -229,6 +260,13 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
       this.selectedValues = {};
       this.groupEdit = new StudentGroup();
       Object.assign(this.groupEdit, group);
+      this.original_type = group.type;
+      this.original_mealSessionId = group.mealSessionId;
+      this.original_start = new Date(group.deliveryStartDate);
+      this.original_end = new Date(group.deliveryEndDate);
+      if (!this.groupEdit.price) {
+        this.groupEdit.price = 0;
+      }
       return this.groupEdit;
     }
     else {
@@ -258,6 +296,13 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
     });
   }
 
+  getCutoffDate() {
+    let now = new Date();
+    now.setHours(0, 0, 0, 0);
+    now.setDate(now.getDate() + 3);
+    return now;
+  }
+
   getName(id) {
     let student = this.students.find(x => x.id === id);
     if (student) {
@@ -265,6 +310,82 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
     } else {
       return '';
     }
+  }
+
+  onChangeDate(type: string, event: MatDatepickerInputEvent<Date>) {
+    if (type == 'start') {
+      this.start = new Date(event.value);
+      this.groupEdit.startDate = new Date(event.value);
+    }
+    if (type == 'end') {
+      this.end = new Date(event.value);
+      this.groupEdit.endDate = new Date(event.value);
+    }
+
+  }
+
+  onTypeChange(type: string) {
+    if (this.groupEdit.id && type != StudentGroupType.MEAL_PLAN && this.original_type == StudentGroupType.MEAL_PLAN) {
+      this.alertService.showDialog('Changing the type will remove all meal plans for the students in this group. Do you wish to proceed?',
+        DialogType.confirm, () => { this.groupEdit.type = StudentGroupType.OTHERS }, () => { this.groupEdit.type = StudentGroupType.MEAL_PLAN });
+    } 
+  }
+
+  onMealSessionChange(mealSessionId: string) {
+    if (this.groupEdit.id && mealSessionId != this.original_mealSessionId) {
+      this.alertService.showDialog('Changing the session will remove all meal plans for the students in this group and would require you to regenerate the meal plan. Do you wish to proceed?',
+        DialogType.confirm, () => { this.groupEdit.mealSessionId = mealSessionId }, () => { this.groupEdit.mealSessionId = this.original_mealSessionId });
+    }
+  }
+
+  onChangeDeliveryDate(event?: MatDatepickerInputEvent<Date>, type?: string) {
+
+    if (type == 'from') {
+      this.groupEdit.deliveryStartDate = event ? new Date(event.value) : new Date();
+    }
+
+    if (type == 'to') {
+      this.groupEdit.deliveryEndDate = event ? new Date(event.value) : new Date();
+    }
+
+    let start = new Date(this.groupEdit.deliveryStartDate),
+      end = new Date(this.groupEdit.deliveryEndDate);
+    if (this.groupEdit.id && (((start).toDateString() != this.original_start.toDateString()) ||
+      ((end).toDateString() != this.original_end.toDateString()))) {
+      this.alertService.showDialog('Changing the dates will remove all meal plans for the students in this group and would require you to regenerate the meal plan. Do you wish to proceed?',
+        DialogType.confirm, () => {
+          this.groupEdit.deliveryStartDate = this.groupEdit.deliveryStartDate ? new Date(this.groupEdit.deliveryStartDate) : new Date();
+          this.groupEdit.deliveryEndDate = this.groupEdit.deliveryEndDate ? new Date(this.groupEdit.deliveryEndDate) : new Date();
+          
+      }, () => {
+          this.groupEdit.deliveryStartDate = this.original_start;
+          this.groupEdit.deliveryEndDate = this.original_end;
+      });
+    }
+    this.getMealSessions(start, end);
+    
+  }
+
+  getMealSessions(d: Date, dTo: Date) {
+    this.menuService.getOutletSessionsByFilter(this.outletId, (d).toDateString(), (dTo).toDateString())
+      .subscribe(results => {
+        this.mealSessionDetails = results;
+        let mealSessions = [];
+        if (this.mealSessionDetails) {
+          this.mealSessionDetails.forEach((d, i, details) => {
+            let indx = mealSessions && mealSessions.length > 0 ? mealSessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
+            if (indx < 0) {
+              mealSessions.push({ mealSessionId: d.mealSessionId, mealSessionName: d.mealSessionName });
+            }
+          })
+        }
+
+        this.mealSessions = mealSessions;
+      },
+        error => {
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
+            MessageSeverity.error);
+        })
   }
 
   get canManageStudents() {

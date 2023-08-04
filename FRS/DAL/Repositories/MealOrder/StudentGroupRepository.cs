@@ -79,13 +79,43 @@ namespace DAL.Repositories.MealOrder
             {
                 var f = await GetSingleOrDefaultAsync(e => e.Id == group.Id);
 
+                //check if meal session or type has been changed
+                if (f.Type != group.Type || f.MealSessionId != group.MealSessionId || 
+                    (f.DeliveryStartDate.HasValue && group.DeliveryStartDate.HasValue && f.DeliveryStartDate.Value.Date != group.DeliveryStartDate.Value.Date) || 
+                    (f.DeliveryEndDate.HasValue && group.DeliveryEndDate.HasValue && f.DeliveryEndDate.Value.Date != group.DeliveryEndDate.Value.Date))
+                {
+                    //delete orders and meal plans
+                    var orders = await _appContext.TokenOrders.Where(x => x.StudentGroupId == group.Id).ToListAsync();
+                    foreach (var order in orders)
+                    {
+                        order.IsActive = false;
+                        order.Status = "cancelled";
+                        order.CancelledOn = DateTime.Now;
+                        order.CancellationReason = "Student Group Meal Session, dates or Type were changed.";
+                        _appContext.TokenOrders.Update(order);
+                    }
+                }
+
                 var detailsToDelete = this._appContext.StudentGroupDetails.Where(x => x.StudentGroupId == f.Id);
 
                 this._appContext.StudentGroupDetails.RemoveRange(detailsToDelete);
 
                 if (groupDetails != null)
                 {
-                    groupDetails.ForEach(e =>
+                    //delete orders for students removed
+                    var orders = await _appContext.TokenOrders.Where(x => x.StudentGroupId == group.Id && x.IsActive && x.IsMealPlan &&
+                                        !groupDetails.Any(a => a.StudentId == x.ProfileId)).ToListAsync();
+                    foreach (var order in orders)
+                    {
+                        order.IsActive = false;
+                        order.Status = "cancelled";
+                        order.CancelledOn = DateTime.Now;
+                        order.CancellationReason = $"Student {order.ProfileId} was removed.";
+                        _appContext.TokenOrders.Update(order);
+                    }
+
+                    string invoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmssffffff");
+                    foreach (var e in groupDetails)
                     {
                         var sc = this._appContext.StudentGroupDetails.FirstOrDefault(x => x.Id == e.Id);
                         if (sc != null)
@@ -98,7 +128,62 @@ namespace DAL.Repositories.MealOrder
                         {
                             this._appContext.StudentGroupDetails.Add(e);
                         }
-                    });
+
+                        // create orders using meal plans
+                        var mealPlans = await _appContext.StudentGroupMealPlans.Where(x => x.StudentGroupId == group.Id && x.IsActive).ToListAsync();
+                        foreach (var mealPlan in mealPlans)
+                        {
+                            //check if student already has an existing order, skip
+                            var hasOrder = await _appContext.TokenOrders.AnyAsync(x => x.StudentGroupId == group.Id && x.ProfileId == e.StudentId && x.IsActive && x.IsMealPlan &&
+                                            x.DeliveryDate.Date == mealPlan.DeliveryDate.Date);
+
+                            if (hasOrder) continue;
+                            var order = new TokenOrder
+                            {
+                                DeliveryDate = mealPlan.DeliveryDate.Date,
+                                TransactionTime = DateTime.Now,
+                                MealSessionDetailId = mealPlan.MealSessionDetailId,
+                                ProfileId = e.StudentId,
+                                Status = "paid",
+                                StoreId = mealPlan.StoreId,
+                                StudentGroupId = group.Id,
+                                TotalAmount = mealPlan.Price,
+                                TotalPayment = mealPlan.Price,
+                                IsMealPlan = true,
+                                Tokens = new List<TokenOrdered>
+                                {
+                                    new TokenOrdered
+                                    {
+                                        TokenId = mealPlan.MealTypeId.Value,
+                                        Qty = 1,
+                                        TokenDesc = mealPlan.Label,
+                                        SelectedDishes = new List<TokenOrderDish>
+                                        {
+                                                new TokenOrderDish
+                                                {
+                                                    DishId = mealPlan.DishId,
+                                                    Qty = 1
+                                                }
+                                        }
+                                    }
+                                }
+                            };
+
+                            var student = await _appContext.Students.FirstOrDefaultAsync(x => x.Id == e.StudentId);
+                            var payment = new Payment
+                            {
+                                StudentId = order.ProfileId,
+                                email = student?.Email,
+                                subtotal = (decimal)order.TotalAmount,
+                                total = (decimal)order.TotalAmount,
+                                InvoiceNumber = invoiceNumber,
+                                Status = "SUCCESS"
+                            };
+
+                            order.Payment = payment;
+                            await _appContext.TokenOrders.AddAsync(order);
+                        }
+                    }
                 }
 
                 f.CopyFrom(group);
@@ -108,7 +193,7 @@ namespace DAL.Repositories.MealOrder
                 {
                     result.Message = "Successfully saved!";
                     result.IsSuccess = true;
-                    result.Data = f;
+                    //result.Data = f;
 
                     scope.Complete();
                 }

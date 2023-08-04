@@ -4,14 +4,16 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230801204518_added_studentgroup_cols")]
+    partial class added_studentgroup_cols
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5607,23 +5609,15 @@ namespace FRS.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<DateTime?>("DeliveryEndDate");
-
-                    b.Property<DateTime?>("DeliveryStartDate");
-
                     b.Property<DateTime?>("EndDate");
 
                     b.Property<bool>("IsActive");
 
                     b.Property<bool>("IsPublished");
 
-                    b.Property<int?>("MealSessionId");
-
                     b.Property<string>("Name");
 
                     b.Property<int?>("OutletId");
-
-                    b.Property<float>("Price");
 
                     b.Property<DateTime?>("StartDate");
 
@@ -5636,8 +5630,6 @@ namespace FRS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedBy");
-
-                    b.HasIndex("MealSessionId");
 
                     b.HasIndex("OutletId");
 
@@ -5689,23 +5681,11 @@ namespace FRS.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<DateTime>("DeliveryDate");
-
                     b.Property<int>("DishId");
 
                     b.Property<bool>("IsActive");
 
-                    b.Property<string>("Label");
-
-                    b.Property<int>("MealSessionDetailId");
-
                     b.Property<int>("MealSessionId");
-
-                    b.Property<int?>("MealTypeId");
-
-                    b.Property<float>("Price");
-
-                    b.Property<int?>("StoreId");
 
                     b.Property<int>("StudentGroupId");
 
@@ -5719,9 +5699,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("DishId");
 
-                    b.HasIndex("MealSessionDetailId");
-
-                    b.HasIndex("StoreId");
+                    b.HasIndex("MealSessionId");
 
                     b.HasIndex("StudentGroupId");
 
@@ -6020,8 +5998,6 @@ namespace FRS.Migrations
                     b.Property<bool>("IsActive");
 
                     b.Property<bool>("IsFAS");
-
-                    b.Property<bool>("IsMealPlan");
 
                     b.Property<int?>("MealSessionDetailId");
 
@@ -11658,10 +11634,6 @@ namespace FRS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedBy");
 
-                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealSession")
-                        .WithMany()
-                        .HasForeignKey("MealSessionId");
-
                     b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
                         .WithMany()
                         .HasForeignKey("OutletId");
@@ -11703,14 +11675,10 @@ namespace FRS.Migrations
                         .HasForeignKey("DishId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("DAL.Models.MealOrder.MealSessionDetail", "MealSessionDetail")
+                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealSession")
                         .WithMany()
-                        .HasForeignKey("MealSessionDetailId")
+                        .HasForeignKey("MealSessionId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DAL.Models.MealOrder.StoreInfo", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId");
 
                     b.HasOne("DAL.Models.MealOrder.StudentGroup", "StudentGroup")
                         .WithMany()

@@ -22,6 +22,19 @@ namespace DAL.Models.MealOrder
         public int? OutletId { get; set; }
 
         public string Type { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public bool IsPublished { get; set; }
+
+        public DateTime? DeliveryStartDate { get; set; }
+        public DateTime? DeliveryEndDate { get; set; }
+        public float Price { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        public int? MealSessionId { get; set; }
+
+        [ForeignKey("MealSessionId")]
+        public virtual MealSession MealSession { get; set; }
 
         [ForeignKey("OutletId")]
         public virtual Outlet Outlet { get; set; }

@@ -150,7 +150,6 @@ namespace BAL.Services
             {
                 result.Message = "Successfully saved!";
                 result.IsSuccess = true;
-                result.Data = f;
             }
             else
             {

@@ -17,6 +17,15 @@ namespace BAL.DTO.MealOrder
         public string Name { get; set; }
 
         public int? OutletId { get; set; }
+        public string Type { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public bool IsPublished { get; set; }
+        public DateTime? DeliveryStartDate { get; set; }
+        public DateTime? DeliveryEndDate { get; set; }
+        public int? MealSessionId { get; set; }
+        public string MealSessionName { get; set; }
+        public float Price { get; set; }
         public List<StudentGroupDetailDTO> Sgdetails { get; set; }
     }
 

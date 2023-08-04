@@ -367,5 +367,12 @@ export class MenuService {
 
     return this.commonEndpoint.get<any>(this.menuGroupUrl + '/activedishcycles?studentId=' + studentId);
   }
+  // meal plan
+  bulkMealPlanOrder(studentGroupId: string, outletId: string, storeId: string, deliveryDate: string, deliveryDateTo: string, dishTypeId: string, mealSessionId: string, createdBy: string, isClearOrder: boolean) {
+    return this.commonEndpoint.get<any>(`${this.tokenOrderUrl}/mealplan?studentGroupId=${studentGroupId}&outletId=${outletId}&storeId=${storeId}&deliveryDate=${deliveryDate}&deliveryDateTo=${deliveryDateTo}&dishTypeId=${dishTypeId}&mealSessionId=${mealSessionId}&createdBy=${createdBy}&clear=${isClearOrder}`);
+  }
 
+  getMealPlanSummary(studentGroupId: string, outletId: string, storeId: string, deliveryDate: string, deliveryDateTo: string, mealSessionId: string) {
+    return this.commonEndpoint.get<any>(`${this.tokenOrderUrl}/mealplan/ordersummary?studentGroupId=${studentGroupId}&outletId=${outletId}&storeId=${storeId}&deliveryDate=${deliveryDate}&deliveryDateTo=${deliveryDateTo}&mealSessionId=${mealSessionId}`);
+  }
 }

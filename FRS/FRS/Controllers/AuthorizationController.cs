@@ -523,7 +523,9 @@ namespace FRS.Controllers
             return Redirect("/changepassword");
         }
 
-        [HttpGet("logotp")]
+        [HttpGet("~/logotp")]
+        [HttpPost("~/logotp")]
+        [Produces("application/json")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> LogOtpAttempt(string username, bool isSuccessful)
         {

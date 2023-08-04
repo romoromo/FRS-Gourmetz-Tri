@@ -14,6 +14,7 @@ import { StudentGroupEditorComponent } from './student-group-editor.component';
 import { StudentService } from 'src/app/services/meal-order/student.service';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { TokenOrdersBulkManagementComponent } from './../token-order-bulk/token-orders-bulk-management.component';
+import { MealPlanSummaryComponent } from './meal-plan/meal-plans-summary.component';
 
 
 @Component({
@@ -201,6 +202,21 @@ export class StudentGroupsManagementComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       this.loadData();
     });
+  }
+
+  openMealPlanSummary(row) {
+    const dialogRef = this.dialog.open(MealPlanSummaryComponent, {
+      data: { header: "Meal Order", group: row, outletId: this.outletId },
+      width: '1200px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  }
+
+  getMealSessionName() {
+
   }
 
   get canManageStudents() {

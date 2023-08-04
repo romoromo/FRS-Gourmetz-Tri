@@ -42,6 +42,7 @@ namespace DAL.Models.MealOrder
         public string CancelRequestStatus { get; set; }
 
         public bool IsFAS { get; set; }
+        public bool IsMealPlan { get; set; }
 
         public DateTime? CollectionTime { get; set; }
 

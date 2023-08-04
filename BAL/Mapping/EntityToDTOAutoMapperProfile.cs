@@ -287,6 +287,7 @@ namespace BAL.Mapping
             CreateMap<StudentGroupDTO, StudentGroup>();
 
             CreateMap<StudentGroup, StudentGroupDTO>()
+                .ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSession.Name))
                 .ForMember(e => e.Sgdetails, map => map.MapFrom(e => e.Sgdetails.Where(f => f.IsActive).ToList()));
 
             CreateMap<StudentGroupDetailDTO, StudentGroupDetail>();
@@ -754,6 +755,9 @@ namespace BAL.Mapping
 
             CreateMap<UserOrderAlert, UserOrderAlertDTO>();
             CreateMap<UserOrderAlertDTO, UserOrderAlert>();
+
+            CreateMap<StudentGroupMealPlan, StudentGroupMealPlanDTO>();
+            CreateMap<StudentGroupMealPlanDTO, StudentGroupMealPlan>();
         }
     }
 }
