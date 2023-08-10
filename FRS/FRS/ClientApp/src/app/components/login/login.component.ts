@@ -148,25 +148,30 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.alertService.stopLoadingMessage();
             this.isLoading = false;
             this.reset();
-            this.authService.redirectForLogin2FA();
-            //if (this.connections.userHubConnection == null || this.connections.userHubConnection.state !== signalRCore.HubConnectionState.Connected) {
-            //  //this.connections.userHubConnection = this.authService.signalRConnection(`/hub/user?email=${user.email}&status=ONLINE`, true);
-            //  //let status = user.status ? user.status : 'ONLINE';
-            //  this.connections.userHubConnection = this.authService.signalRConnection(`${this.configurations.baseUrl}/hub/user?email=${user.email}`, true, this.connections.userHubConnection);
+            if (this.configurations.enableMFA) {
+              this.authService.redirectForLogin2FA();
+            } else {
+              if (this.connections.userHubConnection == null || this.connections.userHubConnection.state !== signalRCore.HubConnectionState.Connected) {
+                //this.connections.userHubConnection = this.authService.signalRConnection(`/hub/user?email=${user.email}&status=ONLINE`, true);
+                //let status = user.status ? user.status : 'ONLINE';
+                this.connections.userHubConnection = this.authService.signalRConnection(`${this.configurations.baseUrl}/hub/user?email=${user.email}`, true, this.connections.userHubConnection);
 
-            //}
+              }
 
-            //if (!this.isModal) {
-            //  this.alertService.showMessage("Login", `Welcome ${user.userName}!`, MessageSeverity.success);
-            //}
-            //else {
-            //  this.alertService.showMessage("Login", `Session for ${user.userName} restored!`, MessageSeverity.success);
-            //  setTimeout(() => {
-            //    this.alertService.showStickyMessage("Session Restored", "Please try your last operation again", MessageSeverity.default);
-            //  }, 500);
+              if (!this.isModal) {
+                this.alertService.showMessage("Login", `Welcome ${user.userName}!`, MessageSeverity.success);
+              }
+              else {
+                this.alertService.showMessage("Login", `Session for ${user.userName} restored!`, MessageSeverity.success);
+                setTimeout(() => {
+                  this.alertService.showStickyMessage("Session Restored", "Please try your last operation again", MessageSeverity.default);
+                }, 500);
 
-            //  this.closeModal();
-            //}
+                this.closeModal();
+              }
+            }
+            
+            
           }, 500);
         },
         error => {

@@ -35,6 +35,7 @@ export class ConfigurationService {
   public resetPasswordUrl = environment.resetPasswordUrl;
   public multifactorUrl = environment.multifactorUrl;
   public fallbackBaseUrl = "http://localhost";
+  public enableMFA = false;
 
   //***Specify default configurations here***
   public static readonly defaultLanguage: string = "en";
@@ -79,6 +80,7 @@ export class ConfigurationService {
         if (this.config) {
           this.baseUrl = this.config.baseUrl;
           this.domainUrl = this.config.domainUrl;
+          this.enableMFA = this.config.enableMFA;
         }
       });
   }

@@ -20,6 +20,8 @@ import { FormControl } from '@angular/forms';
 import { StudentSelectorComponent } from './student-selector/student-selector.component'
 import { MomentUtcDateAdapter } from 'src/app/helpers/moment-utc-adapter';
 import { MenuService } from 'src/app/services/meal-order/menu.service';
+import { FileService } from 'src/app/services/file.service';
+import { getBaseUrl } from 'src/app/app.module';
 
 export const CUSTOM_DATE_FORMAT = {
   parse: {
@@ -49,6 +51,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   private isSaving: boolean;
   private showValidationErrors: boolean = true;
   private editingStudentName: string;
+  public fileUploadResponse: { dbPath: '', fileId: null, fileName: '' };
   private groupEdit: StudentGroup = new StudentGroup();
   private allPermissions: Permission[] = [];
   private selectedValues: { [key: string]: boolean; } = {};
@@ -58,7 +61,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   private outletId;
   mealSessionDetails: any[] = [];
   mealSessions: any[] = [];
-
+  terms: number[] = [ 1, 2, 3, 4];
   start = new Date();
   end = new Date();
   original_type = '';
@@ -80,7 +83,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   private form;
 
   constructor(private alertService: AlertService, private studentService: StudentService, private accountService: AccountService, private classService: ClassService,
-    private userService: UserService, private restrictionService: RestrictionService, private deliveryService: DeliveryService,
+    private fileService: FileService, private restrictionService: RestrictionService, private deliveryService: DeliveryService,
     public dialogRef: MatDialogRef<StudentGroupEditorComponent>, public dialog: MatDialog, private menuService: MenuService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.outletId) != typeof (undefined)) {
@@ -386,6 +389,20 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
             MessageSeverity.error);
         })
+  }
+
+  public uploadFinished = (event) => {
+    this.fileUploadResponse = event;
+    this.groupEdit.filePath = this.fileUploadResponse ? this.fileUploadResponse.dbPath : null;
+    this.groupEdit.fileName = this.fileUploadResponse ? this.fileUploadResponse.fileName : null;
+  }
+
+  getFileImage(path) {
+    return this.fileService.getFile(path);
+  }
+
+  downloadFile() {
+    window.open(getBaseUrl() + '/gateway/Download/FileByPath?filePath=/' + encodeURIComponent(this.groupEdit.filePath), '_blank');
   }
 
   get canManageStudents() {

@@ -21,11 +21,11 @@ export class FileService extends EndpointFactory {
     super(http, configurations, injector);
   }
 
-  uploadFile<T>(data: any): Observable<T> {
+  uploadFile<T>(data: any, subDir: string = ''): Observable<T> {
 
-    return this.http.post<T>(this.fileApiUrl + '/upload', data, { reportProgress: true, observe: 'events' }).pipe<T>(
+    return this.http.post<T>(this.fileApiUrl + '/upload?subDir=' + subDir, data, { reportProgress: true, observe: 'events' }).pipe<T>(
       catchError(error => {
-        return this.handleError(error, () => this.uploadFile(data));
+        return this.handleError(error, () => this.uploadFile(data, subDir));
       }));
   }
 

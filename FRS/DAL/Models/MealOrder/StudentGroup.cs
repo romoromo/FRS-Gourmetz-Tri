@@ -29,6 +29,9 @@ namespace DAL.Models.MealOrder
         public DateTime? DeliveryStartDate { get; set; }
         public DateTime? DeliveryEndDate { get; set; }
         public float Price { get; set; }
+        public int Term { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]
         public int? MealSessionId { get; set; }

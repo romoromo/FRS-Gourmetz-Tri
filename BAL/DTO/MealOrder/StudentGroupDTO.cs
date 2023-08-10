@@ -26,6 +26,9 @@ namespace BAL.DTO.MealOrder
         public int? MealSessionId { get; set; }
         public string MealSessionName { get; set; }
         public float Price { get; set; }
+        public int Term { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
         public List<StudentGroupDetailDTO> Sgdetails { get; set; }
     }
 

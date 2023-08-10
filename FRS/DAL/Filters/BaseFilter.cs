@@ -44,6 +44,7 @@ namespace DAL.Filters
         public string InvoiceNumber { get; set; }
         public string OrderNumber { get; set; }
         public int? OutletId { get; set; }
+        public string Keyword { get; set; }
     }
 
     public class SalesOrderReportFilter : BaseFilter

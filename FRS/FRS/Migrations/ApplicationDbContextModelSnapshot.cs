@@ -4584,6 +4584,82 @@ namespace FRS.Migrations
                     b.ToTable("MenuGroupDishCycles");
                 });
 
+            modelBuilder.Entity("DAL.Models.MealOrder.OrderPortalBanner", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<int?>("ImageId");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<int>("Order");
+
+                    b.Property<int?>("OrderPortalContentId");
+
+                    b.Property<int?>("OutletId");
+
+                    b.Property<string>("Subtitle");
+
+                    b.Property<string>("Title");
+
+                    b.Property<int?>("UpdatedBy");
+
+                    b.Property<DateTime>("UpdatedDate");
+
+                    b.Property<string>("Url");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("ImageId");
+
+                    b.HasIndex("OrderPortalContentId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.ToTable("OrderPortalBanners");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.OrderPortalContent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Announcement");
+
+                    b.Property<int?>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<DateTime>("EffectiveDate");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<int?>("OutletId");
+
+                    b.Property<int?>("UpdatedBy");
+
+                    b.Property<DateTime>("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("OutletId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.ToTable("OrderPortalContents");
+                });
+
             modelBuilder.Entity("DAL.Models.MealOrder.Outlet", b =>
                 {
                     b.Property<int>("Id")
@@ -5615,6 +5691,10 @@ namespace FRS.Migrations
 
                     b.Property<DateTime?>("EndDate");
 
+                    b.Property<string>("FileName");
+
+                    b.Property<string>("FilePath");
+
                     b.Property<bool>("IsActive");
 
                     b.Property<bool>("IsPublished");
@@ -5628,6 +5708,8 @@ namespace FRS.Migrations
                     b.Property<float>("Price");
 
                     b.Property<DateTime?>("StartDate");
+
+                    b.Property<int>("Term");
 
                     b.Property<string>("Type");
 
@@ -11104,6 +11186,40 @@ namespace FRS.Migrations
                         .WithMany("MenuGroupDishCycles")
                         .HasForeignKey("MenuGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.OrderPortalBanner", b =>
+                {
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.File", "BannerImage")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
+                    b.HasOne("DAL.Models.MealOrder.OrderPortalContent", "OrderPortalContent")
+                        .WithMany("Banners")
+                        .HasForeignKey("OrderPortalContentId");
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.OrderPortalContent", b =>
+                {
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
+                        .WithMany()
+                        .HasForeignKey("OutletId");
 
                     b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
                         .WithMany()

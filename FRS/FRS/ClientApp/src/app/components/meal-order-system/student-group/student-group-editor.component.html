@@ -24,9 +24,13 @@
             <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="groupName" name="groupName" placeholder="Enter name" [(ngModel)]="groupEdit.name" #groupName="ngModel" required minlength="2" maxlength="200" />
             <mat-error *ngIf="showValidationErrors && f.submitted">Name is required</mat-error>
           </mat-form-field>
-          <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
-            <!--<mat-label>Price</mat-label>-->
-            <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="price" name="price" placeholder="Price" [(ngModel)]="groupEdit.price" #price="ngModel" required />
+          <mat-form-field class="col-md-6 col-xs-12">
+            <mat-label>Terms</mat-label>
+            <mat-select id="term" name="term" [(ngModel)]="groupEdit.term" #term="ngModel" required>
+              <mat-option *ngFor="let term of terms" [value]="term">
+                Semester {{term}}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
           <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
             <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [(ngModel)]="groupEdit.startDate" required [ngModelOptions]="{standalone: true}">
@@ -52,6 +56,10 @@
             <mat-datepicker-toggle matSuffix [for]="delvdateTopicker"></mat-datepicker-toggle>
             <mat-datepicker #delvdateTopicker></mat-datepicker>
           </mat-form-field>
+          <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+            <!--<mat-label>Price</mat-label>-->
+            <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="price" name="price" placeholder="Price" [(ngModel)]="groupEdit.price" #price="ngModel" required />
+          </mat-form-field>
           <mat-form-field class="col-sm-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
             <mat-label>Session</mat-label>
             <mat-select id="mealSessionId" name="mealSessionId" [(ngModel)]="groupEdit.mealSessionId" #mealSessionId="ngModel" required (selectionChange)="onMealSessionChange($event.value)">
@@ -60,6 +68,25 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+          <div class="col-md-6 col-xs-12">
+            <mat-label><h5>File</h5></mat-label>
+            <div *ngIf="canManageStudents">
+              <div>
+                <file-upload showTxt="false" subDir="StudentGroup" showFilename="false" (onUploadFinished)="uploadFinished($event)" [useOriginalFilename]="true"></file-upload>
+              </div>
+              <div class="col-md-6 text-center" *ngIf="groupEdit.filePath">
+                <span *ngIf="groupEdit.fileName">{{groupEdit.fileName}}</span>
+                <a *ngIf="canManageStudents" class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="downloadFile()"><i class="fa fa-download" aria-hidden="true"></i> Download</a>
+              </div>
+            </div>
+            <!--<div *ngIf="groupEdit.filePath" class="col-md-6" style="padding:10px; border: 1px dashed #808080;text-align:center">
+              <img [src]="getFileImage(groupEdit.filePath)" alt="icon" style="width:100px; height:100px;" />
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-6 text-center" *ngIf="groupEdit.filePath">
+              <a *ngIf="canManageStudents" class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="removePhoto()"><i class="fa fa-trash-o" aria-hidden="true"></i> Remove</a>
+            </div>-->
+          </div>
           <mat-checkbox class="col-sm-6 col-xs-12" [(ngModel)]="groupEdit.isPublished" id="isPublished"
                         name="isPublished" *ngIf="groupEdit.type == 'Meal Plan'">
             <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Publish</label>

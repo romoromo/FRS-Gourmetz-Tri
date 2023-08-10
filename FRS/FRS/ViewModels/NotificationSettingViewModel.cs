@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FRS.ViewModels
 {
-    public class NotificationSettingViewModel
+    public class NotificationSettingViewModel: Sanitizeable
     {
         public int Id { get; set; }
         public string Type { get; set; }

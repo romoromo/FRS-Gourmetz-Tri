@@ -141,6 +141,7 @@ namespace DAL
         private ITokenPaymentResponseRepository _tokenPaymentResponse;  //
         private MenuGroupRepository _menuGroups;
         private INotificationSettingRepository _notificationSetting;
+        private IOrderPortalContentRepository _orderPortalContents;
 
         public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory)
         {
@@ -1402,6 +1403,17 @@ namespace DAL
                     _notificationSetting = new NotificationSettingRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
 
                 return _notificationSetting;
+            }
+        }
+
+        public IOrderPortalContentRepository OrderPortalContents
+        {
+            get
+            {
+                if (_orderPortalContents == null)
+                    _orderPortalContents = new OrderPortalContentRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+
+                return _orderPortalContents;
             }
         }
 

@@ -148,6 +148,8 @@ import { UserRolesReportManagementComponent } from './components/reports/user-ro
 import { OrderCancellationReportManagementComponent } from './components/reports/order-cancellation/order-cancellations-management.component';
 import { NotificationSettingComponent } from './components/notification-setting/notification-settings.component';
 import { MultiFactorLoginComponent } from './components/multi-factor-login/multi-factor-login.component';
+import { OrderPortalContent } from './models/meal-order/order-portal-content.model';
+import { OrderPortalContentComponent } from './components/meal-order-system/order-portal-content/order-portal-contents.component';
 
  
 
@@ -308,6 +310,7 @@ const routes: Routes = [
       { path: "ordercancellation", component: OrderCancellationsManagementComponent, canActivate: [AuthGuard], data: { title: "Order Cancellation" } },
       { path: "ordercancellationreport", component: OrderCancellationReportManagementComponent, canActivate: [AuthGuard], data: { title: "Order Cancellation Report" } },
       { path: "notificationsettings", component: NotificationSettingComponent, canActivate: [AuthGuard], data: { title: "Notification Setting" } },
+      { path: "orderportalcontents", component: OrderPortalContentComponent, canActivate: [AuthGuard], data: { title: "Order Portal Content" } },
 
       //{ path: "display/:mac", redirectTo: "/display/:mac" },
       //{ path: "signinwithgoogle", redirectTo: "/authorization/SignInWithGoogle", pathMatch: "full" },

@@ -758,6 +758,14 @@ namespace BAL.Mapping
 
             CreateMap<StudentGroupMealPlan, StudentGroupMealPlanDTO>();
             CreateMap<StudentGroupMealPlanDTO, StudentGroupMealPlan>();
+
+            CreateMap<OrderPortalContent, OrderPortalContentDTO>();
+            CreateMap<OrderPortalContentDTO, OrderPortalContent>();
+
+            CreateMap<OrderPortalBanner, OrderPortalBannerDTO>()
+                .ForMember(e => e.FilePath, map => map.MapFrom(e => e.BannerImage != null && e.BannerImage != null ? e.BannerImage.Path : String.Empty));
+
+            CreateMap<OrderPortalBannerDTO, OrderPortalBanner>();
         }
     }
 }

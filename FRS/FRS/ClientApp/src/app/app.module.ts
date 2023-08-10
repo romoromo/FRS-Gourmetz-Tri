@@ -475,6 +475,8 @@ import { OrderCancellationReportManagementComponent } from './components/reports
 import { NotificationSettingComponent } from './components/notification-setting/notification-settings.component';
 import { MealPlanSummaryComponent } from './components/meal-order-system/student-group/meal-plan/meal-plans-summary.component';
 import { MultiFactorLoginComponent } from './components/multi-factor-login/multi-factor-login.component';
+import { OrderPortalContentComponent } from './components/meal-order-system/order-portal-content/order-portal-contents.component';
+import { OrderPortalService } from './services/order-portal.service';
  
  
 
@@ -695,7 +697,8 @@ export const configFactory = (configService: ConfigurationService) => {
     UserRolesReportManagementComponent,
     OrderCancellationReportManagementComponent,
     NotificationSettingComponent, MealPlanSummaryComponent,
-    MultiFactorLoginComponent
+    MultiFactorLoginComponent,
+    OrderPortalContentComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },
@@ -784,7 +787,8 @@ export const configFactory = (configService: ConfigurationService) => {
     ClassService, StudentService, UserService, StaffService, DeliveryService, RestrictionService,
     MealService, DishService, MenuService, PaymentService, EmailService,
     OrderService,
-    ReportService
+    ReportService,
+    OrderPortalService
   ],
   bootstrap: [RootAppComponent],
   exports: [CalendarComponent, CalendarHeaderComponent, BookingComponent, CalendarLandingPageComponent, MenuPanelComponent, SubMenuPanelComponent],
@@ -865,7 +869,8 @@ export const configFactory = (configService: ConfigurationService) => {
     UserRolesReportManagementComponent,
     OrderCancellationReportManagementComponent,
     NotificationSettingComponent, MealPlanSummaryComponent,
-    MultiFactorLoginComponent
+    MultiFactorLoginComponent,
+    OrderPortalContentComponent
   ],
 })
 export class AppModule {

@@ -162,9 +162,9 @@ namespace BAL.Services.MealOrder
         #endregion
 
         #region Meal Plan
-        public async Task<List<GroupedStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime orderDate)
+        public async Task<List<GroupedStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime orderDate, int term)
         {
-            var mealPlans =  Mapper.Map<List<StudentGroupMealPlanDTO>>(await this._uow.TokenOrders.GetStudentMealPlansAsync(studentId, orderDate));
+            var mealPlans =  Mapper.Map<List<StudentGroupMealPlanDTO>>(await this._uow.TokenOrders.GetStudentMealPlansAsync(studentId, orderDate, term));
             return mealPlans.GroupBy(e => e.StudentGroupId).Select(e => new GroupedStudentGroupMealPlanDTO
             {
                 StudentGroupId = e.Key,

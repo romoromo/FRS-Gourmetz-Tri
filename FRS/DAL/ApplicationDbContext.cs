@@ -252,6 +252,8 @@ namespace DAL
         public DbSet<DishComponent> DishComponents { get; set; }
         public DbSet<NotificationSetting> NotificationSettings { get; set; }
         public DbSet<StudentGroupMealPlan> StudentGroupMealPlans { get; set; }
+        public DbSet<OrderPortalContent> OrderPortalContents { get; set; }
+        public DbSet<OrderPortalBanner> OrderPortalBanners { get; set; }
 
         #region Stored Procedures
 
@@ -590,7 +592,9 @@ namespace DAL
             builder.Entity<MenuGroupClass>().TrackAllProperties();
             builder.Entity<DishComponent>().TrackAllProperties();
             builder.Entity<StudentGroupMealPlan>().TrackAllProperties();
-            
+            builder.Entity<OrderPortalContent>().TrackAllProperties();
+            builder.Entity<OrderPortalBanner>().TrackAllProperties();
+
             #endregion
 
         }

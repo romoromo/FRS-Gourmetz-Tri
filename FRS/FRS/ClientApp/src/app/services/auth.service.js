@@ -29,8 +29,18 @@ var AuthService = /** @class */ (function () {
         this._loginStatus = new rxjs_1.Subject();
         this.initializeLoginStatus();
     }
+    Object.defineProperty(AuthService.prototype, "isEnableMFA", {
+        get: function () { return this.configurations.enableMFA; },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(AuthService.prototype, "loginUrl", {
         get: function () { return this.configurations.loginUrl; },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(AuthService.prototype, "login2FAUrl", {
+        get: function () { return this.configurations.multifactorUrl; },
         enumerable: false,
         configurable: true
     });
@@ -87,6 +97,14 @@ var AuthService = /** @class */ (function () {
         this.registerRedirectUrl = this.router.url;
         this.router.navigate([this.registerUrl]);
     };
+    AuthService.prototype.redirectForLogin2FA = function () {
+        this.loginRedirectUrl = this.router.url;
+        this.router.navigate([this.login2FAUrl]);
+    };
+    AuthService.prototype.redirectToHome = function () {
+        this.loginRedirectUrl = this.router.url;
+        this.router.navigate([this.homeUrl]);
+    };
     AuthService.prototype.reLogin = function () {
         this.localStorage.deleteData(db_Keys_1.DBkeys.TOKEN_EXPIRES_IN);
         if (this.reLoginDelegate) {
@@ -107,6 +125,10 @@ var AuthService = /** @class */ (function () {
             this.logout();
         return this.endpointFactory.getLoginEndpoint(userName, password, institutionCode, 'false', isAD).pipe(operators_1.map(function (response) { return _this.processLoginResponse(response, rememberMe); }));
     };
+    AuthService.prototype.login2FA = function (userId, code) {
+        var _this = this;
+        return this.endpointFactory.getLogin2FAEndpoint(userId, code).pipe(operators_1.map(function (response) { return _this.processLogin2FAResponse(response); }));
+    };
     AuthService.prototype.loginExternal = function (userName) {
         var _this = this;
         return this.endpointFactory.getLoginEndpoint(userName, null, null, 'true').pipe(operators_1.map(function (response) { return _this.processLoginResponse(response, false); }));
@@ -120,6 +142,15 @@ var AuthService = /** @class */ (function () {
         if (this.isLoggedIn)
             this.logout();
         return this.endpointFactory.getResetPasswordEndpoint(resetPassword);
+    };
+    AuthService.prototype.processLogin2FAResponse = function (response) {
+        if (!response.validated)
+            throw new Error("Invalid code");
+        var user = this.getCurrentUser(true);
+        user.last2FAValidatedTime = (new Date()).toString();
+        this.localStorage.savePermanentData(user, db_Keys_1.DBkeys.CURRENT_USER);
+        this.reevaluateLoginStatus(user);
+        return user;
     };
     AuthService.prototype.processLoginResponse = function (response, rememberMe) {
         var accessToken = response.access_token;
@@ -140,6 +171,7 @@ var AuthService = /** @class */ (function () {
             this.configurations.import(decodedIdToken.configuration);
         var user = new user_model_1.User(decodedIdToken.sub, decodedIdToken.name, decodedIdToken.fullname, decodedIdToken.email, decodedIdToken.jobtitle, decodedIdToken.phone, Array.isArray(decodedIdToken.role) ? decodedIdToken.role : [decodedIdToken.role], decodedIdToken.institutionId);
         user.isEnabled = true;
+        user.last2FAValidatedTime = null;
         this.saveUserDetails(user, permissions, accessToken, idToken, refreshToken, accessTokenExpiry, rememberMe);
         this.reevaluateLoginStatus(user);
         return user;
@@ -181,8 +213,16 @@ var AuthService = /** @class */ (function () {
     };
     AuthService.prototype.reevaluateLoginStatus = function (currentUser) {
         var _this = this;
+        var d = new Date();
+        d.setMinutes(d.getMinutes() - 5); //5 minutes ago
         var user = currentUser || this.localStorage.getDataObject(db_Keys_1.DBkeys.CURRENT_USER);
-        var isLoggedIn = user != null;
+        var isLoggedIn = false;
+        if (this.isEnableMFA) {
+            isLoggedIn = user != null && user.last2FAValidatedTime && (new Date(user.last2FAValidatedTime) > d);
+        }
+        else {
+            isLoggedIn = user != null;
+        }
         if (this.previousIsLoggedInCheck != isLoggedIn) {
             setTimeout(function () {
                 _this._loginStatus.next(isLoggedIn);
@@ -192,6 +232,12 @@ var AuthService = /** @class */ (function () {
     };
     AuthService.prototype.getLoginStatusEvent = function () {
         return this._loginStatus.asObservable();
+    };
+    AuthService.prototype.getCurrentUser = function (skipEvaluation) {
+        var user = this.localStorage.getDataObject(db_Keys_1.DBkeys.CURRENT_USER);
+        if (!skipEvaluation)
+            this.reevaluateLoginStatus(user);
+        return user;
     };
     Object.defineProperty(AuthService.prototype, "currentUser", {
         get: function () {
@@ -255,7 +301,8 @@ var AuthService = /** @class */ (function () {
     });
     Object.defineProperty(AuthService.prototype, "isLoggedIn", {
         get: function () {
-            return this.currentUser != null;
+            return this.isEnableMFA ? this.currentUser != null && typeof (this.currentUser.last2FAValidatedTime) != typeof (undefined)
+                : this.currentUser != null;
         },
         enumerable: false,
         configurable: true
@@ -276,19 +323,24 @@ var AuthService = /** @class */ (function () {
         //}
         //else {
         if (this.currentUser != null || skipAuth) {
-            if (!connection && !currentConnection) {
-                connection = new coreSignalR.HubConnectionBuilder()
-                    .withUrl(url, {
-                    transport: coreSignalR.HttpTransportType.WebSockets | coreSignalR.HttpTransportType.LongPolling
-                })
-                    .configureLogging(coreSignalR.LogLevel.Trace)
-                    .configureLogging({
-                    log: function (logLevel, message) {
-                        //console.log(logLevel);
-                        console.log(url + " - " + new Date().toISOString() + ": " + message);
-                    }
-                })
-                    .build();
+            if (!connection) {
+                if (!currentConnection) {
+                    connection = new coreSignalR.HubConnectionBuilder()
+                        .withUrl(url, {
+                        transport: coreSignalR.HttpTransportType.WebSockets | coreSignalR.HttpTransportType.LongPolling
+                    })
+                        .configureLogging(coreSignalR.LogLevel.Trace)
+                        .configureLogging({
+                        log: function (logLevel, message) {
+                            //console.log(logLevel);
+                            console.log(url + " - " + new Date().toISOString() + ": " + message);
+                        }
+                    })
+                        .build();
+                }
+                else {
+                    connection = currentConnection;
+                }
             }
             this.connections[url] = connection;
         }

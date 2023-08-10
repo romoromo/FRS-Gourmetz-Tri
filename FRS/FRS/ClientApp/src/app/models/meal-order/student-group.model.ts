@@ -17,6 +17,9 @@ export class StudentGroup {
   public mealSessionId: string;
   public deliveryStartDate?: Date;
   public deliveryEndDate?: Date;
+  public term: string;
+  public fileName: string;
+  public filePath: string;
   public sgdetails: StudentGroupDetail[];
 }
 

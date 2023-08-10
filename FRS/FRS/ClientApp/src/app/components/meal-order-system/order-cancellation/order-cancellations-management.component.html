@@ -3,34 +3,39 @@
     <h3>Order Cancellation</h3>
   </header>
   <div class="row control-box">
-    <div class="col-xs-12 col-sm-3">
-      <mat-form-field class="col-xs-12">
+    
+      <mat-form-field class="col-xs-12 col-sm-3">
+        <input matInput autocomplete="off" type="text" id="keyword" name="keyword" placeholder="Student Name/Email"
+               [(ngModel)]="filter.keyword" #keyword="ngModel" />
+      </mat-form-field>
+    
+      <mat-form-field class="col-xs-12 col-sm-3">
         <input matInput autocomplete="off" type="text" id="invNo" name="invNo" placeholder="Invoice No."
                [(ngModel)]="filter.invoiceNumber" #invNo="ngModel" />
       </mat-form-field>
-    </div>
-    <div class="col-xs-12 col-sm-3">
-      <mat-form-field class="col-xs-12">
+    
+      <mat-form-field class="col-xs-12 col-sm-3">
         <input matInput autocomplete="off" type="text" id="orderNo" name="orderNo" placeholder="Order No."
                [(ngModel)]="filter.orderNumber" #orderNo="ngModel" />
       </mat-form-field>
-    </div>
-    <div class="col-xs-6 col-sm-4 col-md-2">
-      <mat-form-field>
+    
+      <mat-checkbox [(ngModel)]="isFAS" class="col-xs-12 col-sm-3">
+        <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">FAS Only</label>
+      </mat-checkbox>
+      <div class="clearfix"></div>
+      <mat-form-field class="col-xs-12 col-sm-3">
         <input matInput [matDatepicker]="startpicker" placeholder="Delivery Start Date" [value]="start"
                (dateChange)="onChangeDate('start', $event)">
         <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
         <mat-datepicker #startpicker></mat-datepicker>
       </mat-form-field>
-    </div>
-    <div class="col-xs-6 col-sm-4 col-md-2">
-      <mat-form-field>
+    
+      <mat-form-field class="col-xs-12 col-sm-3">
         <input matInput [matDatepicker]="endpicker" placeholder="Delivery End Date" [value]="end"
                (dateChange)="onChangeDate('end',$event)">
         <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
         <mat-datepicker #endpicker></mat-datepicker>
       </mat-form-field>
-    </div>
     <!--<div class="col-xs-6 col-sm-4 col-md-2">
     <mat-form-field>
       <mat-select name="status" [(ngModel)]="status" placeholder="Status">
@@ -40,11 +45,6 @@
       </mat-select>
     </mat-form-field>
   </div>-->
-    <div class="col-xs-6 col-sm-4 col-md-2">
-      <mat-checkbox [(ngModel)]="isFAS">
-        <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">FAS Only</label>
-      </mat-checkbox>
-    </div>
     <div class="col-xs-12 col-sm-12 col-md-3" style="padding-bottom:10px;">
       <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
       <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>

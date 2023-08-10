@@ -50,6 +50,7 @@ export class OrderCancellationFilter extends Filter {
   public invoiceNumber: string;
   public orderNumber: string;
   public outletId: string;
+  public keyword: string;
 }
 
 export class SalesOrderReportFilter extends Filter {

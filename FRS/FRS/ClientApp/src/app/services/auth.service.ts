@@ -19,6 +19,7 @@ import { connect } from 'tls';
 @Injectable()
 export class AuthService {
 
+  public get isEnableMFA() { return this.configurations.enableMFA; }
   public get loginUrl() { return this.configurations.loginUrl; }
   public get login2FAUrl() { return this.configurations.multifactorUrl; }
   public get homeUrl() { return this.configurations.homeUrl; }
@@ -274,7 +275,13 @@ export class AuthService {
     d.setMinutes(d.getMinutes() - 5); //5 minutes ago
 
     let user = currentUser || this.localStorage.getDataObject<User>(DBkeys.CURRENT_USER);
-    let isLoggedIn = user != null && user.last2FAValidatedTime && (new Date(user.last2FAValidatedTime) > d);
+    let isLoggedIn = false;
+    if (this.isEnableMFA) {
+      isLoggedIn = user != null && user.last2FAValidatedTime && (new Date(user.last2FAValidatedTime) > d);
+    }
+    else {
+      isLoggedIn = user != null;
+    }
 
     if (this.previousIsLoggedInCheck != isLoggedIn) {
       setTimeout(() => {
@@ -347,7 +354,8 @@ export class AuthService {
   }
 
   get isLoggedIn(): boolean {
-    return this.currentUser != null && typeof (this.currentUser.last2FAValidatedTime) != typeof (undefined);
+    return this.isEnableMFA ? this.currentUser != null && typeof (this.currentUser.last2FAValidatedTime) != typeof (undefined)
+      : this.currentUser != null;
   }
 
   get rememberMe(): boolean {

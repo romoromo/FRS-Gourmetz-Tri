@@ -21,7 +21,9 @@ var ConfigurationService = /** @class */ (function () {
         this.loginUrl = environment_1.environment.loginUrl;
         this.registerUrl = environment_1.environment.registerUrl;
         this.resetPasswordUrl = environment_1.environment.resetPasswordUrl;
+        this.multifactorUrl = environment_1.environment.multifactorUrl;
         this.fallbackBaseUrl = "http://localhost";
+        this.enableMFA = false;
         //***End of defaults***  
         this._language = null;
         this._homeUrl = null;
@@ -50,6 +52,7 @@ var ConfigurationService = /** @class */ (function () {
             if (_this.config) {
                 _this.baseUrl = _this.config.baseUrl;
                 _this.domainUrl = _this.config.domainUrl;
+                _this.enableMFA = _this.config.enableMFA;
             }
         });
     };

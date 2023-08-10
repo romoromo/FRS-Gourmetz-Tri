@@ -89,6 +89,6 @@ namespace BAL.Services.Interfaces.MealOrder
 
         Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear);
         Task<MealPlanTokenOrderSummaryDTO> GetMealPlanOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetailDTO> mealSessionDetailsDto);
-        Task<List<GroupedStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime orderDate);
+        Task<List<GroupedStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime orderDate, int term);
     }
 }

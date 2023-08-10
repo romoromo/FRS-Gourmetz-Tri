@@ -122,6 +122,7 @@ namespace DAL
         IContactUsDetailRepository ContactUsDetails { get; }
         INotificationEventRepository NotificationEvents { get; }
         ICancelOrderRequestRepository CancelOrderRequests { get; }
+        IOrderPortalContentRepository OrderPortalContents { get; }
         int? CurrentUserId { get; set; }
         int? CurrentInstitutionId { get; }
 

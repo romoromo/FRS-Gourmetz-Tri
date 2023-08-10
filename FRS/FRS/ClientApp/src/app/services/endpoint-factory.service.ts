@@ -6,6 +6,7 @@ import { mergeMap, switchMap, catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ConfigurationService } from './configuration.service';
 import { ResetPassword } from '../models/user-login.model';
+import { param } from 'jquery';
 
 @Injectable()
 export class EndpointFactory {
@@ -65,9 +66,11 @@ export class EndpointFactory {
       .append('institutionCode', institutionCode)
       .append('isAD', isAD.toString())
       .append('needConfirmationCode', "true")
-      .append('mfa', "true")
       .append('scope', 'openid email phone profile offline_access roles');
 
+    if (this.configurations.enableMFA) {
+      params.append('mfa', "true");
+    }
     let requestBody = params.toString();
 
     return this.http.post<T>(this.loginUrl, requestBody, { headers: header });

@@ -28,7 +28,7 @@ namespace FRS.Controllers
         }
 
         [HttpPost("upload"), DisableRequestSizeLimit]
-        public IActionResult Upload()
+        public async Task<IActionResult> Upload(string subdir = null)
         {
             try
             {
@@ -37,7 +37,15 @@ namespace FRS.Controllers
                 bool useOriginalFilename = false;
                 bool.TryParse(useOriginalFilenameVal, out useOriginalFilename);
                 var folderName = Path.Combine("Resources", "Images");
+                if (!string.IsNullOrEmpty(subdir))
+                {
+                    folderName = Path.Combine(folderName, subdir);
+                }
+
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                if (!Directory.Exists(pathToSave))
+                    Directory.CreateDirectory(pathToSave);
 
                 if (file.Length > 0)
                 {
@@ -55,7 +63,7 @@ namespace FRS.Controllers
 
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
-                        file.CopyTo(stream);
+                        await file.CopyToAsync(stream);
                     }
 
                     return Ok(new { dbPath, fileName, originalFileName });

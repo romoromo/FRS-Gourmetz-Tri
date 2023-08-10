@@ -34,6 +34,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdateOrderCancelRequestStatus(int orderId, string status);
         Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear);
         Task<MealPlanTokenOrderSummaryDTO> GetMealPlanOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails);
-        Task<List<StudentGroupMealPlan>> GetStudentMealPlansAsync(int studentId, DateTime orderDate);
+        Task<List<StudentGroupMealPlan>> GetStudentMealPlansAsync(int studentId, DateTime orderDate, int term);
     }
 }

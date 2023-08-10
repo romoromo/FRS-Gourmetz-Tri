@@ -7,6 +7,7 @@ using DAL.Core.Helpers;
 using DAL.Models;
 using DAL.Models.MealOrder;
 using FRS.Helpers;
+using FRS.ViewModels.MealOrder;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Linq;
 using ServiceModels;
@@ -713,6 +714,9 @@ namespace FRS.ViewModels
             CreateMap<NotificationEventViewModel, NotificationEventDTO>();
 
             CreateMap<NotificationSettingViewModel, NotificationSettingDTO>();
+
+            CreateMap<OrderPortalContentViewModel, OrderPortalContentDTO>();
+            CreateMap<OrderPortalBannerViewModel, OrderPortalBannerDTO>();
         }
     }
 }

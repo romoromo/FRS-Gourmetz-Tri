@@ -19,6 +19,7 @@ var EndpointFactory = /** @class */ (function () {
         this.configurations = configurations;
         this.injector = injector;
         this._loginUrl = "/connect/token";
+        this._login2FAUrl = "/login/multi-fa";
         this._forgotPasswordUrl = "/api/account/forgotpassword";
         this._resetPasswordUrl = "/api/account/resetpassword";
     }
@@ -35,6 +36,11 @@ var EndpointFactory = /** @class */ (function () {
     });
     Object.defineProperty(EndpointFactory.prototype, "resetPasswordUrl", {
         get: function () { return this.configurations.baseUrl + this._resetPasswordUrl; },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EndpointFactory.prototype, "login2FAUrl", {
+        get: function () { return this.configurations.baseUrl + this._login2FAUrl; },
         enumerable: false,
         configurable: true
     });
@@ -70,9 +76,21 @@ var EndpointFactory = /** @class */ (function () {
             .append('isExternalLogin', isExternalLogin)
             .append('institutionCode', institutionCode)
             .append('isAD', isAD.toString())
+            .append('needConfirmationCode', "true")
             .append('scope', 'openid email phone profile offline_access roles');
+        if (this.configurations.enableMFA) {
+            params.append('mfa', "true");
+        }
         var requestBody = params.toString();
         return this.http.post(this.loginUrl, requestBody, { headers: header });
+    };
+    EndpointFactory.prototype.getLogin2FAEndpoint = function (userId, code) {
+        var header = new http_1.HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
+        var params = new http_1.HttpParams()
+            .append('userId', userId)
+            .append('code', code);
+        var requestBody = params.toString();
+        return this.http.post(this.login2FAUrl, requestBody, { headers: header });
     };
     EndpointFactory.prototype.getRefreshLoginEndpoint = function () {
         var _this = this;

@@ -61,6 +61,7 @@ using Microsoft.AspNetCore.DataProtection;
 using WebSocketOptions = Microsoft.AspNetCore.Builder.WebSocketOptions;
 using OpenIddict.Validation;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using FRS.ViewModels.MealOrder;
 
 namespace FRS
 {
@@ -706,11 +707,15 @@ namespace FRS
 
             app.UseAuthentication();
             //Sanitize models
-            app.UseMiddleware<SanitizeMiddleware<NotificationSettingViewModel>>();
+            app.UseMiddleware<SanitizeMiddleware<Sanitizeable>>();
+            //app.UseMiddleware<SanitizeMiddleware<OrderPortalContentViewModel>>();
+            //app.UseMiddleware<SanitizeMiddleware<OrderPortalBannerViewModel>>();
             app.UseMiddleware<AntiXssMiddleware>();
 
             //Desanitize models after xss checking
-            app.UseMiddleware<DesanitizeMiddleware<NotificationSettingViewModel>>();
+            app.UseMiddleware<DesanitizeMiddleware<Sanitizeable>>();
+            //app.UseMiddleware<DesanitizeMiddleware<OrderPortalContentViewModel>>();
+            //app.UseMiddleware<DesanitizeMiddleware<OrderPortalBannerViewModel>>();
 
             app.UseMiddleware<ExceptionMiddleware>();
             /* Uncomment if cookie affinity doesn't fix the issue

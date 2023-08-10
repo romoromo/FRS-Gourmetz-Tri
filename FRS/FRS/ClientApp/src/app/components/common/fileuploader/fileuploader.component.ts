@@ -21,6 +21,8 @@ export class FileUploadComponent implements OnInit {
   @Input() btnClassContainer: string;
   @Input() fileName: string;
   @Input() useOriginalFilename: string;
+  @Input() showFilename: boolean;
+  @Input() subDir: string;
 
   constructor(private http: HttpClient, private fileService: FileService) { }
 
@@ -50,14 +52,14 @@ export class FileUploadComponent implements OnInit {
     formData.append('file', fileToUpload, name);
     
 
-    this.fileService.uploadFile<HttpEvent<Object>>(formData)
+    this.fileService.uploadFile<HttpEvent<Object>>(formData, this.subDir)
       .subscribe(event => {
         if (event.type === HttpEventType.UploadProgress)
           this.progress = Math.round(100 * event.loaded / event.total);
         else if (event.type === HttpEventType.Response) {
           this.message = 'Upload success.';
-          //var fileUploadResponse: any = event.body;
-          //this.filename = fileUploadResponse.fileName;
+          var fileUploadResponse: any = event.body;
+          this.filename = fileUploadResponse.fileName;
           this.onUploadFinished.emit(event.body);
           if (this.resetAfterUpload) {
             this.reset();

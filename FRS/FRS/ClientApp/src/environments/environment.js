@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.environment = void 0;
 exports.environment = {
     production: true,
-    baseUrl: '',
+    baseUrl: 'https://uat.tappeemeals.com/gateway',
     //baseUrl: 'http://localhost:53334/gateway',
     loginUrl: "/login",
     registerUrl: "/register",

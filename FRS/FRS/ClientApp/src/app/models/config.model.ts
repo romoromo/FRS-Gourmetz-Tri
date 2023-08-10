@@ -10,4 +10,5 @@ export class Config {
   public registerUrl: string;
   public resetPasswordUrl: string;
   public domainUrl: string;
+  public enableMFA: boolean;
 }
