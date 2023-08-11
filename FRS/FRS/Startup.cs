@@ -521,6 +521,7 @@ namespace FRS
             services.AddScoped<IDishService, DishService>();
             services.AddScoped<IMenuService, MenuService>();
             services.AddScoped<IDeliveryService, DeliveryService>();
+            services.AddScoped<IOrderPortalService, OrderPortalService>();
 
             #endregion
         }

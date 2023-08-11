@@ -26,9 +26,9 @@
           </mat-form-field>
           <mat-form-field class="col-md-6 col-xs-12">
             <mat-label>Terms</mat-label>
-            <mat-select id="term" name="term" [(ngModel)]="groupEdit.term" #term="ngModel" required>
-              <mat-option *ngFor="let term of terms" [value]="term">
-                Semester {{term}}
+            <mat-select id="outletTermId" name="outletTermId" [(ngModel)]="groupEdit.outletTermId" #outletTermId="ngModel" required>
+              <mat-option *ngFor="let term of terms" [value]="term.id">
+                {{term.label}}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -80,17 +80,20 @@
               </div>
             </div>
             <!--<div *ngIf="groupEdit.filePath" class="col-md-6" style="padding:10px; border: 1px dashed #808080;text-align:center">
-              <img [src]="getFileImage(groupEdit.filePath)" alt="icon" style="width:100px; height:100px;" />
-            </div>
-            <div class="clearfix"></div>
-            <div class="col-md-6 text-center" *ngIf="groupEdit.filePath">
-              <a *ngIf="canManageStudents" class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="removePhoto()"><i class="fa fa-trash-o" aria-hidden="true"></i> Remove</a>
-            </div>-->
+      <img [src]="getFileImage(groupEdit.filePath)" alt="icon" style="width:100px; height:100px;" />
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-6 text-center" *ngIf="groupEdit.filePath">
+      <a *ngIf="canManageStudents" class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="removePhoto()"><i class="fa fa-trash-o" aria-hidden="true"></i> Remove</a>
+    </div>-->
           </div>
-          <mat-checkbox class="col-sm-6 col-xs-12" [(ngModel)]="groupEdit.isPublished" id="isPublished"
+          <mat-checkbox class="col-sm-3 col-xs-12" [(ngModel)]="groupEdit.isPublished" id="isPublished"
                         name="isPublished" *ngIf="groupEdit.type == 'Meal Plan'">
             <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Publish</label>
           </mat-checkbox>
+          <mat-form-field class="col-md-3 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+            <input matInput autocomplete="off" [disabled]="!canManageStudents" type="number" id="sequence" name="sequence" placeholder="Sequence" [(ngModel)]="groupEdit.sequence" #sequence="ngModel" required />
+          </mat-form-field>
         </div>
         <div class="col-xs-12" style="min-height:300px">
           <input matInput type="text" [hidden]="true" />

@@ -61,7 +61,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   private outletId;
   mealSessionDetails: any[] = [];
   mealSessions: any[] = [];
-  terms: number[] = [ 1, 2, 3, 4];
+  terms: number[] = []; //[ 1, 2, 3, 4];
   start = new Date();
   end = new Date();
   original_type = '';
@@ -96,6 +96,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
     }
 
     this.getStudents();
+    this.getTerms();
   }
 
   ngOnInit() {
@@ -122,6 +123,20 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
         error => {
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving students.\r\n"`,
             MessageSeverity.error);
+        })
+  }
+
+  getTerms() {
+    let filter = new Filter();
+    let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
+    filter.filters = f + '(IsActive)==true';
+    this.studentService.getOutletTermsByFilter(filter)
+      .subscribe(results => {
+        this.terms = results.pagedData;
+      },
+        error => {
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving record.\r\n"`,
+          //  MessageSeverity.error);
         })
   }
 

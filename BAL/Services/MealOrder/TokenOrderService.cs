@@ -162,14 +162,45 @@ namespace BAL.Services.MealOrder
         #endregion
 
         #region Meal Plan
-        public async Task<List<GroupedStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime orderDate, int term)
+        public async Task<List<GroupedTermStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime orderDate)
         {
-            var mealPlans =  Mapper.Map<List<StudentGroupMealPlanDTO>>(await this._uow.TokenOrders.GetStudentMealPlansAsync(studentId, orderDate, term));
-            return mealPlans.GroupBy(e => e.StudentGroupId).Select(e => new GroupedStudentGroupMealPlanDTO
+            var mealPlans =  Mapper.Map<List<StudentGroupMealPlanDTO>>(await this._uow.TokenOrders.GetStudentMealPlansAsync(studentId, orderDate));
+            //var grpMealPlans = mealPlans.GroupBy(e => e.StudentGroupId).Select(e => new GroupedStudentGroupMealPlanDTO
+            //{
+            //    StudentGroupId = e.Key,
+            //    StudentGroupName = e.First().StudentGroup.Name,
+            //    OutletTermId = e.First().StudentGroup.OutletTermId.GetValueOrDefault(),
+            //    TermName = e.First().StudentGroup.TermName,
+            //    Sequence = e.First().StudentGroup.Sequence,
+            //    Plans = e.OrderBy(x => x.StudentGroup.Sequence).ToList()
+            //}).ToList();
+
+            return mealPlans.GroupBy(e => e.StudentGroup.OutletTermId).Select(e => new GroupedTermStudentGroupMealPlanDTO
             {
-                StudentGroupId = e.Key,
-                StudentGroupName = e.First().StudentGroup.Name,
-                Meals = e.OrderBy(x => x.DeliveryDate).ToList()
+                OutletTermId = e.Key.Value,
+                TermName = e.First().StudentGroup.TermName,
+                Plans = e.Select(x => new StudentGroupDTO
+                {
+                    Code = x.StudentGroup.Code,
+                    DeliveryEndDate = x.StudentGroup.DeliveryEndDate,
+                    DeliveryStartDate = x.StudentGroup.DeliveryStartDate,
+                    Description = x.StudentGroup.Description,
+                    EndDate = x.StudentGroup.EndDate,
+                    FileName = x.StudentGroup.FileName,
+                    FilePath = x.StudentGroup.FilePath,
+                    Id = x.StudentGroup.Id,
+                    IsPublished = x.StudentGroup.IsPublished,
+                    MealSessionId = x.StudentGroup.MealSessionId,
+                    MealSessionName = x.StudentGroup.MealSessionName,
+                    Name = x.StudentGroup.Name,
+                    OutletId = x.StudentGroup.OutletId,
+                    OutletTermId = x.StudentGroup.OutletTermId,
+                    Price = x.StudentGroup.Price,
+                    Sequence = x.StudentGroup.Sequence,
+                    StartDate = x.StudentGroup.StartDate,
+                    TermName = x.StudentGroup.TermName,
+                    Type = x.StudentGroup.Type
+                }).Distinct(new StudentGroupIdEqualityComparer()).OrderBy(x => x.Sequence).ToList()
             }).ToList();
         }
 

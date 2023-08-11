@@ -29,6 +29,7 @@ namespace DAL.Models.MealOrder
         public virtual ICollection<MealSession> MealSessions { get; set; }
         public virtual ICollection<OutletMenuCycleSchedulePeriodMenu> OutletMenuCycleSchedulePeriodMenus { get; set; }
         public virtual ICollection<MenuCycle> MenuCycles { get; set; }
+        public virtual ICollection<OutletTerm> Terms { get; set; }
 
     }
 }

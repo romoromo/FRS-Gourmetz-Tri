@@ -262,6 +262,18 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        #region Sieved Outlet terms
+        public async Task<PagedEntity<OutletTerm>> GetOutletTermsAsync(BaseFilter filter)
+        {
+            IQueryable<OutletTerm> query = _appContext.OutletTerms;
+
+            var result = await this._sieveProcessor.GetPagedAsync(query, filter);
+
+            return result;
+        }
+
+
+        #endregion
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }

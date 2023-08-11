@@ -254,6 +254,7 @@ namespace DAL
         public DbSet<StudentGroupMealPlan> StudentGroupMealPlans { get; set; }
         public DbSet<OrderPortalContent> OrderPortalContents { get; set; }
         public DbSet<OrderPortalBanner> OrderPortalBanners { get; set; }
+        public DbSet<OutletTerm> OutletTerms { get; set; }
 
         #region Stored Procedures
 
@@ -594,6 +595,7 @@ namespace DAL
             builder.Entity<StudentGroupMealPlan>().TrackAllProperties();
             builder.Entity<OrderPortalContent>().TrackAllProperties();
             builder.Entity<OrderPortalBanner>().TrackAllProperties();
+            builder.Entity<OutletTerm>().TrackAllProperties();
 
             #endregion
 

@@ -52,5 +52,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<List<StudentDTO>> GetStudentsWithAbandonedCart1(int hoursLeft);
         Task<List<StudentDTO>> GetStudentsWithAbandonedCart2(int daysBeforeCutOff);
         Task<List<StudentOrderDTO>> GetStudentsWithOrdersNotCollected(int daysPassed);
+
+        Task<PagedEntity<OutletTermDTO>> GetOutletTermsAsync(BaseFilter filter);
     }
 }

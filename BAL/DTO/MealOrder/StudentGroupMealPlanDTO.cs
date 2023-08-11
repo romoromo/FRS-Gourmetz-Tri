@@ -28,10 +28,21 @@ namespace BAL.DTO.MealOrder
         public StoreInfoDTO Store { get; set; }
     }
 
+    public class GroupedTermStudentGroupMealPlanDTO
+    {
+        public int OutletTermId { get; set; }
+        public string TermName { get; set; }
+        public List<StudentGroupDTO> Plans { get; set; }
+    }
+
     public class GroupedStudentGroupMealPlanDTO
     {
         public int StudentGroupId { get; set; }
         public string StudentGroupName { get; set; }
-        public List<StudentGroupMealPlanDTO> Meals { get; set; }
+        public int OutletTermId { get; set; }
+        public string TermName { get; set; }
+        public int Sequence { get; set; }
+        public float Price { get; set; }
+        public List<StudentGroupMealPlanDTO> Plans { get; set; }
     }
 }

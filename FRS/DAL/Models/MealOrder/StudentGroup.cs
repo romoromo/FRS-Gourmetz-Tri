@@ -19,12 +19,21 @@ namespace DAL.Models.MealOrder
         public string Name { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]
+        public string Description { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
         public int? OutletId { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        public int? OutletTermId { get; set; }
 
         public string Type { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool IsPublished { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        public int Sequence { get; set; }
 
         public DateTime? DeliveryStartDate { get; set; }
         public DateTime? DeliveryEndDate { get; set; }
@@ -41,6 +50,10 @@ namespace DAL.Models.MealOrder
 
         [ForeignKey("OutletId")]
         public virtual Outlet Outlet { get; set; }
+
+        [ForeignKey("OutletTermId")]
+        public virtual OutletTerm OutletTerm { get; set; }
+
         public virtual ICollection<StudentGroupDetail> Sgdetails { get; set; }
     }
 }

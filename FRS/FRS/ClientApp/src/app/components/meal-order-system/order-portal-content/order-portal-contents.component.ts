@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Inject, Input } from '@angular/core';
 
 import { Filter } from 'src/app/models/sieve-filter.model';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -16,7 +16,8 @@ import { MAT_DIALOG_DATA } from '@angular/material';
 })
 export class OrderPortalContentComponent implements OnInit {
   orderPortalContent: any;
-  outletId: string;
+  @Input() outletId: string;
+  @Input() isHideHeader: boolean;
 
   constructor(private alertService: AlertService, private accountService: AccountService, public configurations: ConfigurationService,
     private orderPortalService: OrderPortalService, private sanitizer: DomSanitizer,

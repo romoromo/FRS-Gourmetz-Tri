@@ -24,9 +24,17 @@ export class StudentService {
   private readonly _voucherUrl: string = "/api/student/vouchers";
   get voucherUrl() { return this.configurations.baseUrl + this._voucherUrl; }
 
+  private readonly _outletTermUrl: string = "/api/student/outlets/terms";
+  get outletTermUrl() { return this.configurations.baseUrl + this._outletTermUrl; }
+
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
 
+  }
+
+  //outlet terms
+  getOutletTermsByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.outletTermUrl + '/sieve/list', filter);
   }
 
   //student level

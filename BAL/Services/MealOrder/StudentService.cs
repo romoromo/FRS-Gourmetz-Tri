@@ -436,5 +436,15 @@ namespace BAL.Services.MealOrder
             return Mapper.Map<List<VoucherDTO>>(svs.Select(a => a.Voucher));
         }
         #endregion
+
+        #region Outlet Terms
+
+        public async Task<PagedEntity<OutletTermDTO>> GetOutletTermsAsync(BaseFilter filter)
+        {
+            var result = Mapper.Map<PagedEntity<OutletTermDTO>>(await this._uow.StudentGroups.GetOutletTermsAsync(filter));
+            return result;
+        }
+
+        #endregion
     }
 }

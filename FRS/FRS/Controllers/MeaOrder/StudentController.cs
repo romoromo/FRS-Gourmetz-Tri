@@ -878,5 +878,24 @@ namespace FRS.Controllers
             return Ok(vouchers);
         }
         #endregion
+
+        #region Outlet Terms
+
+        #region Sieved
+        [ApiKeyAuthorize]
+        [HttpGet("outlets/terms/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllStudentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetOutletTerms(BaseFilter filter)
+        {
+            var results = await this._service.GetOutletTermsAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<OutletTermDTO>>(results));
+        }
+
+        #endregion
+
+        #endregion
     }
 }
