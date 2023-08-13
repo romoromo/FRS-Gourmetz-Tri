@@ -216,7 +216,7 @@ namespace FRS.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetStudentMealPlan(int studentId, DateTime orderDate)
+        public async Task<IActionResult> GetStudentMealPlan(int studentId, DateTime? orderDate)
         {
             var dto = await this._service.GetStudentMealPlanAsync(studentId, orderDate);
             return Ok(dto);
@@ -1121,6 +1121,119 @@ namespace FRS.Controllers
                     return NotFound(id);
 
                 var result = await this._service.UpdatePackingAllocationAsync(model);
+                if (result.IsSuccess)
+                    return NoContent();
+
+                AddErrors(new string[] { result.Message });
+
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        #endregion
+
+        #region MealPlanOrders
+
+        #region Sieved
+        //[ApiKeyAuthorize]
+        [HttpGet("mealplanorders/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllStudentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetMealPlanOrders(BaseFilter filter)
+        {
+            var results = await this._service.GetMealPlanOrdersAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<MealPlanOrderDTO>>(results));
+        }
+
+        #endregion
+
+        [HttpGet("mealplanorders/get/{id}")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllStudentsPolicy)]
+        [ProducesResponseType(200, Type = typeof(MealPlanOrderDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetMealPlanOrder(int id)
+        {
+            var dto = await this._service.GetMealPlanOrderByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            return Ok(dto);
+        }
+
+        [HttpPost("mealplanorders")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllStudentsPolicy)]
+        [ProducesResponseType(201, Type = typeof(MealPlanOrderDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateMealPlanOrder([FromBody] MealPlanOrderDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                var result = await this._service.CreateMealPlanOrderAsync(dto);
+                if (result.IsSuccess)
+                {
+                    MealPlanOrderDTO vm = Mapper.Map<MealPlanOrderDTO>(result.Data);
+                    return CreatedAtAction("GetPAckingAllocationById", new { id = vm.Id }, vm);
+                }
+
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
+        [HttpDelete("mealplanorders/delete/{id}")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllStudentsPolicy)]
+        [ProducesResponseType(200, Type = typeof(MealPlanOrderDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteMealPlanOrder(int id)
+        {
+            var dto = await this._service.GetMealPlanOrderByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            var result = await this._service.DeleteMealPlanOrderAsync(id);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while deleting: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+        [HttpPut("mealplanorders/update/{id}")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllStudentsPolicy)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateMealPlanOrder(string id, [FromBody] MealPlanOrderDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model == null)
+                    return BadRequest($"{nameof(model)} cannot be null");
+
+                if (model.Id == 0)
+                    return BadRequest("Conflicting type id in parameter and model data");
+
+
+                var dto = await this._service.GetMealPlanOrderByIdAsync(model.Id);
+
+                if (dto == null)
+                    return NotFound(id);
+
+                var result = await this._service.UpdateMealPlanOrderAsync(model);
                 if (result.IsSuccess)
                     return NoContent();
 

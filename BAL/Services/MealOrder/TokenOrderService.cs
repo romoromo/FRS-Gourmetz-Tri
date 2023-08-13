@@ -162,7 +162,7 @@ namespace BAL.Services.MealOrder
         #endregion
 
         #region Meal Plan
-        public async Task<List<GroupedTermStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime orderDate)
+        public async Task<List<GroupedTermStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime? orderDate)
         {
             var mealPlans =  Mapper.Map<List<StudentGroupMealPlanDTO>>(await this._uow.TokenOrders.GetStudentMealPlansAsync(studentId, orderDate));
             //var grpMealPlans = mealPlans.GroupBy(e => e.StudentGroupId).Select(e => new GroupedStudentGroupMealPlanDTO
@@ -179,6 +179,8 @@ namespace BAL.Services.MealOrder
             {
                 OutletTermId = e.Key.Value,
                 TermName = e.First().StudentGroup.TermName,
+                DeliveryStartDate = e.First().StudentGroup.DeliveryStartDate,
+                DeliveryEndDate = e.First().StudentGroup.DeliveryEndDate,
                 Plans = e.Select(x => new StudentGroupDTO
                 {
                     Code = x.StudentGroup.Code,
@@ -356,18 +358,18 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> CreateMealAllocationAsync(MealAllocationDTO dto)
         {
             var result = new BaseOperationResponse();
-            var allocation = Mapper.Map<MealAllocation>(dto);
+            var order = Mapper.Map<MealAllocation>(dto);
             var tokens = Mapper.Map<List<TokenLabel>>(dto.tokens);
-            result = await this._uow.MealAllocations.CreateAsync(allocation, tokens);
+            result = await this._uow.MealAllocations.CreateAsync(order, tokens);
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateMealAllocationAsync(MealAllocationDTO dto)
         {
             var result = new BaseOperationResponse();
-            var allocation = Mapper.Map<MealAllocation>(dto);
+            var order = Mapper.Map<MealAllocation>(dto);
             var tokens = Mapper.Map<List<TokenLabel>>(dto.tokens);
-            result = await this._uow.MealAllocations.UpdateAsync(allocation, tokens);
+            result = await this._uow.MealAllocations.UpdateAsync(order, tokens);
             return result;
         }
 
@@ -415,6 +417,44 @@ namespace BAL.Services.MealOrder
         {
             var result = new BaseOperationResponse();
             result = await this._uow.PackingAllocations.DeleteAsync(id);
+            return result;
+        }
+
+        #endregion
+
+        #region MealPlanOrder
+
+        public async Task<PagedEntity<MealPlanOrderDTO>> GetMealPlanOrdersAsync(BaseFilter filter)
+        {
+            var result = Mapper.Map<PagedEntity<MealPlanOrderDTO>>(await this._uow.MealPlanOrders.GetMealPlanOrdersAsync(filter));
+            return result;
+        }
+
+        public async Task<MealPlanOrderDTO> GetMealPlanOrderByIdAsync(int id)
+        {
+            return Mapper.Map<MealPlanOrderDTO>(await this._uow.MealPlanOrders.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreateMealPlanOrderAsync(MealPlanOrderDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            var order = Mapper.Map<MealPlanOrder>(dto);
+            result = await this._uow.MealPlanOrders.CreateAsync(order);
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateMealPlanOrderAsync(MealPlanOrderDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            var order = Mapper.Map<MealPlanOrder>(dto);
+            result = await this._uow.MealPlanOrders.UpdateAsync(order);
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> DeleteMealPlanOrderAsync(int id)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.MealPlanOrders.DeleteAsync(id);
             return result;
         }
 

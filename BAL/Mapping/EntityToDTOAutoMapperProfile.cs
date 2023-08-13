@@ -334,6 +334,10 @@ namespace BAL.Mapping
             CreateMap<DishType, DishTypeDTO>();
             CreateMap<DishTypeDTO, DishType>();
 
+            CreateMap<MealPlanOrder, MealPlanOrderDTO>()
+                .ForMember(e => e.StudentGroupCode, map => map.MapFrom(f => f.StudentGroup.Code));
+            CreateMap<MealPlanOrderDTO, MealPlanOrder>();
+
             CreateMap<Cuisine, CuisineDTO>();
             CreateMap<CuisineDTO, Cuisine>();
 
@@ -700,6 +704,7 @@ namespace BAL.Mapping
             CreateMap<PaymentDTO, Payment>();
             CreateMap<Payment, PaymentDTO>()
                 .ForMember(d => d.TokenOrders, map => map.MapFrom(s => s.TokenOrders != null ? s.TokenOrders.Where(z => z.IsActive) : null))
+                .ForMember(d => d.MealPlanOrders, map => map.MapFrom(s => s.MealPlanOrders != null ? s.MealPlanOrders.Where(z => z.IsActive) : null))
                 .ForMember(e => e.userName, map => map.MapFrom(f => f.User.FriendlyName))
                 .ForMember(e => e.studentName, map => map.MapFrom(f => f.Student.Name));
 

@@ -1888,6 +1888,18 @@ namespace MealOrderPayments.Controllers
 
             }
 
+            foreach (var d in p.MealPlanOrders)
+            {
+                var label = d.StudentGroupCode;
+                var price = d.TotalAmount;
+
+                sb.AppendLine("<tr>");
+                sb.AppendLine(string.Format("<td style=\"padding: 5px;\">{0}</td>", label));
+                sb.AppendLine(string.Format("<td style=\"text-align: right;padding:5px;\" >{0:n2}</td>", price));
+                sb.AppendLine("</tr>");
+
+            }
+
             sb.AppendLine("<tr>");
             sb.AppendLine(string.Format("<td style=\"padding: 5px;\">{0}</td>", "Price"));
             sb.AppendLine(string.Format("<td style=\"text-align: right;padding:5px;\" >{0}</td>", p.subtotal));
@@ -1985,6 +1997,22 @@ namespace MealOrderPayments.Controllers
                                     {
                                         dt.Status = "paid";
                                         var r = await this._service.UpdateTokenOrderAsync(dt);
+
+                                        tokenOrderUpdated = true;
+                                    }
+                                }
+                            }
+
+                            foreach (var t in p.MealPlanOrders)
+                            {
+                                if (t.Status != "paid" && p.Status == "SUCCESS" && t.Status != "cancelled")
+                                {
+                                    var dt = await this._service.GetMealPlanOrderByIdAsync(t.Id);
+
+                                    if (dt != null)
+                                    {
+                                        dt.Status = "paid";
+                                        var r = await this._service.UpdateMealPlanOrderAsync(dt);
 
                                         tokenOrderUpdated = true;
                                     }

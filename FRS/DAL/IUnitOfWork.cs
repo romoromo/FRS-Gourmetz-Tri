@@ -80,6 +80,7 @@ namespace DAL
         IRestrictionTypeRepository RestrictionTypes { get; }
         IRestrictionRepository Restrictions { get; }
         IDishTypeRepository DishTypes { get; }
+        IMealPlanOrderRepository MealPlanOrders { get; }
         ICatererInfoRepository CatererInfos { get; }
         IOutletRepository Outlets { get; }
         IOutletProfileRepository OutletProfiles { get; }

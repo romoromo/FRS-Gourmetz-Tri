@@ -52,6 +52,12 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<PagedEntity<PackingAllocationDTO>> GetPackingAllocationsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdatePackingAllocationAsync(PackingAllocationDTO dto);
 
+        Task<BaseOperationResponse> CreateMealPlanOrderAsync(MealPlanOrderDTO dto);
+        Task<BaseOperationResponse> DeleteMealPlanOrderAsync(int id);
+        Task<MealPlanOrderDTO> GetMealPlanOrderByIdAsync(int id);
+        Task<PagedEntity<MealPlanOrderDTO>> GetMealPlanOrdersAsync(BaseFilter filter);
+        Task<BaseOperationResponse> UpdateMealPlanOrderAsync(MealPlanOrderDTO dto);
+
         Task<List<SalesDataDTO>> RetrieveSalesData(BaseFilter filter);
 
         Task<List<TokenOrder>> GetTokenOrderWithCurrentSession(BaseFilter filter, int sessionDetailId);
@@ -89,6 +95,6 @@ namespace BAL.Services.Interfaces.MealOrder
 
         Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear);
         Task<MealPlanTokenOrderSummaryDTO> GetMealPlanOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetailDTO> mealSessionDetailsDto);
-        Task<List<GroupedTermStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime orderDate);
+        Task<List<GroupedTermStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime? orderDate);
     }
 }

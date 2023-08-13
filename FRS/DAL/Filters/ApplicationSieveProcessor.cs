@@ -93,6 +93,7 @@ namespace DAL.Filters
             DriverMapping(ref mapper);
             RouteMapping(ref mapper);
             TokenOrderMapping(ref mapper);
+            MealPlanOrderMapping(ref mapper);
             TokensOrderHistoryMapping(ref mapper);
             TokenLabelMapping(ref mapper);
             MealAllocationMapping(ref mapper);
@@ -1942,6 +1943,82 @@ namespace DAL.Filters
                 .HasName("total");
 
             mapper.Property<TokenOrder>(p => p.Student.Class.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("className");
+        }
+
+        private void MealPlanOrderMapping(ref SievePropertyMapper mapper)
+        {
+            mapper.Property<MealPlanOrder>(p => p.Id)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<MealPlanOrder>(p => p.TransactionTime)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<MealPlanOrder>(p => p.Status)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<MealPlanOrder>(p => p.Student.OutletId)
+                .CanFilter()
+                .CanSort()
+                .HasName("outletId");
+
+            mapper.Property<MealPlanOrder>(p => p.Student.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("profileName");
+
+
+            mapper.Property<MealPlanOrder>(p => p.Payment.PaymentType.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("paymentTypeName");
+
+            mapper.Property<MealPlanOrder>(p => p.Payment.PaymentNumber)
+                .CanFilter()
+                .CanSort()
+                .HasName("paymentNumber");
+
+            mapper.Property<MealPlanOrder>(p => p.Payment.fomoid)
+                .CanFilter()
+                .CanSort()
+                .HasName("fomoId");
+
+            mapper.Property<MealPlanOrder>(p => p.CreatedByUser.FriendlyName)
+                .CanFilter()
+                .CanSort()
+                .HasName("processedBy");
+
+            mapper.Property<MealPlanOrder>(p => p.Student.Class.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("className");
+
+            mapper.Property<MealPlanOrder>(p => p.Payment.InvoiceNumber)
+                .CanFilter()
+                .CanSort()
+                .HasName("invoiceNumber");
+
+            mapper.Property<MealPlanOrder>(p => p.Payment.Voucher.Code)
+                .CanFilter()
+                .CanSort()
+                .HasName("voucherCode");
+
+            mapper.Property<MealPlanOrder>(p => p.Payment.discount)
+                .CanFilter()
+                .CanSort()
+                .HasName("discount");
+
+            mapper.Property<MealPlanOrder>(p => p.Payment.total)
+                .CanFilter()
+                .CanSort()
+                .HasName("total");
+
+            mapper.Property<MealPlanOrder>(p => p.Student.Class.Name)
                 .CanFilter()
                 .CanSort()
                 .HasName("className");

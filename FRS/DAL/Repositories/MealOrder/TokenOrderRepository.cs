@@ -780,13 +780,15 @@ namespace DAL.Repositories.MealOrder
 
         #region Meal Plan
 
-        public async Task<List<StudentGroupMealPlan>> GetStudentMealPlansAsync(int studentId, DateTime orderDate)
+        public async Task<List<StudentGroupMealPlan>> GetStudentMealPlansAsync(int studentId, DateTime? orderDate)
         {
+            var date = orderDate != null ? orderDate?.Date : DateTime.Today;
+
             IQueryable<StudentGroupMealPlan> query = _appContext.StudentGroupMealPlans.Where(t => t.IsActive && t.StudentGroup.IsActive && 
                                                     t.StudentGroup.Sgdetails.Any(x => x.StudentId == studentId) &&
                                                     t.StudentGroup.IsPublished && t.StudentGroup.Type == StudentMealType.MEAL_PLAN && 
-                                                    t.StudentGroup.StartDate.HasValue && t.StudentGroup.StartDate.Value >= orderDate.Date &&
-                                                    t.StudentGroup.EndDate.HasValue && orderDate.Date <= t.StudentGroup.EndDate.Value);
+                                                    t.StudentGroup.StartDate.HasValue && t.StudentGroup.StartDate.Value <= date &&
+                                                    t.StudentGroup.EndDate.HasValue && date <= t.StudentGroup.EndDate.Value);
 
             return query.ToList();
         }

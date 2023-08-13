@@ -172,8 +172,12 @@ namespace FRS.Controllers
                 dto.InvoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmssffffff");
 
                 var tos = dto.TokenOrders;
-
                 dto.TokenOrders = null;
+
+                var mpos = dto.MealPlanOrders;
+                dto.MealPlanOrders = null;
+
+
                 var result = await this._service.CreatePaymentAsync(dto);
                 if (result.IsSuccess)
                 {
@@ -194,7 +198,22 @@ namespace FRS.Controllers
                         }
                     }
 
-                   
+                    foreach (var to in mpos)
+                    {
+
+                        var dt = await this._tokenService.GetMealPlanOrderByIdAsync(to.Id);
+
+
+
+                        if (dt != null)
+                        {
+                            dt.PaymentId = vm.Id;
+                            if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
+                            var r = await this._tokenService.UpdateMealPlanOrderAsync(dt);
+                        }
+                    }
+
+
 
                     return CreatedAtAction("GetPaymentById", new { id = vm.Id }, vm);
                 }

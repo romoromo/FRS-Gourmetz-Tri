@@ -21,7 +21,7 @@ namespace DAL
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int, UserClaim, ApplicationUserRole, IdentityUserLogin<int>, UserRoleClaim,
         IdentityUserToken<int>>
-        , IDataProtectionKeyContext // Uncomment if cookie affinity doesn't fix the issue
+       /// , IDataProtectionKeyContext // Uncomment if cookie affinity doesn't fix the issue
     {
         public int? CurrentUserId { get; set; }
         public string CurrentUserName { get; set; }
@@ -162,6 +162,7 @@ namespace DAL
         public DbSet<Restriction> Restrictions { get; set; }
         public DbSet<RestrictionType> RestrictionTypes { get; set; }
         public DbSet<DishType> DishTypes { get; set; }
+        public DbSet<MealPlanOrder> MealPlanOrders { get; set; }
         public DbSet<Cuisine> Cuisines { get; set; }
         public DbSet<CatererInfo> CatererInfos { get; set; }
         public DbSet<BentoBoxType> BentoBoxTypes { get; set; }
@@ -248,7 +249,7 @@ namespace DAL
         public DbSet<MenuGroupDishCycle> MenuGroupDishCycles { get; set; }
         public DbSet<MenuGroupClass> MenuGroupClasses { get; set; }
         // Uncomment if cookie affinity doesn't fix the issue
-        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+        //public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<DishComponent> DishComponents { get; set; }
         public DbSet<NotificationSetting> NotificationSettings { get; set; }
         public DbSet<StudentGroupMealPlan> StudentGroupMealPlans { get; set; }
@@ -518,6 +519,7 @@ namespace DAL
             builder.Entity<Restriction>().TrackAllProperties();
             builder.Entity<RestrictionType>().TrackAllProperties();
             builder.Entity<DishType>().TrackAllProperties();
+            builder.Entity<MealPlanOrder>().TrackAllProperties();
             builder.Entity<Cuisine>().TrackAllProperties();
             builder.Entity<CatererInfo>().TrackAllProperties();
             builder.Entity<BentoBoxType>().TrackAllProperties();

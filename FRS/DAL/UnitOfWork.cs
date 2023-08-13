@@ -94,6 +94,7 @@ namespace DAL
         private RestrictionRepository _restrictions;
         private RestrictionTypeRepository _restrictionTypes;
         private DishTypeRepository _dishTypes;
+        private MealPlanOrderRepository _mealPlanOrders;
         private CatererInfoRepository _catererInfos;
         private BentoAssetRepository _bentoAssets;
         private CartonAssetRepository _cartonAssets;
@@ -1013,6 +1014,17 @@ namespace DAL
                     _dishTypes = new DishTypeRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
 
                 return _dishTypes;
+            }
+        }
+
+        public IMealPlanOrderRepository MealPlanOrders
+        {
+            get
+            {
+                if (_mealPlanOrders == null)
+                    _mealPlanOrders = new MealPlanOrderRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+
+                return _mealPlanOrders;
             }
         }
 

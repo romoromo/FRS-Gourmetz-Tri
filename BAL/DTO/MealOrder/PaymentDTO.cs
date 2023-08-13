@@ -15,6 +15,8 @@ namespace BAL.DTO.MealOrder
 
         public List<TokenOrderDTO> TokenOrders { get; set; }
 
+        public List<MealPlanOrderDTO> MealPlanOrders { get; set; }
+
         public decimal subtotal { get; set; }
         public decimal discount { get; set; }
         public decimal gst { get; set; }

@@ -94,6 +94,17 @@ namespace DAL.Repositories.MealOrder
                             _appContext.SaveChanges();
                         }
                     }
+
+                    foreach (var t in f.MealPlanOrders)
+                    {
+                        var tOrder = _appContext.MealPlanOrders.FirstOrDefault(a => a.Id == t.Id);
+                        if (tOrder != null)
+                        {
+                            tOrder.Status = tOrder.Status == "cancelled" ? tOrder.Status : "paid";
+                            _appContext.MealPlanOrders.Update(tOrder);
+                            _appContext.SaveChanges();
+                        }
+                    }
                 }
 
 
@@ -139,6 +150,17 @@ namespace DAL.Repositories.MealOrder
                         {
                             tOrder.Status = tOrder.Status == "cancelled" ? tOrder.Status : "paid";
                             _appContext.TokenOrders.Update(tOrder);
+                            _appContext.SaveChanges();
+                        }
+                    }
+
+                    foreach (var t in f.MealPlanOrders)
+                    {
+                        var tOrder = _appContext.MealPlanOrders.FirstOrDefault(a => a.Id == t.Id);
+                        if (tOrder != null)
+                        {
+                            tOrder.Status = tOrder.Status == "cancelled" ? tOrder.Status : "paid";
+                            _appContext.MealPlanOrders.Update(tOrder);
                             _appContext.SaveChanges();
                         }
                     }

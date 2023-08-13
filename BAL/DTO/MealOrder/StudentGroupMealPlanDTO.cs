@@ -32,7 +32,9 @@ namespace BAL.DTO.MealOrder
     {
         public int OutletTermId { get; set; }
         public string TermName { get; set; }
+        public DateTime? DeliveryStartDate { get; set; }
         public List<StudentGroupDTO> Plans { get; set; }
+        public DateTime? DeliveryEndDate { get; set; }
     }
 
     public class GroupedStudentGroupMealPlanDTO
