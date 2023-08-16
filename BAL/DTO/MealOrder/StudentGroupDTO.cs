@@ -26,14 +26,15 @@ namespace BAL.DTO.MealOrder
         public bool IsPublished { get; set; }
         public DateTime? DeliveryStartDate { get; set; }
         public DateTime? DeliveryEndDate { get; set; }
-        public int? MealSessionId { get; set; }
-        public string MealSessionName { get; set; }
+        //public int? MealSessionId { get; set; }
+        //public string MealSessionName { get; set; }
         public float Price { get; set; }
         public int Term { get; set; }
         public string FileName { get; set; }
         public string FilePath { get; set; }
         public int Sequence { get; set; }
         public List<StudentGroupDetailDTO> Sgdetails { get; set; }
+        public List<StudentGroupSessionDTO> Sessions { get; set; }
     }
 
     public class StudentGroupDetailDTO
@@ -42,6 +43,13 @@ namespace BAL.DTO.MealOrder
         public int StudentGroupId { get; set; }
         public int StudentId { get; set; }
 
+    }
+
+    public class StudentGroupSessionDTO
+    {
+        public int Id { get; set; }
+        public int StudentGroupId { get; set; }
+        public int MealSessionId { get; set; }
     }
 
     public class StudentGroupIdEqualityComparer : IEqualityComparer<StudentGroupDTO>

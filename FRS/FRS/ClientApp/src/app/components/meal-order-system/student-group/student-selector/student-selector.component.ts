@@ -38,10 +38,14 @@ export class StudentSelectorComponent implements OnInit {
   selectedCaterers: CatererOutlet[];
   public classes: Class[] = [];
   public interestGroups: InterestGroup[] = [];
+  private selected: any[] = [];
+  private allRowsSelected = false;
 
   filterIsFas: boolean;
   filterClassId: string;
   filterIGId: string;
+
+  @ViewChild('hdrTpl') hdrTpl: TemplateRef<any>;
 
   @ViewChild('actionsTemplate')
   actionsTemplate: TemplateRef<any>;
@@ -83,7 +87,7 @@ export class StudentSelectorComponent implements OnInit {
       { prop: 'classLevelName', name: 'Class Level' },
       { prop: 'className', name: 'Class' },
       { name: 'Is FAS', cellTemplate: this.fasTemplate },
-      { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
+      { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false, headerCheckboxable: true, headerTemplate: this.hdrTpl }
     ];
   }
 
@@ -94,6 +98,15 @@ export class StudentSelectorComponent implements OnInit {
     this.loadData();
     this.getClasses();
     this.getInterestGroups();
+  }
+
+  onCheckboxChangeFn(ev) {
+    console.log(ev);
+  }
+
+  onSelect({ selected }) {
+    console.log(selected);
+    this.selected = selected;
   }
 
   getClasses() {
@@ -210,8 +223,10 @@ export class StudentSelectorComponent implements OnInit {
   }
 
   public save = () => {
-    let students = this.rows.filter((cg) => (<any>cg).checked); 
-    this.dialogRef.close({ isCancel: false, selectedStudents: students });
+    //let studentIds= this.selected.map((e) => { return e.id; });
+
+    //let students = this.rows.filter((cg) => (<any>cg).checked); 
+    this.dialogRef.close({ isCancel: false, selectedStudents: this.selected });
   }
 
   private cancel() {

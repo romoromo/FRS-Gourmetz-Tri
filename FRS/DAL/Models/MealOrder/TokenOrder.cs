@@ -43,6 +43,7 @@ namespace DAL.Models.MealOrder
 
         public bool IsFAS { get; set; }
         public bool IsMealPlan { get; set; }
+        public bool IsStudentGroupOrder { get; set; }
 
         public DateTime? CollectionTime { get; set; }
 

@@ -4,14 +4,16 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230816034320_added_student_group_session")]
+    partial class added_student_group_session
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5783,6 +5785,8 @@ namespace FRS.Migrations
 
                     b.Property<bool>("IsPublished");
 
+                    b.Property<int?>("MealSessionId");
+
                     b.Property<string>("Name");
 
                     b.Property<int?>("OutletId");
@@ -5806,6 +5810,8 @@ namespace FRS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedBy");
+
+                    b.HasIndex("MealSessionId");
 
                     b.HasIndex("OutletId");
 
@@ -11938,6 +11944,10 @@ namespace FRS.Migrations
                     b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealSession")
+                        .WithMany()
+                        .HasForeignKey("MealSessionId");
 
                     b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
                         .WithMany()

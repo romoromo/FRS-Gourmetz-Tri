@@ -42,11 +42,11 @@ namespace DAL.Models.MealOrder
         public string FileName { get; set; }
         public string FilePath { get; set; }
 
-        [Sieve(CanFilter = true, CanSort = true)]
-        public int? MealSessionId { get; set; }
+        //[Sieve(CanFilter = true, CanSort = true)]
+        //public int? MealSessionId { get; set; }
 
-        [ForeignKey("MealSessionId")]
-        public virtual MealSession MealSession { get; set; }
+        //[ForeignKey("MealSessionId")]
+        //public virtual MealSession MealSession { get; set; }
 
         [ForeignKey("OutletId")]
         public virtual Outlet Outlet { get; set; }
@@ -55,5 +55,6 @@ namespace DAL.Models.MealOrder
         public virtual OutletTerm OutletTerm { get; set; }
 
         public virtual ICollection<StudentGroupDetail> Sgdetails { get; set; }
+        public virtual ICollection<StudentGroupSession> MealSessions { get; set; }
     }
 }

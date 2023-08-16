@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DAL.Core;
 using DAL.Filters;
@@ -9,12 +10,14 @@ namespace DAL.Repositories.Interfaces.MealOrder
 {
     public interface IStudentGroupRepository
     {
-        Task<BaseOperationResponse> CreateAsync(StudentGroup group, List<StudentGroupDetail> groupDetails);
+        Task<BaseOperationResponse> CreateAsync(StudentGroup group, List<StudentGroupDetail> groupDetails, List<StudentGroupSession> sessions);
         Task<BaseOperationResponse> Delete(StudentGroup group);
         Task<BaseOperationResponse> DeleteAsync(int groupId);
         Task<StudentGroup> GetByIdAsync(int id);
         Task<PagedEntity<StudentGroup>> GetStudentGroupsAsync(BaseFilter filter);
-        Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<StudentGroupDetail> groupDetails);
+        Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<StudentGroupDetail> groupDetails, List<StudentGroupSession> sessions);
         Task<PagedEntity<OutletTerm>> GetOutletTermsAsync(BaseFilter filter);
+        Task<string> GenerateCode(int id);
+        Task<List<StudentGroup>> GetAllStudentGroupsAsync(DateTime? orderDate);
     }
 }

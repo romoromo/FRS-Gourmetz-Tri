@@ -287,11 +287,15 @@ namespace BAL.Mapping
             CreateMap<StudentGroupDTO, StudentGroup>();
 
             CreateMap<StudentGroup, StudentGroupDTO>()
-                .ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSession.Name))
+                //.ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSession.Name))
                 .ForMember(e => e.TermName, map => map.MapFrom(e => e.OutletTerm.Label))
-                .ForMember(e => e.Sgdetails, map => map.MapFrom(e => e.Sgdetails.Where(f => f.IsActive).ToList()));
+                .ForMember(e => e.Sgdetails, map => map.MapFrom(e => e.Sgdetails.Where(f => f.IsActive).ToList()))
+                .ForMember(e => e.Sessions, map => map.MapFrom(e => e.MealSessions.Where(f => f.IsActive).ToList()));
 
             CreateMap<StudentGroupDetailDTO, StudentGroupDetail>();
+
+            CreateMap<StudentGroupSessionDTO, StudentGroupSession>();
+            CreateMap<StudentGroupSession, StudentGroupSessionDTO>();
 
             CreateMap<OutletTerm, OutletTermDTO>();
             CreateMap<OutletTermDTO, OutletTerm>();

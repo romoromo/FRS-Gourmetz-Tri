@@ -50,9 +50,11 @@ namespace FRS.Controllers
         private readonly INotificationService _notificationService;
         private readonly IEmailSender _emailSender;
         private readonly IHubContext<UserHub> _userHub;
+        private readonly IStudentService _studentService;
 
         public TokenOrderController(ITokenOrderService service, ILogger<TokenOrderController> logger, IAccountManager accountManager, OrderController orderController,
-            IMenuService menuService, IConfiguration configuration, INotificationService notificationService, IHubContext<UserHub> userHub, IEmailSender emailSender)
+            IMenuService menuService, IConfiguration configuration, INotificationService notificationService, IHubContext<UserHub> userHub, IEmailSender emailSender,
+            IStudentService studentService)
         {
             _service = service;
             _logger = logger;
@@ -63,6 +65,7 @@ namespace FRS.Controllers
             _notificationService = notificationService;
             _emailSender = emailSender;
             _userHub = userHub;
+            _studentService = studentService;
         }
 
         #region Token Orders
@@ -216,9 +219,9 @@ namespace FRS.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetStudentMealPlan(int studentId, DateTime? orderDate)
+        public async Task<IActionResult> GetStudentMealPlan(DateTime? orderDate)
         {
-            var dto = await this._service.GetStudentMealPlanAsync(studentId, orderDate);
+            var dto = await this._studentService.GetStudentMealPlanAsync(orderDate);
             return Ok(dto);
         }
 
@@ -245,9 +248,41 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetMealPlanSummary(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int mealSessionId)
         {
+            //var mealSessions = await this._menuService.GetOutletMealSessions(outletId, deliveryDate, null, null, deliveryDateTo);
+            //mealSessions = mealSessions.Where(e => e.MealSessionId == mealSessionId).ToList();
+            var results = await this._service.GetMealPlanOrderSummaryAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, null);
+            return Ok(results);
+        }
+
+        #endregion
+
+        #region Student Group Order
+        [HttpGet("tokenorders/studentgroup/order")]
+        [ProducesResponseType(201, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateStudentGroupOrder(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear)
+        {
+            if (outletId == 0)
+                return BadRequest("Outlet not found.");
+
+            var result = await this._service.CreateStudentGroupOrderAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, clear);
+            if (!result.IsSuccess)
+                return BadRequest("The following errors occurred while processing: " + string.Join(", ", result.Message));
+
+            return Ok(result);
+        }
+
+
+        [HttpGet("tokenorders/studentgroup/ordersummary")]
+        //[Authorize(Authorization.Policies.ViewAllMealSessionsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetStudentGroupOrderSummary(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int mealSessionId)
+        {
             var mealSessions = await this._menuService.GetOutletMealSessions(outletId, deliveryDate, null, null, deliveryDateTo);
             mealSessions = mealSessions.Where(e => e.MealSessionId == mealSessionId).ToList();
-            var results = await this._service.GetMealPlanOrderSummaryAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, mealSessions);
+            var results = await this._service.GetStudentGroupOrderSummaryAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, mealSessions);
             return Ok(results);
         }
 
