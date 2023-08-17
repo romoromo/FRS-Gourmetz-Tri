@@ -825,8 +825,8 @@ namespace DAL.Repositories.MealOrder
                                                 e.DeliveryDate.Date <= deliveryDateTo.Date &&
                                                 e.StoreId == storeId &&
                                                 e.Session.MealSessionId == mealSessionId &&
-                                                e.IsActive &&
-                                                e.StudentGroupId == studentGroupId);
+                                                //e.StudentGroupId == studentGroupId &&
+                                                e.IsActive);
 
                     if (hasOrder)
                     {
@@ -997,7 +997,7 @@ namespace DAL.Repositories.MealOrder
                                                     e.ProfileId == student.Id &&
                                                     e.IsActive && e.Status != "cancelled" &&
                                                     e.DeliveryDate.Date == mealPlan.DeliveryDate.Date &&
-                                                    e.StoreId == storeId && e.IsMealPlan && e.IsActive &&
+                                                    e.StoreId == storeId && e.IsActive &&
                                                     e.Session.MealSessionId == mealSessionId);
 
                             if (clear || (existingOrders != null && existingOrders.Any()))
@@ -1180,9 +1180,9 @@ namespace DAL.Repositories.MealOrder
                                                 e.DeliveryDate.Date >= deliveryDate.Date &&
                                                 e.DeliveryDate.Date <= deliveryDateTo.Date &&
                                                 e.StoreId == storeId &&
-                                                e.Session.MealSessionId == mealSessionId &&
-                                                e.StudentGroupId == studentGroupId &&
-                                                e.IsStudentGroupOrder);
+                                                e.Session.MealSessionId == mealSessionId);
+                                                //e.StudentGroupId == studentGroupId &&
+                                               // e.IsStudentGroupOrder);
 
                     if (hasOrder)
                     {
@@ -1199,6 +1199,7 @@ namespace DAL.Repositories.MealOrder
                                             e.OutletProfile.Caterer.CatererOutlets.Any(o => o.IsActive && o.OutletId == outletId) &&
                                             (deliveryDate.Date >= e.StartDate.Date &&
                                             (!e.EndDate.HasValue || e.EndDate.Value.Date >= deliveryDate.Date)) &&
+                                            //e.DishTypeId == dishTypeId &&
                                             e.DishCyclePeriods.Any(d => d.MealPeriodId == sessionDetail.MealSession.MealPeriodId) &&
                                             e.CycleType == "Main Menu");
 
@@ -1208,143 +1209,153 @@ namespace DAL.Repositories.MealOrder
                             return result;
                         }
 
-                        var sgDishKeyPair = new Dictionary<int, Tuple<int?, int?, float, string>>();
-                        var allDetailMenus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive).ToList();
-
-                        foreach (var cycle in activeDishCycles)
+                        //MealTypeId, DishId, Price, Label
+                        var classDishKeyPair = new Dictionary<int, Tuple<int?, int?, float, string>>();
+                        foreach (var detail in studentGroup.Sgdetails)
                         {
-                            var detailMenus = allDetailMenus.ToList();
-                            if (cycle.StartDate.Date > deliveryDate.Date)
-                                continue;
+                            var student = detail.Student;
+                            var existingOrders = _appContext.TokenOrders.Where(e =>
+                                                    e.ProfileId == student.Id &&
+                                                    e.IsActive && e.Status != "cancelled" &&
+                                                    e.DeliveryDate.Date == deliveryDate &&
+                                                    e.StoreId == storeId &&
+                                                    e.Session.MealSessionId == mealSessionId);
 
-                            //identify what day from the date passed
-                            var span = deliveryDate.Date.Subtract(cycle.StartDate.Date);
-                            int day = span.Days + 1;
-                            int d = day == 0 ? 1 : ((day % cycle.NumOfDays) == 0 ? cycle.NumOfDays : (day % cycle.NumOfDays));
-                            var cycleSets = _appContext.DishCycleScheduleSets.Where(e => e.IsActive &&
-                                                                            e.DishCycleId == cycle.Id && //e.Sequence == i && 
-                                                                            e.DishCycleType.DishTypeId == dishTypeId);
-                            bool hasSelectedDish = false;
-                            if (cycleSets != null)
+                            if (clear || (existingOrders != null && existingOrders.Any()))
                             {
-                                _logger.LogInformation($"CreateStudentGroupOrderAsync INFO Day: {d}");
-                                foreach (var cycleSet in cycleSets)
+                                foreach (var existingOrder in existingOrders)
                                 {
-                                    _logger.LogInformation($"CreateStudentGroupOrderAsync INFO 1: {cycleSet.Label} - {cycleSet.CycleTypeId} -  {cycleSet.CycleTypeSequence}");
-
-                                    var subSchedules = _appContext.DishCycleSchedules.Where(e => e.IsActive && e.DishCycleId == cycleSet.CycleTypeId);
-
-                                    if (subSchedules != null && subSchedules.Any())
+                                    if (existingOrder.IsStudentGroupOrder)
                                     {
-                                        int subScheduleDays = subSchedules.Count();
-                                        _logger.LogInformation($"CreateStudentGroupOrderAsync INFO subSchedules: {subScheduleDays}");
-
-                                        int subDay = d;
-                                        if (d > subScheduleDays)
+                                        //remove token orders made
+                                        existingOrder.Status = "deleted";
+                                        if (existingOrder.Payment != null)
                                         {
-                                            subDay = d % subScheduleDays;
+                                            existingOrder.Payment.IsActive = false;
                                         }
 
-                                        _logger.LogInformation($"CreateStudentGroupOrderAsync INFO Sub Day: {subDay}");
-
-                                        var subSchedule = subSchedules.FirstOrDefault(e => e.Day == subDay);
-                                        if (subSchedule != null && subSchedule.Details != null)
-                                        {
-                                            var subScheduleDetail = subSchedule.Details.FirstOrDefault(e => e.Sequence == cycleSet.CycleTypeSequence);
-                                            if (subScheduleDetail != null)
-                                            {
-                                                detailMenus = subScheduleDetail.Menus.ToList();
-                                                _logger.LogInformation($"CreateStudentGroupOrderAsync INFO 2: {subScheduleDetail.Label} - {subScheduleDetail.DishCycleId} - {subScheduleDetail.DishCycleScheduleId} - Menu COUNT: {detailMenus.Count}");
-                                                _logger.LogInformation($"CreateStudentGroupOrderAsync INFO 2a: Menus: {string.Join(",", detailMenus.Select(e => e.Dish.Label))}");
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        _logger.LogInformation($"CreateStudentGroupOrderAsync INFO subSchedules: subSchedules is null or empty");
+                                        SoftDelete(existingOrder);
                                     }
 
-
-                                    if (detailMenus.Any())
-                                    {
-                                        var tuple = new Tuple<int?, int?, float, string>(cycle.MealTypeId, detailMenus.First().DishId, (float)cycleSet.Price, cycleSet.Label);
-                                        sgDishKeyPair.Add(studentGroupId, tuple);
-                                        hasSelectedDish = true;
-                                        break;
-                                    }
                                 }
 
+                                if (clear) continue;
                             }
 
-                            if (hasSelectedDish) break;
-                        }
-
-                        if (sgDishKeyPair.Keys.Any(e => e == studentGroupId))
-                        {
-                            var kp = sgDishKeyPair[studentGroupId];
-
-                            foreach (var detail in studentGroup.Sgdetails)
+                            bool hasSelectedDish = false;
+                            var order = new TokenOrder
                             {
-                                var student = detail.Student;
-                                var existingOrders = _appContext.TokenOrders.Where(e =>
-                                                        e.ProfileId == student.Id &&
-                                                        e.IsActive && e.Status != "cancelled" &&
-                                                        e.DeliveryDate.Date == deliveryDate.Date &&
-                                                        e.StoreId == storeId && e.IsMealPlan &&
-                                                        e.Session.MealSessionId == mealSessionId);
+                                DeliveryDate = deliveryDate,
+                                TransactionTime = DateTime.Now,
+                                MealSessionDetailId = sessionDetail.Id,
+                                ProfileId = student.Id,
+                                Status = "paid",
+                                StoreId = storeId,
+                                CreatedBy = createdBy,
+                                IsStudentGroupOrder = true,
+                                StudentGroupId = studentGroupId
+                            };
 
-                                if (clear || (existingOrders != null && existingOrders.Any()))
+                            if (!classDishKeyPair.Keys.Any(e => e == student.ClassId))
+                            {
+                                var allDetailMenus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive).ToList();
+                                foreach (var cycle in activeDishCycles)
                                 {
-                                    foreach (var existingOrder in existingOrders)
+                                    var detailMenus = allDetailMenus.ToList();
+                                    if (cycle.StartDate.Date > deliveryDate.Date)
+                                        continue;
+
+                                    //identify what day from the date passed
+                                    var span = deliveryDate.Date.Subtract(cycle.StartDate.Date);
+                                    int day = span.Days + 1;
+                                    int d = day == 0 ? 1 : ((day % cycle.NumOfDays) == 0 ? cycle.NumOfDays : (day % cycle.NumOfDays));
+                                    //var schedule = _appContext.DishCycleSchedules.FirstOrDefault(e => e.IsActive &&
+                                    //                                                         e.DishCycleId == cycle.Id &&
+                                    //                                                         e.Day == d);
+                                    //get details and loop according to the number of sets
+                                    //for (int i = 1; i <= cycle.NumOfSets; i++)
+                                    //{
+                                    var cycleSets = _appContext.DishCycleScheduleSets.Where(e => e.IsActive &&
+                                                                                    e.DishCycleId == cycle.Id && //e.Sequence == i && 
+                                                                                    e.DishCycleType.DishTypeId == dishTypeId);
+
+                                    if (cycleSets != null)
                                     {
-                                        if (existingOrder.IsMealPlan)
+                                        _logger.LogInformation($"CreateFasTokenOrdersAsync INFO Day: {d}");
+                                        foreach (var cycleSet in cycleSets)
                                         {
-                                            //remove token orders made
-                                            existingOrder.Status = "deleted";
-                                            if (existingOrder.Payment != null)
+                                            _logger.LogInformation($"CreateFasTokenOrdersAsync INFO 1: {cycleSet.Label} - {cycleSet.CycleTypeId} -  {cycleSet.CycleTypeSequence}");
+
+                                            var subSchedules = _appContext.DishCycleSchedules.Where(e => e.IsActive && e.DishCycleId == cycleSet.CycleTypeId);
+
+                                            if (subSchedules != null && subSchedules.Any())
                                             {
-                                                existingOrder.Payment.IsActive = false;
+                                                int subScheduleDays = subSchedules.Count();
+                                                _logger.LogInformation($"CreateFasTokenOrdersAsync INFO subSchedules: {subScheduleDays}");
+
+                                                int subDay = d;
+                                                if (d > subScheduleDays)
+                                                {
+                                                    subDay = d % subScheduleDays;
+                                                }
+
+                                                _logger.LogInformation($"CreateFasTokenOrdersAsync INFO Sub Day: {subDay}");
+
+                                                var subSchedule = subSchedules.FirstOrDefault(e => e.Day == subDay);
+                                                if (subSchedule != null && subSchedule.Details != null)
+                                                {
+                                                    var subScheduleDetail = subSchedule.Details.FirstOrDefault(e => e.Sequence == cycleSet.CycleTypeSequence);
+                                                    if (subScheduleDetail != null)
+                                                    {
+                                                        detailMenus = subScheduleDetail.Menus.ToList();
+                                                        _logger.LogInformation($"CreateFasTokenOrdersAsync INFO 2: {subScheduleDetail.Label} - {subScheduleDetail.DishCycleId} - {subScheduleDetail.DishCycleScheduleId} - Menu COUNT: {detailMenus.Count}");
+                                                        _logger.LogInformation($"CreateFasTokenOrdersAsync INFO 2a: Menus: {string.Join(",", detailMenus.Select(e => e.Dish.Label))}");
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                _logger.LogInformation($"CreateFasTokenOrdersAsync INFO subSchedules: subSchedules is null or empty");
                                             }
 
-                                            SoftDelete(existingOrder);
+
+                                            if (detailMenus.Any())
+                                            {
+                                                var tuple = new Tuple<int?, int?, float, string>(cycle.MealTypeId, detailMenus.First().DishId, (float)cycleSet.Price, cycleSet.Label);
+                                                classDishKeyPair.Add(student.ClassId, tuple);
+                                                hasSelectedDish = true;
+                                                break;
+                                            }
                                         }
 
                                     }
 
-                                    if (clear) continue;
+                                    if (hasSelectedDish) break;
                                 }
+                            }
 
-                                var order = new TokenOrder
+                            if (classDishKeyPair.Keys.Any(e => e == student.ClassId))
+                            {
+                                var kp = classDishKeyPair[student.ClassId];
+                                order.TotalAmount = kp.Item3;
+                                order.TotalPayment = kp.Item3;
+                                order.Tokens = new List<TokenOrdered>
+                            {
+                                new TokenOrdered
                                 {
-                                    DeliveryDate = deliveryDate.Date,
-                                    TransactionTime = DateTime.Now,
-                                    MealSessionDetailId = sessionDetail.Id,
-                                    ProfileId = student.Id,
-                                    Status = "paid",
-                                    StoreId = storeId,
-                                    CreatedBy = createdBy,
-                                    StudentGroupId = studentGroupId,
-                                    TotalAmount = kp.Item3,
-                                    TotalPayment = kp.Item3,
-                                    IsStudentGroupOrder = true,
-                                    Tokens = new List<TokenOrdered>
-                                {
-                                    new TokenOrdered
+                                    TokenId = kp.Item1.Value,
+                                    Qty = 1,
+                                    TokenDesc = kp.Item4,
+                                    SelectedDishes = new List<TokenOrderDish>
                                     {
-                                        TokenId = kp.Item1.Value,
-                                        Qty = 1,
-                                        TokenDesc = kp.Item4,
-                                        SelectedDishes = new List<TokenOrderDish>
-                                        {
-                                                new TokenOrderDish
-                                                {
-                                                    DishId = kp.Item2,
-                                                    Qty = 1
-                                                }
-                                        }
+                                            new TokenOrderDish
+                                            {
+                                                DishId = kp.Item2,
+                                                Qty = 1
+                                            }
                                     }
                                 }
-                                };
+                            };
 
                                 var payment = new Payment
                                 {
@@ -1364,8 +1375,6 @@ namespace DAL.Repositories.MealOrder
 
                         deliveryDate = deliveryDate.Date.AddDays(1);
                     }
-
-                    
 
                     await _appContext.SaveChangesAsync();
 
@@ -1442,6 +1451,7 @@ namespace DAL.Repositories.MealOrder
             return summary;
         }
         #endregion
+
         //public async Task<BaseOperationResponse> ImportStudentAsync(IAccountManager accountManager, List<StudentImportDTO> rows)
         //{
         //    var result = new BaseOperationResponse();

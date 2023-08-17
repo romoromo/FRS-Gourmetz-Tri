@@ -68,7 +68,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit {
     }
 
     if (typeof (data.group.name) != typeof (undefined)) {
-      this.title += `for ${data.group.name}`;
+      this.title += ` for ${data.group.name}`;
     }
 
     if (data.group.mealSessionName) {
@@ -209,7 +209,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit {
     //  return;
     //}
 
-    if (!confirm(`Are you sure you want to assign this dish to the group?`)) return;
+    if (!confirm(`Are you sure you want to assign dish to the group?`)) return;
     this.isSaving = true;
     this.isClear = clear;
     //this.alertService.startLoadingMessage("Processing orders...");

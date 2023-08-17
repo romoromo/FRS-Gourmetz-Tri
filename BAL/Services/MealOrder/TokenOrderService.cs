@@ -226,7 +226,7 @@ namespace BAL.Services.MealOrder
         #region Student Group Order
         public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear)
         {
-            var result = await this._uow.TokenOrders.CreateMealPlanAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, clear);
+            var result = await this._uow.TokenOrders.CreateStudentGroupOrderAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, clear);
 
             return result;
         }

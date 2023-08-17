@@ -281,7 +281,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStudentGroupOrderSummary(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int mealSessionId)
         {
             var mealSessions = await this._menuService.GetOutletMealSessions(outletId, deliveryDate, null, null, deliveryDateTo);
-            mealSessions = mealSessions.Where(e => e.MealSessionId == mealSessionId).ToList();
+            //mealSessions = mealSessions.Where(e => e.MealSessionId == mealSessionId).ToList();
             var results = await this._service.GetStudentGroupOrderSummaryAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, mealSessions);
             return Ok(results);
         }
