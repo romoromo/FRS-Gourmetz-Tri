@@ -379,11 +379,48 @@ namespace BAL.Services.MealOrder
         #endregion
 
         #region Student Group
+        public async Task<string> GenerateCode(int id)
+        {
+            return await this._uow.StudentGroups.GenerateCode(id);
+        }
 
         public async Task<PagedEntity<StudentGroupDTO>> GetStudentGroupsAsync(BaseFilter filter)
         {
             var result = Mapper.Map<PagedEntity<StudentGroupDTO>>(await this._uow.StudentGroups.GetStudentGroupsAsync(filter));
             return result;
+        }
+
+        public async Task<List<GroupedTermStudentGroupDTO>> GetStudentMealPlanAsync(DateTime? orderDate)
+        {
+            var mealPlans = Mapper.Map<List<StudentGroupDTO>>(await _uow.StudentGroups.GetAllStudentGroupsAsync(orderDate));
+
+            return mealPlans.GroupBy(e => e.OutletTermId).Select(e => new GroupedTermStudentGroupDTO
+            {
+                OutletTermId = e.Key.Value,
+                TermName = e.First().TermName,
+                DeliveryStartDate = e.First().DeliveryStartDate,
+                DeliveryEndDate = e.First().DeliveryEndDate,
+                Plans = e.Select(x => new StudentGroupDTO
+                {
+                    Code = x.Code,
+                    DeliveryEndDate = x.DeliveryEndDate,
+                    DeliveryStartDate = x.DeliveryStartDate,
+                    Description = x.Description,
+                    EndDate = x.EndDate,
+                    FileName = x.FileName,
+                    FilePath = x.FilePath,
+                    Id = x.Id,
+                    IsPublished = x.IsPublished,
+                    Name = x.Name,
+                    OutletId = x.OutletId,
+                    OutletTermId = x.OutletTermId,
+                    Price = x.Price,
+                    Sequence = x.Sequence,
+                    StartDate = x.StartDate,
+                    TermName = x.TermName,
+                    Type = x.Type
+                }).Distinct(new StudentGroupIdEqualityComparer()).OrderBy(x => x.Sequence).ToList()
+            }).ToList();
         }
 
         public async Task<StudentGroupDTO> GetStudentGroupByIdAsync(int id)
@@ -396,7 +433,8 @@ namespace BAL.Services.MealOrder
             var result = new BaseOperationResponse();
             var group = Mapper.Map<StudentGroup>(dto);
             var details = Mapper.Map<List<StudentGroupDetail>>(dto.Sgdetails);
-            result = await this._uow.StudentGroups.CreateAsync(group, details);
+            var sessions = Mapper.Map<List<StudentGroupSession>>(dto.Sessions);
+            result = await this._uow.StudentGroups.CreateAsync(group, details, sessions);
             return result;
         }
 
@@ -405,7 +443,8 @@ namespace BAL.Services.MealOrder
             var result = new BaseOperationResponse();
             var group = Mapper.Map<StudentGroup>(dto);
             var details = Mapper.Map<List<StudentGroupDetail>>(dto.Sgdetails);
-            result = await this._uow.StudentGroups.UpdateAsync(group, details);
+            var sessions = Mapper.Map<List<StudentGroupSession>>(dto.Sessions);
+            result = await this._uow.StudentGroups.UpdateAsync(group, details, sessions);
             return result;
         }
 

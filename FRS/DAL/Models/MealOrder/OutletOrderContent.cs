@@ -10,12 +10,22 @@ namespace DAL.Models.MealOrder
     public class OrderPortalContent : AuditableEntity
     {
         [Key]
+        [Sieve(CanFilter = true, CanSort = true)]
         public int Id { get; set; }
 
+        [Sieve(CanFilter = true, CanSort = true)]
         public string Announcement { get; set; }
 
-        public DateTime EffectiveDate { get; set; }
+        [Sieve(CanFilter = true, CanSort = true)]
+        public string Description { get; set; }
 
+        [Sieve(CanFilter = true, CanSort = true)]
+        public DateTime EffectiveStartDate { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        public DateTime EffectiveEndDate { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
         public int? OutletId { get; set; }
 
         [ForeignKey("OutletId")]

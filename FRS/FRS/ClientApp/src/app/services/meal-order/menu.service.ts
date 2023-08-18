@@ -375,4 +375,13 @@ export class MenuService {
   getMealPlanSummary(studentGroupId: string, outletId: string, storeId: string, deliveryDate: string, deliveryDateTo: string, mealSessionId: string) {
     return this.commonEndpoint.get<any>(`${this.tokenOrderUrl}/mealplan/ordersummary?studentGroupId=${studentGroupId}&outletId=${outletId}&storeId=${storeId}&deliveryDate=${deliveryDate}&deliveryDateTo=${deliveryDateTo}&mealSessionId=${mealSessionId}`);
   }
+
+  // individual order
+  bulkStudentGroupOrder(studentGroupId: string, outletId: string, storeId: string, deliveryDate: string, deliveryDateTo: string, dishTypeId: string, mealSessionId: string, createdBy: string, isClearOrder: boolean) {
+    return this.commonEndpoint.get<any>(`${this.tokenOrderUrl}/studentgroup/order?studentGroupId=${studentGroupId}&outletId=${outletId}&storeId=${storeId}&deliveryDate=${deliveryDate}&deliveryDateTo=${deliveryDateTo}&dishTypeId=${dishTypeId}&mealSessionId=${mealSessionId}&createdBy=${createdBy}&clear=${isClearOrder}`);
+  }
+
+  getStudentGroupOrderSummary(studentGroupId: string, outletId: string, storeId: string, deliveryDate: string, deliveryDateTo: string, mealSessionId: string) {
+    return this.commonEndpoint.get<any>(`${this.tokenOrderUrl}/studentgroup/ordersummary?studentGroupId=${studentGroupId}&outletId=${outletId}&storeId=${storeId}&deliveryDate=${deliveryDate}&deliveryDateTo=${deliveryDateTo}&mealSessionId=${mealSessionId}`);
+  }
 }

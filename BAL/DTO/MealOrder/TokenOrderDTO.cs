@@ -68,6 +68,8 @@ namespace BAL.DTO.MealOrder
         public string MealPeriodName { get; set; }
         public string IsFASDisplay { get; set; }
         public bool IsFAS { get; set; }
+        public bool IsMealPlan { get; set; }
+        public bool IsStudentGroupOrder { get; set; }
         public string PaymentNumber { get; set; }
         public string FomoId { get; set; }
         public string InvoiceNumber { get; set; }

@@ -4,21 +4,21 @@ using System.Text;
 
 namespace DAL.Core.DTO
 {
-    public class MealPlanTokenOrderSummaryDTO
+    public class StudentGroupTokenOrderSummaryDTO
     {
-        public MealPlanTokenOrderSummaryDTO()
+        public StudentGroupTokenOrderSummaryDTO()
         {
             this.Cols = new List<string>();
-            this.Rows = new List<MealPlanTokenOrderRowDTO>();
+            this.Rows = new List<StudentGroupTokenOrderRowDTO>();
         }
         public List<string> Cols { get; set; }
-        public List<MealPlanTokenOrderRowDTO> Rows { get; set; }
-        public MealPlanTokenOrderRowDTO Total { get; set; }
+        public List<StudentGroupTokenOrderRowDTO> Rows { get; set; }
+        public StudentGroupTokenOrderRowDTO Total { get; set; }
     }
 
-    public class MealPlanTokenOrderRowDTO
+    public class StudentGroupTokenOrderRowDTO
     {
-        public MealPlanTokenOrderRowDTO()
+        public StudentGroupTokenOrderRowDTO()
         {
             this.Cells = new List<string>();
         }

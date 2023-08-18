@@ -1,0 +1,36 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="portalContentEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!portalContentDescription.valid && showErrorAlert('Description is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageOrderPortalContents" type="text" id="portalContentDescription" name="portalContentDescription" placeholder="Description" [(ngModel)]="portalContentEdit.description" #portalContentDescription="ngModel" required />
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [(ngModel)]="portalContentEdit.effectiveStartDate" required [ngModelOptions]="{standalone: true}">
+          <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+          <mat-datepicker #startpicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-md-6 col-xs-12">
+          <input matInput [matDatepicker]="endpicker" placeholder="End Date" [(ngModel)]="portalContentEdit.effectiveEndDate" required [ngModelOptions]="{standalone: true}">
+          <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+          <mat-datepicker #endpicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <textarea rows="5" matInput type="text" [disabled]="!canManageOrderPortalContents" id="portalContentAnnouncement" autocomplete="off" name="portalContentAnnouncement" placeholder="Announcement" #portalContentAnnouncement="ngModel" [(ngModel)]="portalContentEdit.announcement" required></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageOrderPortalContents" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageOrderPortalContents" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageOrderPortalContents" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

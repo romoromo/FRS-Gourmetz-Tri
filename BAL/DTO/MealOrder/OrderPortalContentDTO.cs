@@ -15,7 +15,11 @@ namespace BAL.DTO.MealOrder
 
         public string Announcement { get; set; }
 
-        public DateTime EffectiveDate { get; set; }
+        public string Description { get; set; }
+
+        public DateTime EffectiveStartDate { get; set; }
+
+        public DateTime EffectiveEndDate { get; set; }
 
         public int? OutletId { get; set; }
 

@@ -148,4 +148,8 @@ export class StudentService {
   addStudentVoucher(studentId: string, code: string) {
     return this.commonEndpoint.get<any>(this.voucherUrl + '/add?studentId=' + studentId + '&code=' + code );
   }
+
+  generateDishCode(catererId: string) {
+    return this.commonEndpoint.get<any>(this.studentGroupUrl + '/generatecode?catererId=' + catererId);
+  }
 }

@@ -7,8 +7,11 @@ export class OrderPortalContent {
   }
 
   public id: string;
+  public outletId: string;
+  public description: string;
   public announcement: string;
-  public effectiveDate: Date;
+  public effectiveStartDate: Date;
+  public effectiveEndDate: Date;
   public putletId: string;
   public banners: OrderPortalBanner[];
 }

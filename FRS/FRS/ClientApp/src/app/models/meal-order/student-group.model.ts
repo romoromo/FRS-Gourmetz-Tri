@@ -21,12 +21,20 @@ export class StudentGroup {
   public fileName: string;
   public filePath: string;
   public sgdetails: StudentGroupDetail[];
+  public sessions: StudentGroupSession[];
 }
 
 export class StudentGroupDetail {
   public id: string;
   public studentGroupId: string;
   public studentId: string;
+}
+
+export class StudentGroupSession {
+  public id: string;
+  public studentGroupId: string;
+  public mealSessionId: string;
+  public checked: string;
 }
 
 export enum StudentGroupType {

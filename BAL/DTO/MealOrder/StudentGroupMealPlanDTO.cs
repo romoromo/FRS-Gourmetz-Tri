@@ -47,4 +47,13 @@ namespace BAL.DTO.MealOrder
         public float Price { get; set; }
         public List<StudentGroupMealPlanDTO> Plans { get; set; }
     }
+
+    public class GroupedTermStudentGroupDTO
+    {
+        public int OutletTermId { get; set; }
+        public string TermName { get; set; }
+        public DateTime? DeliveryStartDate { get; set; }
+        public List<StudentGroupDTO> Plans { get; set; }
+        public DateTime? DeliveryEndDate { get; set; }
+    }
 }

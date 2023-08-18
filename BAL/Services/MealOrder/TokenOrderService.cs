@@ -192,8 +192,8 @@ namespace BAL.Services.MealOrder
                     FilePath = x.StudentGroup.FilePath,
                     Id = x.StudentGroup.Id,
                     IsPublished = x.StudentGroup.IsPublished,
-                    MealSessionId = x.StudentGroup.MealSessionId,
-                    MealSessionName = x.StudentGroup.MealSessionName,
+                    //MealSessionId = x.StudentGroup.MealSessionId,
+                    //MealSessionName = x.StudentGroup.MealSessionName,
                     Name = x.StudentGroup.Name,
                     OutletId = x.StudentGroup.OutletId,
                     OutletTermId = x.StudentGroup.OutletTermId,
@@ -223,6 +223,24 @@ namespace BAL.Services.MealOrder
         }
         #endregion
 
+        #region Student Group Order
+        public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear)
+        {
+            var result = await this._uow.TokenOrders.CreateStudentGroupOrderAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, clear);
+
+            return result;
+        }
+
+        public async Task<StudentGroupTokenOrderSummaryDTO> GetStudentGroupOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetailDTO> mealSessionDetailsDto)
+        {
+            var mealSessionDetails = Mapper.Map<List<MealSessionDetail>>(mealSessionDetailsDto);
+            var result = await this._uow.TokenOrders.GetStudentGroupOrderSummaryAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, mealSessionDetails);
+
+            return result;
+
+        }
+
+        #endregion  
         #region TokensOrderHistoryHistory
 
         public async Task<PagedEntity<TokensOrderHistoryDTO>> GetTokensOrderHistorysAsync(BaseFilter filter)

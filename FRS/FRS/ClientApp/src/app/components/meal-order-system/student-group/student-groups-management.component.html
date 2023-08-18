@@ -52,7 +52,8 @@
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="editGroup(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
     <a *ngIf="!canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="editGroup(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteGroup(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
-    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="openTokenOrder(row)"><i class="fa" aria-hidden="true"></i> Bulk Meal Order</a>
+    <!--<a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="openTokenOrder(row)"><i class="fa" aria-hidden="true"></i> Bulk Meal Order</a>-->
+    <a *ngIf="canManageStudents && row.type == 'Others'" class="btn btn-link btn-xs" href="javascript:;" (click)="openStudentGroupSummary(row)"><i class="fa" aria-hidden="true"></i> Bulk Order Summary</a>
     <a *ngIf="canManageStudents && row.type == 'Meal Plan'" class="btn btn-link btn-xs" href="javascript:;" (click)="openMealPlanSummary(row)"><i class="fa" aria-hidden="true"></i> Meal Plan Summary</a>
   </ng-template>
 </div>

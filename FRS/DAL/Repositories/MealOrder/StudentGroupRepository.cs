@@ -12,6 +12,7 @@ using DAL.Filters;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
 using System.Transactions;
+using static DAL.Core.Constants;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -37,7 +38,34 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        public async Task<List<StudentGroup>> GetAllStudentGroupsAsync(DateTime? orderDate)
+        {
+            var date = orderDate != null ? orderDate?.Date : DateTime.Today;
+
+            IQueryable<StudentGroup> query = _appContext.StudentGroups.Where(t => t.IsActive &&
+                                                    t.IsPublished && t.Type == StudentMealType.MEAL_PLAN &&
+                                                    t.StartDate.HasValue && t.StartDate.Value <= date &&
+                                                    t.EndDate.HasValue && date <= t.EndDate.Value);
+
+            return query.ToList();
+        }
+
         #endregion
+
+        public async Task<string> GenerateCode(int id)
+        {
+            string code = string.Empty;
+            var outlet = await _appContext.Outlets.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (outlet != null)
+            {
+                int sgCount = await _appContext.StudentGroups.CountAsync(e => e.OutletId == id && e.IsActive) + 1;
+                code = string.Format("{0}{1}{2}{3}", "SG", outlet.Id, DateTime.UtcNow.ToString("yyyyMMddHHmm"), sgCount);
+            }
+
+            return code;
+        }
+
         public async Task<StudentGroup> GetByIdAsync(int id)
         {
             var group = id > 0 ? await GetAsync(id) :
@@ -45,7 +73,7 @@ namespace DAL.Repositories.MealOrder
             return group;
         }
 
-        public async Task<BaseOperationResponse> CreateAsync(StudentGroup group, List<StudentGroupDetail> groupDetails)
+        public async Task<BaseOperationResponse> CreateAsync(StudentGroup group, List<StudentGroupDetail> groupDetails, List<StudentGroupSession> sessions)
         {
             var result = new BaseOperationResponse();
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
@@ -108,7 +136,8 @@ namespace DAL.Repositories.MealOrder
 
         }
 
-        public async Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<StudentGroupDetail> groupDetails)
+public async Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<StudentGroupDetail> groupDetails, List<StudentGroupSession> groupSessions)
+
         {
             var result = new BaseOperationResponse();
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
@@ -117,8 +146,21 @@ namespace DAL.Repositories.MealOrder
             {
                 var f = await GetSingleOrDefaultAsync(e => e.Id == group.Id);
 
+                //delete old meal sessions
+                var selectedMealSessionIds = groupSessions.Select(a => a.MealSessionId);
+                var sessions = this._appContext.StudentGroupSessions.Where(e => e.StudentGroupId == group.Id);
+
+                var toBeDeleted = sessions.Where(e => !selectedMealSessionIds.Contains(e.MealSessionId));
+                this._appContext.StudentGroupSessions.RemoveRange(toBeDeleted);
+
+                var toBeAdded = selectedMealSessionIds.Except(sessions.Select(e => e.MealSessionId));
+
+                toBeAdded.ToList().ForEach(e => {
+                    this._appContext.StudentGroupSessions.AddAsync(new StudentGroupSession { StudentGroupId = group.Id, MealSessionId = e });
+                });
+
                 //check if meal session or type has been changed
-                if (f.Type != group.Type || f.MealSessionId != group.MealSessionId || 
+                if (f.Type != group.Type || (toBeDeleted.Any() || toBeAdded.Any()) ||
                     (f.DeliveryStartDate.HasValue && group.DeliveryStartDate.HasValue && f.DeliveryStartDate.Value.Date != group.DeliveryStartDate.Value.Date) || 
                     (f.DeliveryEndDate.HasValue && group.DeliveryEndDate.HasValue && f.DeliveryEndDate.Value.Date != group.DeliveryEndDate.Value.Date))
                 {
@@ -133,6 +175,7 @@ namespace DAL.Repositories.MealOrder
                         _appContext.TokenOrders.Update(order);
                     }
                 }
+
 
                 var detailsToDelete = this._appContext.StudentGroupDetails.Where(x => x.StudentGroupId == f.Id);
 

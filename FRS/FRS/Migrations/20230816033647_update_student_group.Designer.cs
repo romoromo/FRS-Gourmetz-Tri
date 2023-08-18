@@ -4,14 +4,16 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230816033647_update_student_group")]
+    partial class update_student_group
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5783,6 +5785,8 @@ namespace FRS.Migrations
 
                     b.Property<bool>("IsPublished");
 
+                    b.Property<int?>("MealSessionId");
+
                     b.Property<string>("Name");
 
                     b.Property<int?>("OutletId");
@@ -5806,6 +5810,8 @@ namespace FRS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedBy");
+
+                    b.HasIndex("MealSessionId");
 
                     b.HasIndex("OutletId");
 
@@ -5898,39 +5904,6 @@ namespace FRS.Migrations
                     b.HasIndex("UpdatedBy");
 
                     b.ToTable("StudentGroupMealPlans");
-                });
-
-            modelBuilder.Entity("DAL.Models.MealOrder.StudentGroupSession", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CreatedBy");
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<int>("MealSessionId");
-
-                    b.Property<int>("StudentGroupId");
-
-                    b.Property<int?>("UpdatedBy");
-
-                    b.Property<DateTime>("UpdatedDate");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("MealSessionId");
-
-                    b.HasIndex("StudentGroupId");
-
-                    b.HasIndex("UpdatedBy");
-
-                    b.ToTable("StudentGroupSessions");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentInterestGroup", b =>
@@ -11939,6 +11912,10 @@ namespace FRS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedBy");
 
+                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealSession")
+                        .WithMany()
+                        .HasForeignKey("MealSessionId");
+
                     b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
                         .WithMany()
                         .HasForeignKey("OutletId");
@@ -11995,27 +11972,6 @@ namespace FRS.Migrations
 
                     b.HasOne("DAL.Models.MealOrder.StudentGroup", "StudentGroup")
                         .WithMany()
-                        .HasForeignKey("StudentGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy");
-                });
-
-            modelBuilder.Entity("DAL.Models.MealOrder.StudentGroupSession", b =>
-                {
-                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy");
-
-                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealSession")
-                        .WithMany()
-                        .HasForeignKey("MealSessionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DAL.Models.MealOrder.StudentGroup", "StudentGroup")
-                        .WithMany("MealSessions")
                         .HasForeignKey("StudentGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 

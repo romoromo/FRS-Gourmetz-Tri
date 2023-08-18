@@ -16,15 +16,15 @@ import { Permission } from 'src/app/models/permission.model';
 import { AlertService, MessageSeverity } from 'src/app/services/alert.service';
 import { AppTranslationService } from 'src/app/services/app-translation.service';
 import { AccountService } from 'src/app/services/account.service';
-import { StudentGroup, StudentGroupSession } from 'src/app/models/meal-order/student-group.model';
+import { StudentGroup } from 'src/app/models/meal-order/student-group.model';
 
 
 @Component({
-  selector: 'meal-plan-summary',
-  templateUrl: './meal-plans-summary.component.html',
-  styleUrls: ['./meal-plans-summary.component.css']
+  selector: 'individual-order-summary',
+  templateUrl: './individual-orders-summary.component.html',
+  styleUrls: ['./individual-orders-summary.component.css']
 })
-export class MealPlanSummaryComponent implements OnInit {
+export class StudentGroupOrderSummaryComponent implements OnInit {
   private subscription: Subscription = new Subscription();
   columns: any[] = [];
   rows: ClassBatch[] = [];
@@ -43,16 +43,12 @@ export class MealPlanSummaryComponent implements OnInit {
   storeId: string;
   delvdate: Date = new Date();
   delvdateTo: Date = new Date();
-  minDate: Date = new Date();
-  maxDate: Date = new Date();
-
   dishTypeId: string;
   mealSessionDetailId: string;
-  sessions: StudentGroupSession[];
+  mealSessionId: string;
   isClear: boolean;
   title: string;
   group: StudentGroup;
-  mealSessionId: string;
 
   @Input() isHideHeader: boolean;
   @Input() outletId: string;
@@ -62,32 +58,24 @@ export class MealPlanSummaryComponent implements OnInit {
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog, private mealService: MealService, private dishService: DishService, private menuService: MenuService,
-    @Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<MealPlanSummaryComponent>) {
-    this.title = 'Meal Plan ';
+    @Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<StudentGroupOrderSummaryComponent>) {
+    this.title = 'Student Order';
     if (data.group) {
       this.group = data.group;
-      this.minDate = new Date(this.group.deliveryStartDate);
-      this.maxDate = new Date(this.group.deliveryEndDate);
       this.delvdate = new Date(this.group.deliveryStartDate);
       this.delvdateTo = new Date(this.group.deliveryEndDate);
-      this.sessions = this.group.sessions;
+      this.mealSessionId = this.group.mealSessionId;
     }
 
     if (typeof (data.group.name) != typeof (undefined)) {
-      this.title += `for ${data.group.name}`;
+      this.title += ` for ${data.group.name}`;
     }
 
     if (data.group.mealSessionName) {
       this.title += ` (${data.group.mealSessionName})`;
     }
     this.outletId = data.outletId;
-
-    this.getMealSessions(this.delvdate, this.delvdateTo);
   }
-
-  public dateFilter = (d: Date | null): boolean => {
-    return (d >= this.minDate) && (d <= this.maxDate);
-  };
 
   getDeliveryLocations() {
     let filter = new Filter();
@@ -125,11 +113,11 @@ export class MealPlanSummaryComponent implements OnInit {
     }
     
     this.getMealSessions(this.delvdate, this.delvdateTo);
-    this.getMealPlanSummary(this.delvdate, this.delvdateTo);
+    this.getStudentGroupOrderSummary(this.delvdate, this.delvdateTo);
   }
 
   onChangeStore() {
-    this.getMealPlanSummary(this.delvdate, this.delvdateTo);
+    this.getStudentGroupOrderSummary(this.delvdate, this.delvdateTo);
   }
 
   getMealSessions(d: Date, dTo: Date) {
@@ -141,9 +129,7 @@ export class MealPlanSummaryComponent implements OnInit {
           this.mealSessionDetails.forEach((d, i, details) => {
             let indx = mealSessions && mealSessions.length > 0 ? mealSessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
             if (indx < 0) {
-              let ms = this.sessions && this.sessions.length > 0 ? this.sessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
-              if (ms > -1)
-                mealSessions.push({ mealSessionId: d.mealSessionId, mealSessionName: d.mealSessionName });
+              mealSessions.push({ mealSessionId: d.mealSessionId, mealSessionName: d.mealSessionName });
             }
           })
         }
@@ -156,9 +142,9 @@ export class MealPlanSummaryComponent implements OnInit {
         })
   }
 
-  getMealPlanSummary(d: Date, dTo: Date) {
+  getStudentGroupOrderSummary(d: Date, dTo: Date) {
     if (this.outletId && this.storeId) {
-      this.menuService.getMealPlanSummary(this.group.id, this.outletId, this.storeId, d.toDateString(), dTo.toDateString(), this.mealSessionId)
+      this.menuService.getStudentGroupOrderSummary(this.group.id, this.outletId, this.storeId, d.toDateString(), dTo.toDateString(), this.mealSessionId)
         .subscribe(results => {
 
           this.columns = [];
@@ -223,16 +209,14 @@ export class MealPlanSummaryComponent implements OnInit {
     //  return;
     //}
 
-    if (!confirm(`Are you sure you want to assign this dish to the meal plan?`)) return;
+    if (!confirm(`Are you sure you want to assign dish to the group?`)) return;
     this.isSaving = true;
     this.isClear = clear;
     //this.alertService.startLoadingMessage("Processing orders...");
-    this.menuService.bulkMealPlanOrder(this.group.id, this.outletId, this.storeId, this.delvdate.toDateString(), this.delvdateTo.toDateString(), this.dishTypeId, this.mealSessionId, this.accountService.currentUser.id, clear)
+    this.menuService.bulkStudentGroupOrder(this.group.id, this.outletId, this.storeId, this.delvdate.toDateString(), this.delvdateTo.toDateString(), this.dishTypeId, this.mealSessionId, this.accountService.currentUser.id, clear)
       .subscribe(response => {
         if (response.isSuccess) {
-          this.alertService.showMessage("Success", `Dishes are assigned to the meal plan.`, MessageSeverity.success);
-          this.delvdate = new Date(this.minDate);
-          this.delvdateTo = new Date(this.maxDate);
+          this.alertService.showMessage("Success", `Dishes are assigned to the group.`, MessageSeverity.success);
           this.onChangeStore();
         } else {
           this.alertService.showMessage("Error", `Something went wrong with the assignment. ${response.message}`, MessageSeverity.error);
@@ -253,7 +237,7 @@ export class MealPlanSummaryComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  get canManageMealPlans() {
+  get canManageStudentGroupOrders() {
     return true; //this.accountService.userHasPermission(Permission.manageClassBatchesPermission)
   }
 
