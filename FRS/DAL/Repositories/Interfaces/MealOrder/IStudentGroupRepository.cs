@@ -16,5 +16,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<PagedEntity<StudentGroup>> GetStudentGroupsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<StudentGroupDetail> groupDetails);
         Task<PagedEntity<OutletTerm>> GetOutletTermsAsync(BaseFilter filter);
+
+        Task<bool> CreateOrUpdateStudentGroupDetailAsync(int StudentGroupId, int StudentId, bool IsActive);
     }
 }

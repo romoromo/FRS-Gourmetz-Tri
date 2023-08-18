@@ -23,6 +23,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<PagedEntity<TokenOrder>> GetCancellationOrdersAsync(OrderCancellationFilter filter);
         Task<BaseOperationResponse> BulkCancelCart();
         Task<List<TokenOrder>> GetUnupdatedTokenOrdersAsync();
+        Task<List<MealPlanOrder>> GetUnupdatedMealPlanOrdersAsync();
         Task<BaseOperationResponse> UpdateAsync(TokenOrder order, List<TokenOrdered> tokenOrders);
         Task<BaseOperationResponse> BulkCollectAsync(List<OrderCollectionDTO> orders);
         Task<BaseOperationResponse> BulkReturnAsync(List<OrderReturnDTO> orders);

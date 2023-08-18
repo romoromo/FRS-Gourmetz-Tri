@@ -416,6 +416,13 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<bool> CreateOrUpdateStudentGroupDetailAsync(int StudentGroupId, int StudentId, bool IsActive)
+        {
+            
+            var result = await this._uow.StudentGroups.CreateOrUpdateStudentGroupDetailAsync(StudentGroupId, StudentId, IsActive);
+            return result;
+        }
+
         #endregion
 
         #region Student Vouchers

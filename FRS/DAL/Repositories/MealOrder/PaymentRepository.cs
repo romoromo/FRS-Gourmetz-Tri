@@ -10,6 +10,7 @@ using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
 using DAL.Models.MealOrder;
+using System.Transactions;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -103,6 +104,8 @@ namespace DAL.Repositories.MealOrder
                             tOrder.Status = tOrder.Status == "cancelled" ? tOrder.Status : "paid";
                             _appContext.MealPlanOrders.Update(tOrder);
                             _appContext.SaveChanges();
+
+                            if (t.StudentGroupId.HasValue && t.ProfileId.HasValue) await CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
                         }
                     }
                 }
@@ -162,6 +165,8 @@ namespace DAL.Repositories.MealOrder
                             tOrder.Status = tOrder.Status == "cancelled" ? tOrder.Status : "paid";
                             _appContext.MealPlanOrders.Update(tOrder);
                             _appContext.SaveChanges();
+
+                            if(t.StudentGroupId.HasValue && t.ProfileId.HasValue) await CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
                         }
                     }
                 }
@@ -177,6 +182,45 @@ namespace DAL.Repositories.MealOrder
             }
 
             return result;
+        }
+
+        public async Task<bool> CreateOrUpdateStudentGroupDetailAsync(int StudentGroupId, int StudentId, bool IsActive)
+        {
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                            new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
+                            TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var ori = await _appContext.StudentGroupDetails.FirstOrDefaultAsync(e => e.StudentGroupId == StudentGroupId && e.StudentId == StudentId);
+
+                if (ori == null)
+                {
+                    ori = new StudentGroupDetail();
+                    ori.StudentGroupId = StudentGroupId;
+                    ori.StudentId = StudentId;
+                    ori.IsActive = IsActive;
+
+                    var f = await _appContext.StudentGroupDetails.AddAsync(ori);
+                }
+                else
+                {
+                    ori.IsActive = IsActive;
+
+                    _appContext.StudentGroupDetails.Update(ori);
+                }
+
+
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    scope.Complete();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
         }
 
 

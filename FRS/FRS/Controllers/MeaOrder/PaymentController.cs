@@ -210,6 +210,8 @@ namespace FRS.Controllers
                             dt.PaymentId = vm.Id;
                             if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
                             var r = await this._tokenService.UpdateMealPlanOrderAsync(dt);
+
+                            if (t.StudentGroupId.HasValue && t.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
                         }
                     }
 
