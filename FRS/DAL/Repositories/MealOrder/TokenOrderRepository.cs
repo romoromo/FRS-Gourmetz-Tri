@@ -181,7 +181,7 @@ namespace DAL.Repositories.MealOrder
             return query.ToList();
         }
 
-        public async Task<List<MealPlanOrder>> GetUnupdatedMealPanOrdersAsync()
+        public async Task<List<MealPlanOrder>> GetUnupdatedMealPlanOrdersAsync()
         {
             IQueryable<MealPlanOrder> query = _appContext.MealPlanOrders.Where(t => t.Status != "paid" && t.Status != "cancelled" && t.Payment != null && t.Payment.Status == "SUCCESS");
 

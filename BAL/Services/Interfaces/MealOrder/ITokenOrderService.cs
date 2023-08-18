@@ -21,6 +21,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<PagedEntity<TokenOrderDTO>> GetTokenOrdersAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateTokenOrderAsync(TokenOrderDTO dto);
         Task<List<TokenOrderDTO>> GetUnupdatedTokenOrdersAsync();
+        Task<List<MealPlanOrderDTO>> GetUnupdatedMealPlanOrdersAsync();
 
         Task<BaseOperationResponse> CreateTokensOrderHistoryAsync(TokensOrderHistoryDTO dto, TokenOrder tokenOrder = null);
         Task<BaseOperationResponse> DeleteTokensOrderHistoryAsync(int id);

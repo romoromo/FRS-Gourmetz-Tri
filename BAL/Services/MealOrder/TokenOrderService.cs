@@ -79,6 +79,12 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<List<MealPlanOrderDTO>> GetUnupdatedMealPlanOrdersAsync()
+        {
+            var result = Mapper.Map<List<MealPlanOrderDTO>>(await this._uow.TokenOrders.GetUnupdatedMealPlanOrdersAsync());
+            return result;
+        }
+
         public async Task<TokenOrderDTO> GetTokenOrderByIdAsync(int id)
         {
             return Mapper.Map<TokenOrderDTO>(await this._uow.TokenOrders.GetByIdAsync(id));

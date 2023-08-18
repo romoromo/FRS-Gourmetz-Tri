@@ -32,17 +32,18 @@ namespace FRS.Controllers
     public class PaymentController : BaseController
     {
         private IPaymentService _service;
+        private IStudentService _studentService;
         private ITokenOrderService _tokenService;
         readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
 
-        public PaymentController(IPaymentService service, ILogger<PaymentController> logger, ITokenOrderService tokenService, IEmailSender emailSender)
+        public PaymentController(IPaymentService service, ILogger<PaymentController> logger, ITokenOrderService tokenService, IEmailSender emailSender, IStudentService studentservice)
         {
             _service = service;
             _logger = logger;
             _tokenService = tokenService;
             _emailSender = emailSender;
-
+            _studentService = studentservice;
         }
 
         #region Payment Types
@@ -211,7 +212,7 @@ namespace FRS.Controllers
                             if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
                             var r = await this._tokenService.UpdateMealPlanOrderAsync(dt);
 
-                            if (t.StudentGroupId.HasValue && t.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
+                            if (to.StudentGroupId.HasValue && to.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(to.StudentGroupId.Value, to.ProfileId.Value, true);
                         }
                     }
 
