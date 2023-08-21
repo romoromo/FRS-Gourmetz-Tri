@@ -76,8 +76,8 @@ namespace BAL.Services.MealOrder
                     try
                     {
                         string source = Path.Combine(Directory.GetCurrentDirectory(), banner.FilePath);
-                        string ext = Path.GetExtension(source);
-                        string fname = Path.GetFileName(source) + ext;
+                        //string ext = Path.GetExtension(source);
+                        string fname = Path.GetFileName(source);
                         var relativePath = Path.Combine("Resources", "Images", "OrderPortalContent");
                         string destinationFolder = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
                         if (!Directory.Exists(destinationFolder)) Directory.CreateDirectory(destinationFolder);
