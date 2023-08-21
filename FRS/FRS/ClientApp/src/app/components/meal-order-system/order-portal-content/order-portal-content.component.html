@@ -22,7 +22,72 @@
           <textarea rows="5" matInput type="text" [disabled]="!canManageOrderPortalContents" id="portalContentAnnouncement" autocomplete="off" name="portalContentAnnouncement" placeholder="Announcement" #portalContentAnnouncement="ngModel" [(ngModel)]="portalContentEdit.announcement" required></textarea>
         </mat-form-field>
       </div>
+      <div class="col-sm-12">
+        <div class="col-sm-12" style="padding: 0;">
+          <h4>Banners</h4>
+        </div>
+        <div class="col-md-12">
+          <button type="button" mat-button (click)="addBanner()">
+            <mat-icon>
+              add
+            </mat-icon> Add Banner
+          </button>
+        </div>
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Thumbnail</th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let banner of portalContentEdit.banners;let i = index">
+              <tr>
+                <td>{{i + 1}}</td>
+                <td>
+                  <div>
+                    <div>
+                      <file-upload showTxt="false" (onUploadFinished)="uploadBannerImageFinished($event, banner)" [useOriginalFilename]="false"></file-upload>
+                    </div>
+                  </div>
+                  <div style="padding:10px; border: 1px dashed #808080;text-align:center;min-height:100px;min-width:100px">
+                    <img *ngIf="banner.imageFilePath" [src]="getFileImage(banner.imageFilePath)" alt="icon" style="width:100px; height:100px;" />
+                  </div>
+                  <div class="clearfix"></div>
+                  <div class="col-md-6 text-center" *ngIf="banner.imageFilePath">
+                    <a class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="removePhoto(banner)"><i class="fa fa-trash-o" aria-hidden="true"></i> Remove</a>
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" [disabled]="!canManageOrderPortalContents" type="text" id="banner-{{i}}-title" name="banner-{{i}}-title" placeholder="Title" [(ngModel)]="banner.title" required [ngModelOptions]="{standalone: true}" />
+                  </mat-form-field>
+                  <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" [disabled]="!canManageOrderPortalContents" type="text" id="banner-{{i}}-subtitle" name="banner-{{i}}-subtitle" placeholder="Subtitle" [(ngModel)]="banner.subtitle" [ngModelOptions]="{standalone: true}" />
+                  </mat-form-field>
+                  <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" [disabled]="!canManageOrderPortalContents" type="number" id="banner-{{i}}-order" name="banner-{{i}}-order" placeholder="Order" [(ngModel)]="banner.order" [ngModelOptions]="{standalone: true}" />
+                  </mat-form-field>
 
+                  <div class="col-md-12" style="font-size:12px;">Downloadable File</div>
+                  <div class="col-md-12">
+                    <file-upload showTxt="false" (onUploadFinished)="uploadBannerFinished($event, banner)" [useOriginalFilename]="true" [showFilename]="false" fileTypes="*/*"></file-upload>
+                  </div>
+                  <span class="upload" (click)="downloadFile(banner.filePath)">
+                    {{banner.fileName}}
+                  </span>
+                  <!--<input type="hidden" [ngModel]="banner.order + 1" value="{{i}}" [ngModelOptions]="{standalone: true}" />-->
+                </td>
+                <td>
+                  <a *ngIf="canManageOrderPortalContents" class="btn btn-link btn-xs" href="javascript:;" (click)="removeBanner(banner)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">

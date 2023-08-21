@@ -30,4 +30,6 @@ export class OrderPortalBanner {
   public orderPortalContentId: string;
   public fileName: string;
   public filePath: string;
+  public imageFileName: string;
+  public imageFilePath: string;
 }

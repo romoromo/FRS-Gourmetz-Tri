@@ -20,6 +20,10 @@ namespace BAL.DTO.MealOrder
 
         public int? OrderPortalContentId { get; set; }
 
+        public string ImageFileName { get; set; }
+
+        public string ImageFilePath { get; set; }
+
         public string FileName { get; set; }
 
         public string FilePath { get; set; }

@@ -34,6 +34,18 @@ namespace DAL.Models.MealOrder
         [Sieve(CanFilter = true, CanSort = true)]
         public int? OrderPortalContentId { get; set; }
 
+        [Sieve(CanFilter = true, CanSort = true)]
+        public string FileName { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        public string FilePath { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        public string ImageFileName { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        public string ImageFilePath { get; set; }
+
         [ForeignKey("OrderPortalContentId")]
         public virtual OrderPortalContent OrderPortalContent { get; set; }
 

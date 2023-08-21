@@ -775,10 +775,12 @@ namespace BAL.Mapping
             CreateMap<OrderPortalContent, OrderPortalContentDTO>();
             CreateMap<OrderPortalContentDTO, OrderPortalContent>();
 
-            CreateMap<OrderPortalBanner, OrderPortalBannerDTO>()
-                .ForMember(e => e.FilePath, map => map.MapFrom(e => e.BannerImage != null && e.BannerImage != null ? e.BannerImage.Path : String.Empty));
+
+            CreateMap<OrderPortalBanner, OrderPortalBannerDTO>();
+            //.ForMember(e => e.ImageFilePath, map => map.MapFrom(e => e.BannerImage != null && e.BannerImage != null ? e.BannerImage.Path : String.Empty));
 
             CreateMap<OrderPortalBannerDTO, OrderPortalBanner>();
+                //.ForMember(d => d.BannerImage, map => map.MapFrom(s => new File { Path = s.ImageFilePath, FileName = s.ImageFileName, Type = FileType.Icon.ToString() }));
         }
     }
 }

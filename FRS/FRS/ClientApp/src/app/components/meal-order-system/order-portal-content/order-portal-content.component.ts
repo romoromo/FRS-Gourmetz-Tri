@@ -6,7 +6,9 @@ import { Permission } from '../../../models/permission.model';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { MealService } from 'src/app/services/meal-order/meal.service';
 import { OrderPortalService } from 'src/app/services/order-portal.service';
-import { OrderPortalContent } from 'src/app/models/meal-order/order-portal-content.model';
+import { OrderPortalBanner, OrderPortalContent } from 'src/app/models/meal-order/order-portal-content.model';
+import { FileService } from 'src/app/services/file.service';
+import { getBaseUrl } from 'src/app/app.module';
 
 
 @Component({
@@ -28,13 +30,13 @@ export class OrderPortalContentEditorComponent {
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
   public changesCancelledCallback: () => void;
-
+  public fileUploadResponse: { dbPath: '', fileId: null, fileName: '' };
 
   @ViewChild('f')
   private form;
 
   constructor(private alertService: AlertService, private portalService: OrderPortalService, private accountService: AccountService,
-    public dialogRef: MatDialogRef<OrderPortalContentEditorComponent>, private mealService: MealService,
+    public dialogRef: MatDialogRef<OrderPortalContentEditorComponent>, private mealService: MealService, private fileService: FileService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.portalContent) != typeof (undefined)) {
       this.outletId = data.outletId;
@@ -142,6 +144,7 @@ export class OrderPortalContentEditorComponent {
     this.selectedValues = {};
     this.portalContentEdit = new OrderPortalContent();
     this.portalContentEdit.outletId = this.outletId;
+    this.portalContentEdit.banners = [];
     return this.portalContentEdit;
   }
 
@@ -161,7 +164,42 @@ export class OrderPortalContentEditorComponent {
     }
   }
 
+  addBanner(compo) {
+    let dc = new OrderPortalBanner();
+    dc.orderPortalContentId = this.portalContentEdit.id;
+    if (!this.portalContentEdit.banners) this.portalContentEdit.banners = [];
+    this.portalContentEdit.banners.push(dc);
+  }
+  removeBanner(compo) {
+    if (!this.portalContentEdit.banners) this.portalContentEdit.banners = [];
+    const indx = this.portalContentEdit.banners.indexOf(compo);
+    if (indx > -1)
+      this.portalContentEdit.banners.splice(indx, 1);
+  }
 
+  public uploadBannerImageFinished = (event, banner) => {
+    this.fileUploadResponse = event;
+    banner.imageFilePath = this.fileUploadResponse ? this.fileUploadResponse.dbPath : null;
+  }
+
+  removePhoto(banner) {
+    banner.imageFilePath = null;
+    banner.imageFileName = null;
+  }
+
+  public uploadBannerFinished = (event, banner) => {
+    this.fileUploadResponse = event;
+    banner.fileName = event.fileName;
+    banner.filePath = this.fileUploadResponse ? this.fileUploadResponse.dbPath : null;
+  }
+
+  getFileImage(path) {
+    return this.fileService.getFile(path);
+  }
+
+  downloadFile(path) {
+    window.open(getBaseUrl() + '/gateway/Download/FileByPath?filePath=/' + encodeURIComponent(path), '_blank');
+  }
 
   get canManageOrderPortalContents() {
     return true; //this.accountService.userHasPermission(Permission.manageMOSOrderMgtOrderPortalContentsPermission)
