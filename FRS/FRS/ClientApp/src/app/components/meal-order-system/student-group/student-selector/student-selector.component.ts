@@ -33,13 +33,15 @@ export class StudentSelectorComponent implements OnInit {
   columns: any[] = [];
   rows: Student[] = [];
   rowsCache: Student[] = [];
+  allRows: Student[] = [];
+  allRowsCache: Student[] = [];
   outletId: string;
   editOutlet: Outlet;
   selectedCaterers: CatererOutlet[];
   public classes: Class[] = [];
   public interestGroups: InterestGroup[] = [];
   private selected: any[] = [];
-  private allRowsSelected = false;
+  //private allRowsSelected = false;
 
   filterIsFas: boolean;
   filterClassId: string;
@@ -60,6 +62,9 @@ export class StudentSelectorComponent implements OnInit {
     this.outletId = data.outletId;
     if (typeof (data.students) != typeof (undefined)) {
       this.selectedStudents = data.students;
+      let selected = data.students;
+      this.selected.splice(0, selected.length);
+      //this.selected.push(...selected);
     }
   }
 
@@ -98,6 +103,11 @@ export class StudentSelectorComponent implements OnInit {
     this.loadData();
     this.getClasses();
     this.getInterestGroups();
+    //this.loadAllData();
+  }
+
+  selectFn(ev) {
+    console.log(ev);
   }
 
   onCheckboxChangeFn(ev) {
@@ -106,7 +116,25 @@ export class StudentSelectorComponent implements OnInit {
 
   onSelect({ selected }) {
     console.log(selected);
-    this.selected = selected;
+    //this.selected = selected;
+    let length = selected.length;
+    if (selected.length == 0) length = this.rows.length;
+
+    this.selected.splice(0, length);
+    this.selected.push(...selected);
+    this.rows.forEach(row => (row.checked = this.selected.findIndex(e => e.id == row.id) > -1));
+  }
+
+  selectRowsOnInit(): void {
+    let selected = this.rows.filter(e => e.checked);
+    this.onSelect({ selected: selected });
+    //this.rows.forEach(row => {
+    //  // Set the isChecked property based on your criteria
+    //  // For example, you can select all rows where isChecked is true
+    //  if (row.checked) {
+    //    this.onSelect({ selected: [row] });
+    //  }
+    //});
   }
 
   getClasses() {
@@ -140,7 +168,8 @@ export class StudentSelectorComponent implements OnInit {
 
 
   loadData(ev?: any) {
-    this.filter.pageSize = 10;
+    this.filter.pageSize = -1;
+    this.filter.page = 1;
 
     if (ev) {
       this.filter.page = ev.offset;
@@ -155,7 +184,7 @@ export class StudentSelectorComponent implements OnInit {
     let ig = this.filterIGId ? '(StudentInterestGroupId)==' + this.filterIGId + ',' : '';
     let fas = this.filterIsFas != null ? '(IsFAS)==' + this.filterIsFas + ',' : '';
     this.filter.filters = f + c + ig + fas + '(IsActive)==true,(Name)@=' + this.keyword;
-
+    this.alertService.startLoadingMessage();
     this.studentService.getStudentsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
@@ -180,7 +209,8 @@ export class StudentSelectorComponent implements OnInit {
 
         this.rowsCache = [...students];
         this.rows = students;
-
+        this.selectRowsOnInit();
+        this.alertService.stopLoadingMessage();
       },
         error => {
           this.alertService.stopLoadingMessage();
@@ -190,6 +220,36 @@ export class StudentSelectorComponent implements OnInit {
         });
   }
 
+  loadAllData(ev?: any) {
+    let allFilter = new Filter(-1, -1);
+    allFilter.pageSize = -1;
+    allFilter.page = -1;
+
+    let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
+    let c = this.filterClassId ? '(ClassId)==' + this.filterClassId + ',' : '';
+    let ig = this.filterIGId ? '(StudentInterestGroupId)==' + this.filterIGId + ',' : '';
+    let fas = this.filterIsFas != null ? '(IsFAS)==' + this.filterIsFas + ',' : '';
+    allFilter.filters = f + c + ig + fas + '(IsActive)==true,(Name)@=' + this.keyword;
+
+    this.studentService.getStudentsByFilter(allFilter)
+      .subscribe(results => {
+        //this.pagedResult = results;
+
+        //console.log("result page: ", this.pagedResult)
+
+        let students = results.pagedData;
+
+        this.allRowsCache = [...students];
+        this.allRows = students;
+
+      },
+        error => {
+          this.alertService.stopLoadingMessage();
+
+          //this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
+          //  MessageSeverity.error);
+        });
+  }
 
   onSearchChanged(value: string) {
     this.keyword = value;
@@ -220,6 +280,10 @@ export class StudentSelectorComponent implements OnInit {
     this.filterIGId = null;
     this.filterIsFas = null;
     this.loadData(null);
+  }
+
+  toggleSelectAll() {
+   // this.selected = this.allRowsSelected ? this.allRows : [];
   }
 
   public save = () => {

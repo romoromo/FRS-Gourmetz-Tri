@@ -17,7 +17,7 @@
       </mat-option>
     </mat-select>
     <mat-label>is FAS Filter:</mat-label>
-    <mat-radio-group id="fas" name="fas" name="FAS Student" (change)="onFASChange($event)" [(ngModel)]="filterIsFas" #fas="ngModel">
+    <mat-radio-group id="fas" name="fas" (change)="onFASChange($event)" [(ngModel)]="filterIsFas" #fas="ngModel">
       <mat-radio-button [value]="true">Yes</mat-radio-button>&nbsp;
       <mat-radio-button [value]="false">No</mat-radio-button>&nbsp;
     </mat-radio-group>
@@ -31,16 +31,9 @@
                    [footerHeight]="35"
                    [columns]="columns"
                    [columnMode]="'force'"
-                   [externalPaging]="true"
-                   [externalSorting]="true"
-                   [count]="pagedResult.totalCount"
-                   [offset]="pagedResult.filter.page"
-                   [limit]="pagedResult.filter.pageSize"
-                   (page)="loadData($event)"
-                   (sort)="loadData($event)"
+                   [limit]="10"
                    [selected]="selected"
                    [selectionType]="'checkbox'"
-                   [selectAllRowsOnPage]="true"
                    (select)="onSelect($event)">
     </ngx-datatable>
 
@@ -60,14 +53,9 @@
                  let-value="value"
                  let-i="index"
                  let-isSelected="isSelected"
-                 let-onCheckboxChangeFn="onCheckboxChangeFn"
-                 let-rowCount="rowCount"
-                 let-pageSize="pageSize"
-                 let-curPage="curPage"
-                 let-offset="offset">
+                 let-onCheckboxChangeFn="onCheckboxChangeFn">
       <a class="example-section btn btn-link btn-xs" style="cursor:pointer">
         <mat-checkbox [(ngModel)]="row.checked"
-                      [checked]="isSelected"
                       (change)="onCheckboxChangeFn($event)"></mat-checkbox>
       </a>
     </ng-template>

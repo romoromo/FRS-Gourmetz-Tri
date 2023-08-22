@@ -42,7 +42,7 @@ namespace BAL.DTO.MealOrder
         public int Id { get; set; }
         public int StudentGroupId { get; set; }
         public int StudentId { get; set; }
-
+        public string Name { get; set; }
     }
 
     public class StudentGroupSessionDTO

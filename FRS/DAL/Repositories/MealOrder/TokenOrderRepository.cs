@@ -800,7 +800,7 @@ namespace DAL.Repositories.MealOrder
             return query.ToList();
         }
 
-        public async Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear)
+        public async Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool skip = true)
         {
             var result = new BaseOperationResponse();
             try
@@ -825,21 +825,21 @@ namespace DAL.Repositories.MealOrder
                         return result;
                     }
 
-                    bool hasOrder = _appContext.TokenOrders.Any(e =>
-                                                //studentIds.Contains(e.ProfileId.GetValueOrDefault()) &&
-                                                e.IsActive && e.Status != "cancelled" &&
-                                                e.DeliveryDate.Date >= deliveryDate.Date &&
-                                                e.DeliveryDate.Date <= deliveryDateTo.Date &&
-                                                e.StoreId == storeId &&
-                                                e.Session.MealSessionId == mealSessionId &&
-                                                //e.StudentGroupId == studentGroupId &&
-                                                e.IsActive);
+                    //bool hasOrder = _appContext.TokenOrders.Any(e =>
+                    //                            //studentIds.Contains(e.ProfileId.GetValueOrDefault()) &&
+                    //                            e.IsActive && e.Status != "cancelled" &&
+                    //                            e.DeliveryDate.Date >= deliveryDate.Date &&
+                    //                            e.DeliveryDate.Date <= deliveryDateTo.Date &&
+                    //                            e.StoreId == storeId &&
+                    //                            e.Session.MealSessionId == mealSessionId &&
+                    //                            //e.StudentGroupId == studentGroupId &&
+                    //                            e.IsActive);
 
-                    if (hasOrder)
-                    {
-                        result.Message = "Please cancel previous orders for the selected date range before assigning new orders.";
-                        return result;
-                    }
+                    //if (hasOrder)
+                    //{
+                    //    result.Message = "Please cancel previous orders for the selected date range before assigning new orders.";
+                    //    return result;
+                    //}
 
                     var mealPlans = new List<StudentGroupMealPlan>();
                     var mealPlansToDelete = new List<StudentGroupMealPlan>();
@@ -1006,8 +1006,8 @@ namespace DAL.Repositories.MealOrder
                                                     e.DeliveryDate.Date == mealPlan.DeliveryDate.Date &&
                                                     e.StoreId == storeId && e.IsActive &&
                                                     e.Session.MealSessionId == mealSessionId);
-
-                            if (clear || (existingOrders != null && existingOrders.Any()))
+                            bool _skip = true;
+                            if (skip || (existingOrders != null && existingOrders.Any()))
                             {
                                 foreach (var existingOrder in existingOrders)
                                 {
@@ -1021,11 +1021,12 @@ namespace DAL.Repositories.MealOrder
                                         }
 
                                         SoftDelete(existingOrder);
+                                        _skip = false;
                                     }
 
                                 }
 
-                                if (clear) continue;
+                                if (_skip) continue;
                             }
 
                             var order = new TokenOrder
@@ -1156,7 +1157,7 @@ namespace DAL.Repositories.MealOrder
 
         #region Student Group Order
 
-        public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear)
+        public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool skip = true)
         {
             var result = new BaseOperationResponse();
             try
@@ -1181,21 +1182,21 @@ namespace DAL.Repositories.MealOrder
                         return result;
                     }
 
-                    bool hasOrder = _appContext.TokenOrders.Any(e =>
-                                                //studentIds.Contains(e.ProfileId.GetValueOrDefault()) &&
-                                                e.IsActive && e.Status != "cancelled" &&
-                                                e.DeliveryDate.Date >= deliveryDate.Date &&
-                                                e.DeliveryDate.Date <= deliveryDateTo.Date &&
-                                                e.StoreId == storeId &&
-                                                e.Session.MealSessionId == mealSessionId);
-                                                //e.StudentGroupId == studentGroupId &&
-                                               // e.IsStudentGroupOrder);
+                    //bool hasOrder = _appContext.TokenOrders.Any(e =>
+                    //                            //studentIds.Contains(e.ProfileId.GetValueOrDefault()) &&
+                    //                            e.IsActive && e.Status != "cancelled" &&
+                    //                            e.DeliveryDate.Date >= deliveryDate.Date &&
+                    //                            e.DeliveryDate.Date <= deliveryDateTo.Date &&
+                    //                            e.StoreId == storeId &&
+                    //                            e.Session.MealSessionId == mealSessionId);
+                    //                            //e.StudentGroupId == studentGroupId &&
+                    //                           // e.IsStudentGroupOrder);
 
-                    if (hasOrder)
-                    {
-                        result.Message = "Please cancel previous orders for the selected date range before assigning new orders.";
-                        return result;
-                    }
+                    //if (hasOrder)
+                    //{
+                    //    result.Message = "Please cancel previous orders for the selected date range before assigning new orders.";
+                    //    return result;
+                    //}
 
                     var sessionDetail = _appContext.MealSessionDetails.FirstOrDefault(e => e.IsActive && e.MealSessionId == mealSessionId);
 
@@ -1227,8 +1228,8 @@ namespace DAL.Repositories.MealOrder
                                                     e.DeliveryDate.Date == deliveryDate &&
                                                     e.StoreId == storeId &&
                                                     e.Session.MealSessionId == mealSessionId);
-
-                            if (clear || (existingOrders != null && existingOrders.Any()))
+                            bool _skip = true;
+                            if (skip || (existingOrders != null && existingOrders.Any()))
                             {
                                 foreach (var existingOrder in existingOrders)
                                 {
@@ -1242,11 +1243,12 @@ namespace DAL.Repositories.MealOrder
                                         }
 
                                         SoftDelete(existingOrder);
+                                        _skip = false;
                                     }
 
                                 }
 
-                                if (clear) continue;
+                                if (_skip) continue;
                             }
 
                             bool hasSelectedDish = false;

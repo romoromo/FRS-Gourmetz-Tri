@@ -28,6 +28,7 @@ export class StudentGroupDetail {
   public id: string;
   public studentGroupId: string;
   public studentId: string;
+  public name: string;
 }
 
 export class StudentGroupSession {

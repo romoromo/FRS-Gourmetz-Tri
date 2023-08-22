@@ -95,7 +95,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
       this.newGroup();
     }
 
-    this.getStudents();
+    //this.getStudents();
     this.getTerms();
   }
 
@@ -333,7 +333,8 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
         result.selectedStudents.forEach(student => {
           var detail = new StudentGroupDetail();
           detail.studentId = student.id;
-          detail.studentGroupId = this.groupEdit.id;
+          detail.studentGroupId = this.groupEdit.id ? this.groupEdit.id : '0';
+          detail.name = student.name;
           this.groupEdit.sgdetails.push(detail);
         })
         console.log("final sgdetails: ", this.groupEdit)

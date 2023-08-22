@@ -293,6 +293,8 @@ namespace BAL.Mapping
                 .ForMember(e => e.Sessions, map => map.MapFrom(e => e.MealSessions.Where(f => f.IsActive).ToList()));
 
             CreateMap<StudentGroupDetailDTO, StudentGroupDetail>();
+            CreateMap<StudentGroupDetail, StudentGroupDetailDTO>()
+                .ForMember(e => e.Name, map => map.MapFrom(e => e.Student.Name));
 
             CreateMap<StudentGroupSessionDTO, StudentGroupSession>();
             CreateMap<StudentGroupSession, StudentGroupSessionDTO>();
