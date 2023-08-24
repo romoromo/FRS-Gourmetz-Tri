@@ -267,13 +267,13 @@ export class FasMealOrderSummaryComponent implements OnInit {
     if (!this.outletId || !this.delvdate || !this.delvdateTo || !this.mealSessionId || !this.dishTypeId) return false;
 
     if (this.delvdate.getTime() > this.delvdateTo.getTime()) {
-      alert('Cannot orders on this date. Cut-off limit exceeded.');
+      alert('Cannot create orders on this date. Cut-off limit exceeded.');
 
       return;
     }
 
     if (this.delvdate.getTime() < this.getCutoffDate().getTime()) {
-      alert('Cannot orders on this date. Cut-off limit exceeded.');
+      alert('Cannot create orders on this date. Cut-off limit exceeded.');
 
       return;
     }

@@ -33,12 +33,12 @@
             </mat-select>
           </mat-form-field>
           <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
-            <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [(ngModel)]="groupEdit.startDate" required [ngModelOptions]="{standalone: true}">
+            <input matInput [matDatepicker]="startpicker" placeholder="Publish Start Date" [(ngModel)]="groupEdit.startDate" required [ngModelOptions]="{standalone: true}">
             <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
             <mat-datepicker #startpicker></mat-datepicker>
           </mat-form-field>
           <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
-            <input matInput [matDatepicker]="endpicker" placeholder="End Date" [(ngModel)]="groupEdit.endDate" required [ngModelOptions]="{standalone: true}">
+            <input matInput [matDatepicker]="endpicker" placeholder="Publish End Date" [(ngModel)]="groupEdit.endDate" required [ngModelOptions]="{standalone: true}">
             <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
             <mat-datepicker #endpicker></mat-datepicker>
           </mat-form-field>
@@ -56,7 +56,7 @@
             <mat-datepicker-toggle matSuffix [for]="delvdateTopicker"></mat-datepicker-toggle>
             <mat-datepicker #delvdateTopicker></mat-datepicker>
           </mat-form-field>
-          <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
+          <mat-form-field class="col-md-3 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
             <!--<mat-label>Price</mat-label>-->
             <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="price" name="price" placeholder="Price" [(ngModel)]="groupEdit.price" #price="ngModel" required />
           </mat-form-field>
@@ -71,10 +71,10 @@
           <mat-form-field class="col-md-3 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
             <input matInput autocomplete="off" [disabled]="!canManageStudents" type="number" id="sequence" name="sequence" placeholder="Sequence" [(ngModel)]="groupEdit.sequence" #sequence="ngModel" required />
           </mat-form-field>
-          <mat-checkbox class="col-md-3 col-xs-12" [(ngModel)]="groupEdit.isPublished" id="isPublished"
+          <!--<mat-checkbox class="col-md-3 col-xs-12" [(ngModel)]="groupEdit.isPublished" id="isPublished"
                         name="isPublished" *ngIf="groupEdit.type == 'Meal Plan'">
             <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Publish</label>
-          </mat-checkbox>
+          </mat-checkbox>-->
           <ng-container *ngIf="groupEdit.type == 'Meal Plan'">
             <div class="col-md-6">
               <h5>Sessions</h5>
@@ -117,12 +117,18 @@
           <table class="table table-sm table-bordered">
             <thead class="text-center">
               <tr>
+                <td>#</td>
                 <td>Student Name</td>
+                <td>Action</td>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let details of groupEdit.sgdetails; let x=index">
+                <td>{{x + 1}}</td>
                 <td>{{details.name}}</td>
+                <td>
+                  <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteStudent(details)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+                </td>
               </tr>
             </tbody>
           </table>

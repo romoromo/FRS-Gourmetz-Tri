@@ -43,7 +43,7 @@ namespace DAL.Repositories.MealOrder
             var date = orderDate != null ? orderDate?.Date : DateTime.Today;
 
             IQueryable<StudentGroup> query = _appContext.StudentGroups.Where(t => t.IsActive &&
-                                                    t.IsPublished && t.Type == StudentMealType.MEAL_PLAN &&
+                                                    t.Type == StudentMealType.MEAL_PLAN &&
                                                     t.StartDate.HasValue && t.StartDate.Value <= date &&
                                                     t.EndDate.HasValue && date <= t.EndDate.Value);
 
@@ -159,23 +159,30 @@ public async Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<St
                     this._appContext.StudentGroupSessions.AddAsync(new StudentGroupSession { StudentGroupId = group.Id, MealSessionId = e });
                 });
 
-                //check if meal session or type has been changed
-                if (f.Type != group.Type || (toBeDeleted.Any() || toBeAdded.Any()) ||
-                    (f.DeliveryStartDate.HasValue && group.DeliveryStartDate.HasValue && f.DeliveryStartDate.Value.Date != group.DeliveryStartDate.Value.Date) || 
-                    (f.DeliveryEndDate.HasValue && group.DeliveryEndDate.HasValue && f.DeliveryEndDate.Value.Date != group.DeliveryEndDate.Value.Date))
+                if (f.Type.Equals(StudentMealType.MEAL_PLAN, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    //delete orders and meal plans
-                    var orders = await _appContext.TokenOrders.Where(x => x.StudentGroupId == group.Id).ToListAsync();
-                    foreach (var order in orders)
+                    //check if meal session or type has been changed
+                    if (f.Type != group.Type || toBeDeleted.Any() ||
+                        (f.DeliveryStartDate.HasValue && group.DeliveryStartDate.HasValue && f.DeliveryStartDate.Value.Date != group.DeliveryStartDate.Value.Date) ||
+                        (f.DeliveryEndDate.HasValue && group.DeliveryEndDate.HasValue && f.DeliveryEndDate.Value.Date != group.DeliveryEndDate.Value.Date))
                     {
-                        order.IsActive = false;
-                        order.Status = "cancelled";
-                        order.CancelledOn = DateTime.Now;
-                        order.CancellationReason = "Student Group Meal Session, dates or Type were changed.";
-                        _appContext.TokenOrders.Update(order);
+                        //delete orders and meal plans
+                        var orders = await _appContext.TokenOrders.Where(x => x.StudentGroupId == group.Id && x.IsMealPlan).ToListAsync();
+                        foreach (var order in orders)
+                        {
+                            order.IsActive = false;
+                            order.Status = "cancelled";
+                            order.CancelledOn = DateTime.Now;
+                            order.CancellationReason = "Student Group Meal Session, dates or Type were changed.";
+                            _appContext.TokenOrders.Update(order);
+                        }
+
+                        //remove the meal plan
+                        var mealPlansToDelete = await _appContext.StudentGroupMealPlans.Where(x => x.StudentGroupId == group.Id && x.IsActive &&
+                                                            toBeDeleted.Any(a => a.MealSessionId == x.MealSessionId)).ToListAsync();
+                        this._appContext.StudentGroupMealPlans.RemoveRange(mealPlansToDelete);
                     }
                 }
-
 
                 var detailsToDelete = this._appContext.StudentGroupDetails.Where(x => x.StudentGroupId == f.Id);
 
@@ -183,16 +190,19 @@ public async Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<St
 
                 if (groupDetails != null)
                 {
-                    //delete orders for students removed
-                    var orders = await _appContext.TokenOrders.Where(x => x.StudentGroupId == group.Id && x.IsActive && x.IsMealPlan &&
-                                        !groupDetails.Any(a => a.StudentId == x.ProfileId)).ToListAsync();
-                    foreach (var order in orders)
+                    if (group.Type.Equals(StudentMealType.MEAL_PLAN, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        order.IsActive = false;
-                        order.Status = "cancelled";
-                        order.CancelledOn = DateTime.Now;
-                        order.CancellationReason = $"Student {order.ProfileId} was removed.";
-                        _appContext.TokenOrders.Update(order);
+                        //delete orders for students removed
+                        var orders = await _appContext.TokenOrders.Where(x => x.StudentGroupId == group.Id && x.IsActive && x.IsMealPlan &&
+                                        !groupDetails.Any(a => a.StudentId == x.ProfileId)).ToListAsync();
+                        foreach (var order in orders)
+                        {
+                            order.IsActive = false;
+                            order.Status = "cancelled";
+                            order.CancelledOn = DateTime.Now;
+                            order.CancellationReason = $"Student {order.ProfileId} was removed.";
+                            _appContext.TokenOrders.Update(order);
+                        }
                     }
 
                     string invoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmssffffff");
@@ -210,59 +220,62 @@ public async Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<St
                             this._appContext.StudentGroupDetails.Add(e);
                         }
 
-                        // create orders using meal plans
-                        var mealPlans = await _appContext.StudentGroupMealPlans.Where(x => x.StudentGroupId == group.Id && x.IsActive).ToListAsync();
-                        foreach (var mealPlan in mealPlans)
+                        if (group.Type.Equals(StudentMealType.MEAL_PLAN, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            //check if student already has an existing order, skip
-                            var hasOrder = await _appContext.TokenOrders.AnyAsync(x => x.StudentGroupId == group.Id && x.ProfileId == e.StudentId && x.IsActive && x.IsMealPlan &&
-                                            x.DeliveryDate.Date == mealPlan.DeliveryDate.Date);
-
-                            if (hasOrder) continue;
-                            var order = new TokenOrder
+                            // create orders using meal plans
+                            var mealPlans = await _appContext.StudentGroupMealPlans.Where(x => x.StudentGroupId == group.Id && x.IsActive).ToListAsync();
+                            foreach (var mealPlan in mealPlans)
                             {
-                                DeliveryDate = mealPlan.DeliveryDate.Date,
-                                TransactionTime = DateTime.Now,
-                                MealSessionDetailId = mealPlan.MealSessionDetailId,
-                                ProfileId = e.StudentId,
-                                Status = "paid",
-                                StoreId = mealPlan.StoreId,
-                                StudentGroupId = group.Id,
-                                TotalAmount = mealPlan.Price,
-                                TotalPayment = mealPlan.Price,
-                                IsMealPlan = true,
-                                Tokens = new List<TokenOrdered>
+                                //check if student already has an existing order, skip
+                                var hasOrder = await _appContext.TokenOrders.AnyAsync(x => x.ProfileId == e.StudentId && x.IsActive &&
+                                                x.DeliveryDate.Date == mealPlan.DeliveryDate.Date && mealPlan.MealSessionDetailId == x.MealSessionDetailId);
+
+                                if (hasOrder) continue;
+                                var order = new TokenOrder
                                 {
-                                    new TokenOrdered
+                                    DeliveryDate = mealPlan.DeliveryDate.Date,
+                                    TransactionTime = DateTime.Now,
+                                    MealSessionDetailId = mealPlan.MealSessionDetailId,
+                                    ProfileId = e.StudentId,
+                                    Status = "paid",
+                                    StoreId = mealPlan.StoreId,
+                                    StudentGroupId = group.Id,
+                                    TotalAmount = mealPlan.Price,
+                                    TotalPayment = mealPlan.Price,
+                                    IsMealPlan = true,
+                                    Tokens = new List<TokenOrdered>
                                     {
-                                        TokenId = mealPlan.MealTypeId.Value,
-                                        Qty = 1,
-                                        TokenDesc = mealPlan.Label,
-                                        SelectedDishes = new List<TokenOrderDish>
+                                        new TokenOrdered
                                         {
-                                                new TokenOrderDish
-                                                {
-                                                    DishId = mealPlan.DishId,
-                                                    Qty = 1
-                                                }
+                                            TokenId = mealPlan.MealTypeId.Value,
+                                            Qty = 1,
+                                            TokenDesc = mealPlan.Label,
+                                            SelectedDishes = new List<TokenOrderDish>
+                                            {
+                                                    new TokenOrderDish
+                                                    {
+                                                        DishId = mealPlan.DishId,
+                                                        Qty = 1
+                                                    }
+                                            }
                                         }
                                     }
-                                }
-                            };
+                                };
 
-                            var student = await _appContext.Students.FirstOrDefaultAsync(x => x.Id == e.StudentId);
-                            var payment = new Payment
-                            {
-                                StudentId = order.ProfileId,
-                                email = student?.Email,
-                                subtotal = (decimal)order.TotalAmount,
-                                total = (decimal)order.TotalAmount,
-                                InvoiceNumber = invoiceNumber,
-                                Status = "SUCCESS"
-                            };
+                                var student = await _appContext.Students.FirstOrDefaultAsync(x => x.Id == e.StudentId);
+                                var payment = new Payment
+                                {
+                                    StudentId = order.ProfileId,
+                                    email = student?.Email,
+                                    subtotal = (decimal)order.TotalAmount,
+                                    total = (decimal)order.TotalAmount,
+                                    InvoiceNumber = invoiceNumber,
+                                    Status = "SUCCESS"
+                                };
 
-                            order.Payment = payment;
-                            await _appContext.TokenOrders.AddAsync(order);
+                                order.Payment = payment;
+                                await _appContext.TokenOrders.AddAsync(order);
+                            }
                         }
                     }
                 }

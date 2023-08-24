@@ -288,6 +288,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
     this.groupEdit = new StudentGroup();
     this.groupEdit.deliveryStartDate = this.getCutoffDate();
     this.groupEdit.deliveryEndDate = this.getCutoffDate();
+    this.groupEdit.isPublished = true; //not used
     if (!this.groupEdit.code) {
       this.getDishCode();
     }
@@ -437,6 +438,16 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
             MessageSeverity.error);
         })
+  }
+
+  deleteStudent(row: StudentGroupDetail, index: number) {
+    this.alertService.showDialog('Are you sure you want to remove the \"' + row.name + '\"?', DialogType.confirm, () => this.deleteStudentHelper(row, index));
+  }
+
+
+  deleteStudentHelper(row: StudentGroupDetail, index: number) {
+    if (this.groupEdit.sgdetails)
+      this.groupEdit.sgdetails.splice(index, 1);
   }
 
   public uploadFinished = (event) => {

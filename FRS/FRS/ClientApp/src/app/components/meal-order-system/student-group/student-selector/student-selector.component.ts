@@ -253,24 +253,28 @@ export class StudentSelectorComponent implements OnInit {
 
   onSearchChanged(value: string) {
     this.keyword = value;
+    this.selected = [];
     this.loadData(null);
   }
 
   onClassChanged(value: any) {
     this.filterClassId = value.value;
     console.log("filterClassID: ", value)
+    this.selected = [];
     this.loadData(null);
   }
 
   onGroupChanged(value: any) {
     this.filterIGId = value.value;
     console.log("filterInterestGroupID: ", value)
+    this.selected = [];
     this.loadData(null);
   }
 
   onFASChange(value: any) {
     this.filterIsFas = value.value;
     console.log("filterFasID: ", value)
+    this.selected = [];
     this.loadData(null);
   }
 
@@ -279,6 +283,7 @@ export class StudentSelectorComponent implements OnInit {
     this.filterClassId = null;
     this.filterIGId = null;
     this.filterIsFas = null;
+    this.selected = [];
     this.loadData(null);
   }
 

@@ -793,7 +793,7 @@ namespace DAL.Repositories.MealOrder
 
             IQueryable<StudentGroupMealPlan> query = _appContext.StudentGroupMealPlans.Where(t => t.IsActive && t.StudentGroup.IsActive && 
                                                     t.StudentGroup.Sgdetails.Any(x => x.StudentId == studentId) &&
-                                                    t.StudentGroup.IsPublished && t.StudentGroup.Type == StudentMealType.MEAL_PLAN && 
+                                                    t.StudentGroup.Type == StudentMealType.MEAL_PLAN && 
                                                     t.StudentGroup.StartDate.HasValue && t.StudentGroup.StartDate.Value <= date &&
                                                     t.StudentGroup.EndDate.HasValue && date <= t.StudentGroup.EndDate.Value);
 
@@ -848,21 +848,22 @@ namespace DAL.Repositories.MealOrder
                     // select dishes for meal plan first
                     while (deliveryDate.Date <= deliveryDateTo.Date)
                     {
-                        var mealPlan = _appContext.StudentGroupMealPlans.FirstOrDefault(e => e.IsActive && e.StudentGroupId == studentGroupId &&
-                                        e.DeliveryDate.Date == deliveryDate.Date);
+                        var existingMealPlans = _appContext.StudentGroupMealPlans.Where(e => e.IsActive && e.StudentGroupId == studentGroupId &&
+                                        e.DeliveryDate.Date == deliveryDate.Date && e.MealSessionId == mealSessionId);
 
-                        if (mealPlan != null)
+                        if (existingMealPlans != null)
                         {
-                            if (mealPlan.Dish.DishTypeId == dishTypeId)
+                            var plans = existingMealPlans.Where(x => x.Dish.DishTypeId == dishTypeId);
+                            if (plans.Any())
                             {
-                                mealPlans.Add(mealPlan);
+                                mealPlans.AddRange(plans);
                                 deliveryDate = deliveryDate.Date.AddDays(1);
                                 continue;
                             }
                             else
                             {
                                 // replace old dish assigned to this date
-                                mealPlansToDelete.Add(mealPlan);
+                                mealPlansToDelete.AddRange(existingMealPlans);
                             }
                         }
 

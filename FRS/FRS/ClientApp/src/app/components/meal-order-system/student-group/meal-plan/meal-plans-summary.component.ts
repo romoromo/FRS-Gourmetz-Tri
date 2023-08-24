@@ -211,17 +211,17 @@ export class MealPlanSummaryComponent implements OnInit {
   private save(clear?: boolean) {
     if (!this.outletId || !this.delvdate || !this.delvdateTo || !this.mealSessionId || !this.dishTypeId) return false;
 
-    //if (this.delvdate.getTime() > this.delvdateTo.getTime()) {
-    //  alert('Cannot orders on this date. Cut-off limit exceeded.');
+    if (this.delvdate.getTime() > this.delvdateTo.getTime()) {
+      alert('Cannot create orders on this date. Cut-off limit exceeded.');
 
-    //  return;
-    //}
+      return;
+    }
 
-    //if (this.delvdate.getTime() < this.getCutoffDate().getTime()) {
-    //  alert('Cannot orders on this date. Cut-off limit exceeded.');
+    if (this.delvdate.getTime() < this.getCutoffDate().getTime()) {
+      alert('Cannot create orders on this date. Cut-off limit exceeded.');
 
-    //  return;
-    //}
+      return;
+    }
 
     if (!confirm(`Are you sure you want to assign this dish to the meal plan?`)) return;
     this.isSaving = true;
