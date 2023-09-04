@@ -59,7 +59,7 @@
                         </mat-select>
                       </mat-form-field>
                       <div class="col-xs-2">
-                        <a class="btn btn-link btn-xs" href="javascript:;" (click)="addClass(period, period.selectedClass)">
+                        <a class="btn btn-link btn-xs" href="javascript:;" (click)="addClass(schedule, period, period.selectedClass)">
                           <i class="fa fa-plus-square" aria-hidden="true"></i>
                         </a>
                       </div>
@@ -67,7 +67,7 @@
                         <mat-list-item *ngFor="let class of period.classes">
                           <div class="col-xs-10">{{class.name}}</div>
                           <div class="col-xs-2">
-                            <a class="btn btn-link btn-xs" href="javascript:;" (click)="removeClass(period, class.classId)">
+                            <a class="btn btn-link btn-xs" href="javascript:;" (click)="removeClass(schedule, period, class.classId)">
                               <i class="fa fa-trash-o" aria-hidden="true"></i>
                             </a>
                           </div>

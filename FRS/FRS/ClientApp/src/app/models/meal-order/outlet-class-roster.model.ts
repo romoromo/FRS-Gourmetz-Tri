@@ -40,6 +40,7 @@ export class OutletClassRosterSchedule {
   public outletClassRoster: OutletClassRoster;
   public day: number;
   public periods: OutletClassRosterSchedulePeriod[];
+  public classSelections: Class[];
   public hasClass: boolean;
   public color: any;
   public rrule?: {
