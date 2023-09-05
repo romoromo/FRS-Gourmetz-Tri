@@ -45,9 +45,13 @@ namespace BAL.DTO.MealOrder
         public DateTime FoodExpiryDate { get; set; }
         public int? CreatedBy { get; set; }
 
+        public string CreatedByName { get; set; }
+
         public int? UpdatedBy { get; set; }
 
         public int? ClosedBy { get; set; }
+
+        public string ClosedByName { get; set; }
 
         public int? MealSessionDetailId { get; set; }
 
@@ -73,6 +77,7 @@ namespace BAL.DTO.MealOrder
         public string dishLabel { get; set; }
         public string categories { get; set; }
         public int dishQty { get; set; }
+        public int issQty { get; set; }
         public string bentoList { get; set; }
     }
 }

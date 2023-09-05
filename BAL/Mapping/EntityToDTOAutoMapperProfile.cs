@@ -394,6 +394,8 @@ namespace BAL.Mapping
                 .ForMember(e => e.MealSessionName, map => map.MapFrom(f => f.MealSessionDetail != null ? f.MealSessionDetail.MealSession.MealPeriod.Name : ""))
                 .ForMember(e => e.RouteName, map => map.MapFrom(f => f.Route != null ? f.Route.Label : ""))
                 .ForMember(e => e.PickupTime, map => map.MapFrom(f => f.Route.Pickup))
+                .ForMember(e => e.CreatedByName, map => map.MapFrom(f => f.CreatedByUser != null ? f.CreatedByUser.UserName : ""))
+                .ForMember(e => e.ClosedByName, map => map.MapFrom(f => f.ClosedByUser != null ? f.ClosedByUser.UserName : ""))
                 .ForMember(d => d.DeliveryDetails, map => map.MapFrom(s => s.DeliveryDetails != null ? s.DeliveryDetails.Where(z => z.IsActive) : null));
             CreateMap<DeliveryOrderNewDTO, DeliveryOrderNew>();
 

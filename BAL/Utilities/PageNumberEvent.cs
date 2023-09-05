@@ -8,6 +8,7 @@ namespace BAL.Utilities
 {
     public class PageNumberEvent : IPdfPageEvent
     {
+
         public void OnChapter(PdfWriter writer, Document document, float paragraphPosition, Paragraph title)
         {
             //throw new NotImplementedException();
@@ -28,6 +29,8 @@ namespace BAL.Utilities
             PdfContentByte cb = writer.DirectContent;
             BaseFont bf = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 
+            String text = "Page " + writer.PageNumber + " of ";
+
             cb.BeginText();
             cb.SetFontAndSize(bf, 10);
             cb.SetTextMatrix(document.PageSize.GetRight(50), document.PageSize.GetBottom(30));
@@ -42,7 +45,7 @@ namespace BAL.Utilities
 
         public void OnOpenDocument(PdfWriter writer, Document document)
         {
-            //throw new NotImplementedException();
+
         }
 
         public void OnParagraph(PdfWriter writer, Document document, float paragraphPosition)
