@@ -28,7 +28,7 @@ export class Student {
   public newPassword: string;
   public currentPassword: string;
   public confirmPassword: string;
-
+  public checked: boolean;
   public cards: UserCardId[];
   public studentCards: StudentCard[];
   public restrictions: StudentRestriction[];

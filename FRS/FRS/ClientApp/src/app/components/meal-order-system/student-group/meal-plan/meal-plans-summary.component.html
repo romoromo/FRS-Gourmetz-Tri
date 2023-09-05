@@ -3,7 +3,7 @@
     <h3> {{title}}</h3>
   </header>
   <div class="row control-box">
-    <mat-form-field class="col-sm-6 col-xs-12">
+    <mat-form-field class="col-md-3 col-xs-12">
       <mat-label>Delivery Location</mat-label>
       <mat-select id="store" name="store" [(ngModel)]="storeId" #store="ngModel" required (selectionChange)="onChangeStore()">
         <mat-option *ngFor="let store of stores" [value]="store.id">
@@ -11,13 +11,13 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <!--<mat-form-field class="col-md-3 col-sm-6 col-xs-12">
-      <input matInput [matDatepicker]="delvdatepicker" placeholder="Delivery Date From" [value]="delvdate" required (dateChange)="onChangeDate($event, 'from')">
+    <mat-form-field class="col-md-3 col-sm-6 col-xs-12">
+      <input matInput [matDatepickerFilter]="dateFilter" [matDatepicker]="delvdatepicker" placeholder="Delivery Date From" [value]="delvdate" required (dateChange)="onChangeDate($event, 'from')">
       <mat-datepicker-toggle matSuffix [for]="delvdatepicker"></mat-datepicker-toggle>
       <mat-datepicker #delvdatepicker></mat-datepicker>
     </mat-form-field>
     <mat-form-field class="col-md-3 col-sm-6 col-xs-12">
-      <input matInput [matDatepicker]="delvdateTopicker" placeholder="Delivery Date To" [value]="delvdateTo" required (dateChange)="onChangeDate($event)">
+      <input matInput [matDatepickerFilter]="dateFilter" [matDatepicker]="delvdateTopicker" placeholder="Delivery Date To" [value]="delvdateTo" required (dateChange)="onChangeDate($event)">
       <mat-datepicker-toggle matSuffix [for]="delvdateTopicker"></mat-datepicker-toggle>
       <mat-datepicker #delvdateTopicker></mat-datepicker>
     </mat-form-field>
@@ -28,8 +28,8 @@
           {{mealSessionDetail.mealSessionName}}
         </mat-option>
       </mat-select>
-    </mat-form-field>-->
-    <mat-form-field class="col-sm-6 col-xs-12">
+    </mat-form-field>
+    <mat-form-field class="col-md-3 col-xs-12">
       <mat-label>Dish Type</mat-label>
       <mat-select id="dishType" name="dishType" [(ngModel)]="dishTypeId" #dishType="ngModel" required>
         <mat-option *ngFor="let dishType of allDishTypes" [value]="dishType.id">
@@ -69,6 +69,6 @@
     </div>
   </ng-template>-->
   <div mat-dialog-actions align="center">
-    <button *ngIf="!canManageStudents" type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+    <button type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
   </div>
 </div>

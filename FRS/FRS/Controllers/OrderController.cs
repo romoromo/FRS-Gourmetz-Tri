@@ -52,16 +52,18 @@ namespace MealOrderPayments.Controllers
 
         private ITokenOrderService _service;
         private IPaymentService _paymentService;
+        private IStudentService _studentService;
         private readonly IEmailSender _emailSender;
 
 
-        public OrderController(IConfiguration configuration, IUnitOfWork unitOfWork, ITokenOrderService service, IPaymentService paymentService, IEmailSender emailSender)
+        public OrderController(IConfiguration configuration, IUnitOfWork unitOfWork, ITokenOrderService service, IPaymentService paymentService, IEmailSender emailSender, IStudentService studentService)
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
 
             _service = service;
             _paymentService = paymentService;
+            _studentService = studentService;
             _emailSender = emailSender;
             _logger = Utilities.CreateLogger<OrderController>();
         }
@@ -2015,6 +2017,8 @@ namespace MealOrderPayments.Controllers
                                         var r = await this._service.UpdateMealPlanOrderAsync(dt);
 
                                         tokenOrderUpdated = true;
+
+                                        if (t.StudentGroupId.HasValue && t.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
                                     }
                                 }
                             }
@@ -2039,6 +2043,24 @@ namespace MealOrderPayments.Controllers
                     catch (Exception ex)
                     {
                         _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, $"Error when update token order status. Token Order ID {t.Id}, status {t.Status}");
+                    }
+                }
+
+                List<MealPlanOrderDTO> mealPlanOrders = await _service.GetUnupdatedMealPlanOrdersAsync();
+
+                foreach (var t in mealPlanOrders)
+                {
+                    try
+                    {
+
+                        t.Status = "paid";
+                        var r = await this._service.UpdateMealPlanOrderAsync(t);
+
+                        if(t.StudentGroupId.HasValue && t.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, $"Error when update MealPlan order status. MealPlan Order ID {t.Id}, status {t.Status}");
                     }
                 }
             }

@@ -23,6 +23,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<PagedEntity<TokenOrder>> GetCancellationOrdersAsync(OrderCancellationFilter filter);
         Task<BaseOperationResponse> BulkCancelCart();
         Task<List<TokenOrder>> GetUnupdatedTokenOrdersAsync();
+        Task<List<MealPlanOrder>> GetUnupdatedMealPlanOrdersAsync();
         Task<BaseOperationResponse> UpdateAsync(TokenOrder order, List<TokenOrdered> tokenOrders);
         Task<BaseOperationResponse> BulkCollectAsync(List<OrderCollectionDTO> orders);
         Task<BaseOperationResponse> BulkReturnAsync(List<OrderReturnDTO> orders);
@@ -32,8 +33,11 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> CancelOrders(List<int> orderIds, int cancelledById, string reason);
         Task<BaseOperationResponse> UpdateCancellationStatus(int orderId, bool isApproved, string response);
         Task<BaseOperationResponse> UpdateOrderCancelRequestStatus(int orderId, string status);
-        Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear);
+        Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool skip = true);
         Task<MealPlanTokenOrderSummaryDTO> GetMealPlanOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails);
         Task<List<StudentGroupMealPlan>> GetStudentMealPlansAsync(int studentId, DateTime? orderDate);
+        Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool skip = true);
+        Task<StudentGroupTokenOrderSummaryDTO> GetStudentGroupOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails);
+
     }
 }

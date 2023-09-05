@@ -21,6 +21,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<PagedEntity<TokenOrderDTO>> GetTokenOrdersAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateTokenOrderAsync(TokenOrderDTO dto);
         Task<List<TokenOrderDTO>> GetUnupdatedTokenOrdersAsync();
+        Task<List<MealPlanOrderDTO>> GetUnupdatedMealPlanOrdersAsync();
 
         Task<BaseOperationResponse> CreateTokensOrderHistoryAsync(TokensOrderHistoryDTO dto, TokenOrder tokenOrder = null);
         Task<BaseOperationResponse> DeleteTokensOrderHistoryAsync(int id);
@@ -93,8 +94,11 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<byte[]> GenerateCancelledOrdersXls(SalesOrderReportFilter filter);
         Task<List<SalesOrderCollectionSummary>> GetSalesOrderCollectionSummary(DateTime orderDate, int outletId);
 
-        Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear);
+        Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool skip = true);
         Task<MealPlanTokenOrderSummaryDTO> GetMealPlanOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetailDTO> mealSessionDetailsDto);
         Task<List<GroupedTermStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime? orderDate);
+
+        Task<StudentGroupTokenOrderSummaryDTO> GetStudentGroupOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetailDTO> mealSessionDetails);
+        Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool skip = true);
     }
 }

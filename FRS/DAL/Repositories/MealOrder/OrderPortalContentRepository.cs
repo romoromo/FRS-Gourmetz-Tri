@@ -90,60 +90,60 @@ namespace DAL.Repositories.MealOrder
                 var existComponent = this._appContext.OrderPortalBanners.FirstOrDefault(e => e.Id == component.Id);
                 if (existComponent == null || existComponent.Id == 0)
                 {
-                    if (component.BannerImage != null && !string.IsNullOrEmpty(component.BannerImage.Path))
-                    {
-                        if (component.BannerImage == null)
-                        {
-                            //TODO: check why EF Core is not loading the Icon property; interim solution
-                            var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == existComponent.ImageId);
-                            if (icon == null)
-                            {
-                                component.BannerImage = new File();
-                            }
-                            else
-                            {
-                                component.BannerImage = icon;
-                                component.ImageId = icon.Id;
-                            }
-                        }
+                    //if (component.BannerImage != null && !string.IsNullOrEmpty(component.BannerImage.Path))
+                    //{
+                    //    if (component.BannerImage == null)
+                    //    {
+                    //        //TODO: check why EF Core is not loading the Icon property; interim solution
+                    //        var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == existComponent.ImageId);
+                    //        if (icon == null)
+                    //        {
+                    //            component.BannerImage = new File();
+                    //        }
+                    //        else
+                    //        {
+                    //            component.BannerImage = icon;
+                    //            component.ImageId = icon.Id;
+                    //        }
+                    //    }
 
-                        component.BannerImage.Path = component.BannerImage.Path;
-                        component.BannerImage.FileName = component.BannerImage.FileName ?? System.IO.Path.GetFileName(component.BannerImage.Path);
-                        component.BannerImage.Type = FileType.Icon.ToString();
-                    }
+                    //    component.BannerImage.Path = component.BannerImage.Path;
+                    //    component.BannerImage.FileName = component.BannerImage.FileName ?? System.IO.Path.GetFileName(component.BannerImage.Path);
+                    //    component.BannerImage.Type = FileType.Icon.ToString();
+                    //}
                     await this._appContext.OrderPortalBanners.AddAsync(component);
                 }
                 else
                 {
                     existComponent.CopyFrom(component);
-                    if (component.BannerImage != null && !string.IsNullOrEmpty(component.BannerImage.Path))
-                    {
-                        if (!existComponent.ImageId.HasValue)
-                        {
-                            existComponent.BannerImage = component.BannerImage;
-                        }
-                        else
-                        {
-                            if (existComponent.BannerImage == null)
-                            {
-                                //TODO: check why EF Core is not loading the Icon property; interim solution
-                                var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == existComponent.ImageId);
-                                if (icon == null)
-                                {
-                                    existComponent.BannerImage = new File();
-                                }
-                                else
-                                {
-                                    existComponent.BannerImage = icon;
-                                    existComponent.ImageId = icon.Id;
-                                }
-                            }
+                    //if (component.BannerImage != null && !string.IsNullOrEmpty(component.BannerImage.Path))
+                    //{
+                    //    if (!existComponent.ImageId.HasValue)
+                    //    {
+                    //        existComponent.BannerImage = component.BannerImage;
+                    //    }
+                    //    else
+                    //    {
+                    //        if (existComponent.BannerImage == null)
+                    //        {
+                    //            //TODO: check why EF Core is not loading the Icon property; interim solution
+                    //            var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == existComponent.ImageId);
+                    //            if (icon == null)
+                    //            {
+                    //                existComponent.BannerImage = new File();
+                    //            }
+                    //            else
+                    //            {
+                    //                existComponent.BannerImage = icon;
+                    //                existComponent.ImageId = icon.Id;
+                    //            }
+                    //        }
 
-                            existComponent.BannerImage.Path = component.BannerImage.Path;
-                            existComponent.BannerImage.FileName = component.BannerImage.FileName ?? System.IO.Path.GetFileName(component.BannerImage.Path);
-                            existComponent.BannerImage.Type = FileType.Icon.ToString();
-                        }
-                    }
+                    //        existComponent.BannerImage.Path = component.BannerImage.Path;
+                    //        existComponent.BannerImage.FileName = component.BannerImage.FileName ?? System.IO.Path.GetFileName(component.BannerImage.Path);
+                    //        existComponent.BannerImage.Type = FileType.Icon.ToString();
+                    //    }
+                    //}
                     this._appContext.OrderPortalBanners.Update(existComponent);
                 }
 

@@ -16,7 +16,7 @@ import { Permission } from 'src/app/models/permission.model';
 import { AlertService, MessageSeverity } from 'src/app/services/alert.service';
 import { AppTranslationService } from 'src/app/services/app-translation.service';
 import { AccountService } from 'src/app/services/account.service';
-import { StudentGroup } from 'src/app/models/meal-order/student-group.model';
+import { StudentGroup, StudentGroupSession } from 'src/app/models/meal-order/student-group.model';
 
 
 @Component({
@@ -43,12 +43,16 @@ export class MealPlanSummaryComponent implements OnInit {
   storeId: string;
   delvdate: Date = new Date();
   delvdateTo: Date = new Date();
+  minDate: Date = new Date();
+  maxDate: Date = new Date();
+
   dishTypeId: string;
   mealSessionDetailId: string;
-  mealSessionId: string;
+  sessions: StudentGroupSession[];
   isClear: boolean;
   title: string;
   group: StudentGroup;
+  mealSessionId: string;
 
   @Input() isHideHeader: boolean;
   @Input() outletId: string;
@@ -62,9 +66,11 @@ export class MealPlanSummaryComponent implements OnInit {
     this.title = 'Meal Plan ';
     if (data.group) {
       this.group = data.group;
+      this.minDate = new Date(this.group.deliveryStartDate);
+      this.maxDate = new Date(this.group.deliveryEndDate);
       this.delvdate = new Date(this.group.deliveryStartDate);
       this.delvdateTo = new Date(this.group.deliveryEndDate);
-      this.mealSessionId = this.group.mealSessionId;
+      this.sessions = this.group.sessions;
     }
 
     if (typeof (data.group.name) != typeof (undefined)) {
@@ -75,7 +81,13 @@ export class MealPlanSummaryComponent implements OnInit {
       this.title += ` (${data.group.mealSessionName})`;
     }
     this.outletId = data.outletId;
+
+    this.getMealSessions(this.delvdate, this.delvdateTo);
   }
+
+  public dateFilter = (d: Date | null): boolean => {
+    return (d >= this.minDate) && (d <= this.maxDate);
+  };
 
   getDeliveryLocations() {
     let filter = new Filter();
@@ -129,7 +141,9 @@ export class MealPlanSummaryComponent implements OnInit {
           this.mealSessionDetails.forEach((d, i, details) => {
             let indx = mealSessions && mealSessions.length > 0 ? mealSessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
             if (indx < 0) {
-              mealSessions.push({ mealSessionId: d.mealSessionId, mealSessionName: d.mealSessionName });
+              let ms = this.sessions && this.sessions.length > 0 ? this.sessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
+              if (ms > -1)
+                mealSessions.push({ mealSessionId: d.mealSessionId, mealSessionName: d.mealSessionName });
             }
           })
         }
@@ -197,17 +211,17 @@ export class MealPlanSummaryComponent implements OnInit {
   private save(clear?: boolean) {
     if (!this.outletId || !this.delvdate || !this.delvdateTo || !this.mealSessionId || !this.dishTypeId) return false;
 
-    //if (this.delvdate.getTime() > this.delvdateTo.getTime()) {
-    //  alert('Cannot orders on this date. Cut-off limit exceeded.');
+    if (this.delvdate.getTime() > this.delvdateTo.getTime()) {
+      alert('Cannot create orders on this date. Cut-off limit exceeded.');
 
-    //  return;
-    //}
+      return;
+    }
 
-    //if (this.delvdate.getTime() < this.getCutoffDate().getTime()) {
-    //  alert('Cannot orders on this date. Cut-off limit exceeded.');
+    if (this.delvdate.getTime() < this.getCutoffDate().getTime()) {
+      alert('Cannot create orders on this date. Cut-off limit exceeded.');
 
-    //  return;
-    //}
+      return;
+    }
 
     if (!confirm(`Are you sure you want to assign this dish to the meal plan?`)) return;
     this.isSaving = true;
@@ -217,6 +231,8 @@ export class MealPlanSummaryComponent implements OnInit {
       .subscribe(response => {
         if (response.isSuccess) {
           this.alertService.showMessage("Success", `Dishes are assigned to the meal plan.`, MessageSeverity.success);
+          this.delvdate = new Date(this.minDate);
+          this.delvdateTo = new Date(this.maxDate);
           this.onChangeStore();
         } else {
           this.alertService.showMessage("Error", `Something went wrong with the assignment. ${response.message}`, MessageSeverity.error);

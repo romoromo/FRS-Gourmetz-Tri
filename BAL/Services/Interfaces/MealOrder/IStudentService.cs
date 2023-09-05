@@ -54,5 +54,9 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<List<StudentOrderDTO>> GetStudentsWithOrdersNotCollected(int daysPassed);
 
         Task<PagedEntity<OutletTermDTO>> GetOutletTermsAsync(BaseFilter filter);
+
+        Task<bool> CreateOrUpdateStudentGroupDetailAsync(int StudentGroupId, int StudentId, bool IsActive);
+        Task<string> GenerateCode(int id);
+        Task<List<GroupedTermStudentGroupDTO>> GetStudentMealPlanAsync(DateTime? orderDate);
     }
 }

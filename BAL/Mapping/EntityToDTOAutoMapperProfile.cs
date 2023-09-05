@@ -287,11 +287,17 @@ namespace BAL.Mapping
             CreateMap<StudentGroupDTO, StudentGroup>();
 
             CreateMap<StudentGroup, StudentGroupDTO>()
-                .ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSession.Name))
+                //.ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSession.Name))
                 .ForMember(e => e.TermName, map => map.MapFrom(e => e.OutletTerm.Label))
-                .ForMember(e => e.Sgdetails, map => map.MapFrom(e => e.Sgdetails.Where(f => f.IsActive).ToList()));
+                .ForMember(e => e.Sgdetails, map => map.MapFrom(e => e.Sgdetails.Where(f => f.IsActive).ToList()))
+                .ForMember(e => e.Sessions, map => map.MapFrom(e => e.MealSessions.Where(f => f.IsActive).ToList()));
 
             CreateMap<StudentGroupDetailDTO, StudentGroupDetail>();
+            CreateMap<StudentGroupDetail, StudentGroupDetailDTO>()
+                .ForMember(e => e.Name, map => map.MapFrom(e => e.Student.Name));
+
+            CreateMap<StudentGroupSessionDTO, StudentGroupSession>();
+            CreateMap<StudentGroupSession, StudentGroupSessionDTO>();
 
             CreateMap<OutletTerm, OutletTermDTO>();
             CreateMap<OutletTermDTO, OutletTerm>();
@@ -773,10 +779,12 @@ namespace BAL.Mapping
             CreateMap<OrderPortalContent, OrderPortalContentDTO>();
             CreateMap<OrderPortalContentDTO, OrderPortalContent>();
 
-            CreateMap<OrderPortalBanner, OrderPortalBannerDTO>()
-                .ForMember(e => e.FilePath, map => map.MapFrom(e => e.BannerImage != null && e.BannerImage != null ? e.BannerImage.Path : String.Empty));
+
+            CreateMap<OrderPortalBanner, OrderPortalBannerDTO>();
+            //.ForMember(e => e.ImageFilePath, map => map.MapFrom(e => e.BannerImage != null && e.BannerImage != null ? e.BannerImage.Path : String.Empty));
 
             CreateMap<OrderPortalBannerDTO, OrderPortalBanner>();
+                //.ForMember(d => d.BannerImage, map => map.MapFrom(s => new File { Path = s.ImageFilePath, FileName = s.ImageFileName, Type = FileType.Icon.ToString() }));
         }
     }
 }

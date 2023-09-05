@@ -7,8 +7,11 @@ export class OrderPortalContent {
   }
 
   public id: string;
+  public outletId: string;
+  public description: string;
   public announcement: string;
-  public effectiveDate: Date;
+  public effectiveStartDate: Date;
+  public effectiveEndDate: Date;
   public putletId: string;
   public banners: OrderPortalBanner[];
 }
@@ -27,4 +30,6 @@ export class OrderPortalBanner {
   public orderPortalContentId: string;
   public fileName: string;
   public filePath: string;
+  public imageFileName: string;
+  public imageFilePath: string;
 }

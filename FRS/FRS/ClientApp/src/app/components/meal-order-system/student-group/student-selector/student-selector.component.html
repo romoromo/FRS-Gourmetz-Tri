@@ -17,13 +17,13 @@
       </mat-option>
     </mat-select>
     <mat-label>is FAS Filter:</mat-label>
-    <mat-radio-group id="fas" name="fas" name="FAS Student" (change)="onFASChange($event)" [(ngModel)]="filterIsFas" #fas="ngModel">
+    <mat-radio-group id="fas" name="fas" (change)="onFASChange($event)" [(ngModel)]="filterIsFas" #fas="ngModel">
       <mat-radio-button [value]="true">Yes</mat-radio-button>&nbsp;
       <mat-radio-button [value]="false">No</mat-radio-button>&nbsp;
     </mat-radio-group>
     <button type="button" mat-button (click)="clearFilter()">Clear Filters</button>
 
-    <ngx-datatable class="material colored-header"
+    <ngx-datatable class="material colored-header" #studentSelTable
                    [loadingIndicator]="loadingIndicator"
                    [rows]="rows"
                    [rowHeight]="'auto'"
@@ -31,20 +31,47 @@
                    [footerHeight]="35"
                    [columns]="columns"
                    [columnMode]="'force'"
-                   [externalPaging]="true"
-                   [externalSorting]="true"
-                   [count]="pagedResult.totalCount"
-                   [offset]="pagedResult.filter.page"
-                   [limit]="pagedResult.filter.pageSize"
-                   (page)="loadData($event)"
-                   (sort)="loadData($event)">
+                   [limit]="10"
+                   [selected]="selected"
+                   [selectionType]="'checkbox'"
+                   (select)="onSelect($event)">
     </ngx-datatable>
 
-    <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <ng-template #hdrTpl let-column="column"
+                 let-selectFn="selectFn"
+                 let-allRowsSelected="allRowsSelected"
+                 let-value="value">
+      <a class="example-section btn btn-link btn-xs header" style="cursor:pointer">
+        <mat-checkbox [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)"></mat-checkbox>
+      </a>
+
+      <!--<input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" />-->
+    </ng-template>
+
+    <ng-template #actionsTemplate
+                 let-row="row"
+                 let-value="value"
+                 let-i="index"
+                 let-isSelected="isSelected"
+                 let-onCheckboxChangeFn="onCheckboxChangeFn">
       <a class="example-section btn btn-link btn-xs" style="cursor:pointer">
-        <mat-checkbox [(ngModel)]="row.checked"></mat-checkbox>
+        <mat-checkbox [(ngModel)]="row.checked"
+                      (change)="onCheckboxChangeFn($event)"></mat-checkbox>
       </a>
     </ng-template>
+
+    <!--<ng-template #actionsTemplate
+                 let-value="value"
+                 let-isSelected="isSelected"
+                 let-onCheckboxChangeFn="onCheckboxChangeFn"
+                 let-rowCount="rowCount"
+                 let-pageSize="pageSize"
+                 let-curPage="curPage"
+                 let-offset="offset">
+      <input type="checkbox"
+             [checked]="isSelected"
+             (change)="onCheckboxChangeFn($event)" />
+    </ng-template>-->
 
     <ng-template #fasTemplate let-row="row" let-value="value" let-i="index">
       {{(row.isFAS ? 'YES' : 'NO')}}

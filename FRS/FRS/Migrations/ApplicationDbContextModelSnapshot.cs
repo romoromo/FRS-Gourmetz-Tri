@@ -15,7 +15,7 @@ namespace FRS.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -4641,6 +4641,14 @@ namespace FRS.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
+                    b.Property<string>("FileName");
+
+                    b.Property<string>("FilePath");
+
+                    b.Property<string>("ImageFileName");
+
+                    b.Property<string>("ImageFilePath");
+
                     b.Property<int?>("ImageId");
 
                     b.Property<bool>("IsActive");
@@ -4686,7 +4694,11 @@ namespace FRS.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<DateTime>("EffectiveDate");
+                    b.Property<string>("Description");
+
+                    b.Property<DateTime>("EffectiveEndDate");
+
+                    b.Property<DateTime>("EffectiveStartDate");
 
                     b.Property<bool>("IsActive");
 
@@ -5779,8 +5791,6 @@ namespace FRS.Migrations
 
                     b.Property<bool>("IsPublished");
 
-                    b.Property<int?>("MealSessionId");
-
                     b.Property<string>("Name");
 
                     b.Property<int?>("OutletId");
@@ -5804,8 +5814,6 @@ namespace FRS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedBy");
-
-                    b.HasIndex("MealSessionId");
 
                     b.HasIndex("OutletId");
 
@@ -5898,6 +5906,39 @@ namespace FRS.Migrations
                     b.HasIndex("UpdatedBy");
 
                     b.ToTable("StudentGroupMealPlans");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.StudentGroupSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<int>("MealSessionId");
+
+                    b.Property<int>("StudentGroupId");
+
+                    b.Property<int?>("UpdatedBy");
+
+                    b.Property<DateTime>("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("MealSessionId");
+
+                    b.HasIndex("StudentGroupId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.ToTable("StudentGroupSessions");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentInterestGroup", b =>
@@ -6192,6 +6233,8 @@ namespace FRS.Migrations
                     b.Property<bool>("IsFAS");
 
                     b.Property<bool>("IsMealPlan");
+
+                    b.Property<bool>("IsStudentGroupOrder");
 
                     b.Property<int?>("MealSessionDetailId");
 
@@ -8980,6 +9023,21 @@ namespace FRS.Migrations
                     b.HasIndex("WalletId");
 
                     b.ToTable("WalletTransactions");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FriendlyName");
+
+                    b.Property<string>("Xml");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataProtectionKeys");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
@@ -11889,10 +11947,6 @@ namespace FRS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedBy");
 
-                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealSession")
-                        .WithMany()
-                        .HasForeignKey("MealSessionId");
-
                     b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
                         .WithMany()
                         .HasForeignKey("OutletId");
@@ -11949,6 +12003,27 @@ namespace FRS.Migrations
 
                     b.HasOne("DAL.Models.MealOrder.StudentGroup", "StudentGroup")
                         .WithMany()
+                        .HasForeignKey("StudentGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.StudentGroupSession", b =>
+                {
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealSession")
+                        .WithMany()
+                        .HasForeignKey("MealSessionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DAL.Models.MealOrder.StudentGroup", "StudentGroup")
+                        .WithMany("MealSessions")
                         .HasForeignKey("StudentGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 

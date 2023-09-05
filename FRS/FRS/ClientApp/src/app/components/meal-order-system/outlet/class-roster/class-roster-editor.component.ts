@@ -104,7 +104,28 @@ export class OutletClassRosterEditorComponent {
       this.newOutletClassRoster();
     }
 
-    this.getClasses();
+    this.getClasses()
+      .subscribe(results => {
+        this.classes = results.pagedData;
+        Object.assign(this.origClasses, results.pagedData);
+        if (data.outletClassRoster.id) {
+          this.editOutletClassRoster(data.outletClassRoster);
+        } else {
+          this.newOutletClassRoster();
+        }
+      },
+        error => {
+          if (data.outletClassRoster.id) {
+            this.editOutletClassRoster(data.outletClassRoster);
+          } else {
+            this.newOutletClassRoster();
+          }
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving classes.\r\n"`,
+          //  MessageSeverity.error);
+          console.log(error);
+        });
+
     this.getPeriods()
       .subscribe(results => {
         this.periods = results.pagedData;
@@ -181,16 +202,7 @@ export class OutletClassRosterEditorComponent {
     let filter = new Filter();
     let f = this.outletId ? '(classOutletId)==' + this.outletId + ',' : '';
     filter.filters = f + '(IsActive)==true';
-    this.classService.getClassesByFilter(filter)
-      .subscribe(results => {
-        this.classes = results.pagedData;
-        Object.assign(this.origClasses, results.pagedData);
-      },
-        error => {
-          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving classes.\r\n"`,
-            MessageSeverity.error);
-        })
+    return this.classService.getClassesByFilter(filter);
   }
 
   getPeriods() {
@@ -358,6 +370,8 @@ export class OutletClassRosterEditorComponent {
         });
 
         s.periods = periods;
+        s.classSelections = [];
+        Object.assign(s.classSelections, this.classes);
       });
 
       
@@ -415,7 +429,10 @@ export class OutletClassRosterEditorComponent {
     schedule.day = d;
     schedule.outletClassRosterId = this.outletClassRosterEdit.id;
     schedule.periods = dayPeriods;
+    schedule.classSelections = [];
+    Object.assign(schedule.classSelections, this.classes);
     this.outletClassRosterEdit.schedules.push(schedule);
+    
   }
 
   deleteSchedule(day) {
@@ -429,7 +446,7 @@ export class OutletClassRosterEditorComponent {
     }
   }
 
-  addClass(period: OutletClassRosterSchedulePeriod, m: Class) {
+  addClass(schedule: OutletClassRosterSchedule, period: OutletClassRosterSchedulePeriod, m: Class) {
     let c = new OutletClassRosterScheduleClass();
     c.mealSessionDetailId = period.mealSessionDetailId;
     c.classId = m.id;
@@ -443,11 +460,11 @@ export class OutletClassRosterEditorComponent {
     }
 
     //remove class from classes
-    let indxToDel = this.classes.findIndex(e => e.id == m.id);
-    this.classes.splice(indxToDel, 1);
+    let indxToDel = schedule.classSelections.findIndex(e => e.id == m.id);
+    schedule.classSelections.splice(indxToDel, 1);
   }
 
-  removeClass(period: OutletClassRosterSchedulePeriod, id: string) {
+  removeClass(schedule: OutletClassRosterSchedule, period: OutletClassRosterSchedulePeriod, id: string) {
     let indx = period.classes.findIndex(f => f.classId == id);
     if (indx > -1) {
       period.classes.splice(indx, 1);
@@ -456,14 +473,14 @@ export class OutletClassRosterEditorComponent {
     //add class to classes
     let indxToIns = this.origClasses.findIndex(e => e.id == id);
     if (indxToIns > -1) {
-      this.classes.splice(indxToIns, 0, this.origClasses[indxToIns]);
+      schedule.classSelections.splice(indxToIns, 0, this.origClasses[indxToIns]);
     }
   }
 
   filterClasses(schedule) {
     let filteredClass = [];
     let addedClasses = [];
-    for (const c of this.classes) {
+    for (const c of schedule.classSelections) {
       let exist = false;
       for (const s of schedule.periods) {
         for (const sc of s.classes) {

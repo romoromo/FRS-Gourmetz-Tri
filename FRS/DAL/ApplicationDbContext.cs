@@ -21,7 +21,7 @@ namespace DAL
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int, UserClaim, ApplicationUserRole, IdentityUserLogin<int>, UserRoleClaim,
         IdentityUserToken<int>>
-       /// , IDataProtectionKeyContext // Uncomment if cookie affinity doesn't fix the issue
+        , IDataProtectionKeyContext // Uncomment if cookie affinity doesn't fix the issue
     {
         public int? CurrentUserId { get; set; }
         public string CurrentUserName { get; set; }
@@ -249,13 +249,14 @@ namespace DAL
         public DbSet<MenuGroupDishCycle> MenuGroupDishCycles { get; set; }
         public DbSet<MenuGroupClass> MenuGroupClasses { get; set; }
         // Uncomment if cookie affinity doesn't fix the issue
-        //public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<DishComponent> DishComponents { get; set; }
         public DbSet<NotificationSetting> NotificationSettings { get; set; }
         public DbSet<StudentGroupMealPlan> StudentGroupMealPlans { get; set; }
         public DbSet<OrderPortalContent> OrderPortalContents { get; set; }
         public DbSet<OrderPortalBanner> OrderPortalBanners { get; set; }
         public DbSet<OutletTerm> OutletTerms { get; set; }
+        public DbSet<StudentGroupSession> StudentGroupSessions { get; set; }
 
         #region Stored Procedures
 
@@ -598,6 +599,7 @@ namespace DAL
             builder.Entity<OrderPortalContent>().TrackAllProperties();
             builder.Entity<OrderPortalBanner>().TrackAllProperties();
             builder.Entity<OutletTerm>().TrackAllProperties();
+            builder.Entity<StudentGroupSession>().TrackAllProperties();
 
             #endregion
 

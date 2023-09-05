@@ -38,6 +38,15 @@ export class OrderPortalService {
     }
   }
 
+  newOrderPortalContent(orderPortalContent: OrderPortalContent) {
+    return this.commonEndpoint.getNewEndpoint<OrderPortalContent>(this.orderPortalContentUrl, orderPortalContent);
+  }
+
+
+  deleteOrderPortalContent(id: string | OrderPortalContent): Observable<OrderPortalContent> {
+    return this.commonEndpoint.getDeleteEndpoint<OrderPortalContent>(this.orderPortalContentUrl, <string>id);
+  }
+
   getOrderPortalContentsByFilter(filter: Filter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.orderPortalContentUrl + '/sieve/list', filter);
   }

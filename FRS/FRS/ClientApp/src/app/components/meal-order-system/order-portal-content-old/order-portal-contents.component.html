@@ -8,48 +8,25 @@
     <hr class="last-separator-hr" />
   </div>
 </div>
-<div class="form-horizontal" *ngFor="let setting of notificationSettings">
-  <h4>{{(setting.type == 'NO_ORDER' ? 'Students With No Orders' : setting.type == 'ABANDONED_CART_1' ? 'Abandoned Cart 4 Hours Abandoned' : 'Abandoned Cart 4 Days Before Cut-Off')}}</h4>
-
-
+<div class="form-horizontal">
   <div class="form-group row">
-    <label class="col-sm-3 control-label" for="setting-{{setting.dayEnabled}}"> Trigger Notification On </label>
-    <div class="col-sm-4">
-      <select id="setting-{{setting.dayEnabled}}" [(ngModel)]="setting.dayEnabled" #languageSelector="bootstrap-select" bootstrapSelect class="selectpicker form-control">
-        <option value="Sunday">Sunday</option>
-        <option value="Monday">Monday</option>
-        <option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option>
-        <option value="Thursday">Thursday</option>
-        <option value="Friday">Friday</option>
-        <option value="Saturday">Saturday</option>
-      </select>
-    </div>
-    <!--<div class="col-sm-5">
-      <p class="form-control-static text-muted small">{{'preferences.DashboardTodoHint' | translate}}</p>
-    </div>-->
-  </div>
-  <div class="form-group row">
-    <label class="col-sm-3 control-label" for="setting-{{setting.allowedEmails}}"> Whitelist Emails</label>
+    <label class="col-sm-3 control-label" for="announcement"> Announcement</label>
     <div class="col-sm-4">
       <div>
-        <textarea rows="5" name="setting-{{setting.allowedEmails}}" [(ngModel)]="setting.allowedEmails" class="form-control"></textarea>
+        <textarea rows="5" name="announcement" [(ngModel)]="orderPortalContent.announcement" class="form-control"></textarea>
       </div>
     </div>
     <div class="col-sm-5">
-      <p class="form-control-static text-muted small">Allow semi-colon separated emails to receive the notifications (Empty means allow all)</p>
+      <p class="form-control-static text-muted small">Announcement</p>
     </div>
   </div>
-  <div class="form-group row">
+  <div class="form-group row" *ngFor="let banner of banners">
     <label class="col-sm-3 control-label" for="setting-{{setting.subject}}"> Email Subject</label>
     <div class="col-sm-4">
       <div>
         <input type="text" name="setting-{{setting.subject}}" [(ngModel)]="setting.subject" class="form-control" />
       </div>
     </div>
-    <!--<div class="col-sm-5">
-      <p class="form-control-static text-muted small">Allow semi-colon separated emails to receive the notifications (Empty means allow all)</p>
-    </div>-->
   </div>
   <div class="form-group row">
     <label class="col-sm-3 control-label" for="setting-{{setting.template}}"> Email Template</label>

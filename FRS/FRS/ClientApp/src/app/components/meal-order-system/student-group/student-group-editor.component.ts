@@ -5,7 +5,7 @@ import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
 import { DateAdapter, MatDatepickerInputEvent, MatDialog, MatDialogRef, MAT_DATE_FORMATS, MAT_DIALOG_DATA } from '@angular/material';
 import { Student, StudentCard, StudentInterestGroup, StudentRestriction } from 'src/app/models/meal-order/student.model';
-import { StudentGroup, StudentGroupDetail, StudentGroupType } from 'src/app/models/meal-order/student-group.model';
+import { StudentGroup, StudentGroupDetail, StudentGroupSession, StudentGroupType } from 'src/app/models/meal-order/student-group.model';
 import { StudentService } from 'src/app/services/meal-order/student.service';
 import { CommonFilter, Filter } from 'src/app/models/sieve-filter.model';
 import { ClassService } from 'src/app/services/meal-order/class.service';
@@ -95,7 +95,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
       this.newGroup();
     }
 
-    this.getStudents();
+    //this.getStudents();
     this.getTerms();
   }
 
@@ -109,6 +109,16 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   ngOnDestroy() {
     this.alertService.resetStickyMessage();
     this.subscription.unsubscribe();
+  }
+
+  getDishCode() {
+    this.studentService.generateDishCode(this.outletId)
+      .subscribe(results => {
+        console.log(results);
+        this.groupEdit.code = results.code;
+      },
+        error => {
+        })
   }
 
   getStudents() {
@@ -183,6 +193,17 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
     this.groupEdit.outletId = this.outletId;
+
+    this.groupEdit.sessions = [];
+    this.mealSessions.forEach((p, index, ps) => {
+      if (p.checked) {
+        let sr = new StudentGroupSession();
+        sr.studentGroupId = this.groupEdit.id;
+        sr.mealSessionId = p.mealSessionId;
+        this.groupEdit.sessions.push(sr);
+      }
+
+    });
 
     if (this.isNewGroup) {
       this.studentService.newStudentGroup(this.groupEdit).subscribe(group => this.saveSuccessHelper(group), error => this.saveFailedHelper(error));
@@ -267,6 +288,10 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
     this.groupEdit = new StudentGroup();
     this.groupEdit.deliveryStartDate = this.getCutoffDate();
     this.groupEdit.deliveryEndDate = this.getCutoffDate();
+    this.groupEdit.isPublished = true; //not used
+    if (!this.groupEdit.code) {
+      this.getDishCode();
+    }
     return this.groupEdit;
   }
 
@@ -284,6 +309,9 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
       this.original_end = new Date(group.deliveryEndDate);
       if (!this.groupEdit.price) {
         this.groupEdit.price = 0;
+      }
+      if (!this.groupEdit.code) {
+        this.getDishCode();
       }
       return this.groupEdit;
     }
@@ -306,7 +334,8 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
         result.selectedStudents.forEach(student => {
           var detail = new StudentGroupDetail();
           detail.studentId = student.id;
-          detail.studentGroupId = this.groupEdit.id;
+          detail.studentGroupId = this.groupEdit.id ? this.groupEdit.id : '0';
+          detail.name = student.name;
           this.groupEdit.sgdetails.push(detail);
         })
         console.log("final sgdetails: ", this.groupEdit)
@@ -389,6 +418,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
       .subscribe(results => {
         this.mealSessionDetails = results;
         let mealSessions = [];
+        
         if (this.mealSessionDetails) {
           this.mealSessionDetails.forEach((d, i, details) => {
             let indx = mealSessions && mealSessions.length > 0 ? mealSessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
@@ -399,11 +429,25 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
         }
 
         this.mealSessions = mealSessions;
+        this.mealSessions.forEach((p, index, ps) => {
+          (<any>p).checked = this.groupEdit.sessions != null && this.groupEdit.sessions.findIndex(f => f.mealSessionId == p.mealSessionId) > -1;
+        });
+
       },
         error => {
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
             MessageSeverity.error);
         })
+  }
+
+  deleteStudent(row: StudentGroupDetail, index: number) {
+    this.alertService.showDialog('Are you sure you want to remove the \"' + row.name + '\"?', DialogType.confirm, () => this.deleteStudentHelper(row, index));
+  }
+
+
+  deleteStudentHelper(row: StudentGroupDetail, index: number) {
+    if (this.groupEdit.sgdetails)
+      this.groupEdit.sgdetails.splice(index, 1);
   }
 
   public uploadFinished = (event) => {

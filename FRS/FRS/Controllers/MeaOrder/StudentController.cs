@@ -748,6 +748,17 @@ namespace FRS.Controllers
 
         #endregion
 
+        [HttpGet("studentgroups/generatecode")]
+        //[Authorize(Authorization.Policies.ManageAllDishesPolicy)]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        //[AllowAnonymous]
+        public async Task<IActionResult> GenerateCode(int catererId)
+        {
+            var code = await this._service.GenerateCode(catererId);
+            return Ok(new { code });
+        }
+
         [HttpGet("studentgroups/get/{id}")]
         //[AllowAnonymous]
         //[Authorize(Authorization.Policies.ManageAllStudentsPolicy)]
