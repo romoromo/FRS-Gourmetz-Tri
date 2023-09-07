@@ -648,7 +648,7 @@ namespace BAL.Services.MealOrder
             png.ScaleToFit(40f, 40f);
 
             PdfPTable table2 = new PdfPTable(4);
-            float[] widths = new float[] { 3f, 7f, 2.2f, 3.8f };
+            float[] widths = new float[] { 3.4f, 7f, 2.2f, 3.4f };
             table2.SetWidths(widths);
             table2.WidthPercentage = 100f;
             table2.DefaultCell.Border = Rectangle.NO_BORDER;
@@ -734,19 +734,19 @@ namespace BAL.Services.MealOrder
             PdfPCell cell_4_h = new PdfPCell(new Phrase("Ordered Qty", new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
             PdfPCell cell_5_h = new PdfPCell(new Phrase("Issued Qty", new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
 
-            cell_1_h.HorizontalAlignment = Element.ALIGN_LEFT;
+            cell_1_h.HorizontalAlignment = Element.ALIGN_CENTER;
             cell_1_h.BackgroundColor = BaseColor.LIGHT_GRAY;
             //cell_1_h.BorderWidth = 1f;
-            cell_2_h.HorizontalAlignment = Element.ALIGN_LEFT;
+            cell_2_h.HorizontalAlignment = Element.ALIGN_CENTER;
             cell_2_h.BackgroundColor = BaseColor.LIGHT_GRAY;
             //cell_2_h.BorderWidth = 1f;
-            cell_3_h.HorizontalAlignment = Element.ALIGN_LEFT;
+            cell_3_h.HorizontalAlignment = Element.ALIGN_CENTER;
             cell_3_h.BackgroundColor = BaseColor.LIGHT_GRAY;
             //cell_3_h.BorderWidth = 1f;
-            cell_4_h.HorizontalAlignment = Element.ALIGN_LEFT;
+            cell_4_h.HorizontalAlignment = Element.ALIGN_CENTER;
             cell_4_h.BackgroundColor = BaseColor.LIGHT_GRAY;
             //cell_4_h.BorderWidth = 1f;
-            cell_5_h.HorizontalAlignment = Element.ALIGN_LEFT;
+            cell_5_h.HorizontalAlignment = Element.ALIGN_CENTER;
             cell_5_h.BackgroundColor = BaseColor.LIGHT_GRAY;
             //cell_5_h.BorderWidth = 1f;
 
@@ -778,7 +778,7 @@ namespace BAL.Services.MealOrder
                     document.Open();
 
 
-                    float[] widths3 = new float[] { 3f, 7f, 2.2f, 1.9f, 1.9f };
+                    float[] widths3 = new float[] { 3.4f, 7f, 2.2f, 1.8f, 1.6f };
 
 
                     printHeader(dOrder,document);
@@ -855,7 +855,7 @@ namespace BAL.Services.MealOrder
                         PdfPCell cell_4 = new PdfPCell(new Phrase(""));
                         PdfPCell cell_5 = new PdfPCell(new Phrase(""));
 
-                        cell_1.HorizontalAlignment = Element.ALIGN_LEFT;
+                        cell_1.HorizontalAlignment = Element.ALIGN_CENTER;
                         cell_1.BackgroundColor = BaseColor.LIGHT_GRAY;
                         cell_1.Border = Rectangle.RIGHT_BORDER | Rectangle.LEFT_BORDER;
                         //cell_1.BorderWidth = 1f;
@@ -1020,9 +1020,9 @@ namespace BAL.Services.MealOrder
                     document.Add(table);
 
                     PdfPTable table3 = new PdfPTable(2);
-                    float[] widths2 = new float[] { 3f, 7f};
+                    float[] widths2 = new float[] { 3.4f, 7f};
                     table3.SetWidths(widths2);
-                    table3.WidthPercentage = 62.5f;
+                    table3.WidthPercentage = 65f;
 
                     table3.AddCell(getCellBoldNoBord("Issued By : ", PdfPCell.ALIGN_LEFT));
                     table3.AddCell(getCellNoBord(dOrder.CreatedByName + " - " + dOrder.CreatedDate.ToString("dd MMMM yy, h:mm tt"), PdfPCell.ALIGN_LEFT));
@@ -1035,10 +1035,20 @@ namespace BAL.Services.MealOrder
                     table3.AddCell(cellBlankRow);
 
                     table3.AddCell(getCellBoldNoBord("Delivered By : ", PdfPCell.ALIGN_LEFT));
-                    table3.AddCell(getCellNoBord(dOrder.VehicleNumber + " - " + dOrder.LoadingTime.ToString("dd MMMM yy, h:mm tt"), PdfPCell.ALIGN_LEFT));
+                    var loadingTime = "";
+                    if (dOrder.LoadingTime != null)
+                    {
+                        loadingTime = dOrder.LoadingTime.ToString("dd MMMM yy, h:mm tt");
+                    }
+                    table3.AddCell(getCellNoBord(dOrder.VehicleNumber + " - " + loadingTime, PdfPCell.ALIGN_LEFT));
                     table3.AddCell(cellBlankRow);
                     table3.AddCell(getCellBoldNoBord("Received By : ", PdfPCell.ALIGN_LEFT));
-                    table3.AddCell(getCellNoBord(dOrder.ClosedByName + " - " + dOrder.ReceivingTime.ToString("dd MMMM yy, h:mm tt"), PdfPCell.ALIGN_LEFT));
+                    var receivingTime = "";
+                    if (dOrder.ReceivingTime != null )
+                    {
+                        receivingTime = dOrder.ReceivingTime.ToString("dd MMMM yy, h:mm tt");
+                    }
+                    table3.AddCell(getCellNoBord(dOrder.ClosedByName + " - " + receivingTime, PdfPCell.ALIGN_LEFT));
                     table3.AddCell(cellBlankRow);
 
 
