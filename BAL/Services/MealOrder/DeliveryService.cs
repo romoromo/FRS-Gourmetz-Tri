@@ -767,6 +767,12 @@ namespace BAL.Services.MealOrder
 
             var dOrder = await GetDeliveryOrderNewByIdAsync(doId);
 
+            BaseFilter invFilter = new BaseFilter();
+            invFilter.Filters = "(DeliveryOrderID)==" + doId;
+            var dInvs = await GetStoreInventoriesAsync(invFilter);
+
+            var dInv = dInvs.PagedData[0];
+
             if (dOrder != null)
             {
                 using (var stream = new System.IO.MemoryStream())
@@ -889,6 +895,7 @@ namespace BAL.Services.MealOrder
                         c.DeliveryBentos.ForEach(b => {
 
                             var rep = DOReports.Find(r => r.dishID == b.DishId);
+                            var rec = dInv.StoreInventoryDetails.Find(r => (r.DishId == b.DishId && r.CartonId == c.CartonAssetId));
                             if (rep == null)
                             {
                                 var repDish = new DoPrintDTO();
@@ -897,9 +904,9 @@ namespace BAL.Services.MealOrder
                                 repDish.dishCode = b.DishCode;
                                 repDish.categories = b.DishType;
                                 repDish.dishQty = b.Qty;
-                                repDish.issQty = b.ReceivedQty;
+                                repDish.issQty = rec != null ? rec.QtyReceived : 0;
                                 totalQty += b.Qty;
-                                totalIssued += b.ReceivedQty;
+                                totalIssued += repDish.issQty;
                                 repDish.bentoList = "";
                                 if (b.BentoAssetCode != null && b.BentoAssetCode != "")
                                 {
@@ -911,8 +918,8 @@ namespace BAL.Services.MealOrder
                             {
                                 rep.dishQty += b.Qty;
                                 totalQty += b.Qty;
-                                rep.issQty += b.ReceivedQty;
-                                totalIssued += b.ReceivedQty;
+                                rep.issQty += (rec != null ? rec.QtyReceived : 0);
+                                totalIssued += (rec != null ? rec.QtyReceived : 0);
                                 if (b.BentoAssetCode != null && b.BentoAssetCode != "")
                                 {
                                     if (rep.bentoList.Length > 0)
@@ -1036,7 +1043,7 @@ namespace BAL.Services.MealOrder
 
                     table3.AddCell(getCellBoldNoBord("Delivered By : ", PdfPCell.ALIGN_LEFT));
                     var loadingTime = "";
-                    if (dOrder.LoadingTime != null)
+                    if (dOrder.LoadingTime != DateTime.MinValue)
                     {
                         loadingTime = dOrder.LoadingTime.ToString("dd MMMM yy, h:mm tt");
                     }
@@ -1044,11 +1051,11 @@ namespace BAL.Services.MealOrder
                     table3.AddCell(cellBlankRow);
                     table3.AddCell(getCellBoldNoBord("Received By : ", PdfPCell.ALIGN_LEFT));
                     var receivingTime = "";
-                    if (dOrder.ReceivingTime != null )
+                    if (dInv.UpdatedDate != DateTime.MinValue)
                     {
-                        receivingTime = dOrder.ReceivingTime.ToString("dd MMMM yy, h:mm tt");
+                        receivingTime = dInv.UpdatedDate.ToString("dd MMMM yy, h:mm tt");
                     }
-                    table3.AddCell(getCellNoBord(dOrder.ClosedByName + " - " + receivingTime, PdfPCell.ALIGN_LEFT));
+                    table3.AddCell(getCellNoBord(dInv.ReceivedBy + " - " + receivingTime, PdfPCell.ALIGN_LEFT));
                     table3.AddCell(cellBlankRow);
 
 

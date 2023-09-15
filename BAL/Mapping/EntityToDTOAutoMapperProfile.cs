@@ -414,7 +414,8 @@ namespace BAL.Mapping
             CreateMap<DeliveryDetailNewDTO, DeliveryDetailNew>();
 
             CreateMap<StoreInventory, StoreInventoryDTO>()
-                .ForMember(d => d.StoreInventoryDetails, map => map.MapFrom(s => s.StoreInventoryDetails != null ? s.StoreInventoryDetails.Where(z => z.IsActive) : null));
+                .ForMember(d => d.StoreInventoryDetails, map => map.MapFrom(s => s.StoreInventoryDetails != null ? s.StoreInventoryDetails.Where(z => z.IsActive) : null))
+                .ForMember(d => d.ReceivedBy, map => map.MapFrom(f => f.UpdatedByUser != null ? f.UpdatedByUser.UserName : ""));
             CreateMap<StoreInventoryDTO, StoreInventory>();
 
             CreateMap<StoreInventoryDetail, StoreInventoryDetailDTO>();

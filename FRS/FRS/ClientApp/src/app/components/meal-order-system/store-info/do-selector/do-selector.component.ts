@@ -43,7 +43,7 @@ export class DOSelectorComponent implements OnInit {
     let filter = new Filter();
     filter.filters = '(IsActive)==true,(ToStoreId)==' + this.editStore.id;
 
-    this.deliveryService.getDeliveryOrdersByFilter(filter).subscribe(results => {
+    this.deliveryService.getDeliveryOrderNewsByFilter(filter).subscribe(results => {
       this.dos = results.pagedData;
 
       //this.dos.map(cg => {

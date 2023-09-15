@@ -13,7 +13,9 @@ namespace BAL.DTO.MealOrder
         public int? DeliveryOrderID { get; set; }
         public int? DeliveryOrderNewID { get; set; }
         public string DeliveredBy { get; set; }
+        public string ReceivedBy { get; set; }
         public DateTime TimeReceived { get; set; }
+        public DateTime UpdatedDate { get; set; }
         public string Remarks { get; set; }
         public StoreInfoDTO Store { get; set; }
         public DeliveryOrderDTO DeliveryOrder { get; set; }
