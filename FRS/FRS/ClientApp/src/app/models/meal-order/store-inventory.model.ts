@@ -9,6 +9,7 @@ export class StoreInventory {
   public id: string;
   public storeInfoId: string;
   public deliveryOrderId: string;
+  public deliveryOrderNewId: string;
   public timeReceived: Date;
   public remarks: string;
   public deliveredBy: string;

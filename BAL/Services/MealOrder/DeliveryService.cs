@@ -768,10 +768,15 @@ namespace BAL.Services.MealOrder
             var dOrder = await GetDeliveryOrderNewByIdAsync(doId);
 
             BaseFilter invFilter = new BaseFilter();
-            invFilter.Filters = "(DeliveryOrderID)==" + doId;
+            invFilter.Filters = "(DeliveryOrderNewID)==" + doId;
             var dInvs = await GetStoreInventoriesAsync(invFilter);
 
-            var dInv = dInvs.PagedData[0];
+            StoreInventoryDTO dInv = new StoreInventoryDTO();
+
+            if(dInvs.PagedData.Count > 0)
+            {
+                dInv = dInvs.PagedData[0];
+            }
 
             if (dOrder != null)
             {
@@ -895,7 +900,11 @@ namespace BAL.Services.MealOrder
                         c.DeliveryBentos.ForEach(b => {
 
                             var rep = DOReports.Find(r => r.dishID == b.DishId);
-                            var rec = dInv.StoreInventoryDetails.Find(r => (r.DishId == b.DishId && r.CartonId == c.CartonAssetId));
+                            var rec = (StoreInventoryDetailDTO)null;
+                            if (dInv.StoreInventoryDetails != null)
+                            {
+                                rec = dInv.StoreInventoryDetails.Find(r => (r.DishId == b.DishId && r.CartonId == c.CartonAssetId));
+                            }
                             if (rep == null)
                             {
                                 var repDish = new DoPrintDTO();

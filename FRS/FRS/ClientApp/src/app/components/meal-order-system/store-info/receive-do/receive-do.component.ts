@@ -45,7 +45,7 @@ export class ReceiveDOComponent implements OnInit {
 
   loadData() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true,(DeliveryOrderID)==' + this.editDo.id;
+    filter.filters = '(IsActive)==true,(DeliveryOrderNewID)==' + this.editDo.id;
 
     this.deliveryService.getStoreInventoriesByFilter(filter).subscribe(results => {
       this.inventories = results.pagedData;
@@ -160,7 +160,7 @@ export class ReceiveDOComponent implements OnInit {
       }
     })
     this.editInventory.storeInventoryDetails = allDetail;
-    this.editInventory.deliveryOrderId = this.editDo.id;
+    this.editInventory.deliveryOrderNewId = this.editDo.id;
     this.editInventory.storeInfoId = this.editDo.toStoreId;
     console.log(this.editInventory);
 
