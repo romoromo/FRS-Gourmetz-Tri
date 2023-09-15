@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 import { OrderPortalContent } from 'src/app/models/meal-order/order-portal-content.model';
 import { OrderPortalContentEditorComponent } from './order-portal-content.component';
 import { OrderPortalService } from 'src/app/services/order-portal.service';
+import { DateOnlyPipe, DateTimeOnlyPipe } from 'src/app/pipes/datetime.pipe';
 
 
 @Component({
@@ -83,6 +84,8 @@ export class OrderPortalContentsManagementComponent implements OnInit {
     this.columns = [
       { prop: 'description', name: 'Description' },
       { prop: 'announcement', name: 'Announcement' },
+      { prop: 'effectiveStartDate', name: 'Start', pipe: new DateOnlyPipe('en-SG') },
+      { prop: 'effectiveEndDate', name: 'End', pipe: new DateOnlyPipe('en-SG') },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
   }
