@@ -41,7 +41,7 @@ export class OutletTermEditorComponent {
       if (data.outletTerm.id) {
         this.editOutletTerm(data.outletTerm);
       } else {
-        this.newOutletTerm();
+        this.newOutletTerm(data.outletTerm);
       }
     }
 
@@ -146,14 +146,14 @@ export class OutletTermEditorComponent {
   }
 
 
-  newOutletTerm() {
+  newOutletTerm(term) {
     this.isNewOutletTerm = true;
     this.showValidationErrors = true;
 
     this.editingOutletTermName = null;
     this.selectedValues = {};
     this.outletTermEdit = new OutletTerm();
-
+    this.outletTermEdit.outletId = term.outletId;
     return this.outletTermEdit;
   }
 
@@ -162,7 +162,7 @@ export class OutletTermEditorComponent {
       this.isNewOutletTerm = false;
       this.showValidationErrors = true;
 
-      this.editingOutletTermName = outletTerm.name;
+      this.editingOutletTermName = outletTerm.label;
       this.selectedValues = {};
       this.outletTermEdit = new OutletTerm();
       Object.assign(this.outletTermEdit, outletTerm);
@@ -170,7 +170,7 @@ export class OutletTermEditorComponent {
       return this.outletTermEdit;
     }
     else {
-      return this.newOutletTerm();
+      return this.newOutletTerm(outletTerm);
     }
   }
 
