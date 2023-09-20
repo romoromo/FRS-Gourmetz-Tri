@@ -2,6 +2,7 @@
 using DAL.Core;
 using DAL.Filters;
 using DAL.Models;
+using DAL.Models.StoredProcedures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,7 @@ namespace BAL.Services.Interfaces
         Task<PagedEntity<ExternalAppLoginLogDTO>> GetExternalLoginLogsAsync(BaseFilter filter);
         Task<BaseOperationResponse> CreateExternalLoginLogAsync(ExternalAppLoginLogDTO externalAppLoginLog);
         Task<byte[]> GenerateExternalLoginLogXls(BaseFilter filter);
+        Task<PagedEntity<UserActivityLogDTO>> GetUserActivityLogs(UserActivityLogReportFilter filter);
+        Task<byte[]> GenerateUserActivityLogsXls(UserActivityLogReportFilter filter);
     }
 }

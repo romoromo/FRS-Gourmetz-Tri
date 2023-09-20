@@ -12,6 +12,7 @@ using DAL.Filters;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
 using System.Transactions;
+using DAL.Core.Helpers;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -55,6 +56,13 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> CreateAsync(OutletClassRoster outletClassRoster)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.ROSTER_CREATE.ToString(),
+                Remarks = $"Class roster was created."
+            };
+
             var result = new BaseOperationResponse();
 
             //validate class roster
@@ -85,6 +93,7 @@ namespace DAL.Repositories.MealOrder
                 }
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
@@ -96,6 +105,13 @@ namespace DAL.Repositories.MealOrder
                             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
                             TransactionScopeAsyncFlowOption.Enabled))
             {
+                _appContext.AuditUserActivityType = new AuditUserActivityType
+                {
+                    GroupId = Common.GenerateUniqueStringId(),
+                    ActionName = UserActivityType.ROSTER_UPDATE.ToString(),
+                    Remarks = $"Class roster was updated."
+                };
+
                 //validate class roster
                 var similarRosters = await FindAsync(e => e.Id != outletClassRoster.Id && e.IsActive && e.MealSessionId == outletClassRoster.MealSessionId && e.OutletProfileId == outletClassRoster.OutletProfileId
                                         && (outletClassRoster.StartDate.Date >= e.StartDate.Date && outletClassRoster.StartDate.Date <= e.EndDate.Value.Date));
@@ -191,6 +207,7 @@ namespace DAL.Repositories.MealOrder
                 }
 
             }
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
@@ -210,6 +227,13 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> Delete(OutletClassRoster outletClassRoster)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.ROSTER_DELETE.ToString(),
+                Remarks = $"Class roster was deleted."
+            };
+
             var result = new BaseOperationResponse();
             SoftDelete(outletClassRoster);
             if (await _appContext.SaveChangesAsync() > 0)
@@ -222,6 +246,7 @@ namespace DAL.Repositories.MealOrder
                 result.Message = "Failed to delete!";
                 result.IsSuccess = false;
             }
+            _appContext.ResetAuditUserAction();
 
             return result;
         }

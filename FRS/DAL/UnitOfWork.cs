@@ -143,6 +143,7 @@ namespace DAL
         private MenuGroupRepository _menuGroups;
         private INotificationSettingRepository _notificationSetting;
         private IOrderPortalContentRepository _orderPortalContents;
+        private OutletTermRepository _outletTerms;
 
         public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory)
         {
@@ -1048,6 +1049,17 @@ namespace DAL
                     _outlets = new OutletRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
 
                 return _outlets;
+            }
+        }
+
+        public IOutletTermRepository OutletTerms
+        {
+            get
+            {
+                if (_outletTerms == null)
+                    _outletTerms = new OutletTermRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+
+                return _outletTerms;
             }
         }
 

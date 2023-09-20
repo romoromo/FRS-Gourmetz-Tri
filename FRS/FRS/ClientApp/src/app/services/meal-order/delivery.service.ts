@@ -18,7 +18,7 @@ import { TrackingStatus } from '../../models/meal-order/tracking-status.model';
 import { DeliveryOrder } from '../../models/meal-order/delivery-order.model';
 import { DeliveryOrderNew } from '../../models/meal-order/delivery-order-new.model';
 import { StoreInventory } from '../../models/meal-order/store-inventory.model';
-import { Outlet, OutletProfile } from 'src/app/models/meal-order/outlet.model';
+import { Outlet, OutletProfile, OutletTerm } from 'src/app/models/meal-order/outlet.model';
 import { StoreInfo } from '../../models/meal-order/store-info.model';
 import { Driver } from 'src/app/models/meal-order/driver.model';
 import { Route } from 'src/app/models/meal-order/route.model';
@@ -35,6 +35,8 @@ export class DeliveryService {
   private readonly _outletProfileUrl: string = "/api/delivery/outletprofiles";
   get outletProfileUrl() { return this.configurations.baseUrl + this._outletProfileUrl; }
 
+  private readonly _outletTermUrl: string = "/api/delivery/outletterms";
+  get outletTermUrl() { return this.configurations.baseUrl + this._outletTermUrl; }
 
   private readonly _bentoBoxTypeUrl: string = "/api/delivery/bentoboxtypes";
   get bentoBoxTypeUrl() { return this.configurations.baseUrl + this._bentoBoxTypeUrl; }
@@ -467,5 +469,24 @@ export class DeliveryService {
 
   printCCLabel(doId: string) {
     return this.commonEndpoint.getFileget<any>(this.deliveryBaseurl + '/printCCLabel/' + doId);
+  }
+
+  getOutletTermsByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.outletTermUrl + '/sieve/list', filter);
+  }
+
+  updateOutletTerm(outlet: OutletTerm) {
+    if (outlet.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.outletTermUrl, outlet, outlet.id);
+    }
+  }
+
+  newOutletTerm(outlet: OutletTerm) {
+    return this.commonEndpoint.getNewEndpoint<OutletTerm>(this.outletTermUrl, outlet);
+  }
+
+
+  deleteOutletTerm(outletOrOutletId: string | OutletTerm): Observable<OutletTerm> {
+    return this.commonEndpoint.getDeleteEndpoint<OutletTerm>(this.outletTermUrl, <string>outletOrOutletId);
   }
 }

@@ -27,6 +27,9 @@ namespace DAL.Models
         [Required]
         [MaxLength(256)]
         public string RecordId { get; set; }
+        public string GroupId { get; set; }
+        public string ActionName { get; set; }
+        public string Remarks { get; set; }
 
         public virtual ICollection<AuditLogDetail> Details { get; set; }
     }

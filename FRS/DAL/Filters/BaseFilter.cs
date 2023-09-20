@@ -61,4 +61,12 @@ namespace DAL.Filters
     {
         public List<string> Permissions { get; set; }
     }
+
+    public class UserActivityLogReportFilter : BaseFilter
+    {
+        public DateTime ReportDateFrom { get; set; }
+        public DateTime ReportDateTo { get; set; }
+        public string Keyword { get; set; }
+        public string ReportType { get; set; }
+    }
 }

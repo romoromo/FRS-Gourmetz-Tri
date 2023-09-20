@@ -1442,5 +1442,37 @@ namespace BAL.Services.MealOrder
         }
 
         #endregion
-            }
+
+        #region Outlet Term
+
+        public async Task<PagedEntity<OutletTermDTO>> GetOutletTermsAsync(BaseFilter filter)
+        {
+            var result = Mapper.Map<PagedEntity<OutletTermDTO>>(await this._uow.OutletTerms.GetOutletTermsAsync(filter));
+            return result;
+        }
+
+        public async Task<OutletTermDTO> GetOutletTermByIdAsync(int id)
+        {
+            return Mapper.Map<OutletTermDTO>(await this._uow.OutletTerms.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreateOutletTermAsync(OutletTermDTO dto)
+        {
+            return await this._uow.OutletTerms.CreateAsync(Mapper.Map<OutletTerm>(dto));
+        }
+
+        public async Task<BaseOperationResponse> UpdateOutletTermAsync(OutletTermDTO dto)
+        {
+            return await this._uow.OutletTerms.UpdateAsync(Mapper.Map<OutletTerm>(dto));
+        }
+
+        public async Task<BaseOperationResponse> DeleteOutletTermAsync(int id)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.OutletTerms.DeleteAsync(id);
+            return result;
+        }
+
+        #endregion
+    }
 }

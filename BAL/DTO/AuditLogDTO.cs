@@ -17,6 +17,12 @@ namespace BAL.DTO
         public string TableName { get; set; }
 
         public string RecordId { get; set; }
+
+        public string GroupId { get; set; }
+
+        public string ActionName { get; set; }
+
+        public string Remarks { get; set; }
     }
 
     public class ExternalAppLoginLogDTO
@@ -28,5 +34,31 @@ namespace BAL.DTO
         public string Email { get; set; }
         public string Message { get; set; }
         public DateTime EventDateTime { get; set; }
+    }
+
+    public class UserActivityLogDTO
+    {
+        public string GroupId { get; set; }
+        public string Username { get; set; }
+        public string Remarks { get; set; }
+        public DateTime EventDateTime { get; set; }
+        public int Total { get; set; }
+        public List<UserActivityLogDetailDTO> Details { get; set; }
+    }
+
+    public class UserActivityLogDetailDTO
+    {
+        public string GroupId { get; set; }
+        public string Username { get; set; }
+        public string ActionName { get; set; }
+        public int AuditLogId { get; set; }
+        public DateTime EventDateTime { get; set; }
+        public string RecordId { get; set; }
+        public string LogType { get; set; }
+        public string Remarks { get; set; }
+        public string PropertyName { get; set; }
+        public string OldVal { get; set; }
+        public string NewVal { get; set; }
+        public string DetailRemarks { get; set; }
     }
 }

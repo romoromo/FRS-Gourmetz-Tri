@@ -42,6 +42,11 @@
         <div style="padding-left:25px;min-height:300px">
           <h4>{{row.name}} Details</h4>
           <mat-tab-group dynamicHeight>
+            <mat-tab label="Terms">
+              <div class="container-fluid" style="padding-top:20px">
+                <outlet-terms-management [isHideHeader]="true" [outletId]="row.id"></outlet-terms-management>
+              </div>
+            </mat-tab>
             <mat-tab label="Class Batches">
               <div class="container-fluid" style="padding-top:20px">
                 <class-batches-management [isHideHeader]="true" [outletId]="row.id"></class-batches-management>

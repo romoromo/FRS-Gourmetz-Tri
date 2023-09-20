@@ -13,6 +13,7 @@ using static DAL.Core.Helpers.TreeExtensions;
 
 using SMV.FOMOPay.Model;
 using DAL.Models.StoredProcedures;
+using System.Data;
 
 namespace BAL.Mapping
 {
@@ -785,7 +786,30 @@ namespace BAL.Mapping
             //.ForMember(e => e.ImageFilePath, map => map.MapFrom(e => e.BannerImage != null && e.BannerImage != null ? e.BannerImage.Path : String.Empty));
 
             CreateMap<OrderPortalBannerDTO, OrderPortalBanner>();
-                //.ForMember(d => d.BannerImage, map => map.MapFrom(s => new File { Path = s.ImageFilePath, FileName = s.ImageFileName, Type = FileType.Icon.ToString() }));
+            //.ForMember(d => d.BannerImage, map => map.MapFrom(s => new File { Path = s.ImageFilePath, FileName = s.ImageFileName, Type = FileType.Icon.ToString() }));
+
+            CreateMap<IDataRecord, spGetUserActivityLogHeader>()
+            .ForMember(dest => dest.GroupId, opt => opt.MapFrom(src => src["GroupId"]))
+            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src["Username"]))
+            .ForMember(dest => dest.Remarks, opt => opt.MapFrom(src => src["Remarks"]))
+            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src["Total"]));
+
+            CreateMap<IDataRecord, spGetUserActivityLogDetail>()
+            .ForMember(dest => dest.GroupId, opt => opt.MapFrom(src => src["GroupId"]))
+            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src["Username"]))
+            .ForMember(dest => dest.ActionName, opt => opt.MapFrom(src => src["ActionName"]))
+            .ForMember(dest => dest.AuditLogId, opt => opt.MapFrom(src => src["AuditLogId"]))
+            .ForMember(dest => dest.EventDateTime, opt => opt.MapFrom(src => src["EventDateTime"]))
+            .ForMember(dest => dest.RecordId, opt => opt.MapFrom(src => src["RecordId"]))
+            .ForMember(dest => dest.LogType, opt => opt.MapFrom(src => src["LogType"]))
+            .ForMember(dest => dest.Remarks, opt => opt.MapFrom(src => src["Remarks"]))
+            .ForMember(dest => dest.PropertyName, opt => opt.MapFrom(src => src["PropertyName"]))
+            .ForMember(dest => dest.OldVal, opt => opt.MapFrom(src => src["OldVal"]))
+            .ForMember(dest => dest.NewVal, opt => opt.MapFrom(src => src["NewVal"]))
+            .ForMember(dest => dest.DetailRemarks, opt => opt.MapFrom(src => src["DetailRemarks"]));
+
+            CreateMap<spGetUserActivityLogHeader, UserActivityLogDTO>();
+            CreateMap<spGetUserActivityLogDetail, UserActivityLogDetailDTO>();
         }
     }
 }

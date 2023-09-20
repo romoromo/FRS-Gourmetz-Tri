@@ -11,6 +11,7 @@ using Sieve.Services;
 using DAL.Filters;
 using DAL.Models.MealOrder;
 using System.Transactions;
+using DAL.Core.Helpers;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -65,6 +66,13 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> CreateAsync(Payment Payment)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
+                Remarks = "Payment was created."
+            };
+
             var result = new BaseOperationResponse();
             var f = await AddAsync(Payment);
 
@@ -121,11 +129,19 @@ namespace DAL.Repositories.MealOrder
                 result.IsSuccess = false;
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateAsync(Payment Payment)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.PAYMENT_UPDATE.ToString(),
+                Remarks = "Payment was updated."
+            };
+
             var result = new BaseOperationResponse();
 
             var f = await GetSingleOrDefaultAsync(e => e.Id == Payment.Id);
@@ -180,6 +196,7 @@ namespace DAL.Repositories.MealOrder
                 result.Message = "Failed to save payment type!";
                 result.IsSuccess = false;
             }
+            _appContext.ResetAuditUserAction();
 
             return result;
         }
@@ -239,6 +256,13 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> Delete(Payment Payment)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.PAYMENT_DELETE.ToString(),
+                Remarks = "Payment was deleted."
+            };
+
             var result = new BaseOperationResponse();
             SoftDelete(Payment);
             if (await _appContext.SaveChangesAsync() > 0)
@@ -252,6 +276,7 @@ namespace DAL.Repositories.MealOrder
                 result.IsSuccess = false;
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 

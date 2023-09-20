@@ -117,6 +117,13 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> CancelOrders(List<int> orderIds, int cancelledById, string reason)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.CANCEL_ORDER_CREATE.ToString(),
+                Remarks = $"Orders {string.Join(",", orderIds)} were cancelled by {cancelledById}."
+            };
+
             var result = new BaseOperationResponse();
 
             IQueryable<TokenOrder> orders = _appContext.TokenOrders.Where(t => orderIds.Any(f => f == t.Id));
@@ -141,6 +148,7 @@ namespace DAL.Repositories.MealOrder
                 result.IsSuccess = false;
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
@@ -200,6 +208,13 @@ namespace DAL.Repositories.MealOrder
                             new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
                             TransactionScopeAsyncFlowOption.Enabled))
             {
+                _appContext.AuditUserActivityType = new AuditUserActivityType
+                {
+                    GroupId = Common.GenerateUniqueStringId(),
+                    ActionName = UserActivityType.ORDER_CREATE.ToString(),
+                    Remarks = "Order was created."
+                };
+
                 if (order.Status == "paid" && Math.Abs(order.TotalPayment) < 0.01) order.TotalPayment = order.TotalAmount;
 
                 var f = await AddAsync(order);
@@ -216,6 +231,8 @@ namespace DAL.Repositories.MealOrder
 
                 }
             }
+
+            _appContext.ResetAuditUserAction();
             return result;
 
         }
@@ -227,6 +244,13 @@ namespace DAL.Repositories.MealOrder
                             new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
                             TransactionScopeAsyncFlowOption.Enabled))
             {
+                _appContext.AuditUserActivityType = new AuditUserActivityType
+                {
+                    GroupId = Common.GenerateUniqueStringId(),
+                    ActionName = UserActivityType.ORDER_UPDATE.ToString(),
+                    Remarks = "Order was updated."
+                };
+
                 var f = await GetSingleOrDefaultAsync(e => e.Id == order.Id);
 
                 var tokensToDelete = this._appContext.TokenOrdereds.Where(x => x.OrderId == f.Id &&
@@ -323,11 +347,19 @@ namespace DAL.Repositories.MealOrder
 
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateAsync(TokenOrder order)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.ORDER_UPDATE.ToString(),
+                Remarks = "Order was updated."
+            };
+
             var result = new BaseOperationResponse();
 
             var f = await GetSingleOrDefaultAsync(e => e.Id == order.Id);
@@ -349,11 +381,19 @@ namespace DAL.Repositories.MealOrder
                 result.IsSuccess = false;
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateOrderCancelRequestStatus(int orderId, string status)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.CANCEL_ORDER_CREATE.ToString(),
+                Remarks = "Cancel Order was submitted."
+            };
+
             var result = new BaseOperationResponse();
 
             var f = await GetSingleOrDefaultAsync(e => e.Id == orderId);
@@ -374,11 +414,19 @@ namespace DAL.Repositories.MealOrder
                 result.IsSuccess = false;
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateCancellationStatus(int orderId, bool isApproved, string response)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.CANCEL_ORDER_CREATE.ToString(),
+                Remarks = $"Cancel Order Request {(isApproved ? "Approved" : "Rejected")}"
+            };
+
             var result = new BaseOperationResponse();
 
             var f = await GetSingleOrDefaultAsync(e => e.Id == orderId);
@@ -469,6 +517,13 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> DeleteAsync(int orderId)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.ORDER_DELETE.ToString(),
+                Remarks = $"Order {orderId} deleted."
+            };
+
             var result = new BaseOperationResponse();
             var order = await GetSingleOrDefaultAsync(r => r.Id == orderId);
 
@@ -494,6 +549,8 @@ namespace DAL.Repositories.MealOrder
                 result.Message = "Failed to delete!";
                 result.IsSuccess = false;
             }
+
+            _appContext.ResetAuditUserAction();
 
             return result;
         }

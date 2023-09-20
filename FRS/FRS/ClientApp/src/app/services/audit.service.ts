@@ -41,6 +41,10 @@ export class AuditService {
     return this.commonEndpoint.getById<AuditLog[]>(this.auditUrl + '/datalogs', id);
   }
 
+  getUserActivityLogsByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.auditUrl + '/useractivity/sieve/list', filter);
+  }
+
   downloadAuthLogReport(filter: Filter) {
     return this.commonEndpoint.getFile<any>(this.auditUrl + '/exportauthlogs' , filter);
   }
@@ -71,5 +75,9 @@ export class AuditService {
 
   downloadFlattenOrderLogsReport(filter: Filter) {
     return this.commonEndpoint.getFile<any>(this.auditUrl + '/exportorders/flatten', filter);
+  }
+
+  downloadFlattenUserActivityLogsReport(filter: Filter) {
+    return this.commonEndpoint.getFile<any>(this.auditUrl + '/exportuseractivity/flatten', filter);
   }
 }

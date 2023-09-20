@@ -26,6 +26,7 @@ namespace DAL
         public int? CurrentUserId { get; set; }
         public string CurrentUserName { get; set; }
         public int? CurrentInstitutionId { get; set; }
+        public AuditUserActivityType AuditUserActivityType { get; set; }
         public DbSet<Facility> Facilities { get; set; }
         public DbSet<FacilityType> FacilityTypes { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
@@ -261,6 +262,7 @@ namespace DAL
         #region Stored Procedures
 
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
+        public DbSet<spGetUserActivityLogHeader> spGetUserActivityLog { get; set; }
 
         #endregion
 
@@ -606,6 +608,16 @@ namespace DAL
         }
 
         #region Used Methods
+
+        /// <summary>
+        /// Resets the action type. Call only after the whole process is done
+        /// So the group id retains
+        /// </summary>
+        public void ResetAuditUserAction()
+        {
+            AuditUserActivityType = null;
+        }
+
         //public override int SaveChanges(bool acceptAllChangesOnSuccess)
         //{
         //    //UpdateAuditEntities();
@@ -761,7 +773,7 @@ namespace DAL
 
                 using (var auditor = new LogAuditor(ent, this))
                 {
-                    var record = auditor.CreateLogRecord(institutionId, userId, userName, institutionName, eventType);
+                    var record = auditor.CreateLogRecord(institutionId, userId, userName, institutionName, eventType, AuditUserActivityType);
                     if (record != null)
                         this.AuditLogs.Add(record);
                 }
@@ -799,7 +811,7 @@ namespace DAL
 
                 using (var auditor = new LogAuditor(ent, this))
                 {
-                    var record = auditor.CreateLogRecord(institutionId, userId, userName, institutionName, AuditLogType.Added);
+                    var record = auditor.CreateLogRecord(institutionId, userId, userName, institutionName, AuditLogType.Added, AuditUserActivityType);
                     if (record != null)
                         this.AuditLogs.Add(record);
                 }
