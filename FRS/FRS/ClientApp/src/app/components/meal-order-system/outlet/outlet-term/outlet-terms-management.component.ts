@@ -156,7 +156,7 @@ export class OutletTermsManagementComponent implements OnInit {
   }
 
   deleteOutletTerm(row: OutletTerm) {
-    this.alertService.showDialog('Are you sure you want to delete the \"' + row.name + '\"?', DialogType.confirm, () => this.deleteOutletTermHelper(row));
+    this.alertService.showDialog('Are you sure you want to delete the \"' + row.label + '\"?', DialogType.confirm, () => this.deleteOutletTermHelper(row));
   }
 
 
