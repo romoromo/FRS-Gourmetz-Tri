@@ -927,8 +927,8 @@ namespace BAL.Services.MealOrder
                             {
                                 rep.dishQty += b.Qty;
                                 totalQty += b.Qty;
-                                rep.issQty += (rec != null ? rec.QtyReceived : 0);
-                                totalIssued += (rec != null ? rec.QtyReceived : 0);
+                                //rep.issQty += (rec != null ? rec.QtyReceived : 0);
+                                //totalIssued += (rec != null ? rec.QtyReceived : 0);
                                 if (b.BentoAssetCode != null && b.BentoAssetCode != "")
                                 {
                                     if (rep.bentoList.Length > 0)
