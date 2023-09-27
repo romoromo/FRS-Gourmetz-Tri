@@ -13,6 +13,7 @@ using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
 using DAL.Core.DTO;
 using System.Transactions;
+using DAL.Core.Helpers;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -154,6 +155,13 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> CreateAsync(MealSession mealSession)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.ROSTER_MEALSESSION_CREATE.ToString(),
+                Remarks = $"Class roster session was created."
+            };
+
             var result = new BaseOperationResponse();
 
             var f = await AddAsync(mealSession);
@@ -169,6 +177,7 @@ namespace DAL.Repositories.MealOrder
                 result.IsSuccess = false;
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
@@ -180,13 +189,24 @@ namespace DAL.Repositories.MealOrder
                             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
                             TransactionScopeAsyncFlowOption.Enabled))
             {
+                _appContext.AuditUserActivityType = new AuditUserActivityType
+                {
+                    GroupId = Common.GenerateUniqueStringId(),
+                    ActionName = UserActivityType.ROSTER_MEALSESSION_UPDATE.ToString(),
+                    Remarks = $"Class roster sessions were updated."
+                };
+
                 var mealSession = mealSessions.FirstOrDefault();
 
-                var mealSessionIds = mealSessions.Select(e => e.Id);
+                var mealSessionIds = mealSessions.Where(e => e.Id > 0).Select(e => e.Id);
                 //remove existing meal sessions of the outlet
                 var oldMealSessions = _appContext.MealSessions.Where(e => e.OutletId == mealSession.OutletId &&
                                         mealSession.CatererId == mealSession.CatererId && !mealSessionIds.Any(x => x == e.Id));
-                _appContext.MealSessions.RemoveRange(oldMealSessions);
+
+                await oldMealSessions.ForEachAsync(e => { e.IsActive = false; });
+                _appContext.MealSessions.UpdateRange(oldMealSessions);
+
+                //_appContext.MealSessions.RemoveRange(oldMealSessions);
 
                 //then add/update
                 foreach(var e in mealSessions)
@@ -197,10 +217,13 @@ namespace DAL.Repositories.MealOrder
                         ms.Name = e.Name;
                         ms.Sequence = e.Sequence;
 
-                        var detailIds = e.Details.Select(x => x.Id);
+                        var detailIds = e.Details.Where(x => x.Id > 0).Select(x => x.Id);
                         var oldDetails = this._appContext.MealSessionDetails.Where(a => a.MealSessionId == ms.Id
                                                                         && !detailIds.Any(y => y == a.Id));
-                        this._appContext.MealSessionDetails.RemoveRange(oldDetails);
+                        await oldDetails.ForEachAsync(x => { x.IsActive = false; });
+                        _appContext.MealSessionDetails.UpdateRange(oldDetails);
+
+                        //this._appContext.MealSessionDetails.RemoveRange(oldDetails);
                         //this._appContext.MealSessionDetails.AddRange(e.Details);
 
                         //ms.Details = e.Details;
@@ -243,11 +266,19 @@ namespace DAL.Repositories.MealOrder
                 }
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateAsync(MealSession mealSession)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.ROSTER_MEALSESSION_UPDATE.ToString(),
+                Remarks = $"Class roster session {mealSession.Id} was updated."
+            };
+
             var result = new BaseOperationResponse();
 
             var f = await GetSingleOrDefaultAsync(e => e.Id == mealSession.Id);
@@ -267,6 +298,7 @@ namespace DAL.Repositories.MealOrder
                 result.IsSuccess = false;
             }
 
+            _appContext.ResetAuditUserAction();
             return result;
         }
 
@@ -286,6 +318,13 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> Delete(MealSession mealSession)
         {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.ROSTER_MEALSESSION_DELETE.ToString(),
+                Remarks = $"Class roster session {mealSession.Id} was deleted."
+            };
+
             var result = new BaseOperationResponse();
             SoftDelete(mealSession);
             if (await _appContext.SaveChangesAsync() > 0)

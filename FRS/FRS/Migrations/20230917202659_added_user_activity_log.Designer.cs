@@ -4,14 +4,16 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230917202659_added_user_activity_log")]
+    partial class added_user_activity_log
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8369,38 +8371,6 @@ namespace FRS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SmartRoomSchedulerLogs");
-                });
-
-            modelBuilder.Entity("DAL.Models.StoredProcedures.spGetUserActivityLogHeader", b =>
-                {
-                    b.Property<string>("GroupId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ActionName");
-
-                    b.Property<int>("AuditLogId");
-
-                    b.Property<DateTime>("EventDateTime");
-
-                    b.Property<string>("LogType");
-
-                    b.Property<string>("NewVal");
-
-                    b.Property<string>("OldVal");
-
-                    b.Property<string>("PropertyName");
-
-                    b.Property<string>("RecordId");
-
-                    b.Property<string>("Remarks");
-
-                    b.Property<int>("Total");
-
-                    b.Property<string>("Username");
-
-                    b.HasKey("GroupId");
-
-                    b.ToTable("spGetUserActivityLog");
                 });
 
             modelBuilder.Entity("DAL.Models.StoredProcedures.spSalesOrderReport", b =>

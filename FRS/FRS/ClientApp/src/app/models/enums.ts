@@ -10,3 +10,9 @@ export enum LocType {
   Level = "Level",
   Room = "Room"
 }
+
+export enum UserActivityLogType {
+  Order = "Order",
+  Roster = "Roster",
+  Payment = "Payment"
+}

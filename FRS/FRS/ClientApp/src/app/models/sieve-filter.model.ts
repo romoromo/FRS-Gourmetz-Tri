@@ -70,3 +70,10 @@ export class OrderCancellationReportFilter extends Filter {
   public reportDateFrom: string;
   public reportDateTo: string;
 }
+
+export class UserActivityLogReportFilter extends Filter {
+  public reportDateFrom: string;
+  public reportDateTo: string;
+  public keyword: string;
+  public reportType: string;
+}

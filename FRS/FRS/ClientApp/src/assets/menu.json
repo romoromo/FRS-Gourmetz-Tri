@@ -1062,6 +1062,16 @@
           "childMenus": []
         },
         {
+          "label": "Order Portal Content",
+          "active": true,
+          "link": "/orderportalcontents",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [],
+          "childMenus": []
+        },
+        {
           "label": "Audit Logs",
           "active": true,
           "link": "",
@@ -1167,6 +1177,16 @@
           "label": "Role Report",
           "active": true,
           "link": "/rolereport",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [],
+          "childMenus": []
+        },
+        {
+          "label": "User Activity Report",
+          "active": true,
+          "link": "/useractivityreport",
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",

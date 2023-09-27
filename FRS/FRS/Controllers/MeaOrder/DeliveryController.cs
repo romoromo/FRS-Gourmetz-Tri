@@ -1724,5 +1724,100 @@ namespace FRS.Controllers
             );
         }
         #endregion
+
+        #region Outlet Terns
+
+        #region Sieved
+        [ApiKeyAuthorize]
+        [HttpGet("outletterms/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllOutletsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetOutletTerms(BaseFilter filter)
+        {
+            var results = await this._service.GetOutletTermsAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<OutletTermDTO>>(results));
+        }
+
+        #endregion
+
+        [HttpPost("outletterms")]
+        //[Authorize(Authorization.Policies.ManageAllOutletsPolicy)]
+        [ProducesResponseType(201, Type = typeof(OutletTermDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateOutletTerm([FromBody] OutletTermDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                var result = await this._service.CreateOutletTermAsync(dto);
+                if (result.IsSuccess)
+                {
+                    OutletTermDTO vm = Mapper.Map<OutletTermDTO>(result.Data);
+                    return CreatedAtAction("GetOutletTermById", new { id = vm.Id }, vm);
+                }
+
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
+        [HttpDelete("outletterms/delete/{id}")]
+        //[Authorize(Authorization.Policies.ManageAllOutletsPolicy)]
+        [ProducesResponseType(200, Type = typeof(OutletDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteOutletTerm(int id)
+        {
+            var dto = await this._service.GetOutletTermByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            var result = await this._service.DeleteOutletTermAsync(id);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while deleting: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+        [HttpPut("outletterms/update/{id}")]
+        //[Authorize(Authorization.Policies.ManageAllOutletsPolicy)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateOutletTerm(string id, [FromBody] OutletTermDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model == null)
+                    return BadRequest($"{nameof(model)} cannot be null");
+
+                if (model.Id == 0)
+                    return BadRequest("Conflicting type id in parameter and model data");
+
+
+                var dto = await this._service.GetOutletTermByIdAsync(model.Id);
+
+                if (dto == null)
+                    return NotFound(id);
+
+                var result = await this._service.UpdateOutletTermAsync(model);
+                if (result.IsSuccess)
+                    return NoContent();
+
+                AddErrors(new string[] { result.Message });
+
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        #endregion
     }
 }

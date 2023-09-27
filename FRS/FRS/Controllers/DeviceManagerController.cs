@@ -90,7 +90,9 @@ namespace FRS.Controllers
             {
                 var client = new WebClient();
                 if (scheme == "https")
+#pragma warning disable SCS0004 // Certificate Validation has been disabled.
                     ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+#pragma warning restore SCS0004 // Certificate Validation has been disabled.
 
                 client.DownloadFile(scheme + "://" + result.IpAddress + "/admin/download/SSimg", fullpath);
             }

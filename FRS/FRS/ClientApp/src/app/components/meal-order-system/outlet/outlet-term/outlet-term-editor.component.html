@@ -1,0 +1,25 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="outletTermEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!outletTermLabel.valid && showErrorAlert('Label is required', 'Please enter label (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-form-field class="col-md-12">
+            <input matInput autocomplete="off" [disabled]="!canManageOutletTerms" type="text" id="outletTermLabel" name="outletTermLabel" placeholder="Enter name" [(ngModel)]="outletTermEdit.label" #outletTermLabel="ngModel" required minlength="2" maxlength="200" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageOutletTerms" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageOutletTerms" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageOutletTerms" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -224,6 +224,15 @@ namespace DAL.Filters
                 .CanFilter()
                 .CanSort();
 
+            mapper.Property<AuditLog>(p => p.ActionName)
+               .CanFilter()
+               .CanSort();
+            mapper.Property<AuditLog>(p => p.GroupId)
+               .CanFilter()
+               .CanSort();
+            mapper.Property<AuditLog>(p => p.Remarks)
+               .CanFilter()
+               .CanSort();
             //.HasName("institution_name");
         }
 

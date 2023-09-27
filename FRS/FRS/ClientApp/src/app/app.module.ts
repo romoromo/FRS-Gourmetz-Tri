@@ -479,6 +479,10 @@ import { OrderPortalService } from './services/order-portal.service';
 import { OrderPortalContentEditorComponent } from './components/meal-order-system/order-portal-content/order-portal-content.component';
 import { OrderPortalContentsManagementComponent } from './components/meal-order-system/order-portal-content/order-portal-contents-management.component';
 import { StudentGroupOrderSummaryComponent } from './components/meal-order-system/student-group/individual-order/individual-orders-summary.component';
+import { UserActivityLogsManagementComponent } from './components/audit/user-activity-log/user-activity-logs-management.component';
+import { UserActivityLogViewerComponent } from './components/audit/user-activity-log/user-activity-log-viewer.component';
+import { OutletTermsManagementComponent } from './components/meal-order-system/outlet/outlet-term/outlet-terms-management.component';
+import { OutletTermEditorComponent } from './components/meal-order-system/outlet/outlet-term/outlet-term-editor.component';
  
  
 
@@ -701,7 +705,9 @@ export const configFactory = (configService: ConfigurationService) => {
     NotificationSettingComponent, MealPlanSummaryComponent,
     MultiFactorLoginComponent,
     OrderPortalContentEditorComponent, OrderPortalContentsManagementComponent,
-    StudentGroupOrderSummaryComponent
+    StudentGroupOrderSummaryComponent,
+    UserActivityLogsManagementComponent, UserActivityLogViewerComponent,
+    OutletTermsManagementComponent, OutletTermEditorComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },
@@ -874,7 +880,9 @@ export const configFactory = (configService: ConfigurationService) => {
     NotificationSettingComponent, MealPlanSummaryComponent,
     MultiFactorLoginComponent,
     OrderPortalContentEditorComponent, OrderPortalContentsManagementComponent,
-    StudentGroupOrderSummaryComponent
+    StudentGroupOrderSummaryComponent,
+    UserActivityLogsManagementComponent, UserActivityLogViewerComponent,
+    OutletTermsManagementComponent, OutletTermEditorComponent
   ],
 })
 export class AppModule {

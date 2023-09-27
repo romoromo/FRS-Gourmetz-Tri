@@ -246,5 +246,37 @@ namespace FRS.Controllers
             );
         }
         #endregion
+
+        #region user activity
+        [HttpGet("useractivity/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllDepartmentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetUserActivityLogs(UserActivityLogReportFilter filter)
+        {
+            var logs = await _auditLogService.GetUserActivityLogs(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<UserActivityLogDTO>>(logs));
+        }
+
+        [HttpPost("exportuseractivity/flatten")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateUserActivityLogsXls(UserActivityLogReportFilter filter)
+        {
+            var xls = await _auditLogService.GenerateUserActivityLogsXls(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_UserActivityLogs.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
+        #endregion
     }
 }

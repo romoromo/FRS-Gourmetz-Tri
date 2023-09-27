@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderCancellationReportFilter = exports.RoleReportFilter = exports.SalesOrderReportFilter = exports.OrderCancellationFilter = exports.ClassRosterFilter = exports.ServiceContractFilter = exports.CommonFilter = exports.PagedResult = exports.Filter = void 0;
+exports.UserActivityLogReportFilter = exports.OrderCancellationReportFilter = exports.RoleReportFilter = exports.SalesOrderReportFilter = exports.OrderCancellationFilter = exports.ClassRosterFilter = exports.ServiceContractFilter = exports.CommonFilter = exports.PagedResult = exports.Filter = void 0;
 var Filter = /** @class */ (function () {
     function Filter(page, pageSize) {
     }
@@ -82,4 +82,12 @@ var OrderCancellationReportFilter = /** @class */ (function (_super) {
     return OrderCancellationReportFilter;
 }(Filter));
 exports.OrderCancellationReportFilter = OrderCancellationReportFilter;
+var UserActivityLogReportFilter = /** @class */ (function (_super) {
+    __extends(UserActivityLogReportFilter, _super);
+    function UserActivityLogReportFilter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return UserActivityLogReportFilter;
+}(Filter));
+exports.UserActivityLogReportFilter = UserActivityLogReportFilter;
 //# sourceMappingURL=sieve-filter.model.js.map

@@ -17,7 +17,7 @@ namespace DAL.Core.Audit.Auditors
 
         public void Dispose() { }
 
-        internal AuditLog CreateLogRecord(int? institutionId, int? userId, string userName, string institutionName, AuditLogType eventType)
+        internal AuditLog CreateLogRecord(int? institutionId, int? userId, string userName, string institutionName, AuditLogType eventType, AuditUserActivityType userAction = null)
         {
             Type entityType = GetEntityType(dbEntry.Entity.GetType());
             if (!EntityTrackingConfiguration.IsTrackingEnabled(entityType))
@@ -35,6 +35,14 @@ namespace DAL.Core.Audit.Auditors
                 TableName = entityType.FullName,
                 RecordId = this.GetPrimaryKeyValueOf(dbEntry)
             };
+
+            if(userAction != null)
+            {
+                newlog.ActionName = userAction.ActionName;
+                newlog.GroupId = userAction.GroupId;
+                newlog.Remarks = userAction.Remarks;
+            }
+
             var detailsAuditor = GetDetailsAuditor(eventType, newlog);
             newlog.Details = detailsAuditor.CreateLogDetails().ToList();
 

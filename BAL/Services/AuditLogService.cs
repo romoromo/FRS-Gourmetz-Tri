@@ -15,6 +15,10 @@ using AutoMapper;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using DAL.Models.MealOrder;
+using System.Data.SqlClient;
+using DAL.Models.StoredProcedures;
+using System.Data;
+using BAL.DTO.MealOrder;
 
 namespace BAL.Services
 {
@@ -317,6 +321,215 @@ namespace BAL.Services
                         cell = row.CreateCell(3);
                         cell.SetCellValue(dt.EventDateTime.ToString("dd/MM/yyyy hh:mm:ss tt"));
                         cell.CellStyle = contentStyle;
+
+                    });
+
+                    #endregion
+
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        sheet.AutoSizeColumn(i, true);
+                    }
+
+                    wb.Write(stream);
+
+                    return stream.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+        #endregion
+
+        #region User Activity Log
+        public async Task<PagedEntity<UserActivityLogDTO>> GetUserActivityLogs(UserActivityLogReportFilter filter)
+        {
+            var results = await GetUserActivityLogsByFilter(filter);
+            var logs = new List<UserActivityLogDTO>();
+            foreach(var header in results.Headers)
+            {
+                var details = Mapper.Map<List<UserActivityLogDetailDTO>>(results.Details.Where(e => e.GroupId == header.GroupId));
+                var log = new UserActivityLogDTO
+                {
+                    GroupId = header.GroupId,
+                    Remarks = header.Remarks,
+                    Total = header.Total,
+                    Username = header.Username,
+                    EventDateTime = details.FirstOrDefault().EventDateTime,
+                    Details = details
+                };
+
+                logs.Add(log);
+            }
+
+            int total = logs != null && logs.Any() ? logs.FirstOrDefault().Total : 0;
+            var result = new PagedEntity<UserActivityLogDTO>();
+            result.Filter = filter;
+            result.PagedData = logs;
+            result.CurrentPage = filter.Page ?? 1;
+            result.PageSize = filter.PageSize ?? 10;
+            result.PageCount = total / result.PageSize;
+            result.TotalCount = total;
+
+            return result;
+        }
+
+        private async Task<spGetUserActivityLogDTO> GetUserActivityLogsByFilter(UserActivityLogReportFilter filter)
+        {
+            var result = new spGetUserActivityLogDTO();
+            var from = new SqlParameter("@ReportDateFrom", System.Data.SqlDbType.Date);
+            var to = new SqlParameter("@ReportDateTo", System.Data.SqlDbType.Date);
+            var keywords = new SqlParameter("@UserName", System.Data.SqlDbType.NVarChar);
+            var reportType = new SqlParameter("@ActionName", System.Data.SqlDbType.NVarChar);
+
+            from.Value = filter.ReportDateFrom;
+            to.Value = filter.ReportDateTo;
+            keywords.Value = (object)filter.Keyword ?? DBNull.Value;
+            reportType.Value = (object)filter.ReportType ?? DBNull.Value;
+
+            using (var command = _appContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "spGetUserActivityLog";
+                command.Parameters.AddRange(new[] { from, to, keywords, reportType });
+
+                _appContext.Database.OpenConnection();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var header = Mapper.Map<IDataRecord, spGetUserActivityLogHeader>((IDataRecord)reader);
+                        result.Headers.Add(header);
+                    }
+
+                    //MyDTO dto = mapper.Map<IDataRecord, MyDTO>((IDataRecord)reader);
+
+                    //// Read the first result set (header) into a list of UserActivityLogHeader
+                    //var headers = _appContext.Set<spGetUserActivityLogHeader>().FromSql("exec spGetUserActivityLog @ReportDateFrom, @ReportDateTo, @UserName, @ActionName", from, to, keywords, reportType).ToList();
+                    //result.Headers = headers;
+                    // Move to the next result set (detail)
+                    reader.NextResult();
+
+                    while (reader.Read())
+                    {
+                        var detail = Mapper.Map<IDataRecord, spGetUserActivityLogDetail>((IDataRecord)reader);
+                        result.Details.Add(detail);
+                    }
+
+                    // Read the second result set (detail) into a list of UserActivityLogDetail
+                    //var details = _appContext.Set<spGetUserActivityLogDetail>().FromSql("exec spGetUserActivityLog @ReportDateFrom, @ReportDateTo, @UserName, @ActionName", from, to, keywords, reportType).ToList();
+                    //result.Details = details;
+                    // Process the header and detail as needed
+                }
+            }
+
+            //var logs = await _appContext.spGetUserActivityLog
+            //                .FromSql($"exec spGetUserActivityLog @ReportDateFrom, @ReportDateTo, @UserName, @ActionName",
+            //                        from, to, keywords, reportType).ToListAsync();
+
+            return result;
+        }
+
+        public async Task<byte[]> GenerateUserActivityLogsXls(UserActivityLogReportFilter filter)
+        {
+            var results = await GetUserActivityLogsByFilter(filter);
+            var logs = new List<UserActivityLogDTO>();
+            foreach (var header in results.Headers)
+            {
+                var details = Mapper.Map<List<UserActivityLogDetailDTO>>(results.Details.Where(e => e.GroupId == header.GroupId));
+                var log = new UserActivityLogDTO
+                {
+                    GroupId = header.GroupId,
+                    Remarks = header.Remarks,
+                    Total = header.Total,
+                    Username = header.Username,
+                    EventDateTime = details.FirstOrDefault().EventDateTime,
+                    Details = details
+                };
+
+                logs.Add(log);
+            }
+
+
+            if (results != null)
+            {
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    var wb = new XSSFWorkbook();
+                    var rowCount = 0;
+                    var sheet = (XSSFSheet)wb.CreateSheet("User Activity Logs");
+                    var headers = new string[] { "Transaction", "Username", "Event Date/Time", "Remarks", "Log Type", "Details" };
+
+                    #region Headers
+
+                    var headerStyle = wb.CreateCellStyle();
+                    var headerFont = wb.CreateFont();
+                    headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                    headerStyle.SetFont(headerFont);
+                    headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    var row = sheet.CreateRow(rowCount);
+                    var borderedHeaderStyle = wb.CreateCellStyle();
+                    borderedHeaderStyle.SetFont(headerFont);
+                    borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                    ICell cell;
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue(headers[i]);
+                        cell.CellStyle = borderedHeaderStyle;
+                    }
+                    sheet.AutoSizeColumn(0);
+
+                    #endregion
+
+                    #region Content
+                    var contentStyle = wb.CreateCellStyle();
+                    contentStyle.BorderTop = BorderStyle.Thin;
+                    contentStyle.BorderBottom = BorderStyle.Thin;
+                    contentStyle.BorderLeft = BorderStyle.Thin;
+                    contentStyle.BorderRight = BorderStyle.Thin;
+                    contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentStyle.Alignment = HorizontalAlignment.Left;
+                    contentStyle.WrapText = true;
+                    var dataFormatCustom = wb.CreateDataFormat();
+                    logs.ForEach(dt =>
+                    {
+                        foreach (var d in dt.Details)
+                        {
+                            row = sheet.CreateRow(++rowCount);
+
+                            int i = 0;
+                            cell = row.CreateCell(i++);
+                            cell.SetCellValue(dt.GroupId);
+                            cell.CellStyle = contentStyle;
+
+                            cell = row.CreateCell(i++);
+                            cell.SetCellValue(dt.Username);
+                            cell.CellStyle = contentStyle;
+
+                            cell = row.CreateCell(i++);
+                            cell.SetCellValue(dt.EventDateTime.ToString("dd/MM/yyyy hh:mm:ss tt"));
+                            cell.CellStyle = contentStyle;
+
+                            cell = row.CreateCell(i++);
+                            cell.SetCellValue(dt.Remarks);
+                            cell.CellStyle = contentStyle;
+
+                            cell = row.CreateCell(i++);
+                            cell.SetCellValue(d.LogType);
+                            cell.CellStyle = contentStyle;
+
+                            cell = row.CreateCell(i++);
+                            cell.SetCellValue(d.DetailRemarks);
+                            cell.CellStyle = contentStyle;
+                        }
 
                     });
 

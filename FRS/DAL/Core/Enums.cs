@@ -185,4 +185,25 @@ namespace DAL.Core
         ABANDONED_CART_2,
         ORDER_NOT_COLLECTED
     }
+
+    public enum UserActivityType
+    {
+        LOG_IN,
+        LOG_OUT,
+        ORDER_CREATE,
+        ORDER_UPDATE,
+        ORDER_DELETE,
+        PAYMENT_CREATE,
+        PAYMENT_UPDATE,
+        PAYMENT_DELETE,
+        ROSTER_CREATE,
+        ROSTER_UPDATE,
+        ROSTER_DELETE,
+        ROSTER_MEALSESSION_CREATE,
+        ROSTER_MEALSESSION_UPDATE,
+        ROSTER_MEALSESSION_DELETE,
+        CANCEL_ORDER_CREATE,
+        CANCEL_ORDER_UPDATE,
+        CANCEL_ORDER_DELETE,
+    }
 }

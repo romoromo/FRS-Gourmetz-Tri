@@ -112,6 +112,12 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<PagedEntity<RouteDTO>> GetRoutesAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateRouteAsync(RouteDTO dto);
 
+        Task<BaseOperationResponse> CreateOutletTermAsync(OutletTermDTO dto);
+        Task<BaseOperationResponse> DeleteOutletTermAsync(int id);
+        Task<OutletTermDTO> GetOutletTermByIdAsync(int id);
+        Task<PagedEntity<OutletTermDTO>> GetOutletTermsAsync(BaseFilter filter);
+        Task<BaseOperationResponse> UpdateOutletTermAsync(OutletTermDTO dto);
+
         Task<byte[]> GeneratePrintDo(int doId);
 
         Task<byte[]> GeneratePrintCartonLabel(int doId);

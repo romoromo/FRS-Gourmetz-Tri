@@ -84,7 +84,7 @@ namespace DAL
         ICatererInfoRepository CatererInfos { get; }
         IOutletRepository Outlets { get; }
         IOutletProfileRepository OutletProfiles { get; }
-
+        IOutletTermRepository OutletTerms { get; }
         IBentoBoxTypeRepository BentoBoxTypes { get; }
         ICartonTypeRepository CartonTypes { get; }
         IDeliveryOrderRepository DeliveryOrders { get; }

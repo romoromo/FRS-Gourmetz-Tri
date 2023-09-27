@@ -35,3 +35,16 @@ export class Outlet {
   public mealSessions: MealSession[];
   public stores: StoreInfo[];
 }
+
+export class OutletTerm {
+
+  constructor(id?: string, label?: string) {
+
+    this.id = id;
+    this.label = label;
+  }
+
+  public id: string;
+  public label: string;
+  public outletId: string;
+}
