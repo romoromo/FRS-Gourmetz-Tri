@@ -87,9 +87,9 @@ export class OutletTermEditorComponent {
     this.showValidationErrors = false;
 
     if (this.isNewOutletTerm)
-      this.alertService.showMessage("Success", `Term \"${this.outletTermEdit.name}\" was created successfully`, MessageSeverity.success);
+      this.alertService.showMessage("Success", `Term \"${this.outletTermEdit.label}\" was created successfully`, MessageSeverity.success);
     else
-      this.alertService.showMessage("Success", `Changes to term \"${this.outletTermEdit.name}\" was saved successfully`, MessageSeverity.success);
+      this.alertService.showMessage("Success", `Changes to term \"${this.outletTermEdit.label}\" was saved successfully`, MessageSeverity.success);
 
 
     this.outletTermEdit = new OutletTerm();
