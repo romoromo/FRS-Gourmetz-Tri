@@ -1,1003 +1,1312 @@
 {
-  "name": null,
-  "value": null,
-  "description": null,
-  "children": [
-    {
-      "name": "Root",
-      "value": "root.view",
-      "description": "Root",
-      "children": [
+    "name": null,
+    "value": null,
+    "description": null,
+    "children": [
         {
-          "name": "View Facilities Management Menu",
-          "value": "frsmgt.view",
-          "description": "Permission to view Facilities Management menu",
-          "children": [
-            {
-              "name": "View Resource Booking Menu",
-              "value": "frsmgt.resourcebooking.view",
-              "description": "Permission to view Resource Booking menu",
-              "children": [
+            "name": "Root",
+            "value": "root.view",
+            "description": "Root",
+            "children": [
                 {
-                  "name": "Equipment Menu",
-                  "value": "frsmgt.equipment.view",
-                  "description": "Permission to view equipments menu",
-                  "children": [
-                    {
-                      "name": "Manage Equipments",
-                      "value": "frsmgt.equipment.manage",
-                      "description": "Permission to create, delete and modify equipments",
-                      "children": []
-                    }
-                  ]
+                    "name": "View Facilities Management Menu",
+                    "value": "frsmgt.view",
+                    "description": "Permission to view Facilities Management menu",
+                    "children": [
+                        {
+                            "name": "View Resource Booking Menu",
+                            "value": "frsmgt.resourcebooking.view",
+                            "description": "Permission to view Resource Booking menu",
+                            "children": [
+                                {
+                                    "name": "Equipment Menu",
+                                    "value": "frsmgt.equipment.view",
+                                    "description": "Permission to view equipments menu",
+                                    "children": [
+                                        {
+                                            "name": "Manage Equipments",
+                                            "value": "frsmgt.equipment.manage",
+                                            "description": "Permission to create, delete and modify equipments",
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Equipment Type Menu",
+                                    "value": "frsmgt.equipmenttype.view",
+                                    "description": "Permission to view equipment types menu",
+                                    "children": [
+                                        {
+                                            "name": "Manage Equipment Types",
+                                            "value": "frsmgt.equipmenttype.manage",
+                                            "description": "Permission to create, delete and modify equipment type",
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Calendar",
+                                    "value": "frsmgt.calendar.view",
+                                    "description": "Permission to book facilities and events",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Scheduler Logs",
+                                    "value": "frsmgt.smartroomschedulerlog.view",
+                                    "description": "Permission to view scheduler logs",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "View Access Control Menu",
+                            "value": "frsmgt.accesscontrol.view",
+                            "description": "Permission to view FRS Access Control menu",
+                            "children": [
+                                {
+                                    "name": "User Phonebook Management Menu",
+                                    "value": "frsmgt.accesscontrol.phonebook.view",
+                                    "description": "Permission to view user phonebook management menu",
+                                    "children": [
+                                        {
+                                            "name": "Manage User Phonebook",
+                                            "value": "frsmgt.accesscontrol.phonebook.manage",
+                                            "description": "Permission to create, delete and modify user phonebooks",
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Vehicle Management Menu",
+                                    "value": "frsmgt.accesscontrol.uservehicle.view",
+                                    "description": "Permission to view vehicle management menu",
+                                    "children": [
+                                        {
+                                            "name": "Manage Vehicles",
+                                            "value": "frsmgt.accesscontrol.uservehicle.manage",
+                                            "description": "Permission to create, delete and modify vehicles",
+                                            "children": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Workforce Management Menu",
+                            "value": "frsmgt.workforcemanagement.view",
+                            "description": "Permission to view FRS Workforce Management menu",
+                            "children": [
+                                {
+                                    "name": "View Designation",
+                                    "value": "frsmgt.workforcemanagement.designation.view",
+                                    "description": "Permission to view designation menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Employee Roster",
+                                    "value": "frsmgt.workforcemanagement.employeeroster.view",
+                                    "description": "Permission to view employee master menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Employee Master",
+                                    "value": "frsmgt.workforcemanagement.employeemaster.view",
+                                    "description": "Permission to view employee roster menu",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                  "name": "Equipment Type Menu",
-                  "value": "frsmgt.equipmenttype.view",
-                  "description": "Permission to view equipment types menu",
-                  "children": [
-                    {
-                      "name": "Manage Equipment Types",
-                      "value": "frsmgt.equipmenttype.manage",
-                      "description": "Permission to create, delete and modify equipment type",
-                      "children": []
-                    }
-                  ]
+                    "name": "View Signages and Kiosks Menu",
+                    "value": "sgnmanagement.view",
+                    "description": "Permission to view Signages and Kiosks menu",
+                    "children": [
+                        {
+                            "name": "View Content Management Menu",
+                            "value": "sgnmanagement.contentmanagement.view",
+                            "description": "Permission to view Content Management menu",
+                            "children": [
+                                {
+                                    "name": "Media Group",
+                                    "value": "sgnmanagement.contentmanagement.mediagroup.view",
+                                    "description": "Permission to view Media Group menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Media Library",
+                                    "value": "sgnmanagement.contentmanagement.medialibrary.view",
+                                    "description": "Permission to view Media Library menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Playlists",
+                                    "value": "sgnmanagement.contentmanagement.playlist.view",
+                                    "description": "Permission to view Playlists menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Components",
+                                    "value": "sgnmanagement.contentmanagement.component.view",
+                                    "description": "Permission to view Components menu",
+                                    "children": [
+                                        {
+                                            "name": "Create Component",
+                                            "value": "sgnmanagement.contentmanagement.component.create",
+                                            "description": "Permission to create Components",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Update Component",
+                                            "value": "sgnmanagement.contentmanagement.component.update",
+                                            "description": "Permission to update Components",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Delete Component",
+                                            "value": "sgnmanagement.contentmanagement.component.delete",
+                                            "description": "Permission to delete Components",
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Compilations",
+                                    "value": "sgnmanagement.contentmanagement.compilation.view",
+                                    "description": "Permission to view Compilations menu",
+                                    "children": [
+                                        {
+                                            "name": "Create Compilation",
+                                            "value": "sgnmanagement.contentmanagement.compilation.create",
+                                            "description": "Permission to create Compilations",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Update Compilation",
+                                            "value": "sgnmanagement.contentmanagement.compilation.update",
+                                            "description": "Permission to update Compilations",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Delete Compilation",
+                                            "value": "sgnmanagement.contentmanagement.compilation.delete",
+                                            "description": "Permission to delete Compilations",
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Publications",
+                                    "value": "sgnmanagement.contentmanagement.publication.view",
+                                    "description": "Permission to view Publications menu",
+                                    "children": [
+                                        {
+                                            "name": "Publications Approval",
+                                            "value": "frsmgt.accesscontrol.publication.approve",
+                                            "description": "Permission to approve publications",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Approval Email Alert",
+                                            "value": "frsmgt.accesscontrol.publication.email",
+                                            "description": "Receive email alert when publication created",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Create Publication",
+                                            "value": "sgnmanagement.contentmanagement.publication.create",
+                                            "description": "Permission to create Publications",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Update Publication",
+                                            "value": "sgnmanagement.contentmanagement.publication.update",
+                                            "description": "Permission to update Publications",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Delete Publication",
+                                            "value": "sgnmanagement.contentmanagement.publication.delete",
+                                            "description": "Permission to delete Publications",
+                                            "children": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "View Directory Listing Menu",
+                            "value": "sgnmanagement.directorylisting.view",
+                            "description": "Permission to view Directory Listing menu",
+                            "children": [
+                                {
+                                    "name": "Directory Category",
+                                    "value": "sgnmanagement.directorylisting.directorycategory.view",
+                                    "description": "Permission to view Directory Category menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Directory Listing",
+                                    "value": "sgnmanagement.directorylisting.directorylisting.view",
+                                    "description": "Permission to view Directory Listing menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Building",
+                                    "value": "sgnmanagement.directorylisting.building.view",
+                                    "description": "Permission to view Building menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Floor",
+                                    "value": "sgnmanagement.directorylisting.floor.view",
+                                    "description": "Permission to view Floor menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Map",
+                                    "value": "sgnmanagement.directorylisting.map.view",
+                                    "description": "Permission to view Map menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "View Queue Display Interface Menu",
+                            "value": "sgnmanagement.qdi.view",
+                            "description": "Permission to view Queue Display Interface menu",
+                            "children": [
+                                {
+                                    "name": "Queue Matrix Menu",
+                                    "value": "sgnmanagement.qdi.queuematrix.view",
+                                    "description": "Permission to view Queue Matrix menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Queue Display Logs Menu",
+                                    "value": "sgnmanagement.qdi.queuedisplaylog.view",
+                                    "description": "Permission to view Queue Display Logs menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "View Facility Booking Interface Menu",
+                            "value": "sgnmanagement.fbi.view",
+                            "description": "Permission to view Facility Booking Interface menu",
+                            "children": [
+                                {
+                                    "name": "Resource Matrix",
+                                    "value": "sgnmanagement.fbi.resourcematrix.view",
+                                    "description": "Permission to view Resource Matrix menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Interface Logs",
+                                    "value": "sgnmanagement.fbi.interfacelog.view",
+                                    "description": "Permission to view Interface Logs menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "View Device Management Menu",
+                            "value": "sgnmanagement.devicemgt.view",
+                            "description": "Permission to view Device Management menu",
+                            "children": [
+                                {
+                                    "name": "Devices",
+                                    "value": "sgnmanagement.devicemgt.device.view",
+                                    "description": "Permission to view Devices",
+                                    "children": [
+                                        {
+                                            "name": "Manage Devices",
+                                            "value": "sgnmanagement.devicemgt.device.manage",
+                                            "description": "Permission to manage Devices",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Approval",
+                                            "value": "sgnmanagement.devicemgt.device.approve",
+                                            "description": "Permission to approve Devices",
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "EMS",
+                                    "value": "sgnmanagement.devicemgt.ems.view",
+                                    "description": "Permission to view EMS menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "EMS Profile",
+                                    "value": "sgnmanagement.devicemgt.emsprofile.view",
+                                    "description": "Permission to view EMS Profile menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "EMS Schedule",
+                                    "value": "sgnmanagement.devicemgt.emsschedule.view",
+                                    "description": "Permission to view EMS Schedule menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "View Epaper Management Menu",
+                            "value": "sgnmanagement.epapermgt.view",
+                            "description": "Permission to view Epaper Management menu",
+                            "children": [
+                                {
+                                    "name": "Epaper Template",
+                                    "value": "sgnmanagement.epapermgt.template.view",
+                                    "description": "Permission to view Epaper Template menu",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                  "name": "Calendar",
-                  "value": "frsmgt.calendar.view",
-                  "description": "Permission to book facilities and events",
-                  "children": []
+                    "name": "View Reports Menu",
+                    "value": "reportmgt.view",
+                    "description": "Permission to view Reports menu",
+                    "children": [
+                        {
+                            "name": "View Facility Management",
+                            "value": "reportmgt.facilitymgt.view",
+                            "description": "Permission to view Facilitiy Management Reports menu",
+                            "children": [
+                                {
+                                    "name": "Vehicle Logs",
+                                    "value": "reportmgt.facilitymgt.vehiclelog.view",
+                                    "description": "Permission to view Vehicle Logs menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Occupancy Logs",
+                                    "value": "reportmgt.facilitymgt.occupancylog.view",
+                                    "description": "Permission to view Occupancy Logs menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Signages and Kiosks",
+                            "value": "reportmgt.sgn.view",
+                            "description": "Permission to view Signages and Kiosks Reports menu",
+                            "children": [
+                                {
+                                    "name": "Up/Downtime Logs",
+                                    "value": "reportmgt.sgn.updownlog.view",
+                                    "description": "Permission to view Up/Downtime Logs menu",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                  "name": "Scheduler Logs",
-                  "value": "frsmgt.smartroomschedulerlog.view",
-                  "description": "Permission to view scheduler logs",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "View Access Control Menu",
-              "value": "frsmgt.accesscontrol.view",
-              "description": "Permission to view FRS Access Control menu",
-              "children": [
-                {
-                  "name": "User Phonebook Management Menu",
-                  "value": "frsmgt.accesscontrol.phonebook.view",
-                  "description": "Permission to view user phonebook management menu",
-                  "children": [
-                    {
-                      "name": "Manage User Phonebook",
-                      "value": "frsmgt.accesscontrol.phonebook.manage",
-                      "description": "Permission to create, delete and modify user phonebooks",
-                      "children": []
-                    }
-                  ]
+                    "name": "View Asset Management Menu",
+                    "value": "assetmgt.view",
+                    "description": "Permission to view System Settings menu",
+                    "children": [
+                        {
+                            "name": "Asset Type",
+                            "value": "assetmgt.assettype.view",
+                            "description": "Permission to view Asset Type menu",
+                            "children": [
+                                {
+                                    "name": "Manage Asset Type",
+                                    "value": "assetmgt.assettype.manage",
+                                    "description": "Permission to manage Asset Type menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Asset Model",
+                            "value": "assetmgt.assetmodel.view",
+                            "description": "Permission to view Asset Model menu",
+                            "children": [
+                                {
+                                    "name": "Manage Asset Model",
+                                    "value": "assetmgt.assetmodel.manage",
+                                    "description": "Permission to manage Asset Model menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Asset",
+                            "value": "assetmgt.asset.view",
+                            "description": "Permission to view Asset menu",
+                            "children": [
+                                {
+                                    "name": "Manage Asset",
+                                    "value": "assetmgt.asset.manage",
+                                    "description": "Permission to manage Asset menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Service Contract",
+                            "value": "assetmgt.servicecontract.view",
+                            "description": "Permission to view Service Contract menu",
+                            "children": [
+                                {
+                                    "name": "Manage Service Contract",
+                                    "value": "assetmgt.servicecontract.manage",
+                                    "description": "Permission to manage Service Contract menu",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                  "name": "Vehicle Management Menu",
-                  "value": "frsmgt.accesscontrol.uservehicle.view",
-                  "description": "Permission to view vehicle management menu",
-                  "children": [
-                    {
-                      "name": "Manage Vehicles",
-                      "value": "frsmgt.accesscontrol.uservehicle.manage",
-                      "description": "Permission to create, delete and modify vehicles",
-                      "children": []
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "Workforce Management Menu",
-              "value": "frsmgt.workforcemanagement.view",
-              "description": "Permission to view FRS Workforce Management menu",
-              "children": [
-                {
-                  "name": "View Designation",
-                  "value": "frsmgt.workforcemanagement.designation.view",
-                  "description": "Permission to view designation menu",
-                  "children": []
+                    "name": "View System Settings Menu",
+                    "value": "systemsetting.view",
+                    "description": "Permission to view System Settings menu",
+                    "children": [
+                        {
+                            "name": "Location Tree",
+                            "value": "systemsetting.locationtree.view",
+                            "description": "Permission to view Location Tree menu",
+                            "children": [
+                                {
+                                    "name": "Manage Location Tree",
+                                    "value": "systemsetting.locationtree.manage",
+                                    "description": "Permission to manage Location Tree menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Institution",
+                            "value": "systemsetting.institution.view",
+                            "description": "Permission to view Institution menu",
+                            "children": [
+                                {
+                                    "name": "Manage Institution",
+                                    "value": "systemsetting.institution.manage",
+                                    "description": "Permission to manage Institution menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Department",
+                            "value": "systemsetting.department.view",
+                            "description": "Permission to view Department menu",
+                            "children": [
+                                {
+                                    "name": "Manage Department",
+                                    "value": "systemsetting.department.manage",
+                                    "description": "Permission to manage Department menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Building",
+                            "value": "systemsetting.building.view",
+                            "description": "Permission to view Building menu",
+                            "children": []
+                        },
+                        {
+                            "name": "User Group",
+                            "value": "systemsetting.usergroup.view",
+                            "description": "Permission to view User Group menu",
+                            "children": [
+                                {
+                                    "name": "Manage User Group",
+                                    "value": "systemsetting.usergroup.manage",
+                                    "description": "Permission to view User Group menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Image Reference Type",
+                            "value": "systemsetting.imagereferencetype.view",
+                            "description": "Permission to view Image Reference Type menu",
+                            "children": [
+                                {
+                                    "name": "Manage Image Reference Type",
+                                    "value": "systemsetting.imagereferencetype.manage",
+                                    "description": "Permission to view Image Reference Type menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Image Reference Color",
+                            "value": "systemsetting.imagereferencecolor.view",
+                            "description": "Permission to view Image Reference Color menu",
+                            "children": [
+                                {
+                                    "name": "Manage Image Reference Color",
+                                    "value": "systemsetting.imagereferencecolor.manage",
+                                    "description": "Permission to view Image Reference Color menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Device Type",
+                            "value": "systemsetting.devicetype.view",
+                            "description": "Permission to view Device Type menu",
+                            "children": [
+                                {
+                                    "name": "Manage Device Type",
+                                    "value": "systemsetting.devicetype.manage",
+                                    "description": "Permission to manage Device Type menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "User Management",
+                            "value": "systemsetting.user.view",
+                            "description": "Permission to view Users menu",
+                            "children": [
+                                {
+                                    "name": "User",
+                                    "value": "systemsetting.user.manage",
+                                    "description": "Permission to view Users menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Role Management Menu",
+                            "value": "systemsetting.role.view",
+                            "description": "Permission to view Role menu",
+                            "children": [
+                                {
+                                    "name": "Manage Role",
+                                    "value": "systemsetting.role.manage",
+                                    "description": "Permission to create, delete and modify roles",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Assign Role",
+                                    "value": "systemsetting.role.assign",
+                                    "description": "Permission to assign roles to users",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Audit Logs Menu",
+                            "value": "systemsetting.audit.view",
+                            "description": "Permission to view Audit Logs menu",
+                            "children": [
+                                {
+                                    "name": "Authentication Logs",
+                                    "value": "systemsetting.audit.authlog.view",
+                                    "description": "Permission to view authentication logs",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Data Logs",
+                                    "value": "systemsetting.audit.datalog.view",
+                                    "description": "Permission to view data logs",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Application Setting Menu",
+                            "value": "systemsetting.applicationsetting.view",
+                            "description": "Permission to view Application Setting menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Module Setting Menu",
+                            "value": "systemsetting.modulesetting.view",
+                            "description": "Permission to view Module Setting menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Email Queue Menu",
+                            "value": "systemsetting.emailqueue.view",
+                            "description": "Permission to view Email Queue menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Dashboard Menu",
+                            "value": "systemsetting.dashboard.view",
+                            "description": "Permission to view Dashboard menu",
+                            "children": [
+                                {
+                                    "name": "Signage Dashboard",
+                                    "value": "systemsetting.dashboard.sgn.view",
+                                    "description": "Permission to view Signage Dashboard menu",
+                                    "children": [
+                                        {
+                                            "name": "Preview",
+                                            "value": "systemsetting.dashboard.sgn.controls.preview",
+                                            "description": "Permission to allow preview of signage",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Reboot",
+                                            "value": "systemsetting.dashboard.sgn.controls.reboot",
+                                            "description": "Permission to allow rebooting of devices",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Refresh",
+                                            "value": "systemsetting.dashboard.sgn.controls.refresh",
+                                            "description": "Permission to allow refreshing of devices",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Screenshot",
+                                            "value": "systemsetting.dashboard.sgn.controls.screenshot",
+                                            "description": "Permission to download screenshot",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Push Message",
+                                            "value": "systemsetting.dashboard.sgn.controls.pushmessage",
+                                            "description": "Permission to push messages",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Modify device information",
+                                            "value": "systemsetting.dashboard.sgn.controls.deviceinfo",
+                                            "description": "Permission to change device info",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Publication",
+                                            "value": "systemsetting.dashboard.sgn.controls.publication",
+                                            "description": "Permission to change publication",
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Upcoming Events",
+                                    "value": "systemsetting.dashboard.upcomingevent.view",
+                                    "description": "Permission to view Upcoming Events menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Available Locations",
+                                    "value": "systemsetting.dashboard.availablelocation.view",
+                                    "description": "Permission to view Available Locations menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Device Approval List",
+                                    "value": "systemsetting.dashboard.deviceapproval.view",
+                                    "description": "Permission to view Device Approval List menu",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                  "name": "View Employee Roster",
-                  "value": "frsmgt.workforcemanagement.employeeroster.view",
-                  "description": "Permission to view employee master menu",
-                  "children": []
+                    "name": "View Meal Order Account menu",
+                    "value": "mosmgt.accountmgt.view",
+                    "description": "Permission to view Meal Order Account menu",
+                    "children": []
                 },
                 {
-                  "name": "View Employee Master",
-                  "value": "frsmgt.workforcemanagement.employeemaster.view",
-                  "description": "Permission to view employee roster menu",
-                  "children": []
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "View Signages and Kiosks Menu",
-          "value": "sgnmanagement.view",
-          "description": "Permission to view Signages and Kiosks menu",
-          "children": [
-            {
-              "name": "View Content Management Menu",
-              "value": "sgnmanagement.contentmanagement.view",
-              "description": "Permission to view Content Management menu",
-              "children": [
-                {
-                  "name": "Media Group",
-                  "value": "sgnmanagement.contentmanagement.mediagroup.view",
-                  "description": "Permission to view Media Group menu",
-                  "children": []
+                    "name": "View Order Meals",
+                    "value": "mosmgt.mealmgt.order.view",
+                    "description": "Permission to view Order Meals menu",
+                    "children": [
+                        {
+                            "name": "View Restriction Types menu",
+                            "value": "mosmgt.mealmgt.order.restrictiontypes.view",
+                            "description": "Permission to view Restriction Types menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Restriction Types menu",
+                            "value": "mosmgt.mealmgt.order.restrictiontypes.manage",
+                            "description": "Permission to view Restriction Types menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Restrictions menu",
+                            "value": "mosmgt.mealmgt.order.restrictions.view",
+                            "description": "Permission to view Restrictions menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Restrictions menu",
+                            "value": "mosmgt.mealmgt.order.restrictions.manage",
+                            "description": "Permission to view Restrictions menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Cuisines menu",
+                            "value": "mosmgt.mealmgt.order.cuisines.view",
+                            "description": "Permission to view Cuisines menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Cuisines menu",
+                            "value": "mosmgt.mealmgt.order.cuisines.manage",
+                            "description": "Permission to view Cuisines menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Delivery menu",
+                            "value": "mosmgt.mealmgt.order.delivery.view",
+                            "description": "Permission to view Delivery menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Delivery menu",
+                            "value": "mosmgt.mealmgt.order.delivery.manage",
+                            "description": "Permission to view Delivery menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Benton Box Types menu",
+                            "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.view",
+                            "description": "Permission to view Benton Box Types menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Benton Box Types menu",
+                            "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.manage",
+                            "description": "Permission to view Benton Box Types menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Bento Assets menu",
+                            "value": "mosmgt.mealmgt.order.delivery.bentoassets.view",
+                            "description": "Permission to view Bento Assets menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Bento Assets menu",
+                            "value": "mosmgt.mealmgt.order.delivery.bentoassets.manage",
+                            "description": "Permission to view Bento Assets menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Carton Types menu",
+                            "value": "mosmgt.mealmgt.order.delivery.cartontypes.view",
+                            "description": "Permission to view Carton Types menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Carton Types menu",
+                            "value": "mosmgt.mealmgt.order.delivery.cartontypes.manage",
+                            "description": "Permission to view Carton Types menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Carton Assets menu",
+                            "value": "mosmgt.mealmgt.order.delivery.cartonassets.view",
+                            "description": "Permission to view Carton Assets menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Carton Assets menu",
+                            "value": "mosmgt.mealmgt.order.delivery.cartonassets.manage",
+                            "description": "Permission to view Carton Assets menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Tracking Status menu",
+                            "value": "mosmgt.mealmgt.order.delivery.trackingstatus.view",
+                            "description": "Permission to view Tracking Status menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Tracking Status menu",
+                            "value": "mosmgt.mealmgt.order.delivery.trackingstatus.manage",
+                            "description": "Permission to view Tracking Status menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Delivery Order menu",
+                            "value": "mosmgt.mealmgt.order.delivery.deliveryorders.view",
+                            "description": "Permission to view Delivery Order menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Delivery Order menu",
+                            "value": "mosmgt.mealmgt.order.delivery.deliveryorders.manage",
+                            "description": "Permission to view Delivery Order menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Dishing Process menu",
+                            "value": "mosmgt.mealmgt.order.delivery.dishingprocess.view",
+                            "description": "Permission to view Dishing Process menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Dishing Process menu",
+                            "value": "mosmgt.mealmgt.order.delivery.dishingprocess.manage",
+                            "description": "Permission to view Dishing Process menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Packing Process menu",
+                            "value": "mosmgt.mealmgt.order.delivery.packingprocess.view",
+                            "description": "Permission to view Packing Process menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Packing Process menu",
+                            "value": "mosmgt.mealmgt.order.delivery.packingprocess.manage",
+                            "description": "Permission to view Packing Process menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Drivers menu",
+                            "value": "mosmgt.mealmgt.order.delivery.drivers.view",
+                            "description": "Permission to view Drivers menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Drivers menu",
+                            "value": "mosmgt.mealmgt.order.delivery.drivers.manage",
+                            "description": "Permission to view Drivers menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Routes menu",
+                            "value": "mosmgt.mealmgt.order.delivery.routes.view",
+                            "description": "Permission to view Routes menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Routes menu",
+                            "value": "mosmgt.mealmgt.order.delivery.routes.manage",
+                            "description": "Permission to view Routes menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Caterers menu",
+                            "value": "mosmgt.settingmgt.caterers.view",
+                            "description": "Permission to view Caterers menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Caterers menu",
+                            "value": "mosmgt.settingmgt.caterers.manage",
+                            "description": "Permission to view Caterers menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Outlet Profiles menu",
+                            "value": "mosmgt.settingmgt.outletprofiles.view",
+                            "description": "Permission to view Outlet Profiles menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Outlet Profiles menu",
+                            "value": "mosmgt.settingmgt.outletprofiles.manage",
+                            "description": "Permission to view Outlet Profiles menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Store Info menu",
+                            "value": "mosmgt.settingmgt.storeinfo.view",
+                            "description": "Permission to view Store Info menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Store Info menu",
+                            "value": "mosmgt.settingmgt.storeinfo.manage",
+                            "description": "Permission to view Store Info menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Payment Type menu",
+                            "value": "mosmgt.settingmgt.payment.paymenttype.view",
+                            "description": "Permission to view Payment Type menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Payment Type menu",
+                            "value": "mosmgt.settingmgt.payment.paymenttype.manage",
+                            "description": "Permission to view Payment Type menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Transaction Fee menu",
+                            "value": "mosmgt.settingmgt.payment.transactionfee.view",
+                            "description": "Permission to view Transaction Fee menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Transaction Fee menu",
+                            "value": "mosmgt.settingmgt.payment.transactionfee.manage",
+                            "description": "Permission to view Transaction Fee menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Voucher Type menu",
+                            "value": "mosmgt.settingmgt.payment.vouchertype.view",
+                            "description": "Permission to view Voucher Type menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Voucher Type menu",
+                            "value": "mosmgt.settingmgt.payment.vouchertype.manage",
+                            "description": "Permission to view Voucher Type menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Voucher menu",
+                            "value": "mosmgt.settingmgt.payment.voucher.view",
+                            "description": "Permission to view Voucher menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Voucher menu",
+                            "value": "mosmgt.settingmgt.payment.voucher.manage",
+                            "description": "Permission to view Voucher menu",
+                            "children": []
+                        },
+                        {
+                            "name": "View Waiver menu",
+                            "value": "mosmgt.settingmgt.payment.waiver.view",
+                            "description": "Permission to view Waiver menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Waiver menu",
+                            "value": "mosmgt.settingmgt.payment.waiver.manage",
+                            "description": "Permission to view Waiver menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Contact Us Subjects menu",
+                            "value": "mosmgt.settingmgt.contactus.subject.manage",
+                            "description": "Permission to manage Contact Us Subjects menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Contact Us Questions menu",
+                            "value": "mosmgt.settingmgt.contactus.question.manage",
+                            "description": "Permission to manage Contact Us Questions menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Notification Settings menu",
+                            "value": "mosmgt.settingmgt.notifications.settings.manage",
+                            "description": "Permission to manage Notification Settings menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Notification Events menu",
+                            "value": "mosmgt.settingmgt.notifications.events.manage",
+                            "description": "Permission to manage Notification Events menu",
+                            "children": []
+                        },
+                        {
+                            "name": "Manage Cancel Requests menu",
+                            "value": "mosmgt.settingmgt.orders.cancelrequest.manage",
+                            "description": "Permission to manage Cancel Requests menu",
+                            "children": []
+                        }
+                    ]
                 },
                 {
-                  "name": "Media Library",
-                  "value": "sgnmanagement.contentmanagement.medialibrary.view",
-                  "description": "Permission to view Media Library menu",
-                  "children": []
+                    "name": "View Meal Order Organisation menu",
+                    "value": "mosmgt.orgmgt.view",
+                    "description": "Permission to view Meal Order Organisation menu",
+                    "children": []
                 },
                 {
-                  "name": "Playlists",
-                  "value": "sgnmanagement.contentmanagement.playlist.view",
-                  "description": "Permission to view Playlists menu",
-                  "children": []
+                    "name": "View Meal Order Setting menu",
+                    "value": "mosmgt.settingmgt.view",
+                    "description": "Permission to view Meal Order Setting menu",
+                    "children": [
+                        {
+                            "name": "View Outlets menu",
+                            "value": "mosmgt.settingmgt.outlets.view",
+                            "description": "Permission to view Outlets menu",
+                            "children": [
+                                {
+                                    "name": "View Outlet Stores menu",
+                                    "value": "mosmgt.outletmgt.stores.view",
+                                    "description": "Permission to view stores menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Outlet Stores menu",
+                                    "value": "mosmgt.outletmgt.stores.manage",
+                                    "description": "Permission to manage stores menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Outlet Caterers menu",
+                                    "value": "mosmgt.outletmgt.caterers.view",
+                                    "description": "Permission to view Caterers menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Outlet Caterers menu",
+                                    "value": "mosmgt.outletmgt.caterers.manage",
+                                    "description": "Permission to manage Caterers menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Outlet Reports menu",
+                                    "value": "mosmgt.outletmgt.reports.view",
+                                    "description": "Permission to view Reports menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Outlet Meal Summary menu",
+                                    "value": "mosmgt.outletmgt.mealsummary.manage",
+                                    "description": "Permission to manage Meal Summary menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Meal Plan Groupings menu",
+                                    "value": "mosmgt.outletmgt.terms.view",
+                                    "description": "Permission to view Meal Plan Groupings menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Meal Plan Groupings menu",
+                                    "value": "mosmgt.outletmgt.terms.manage",
+                                    "description": "Permission to manage Meal Plan Groupings menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Class Batches menu",
+                                    "value": "mosmgt.outletmgt.classbatches.view",
+                                    "description": "Permission to view Class Batches menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Class Batches menu",
+                                    "value": "mosmgt.outletmgt.classbatches.manage",
+                                    "description": "Permission to manage Class Batches menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Class Levels menu",
+                                    "value": "mosmgt.outletmgt.levels.view",
+                                    "description": "Permission to view Class Levels menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Class Levels menu",
+                                    "value": "mosmgt.outletmgt.levels.manage",
+                                    "description": "Permission to manage Class Levels menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Classes menu",
+                                    "value": "mosmgt.outletmgt.classes.view",
+                                    "description": "Permission to view Classes menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Classes menu",
+                                    "value": "mosmgt.outletmgt.classes.manage",
+                                    "description": "Permission to manage Classes menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Students menu",
+                                    "value": "mosmgt.outletmgt.students.view",
+                                    "description": "Permission to view Students menu",
+                                    "children": [
+                                        {
+                                            "name": "Import Students",
+                                            "value": "mosmgt.outletmgt.students.import.view",
+                                            "description": "Permission to import Students menu",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Create Students",
+                                            "value": "mosmgt.outletmgt.students.manage.create",
+                                            "description": "Permission to manage Students menu",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Update Students",
+                                            "value": "mosmgt.outletmgt.students.manage.edit",
+                                            "description": "Permission to manage Students menu",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Delete Students",
+                                            "value": "mosmgt.outletmgt.students.manage.delete",
+                                            "description": "Permission to manage Students menu",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Create Student Accounts",
+                                            "value": "mosmgt.outletmgt.students.manage.account.create",
+                                            "description": "Permission to manage Student Accounts Creation",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Student Orders Management",
+                                            "value": "mosmgt.outletmgt.students.manage.order",
+                                            "description": "Permission to manage Student Orders",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Student Vouchers Management",
+                                            "value": "mosmgt.outletmgt.students.manage.voucher",
+                                            "description": "Permission to manage Student Vouchers",
+                                            "children": []
+                                        },
+                                        {
+                                            "name": "Student Notifications Management",
+                                            "value": "mosmgt.outletmgt.students.manage.notification",
+                                            "description": "Permission to manage Student Notifications",
+                                            "children": []
+                                        },
+                                      {
+                                        "name": "Student Calendars Management",
+                                        "value": "mosmgt.outletmgt.students.manage.calendar",
+                                        "description": "Permission to manage Student Calendars",
+                                        "children": []
+                                      }
+                                    ]
+                                },
+                                {
+                                    "name": "Manage Students menu",
+                                    "value": "mosmgt.outletmgt.students.manage",
+                                    "description": "Permission to manage Students menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View FAS menu",
+                                    "value": "mosmgt.outletmgt.fas.view",
+                                    "description": "Permission to view FAS menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage FAS menu",
+                                    "value": "mosmgt.outletmgt.fas.manage",
+                                    "description": "Permission to manage FAS menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Student Groups menu",
+                                    "value": "mosmgt.outletmgt.studentgroups.view",
+                                    "description": "Permission to view Student Groups menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Student Groups menu",
+                                    "value": "mosmgt.outletmgt.studentgroups.manage",
+                                    "description": "Permission to manage Student Groups menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Menu Groups menu",
+                                    "value": "mosmgt.outletmgt.menus.view",
+                                    "description": "Permission to view Menu Groups menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Menu Groups menu",
+                                    "value": "mosmgt.outletmgt.menus.manage",
+                                    "description": "Permission to manage Menu Groups menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Order Cancellations menu",
+                                    "value": "mosmgt.outletmgt.cancellations.view",
+                                    "description": "Permission to view Order Cancellations menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Order Cancellations menu",
+                                    "value": "mosmgt.outletmgt.cancellations.manage",
+                                    "description": "Permission to manage Order Cancellations menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Portal Contents menu",
+                                    "value": "mosmgt.outletmgt.portalcontents.view",
+                                    "description": "Permission to view Portal Contents menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Portal Contents menu",
+                                    "value": "mosmgt.outletmgt.portalcontents.manage",
+                                    "description": "Permission to manage Portal Contents menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Email Templates menu",
+                                    "value": "mosmgt.outletmgt.emailtemplates.view",
+                                    "description": "Permission to view Email Templates menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Email Templates menu",
+                                    "value": "mosmgt.outletmgt.emailtemplates.manage",
+                                    "description": "Permission to manage Email Templates menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Meal Allocations menu",
+                                    "value": "mosmgt.outletmgt.mealallocations.view",
+                                    "description": "Permission to view Meal Allocations menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Meal Allocations menu",
+                                    "value": "mosmgt.outletmgt.mealallocations.manage",
+                                    "description": "Permission to view Meal Allocations menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "View Packing Allocations menu",
+                                    "value": "mosmgt.outletmgt.packingallocations.view",
+                                    "description": "Permission to view Packing Allocations menu",
+                                    "children": []
+                                },
+                                {
+                                    "name": "Manage Packing Allocations menu",
+                                    "value": "mosmgt.outletmgt.packingallocations.manage",
+                                    "description": "Permission to manage Packing Allocations menu",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Manage Outlets menu",
+                            "value": "mosmgt.settingmgt.outlets.manage",
+                            "description": "Permission to view Outlets menu",
+                            "children": []
+                        }
+                    ]
                 },
                 {
-                  "name": "Components",
-                  "value": "sgnmanagement.contentmanagement.component.view",
-                  "description": "Permission to view Components menu",
-                  "children": [
-                    {
-                      "name": "Create Component",
-                      "value": "sgnmanagement.contentmanagement.component.create",
-                      "description": "Permission to create Components",
-                      "children": []
-                    },
-                    {
-                      "name": "Update Component",
-                      "value": "sgnmanagement.contentmanagement.component.update",
-                      "description": "Permission to update Components",
-                      "children": []
-                    },
-                    {
-                      "name": "Delete Component",
-                      "value": "sgnmanagement.contentmanagement.component.delete",
-                      "description": "Permission to delete Components",
-                      "children": []
-                    }
-                  ]
+                    "name": "View Meal Order Report menu",
+                    "value": "mosmgt.reportmgt.view",
+                    "description": "Permission to view Meal Order Report menu",
+                    "children": []
                 },
                 {
-                  "name": "Compilations",
-                  "value": "sgnmanagement.contentmanagement.compilation.view",
-                  "description": "Permission to view Compilations menu",
-                  "children": [
-                    {
-                      "name": "Create Compilation",
-                      "value": "sgnmanagement.contentmanagement.compilation.create",
-                      "description": "Permission to create Compilations",
-                      "children": []
-                    },
-                    {
-                      "name": "Update Compilation",
-                      "value": "sgnmanagement.contentmanagement.compilation.update",
-                      "description": "Permission to update Compilations",
-                      "children": []
-                    },
-                    {
-                      "name": "Delete Compilation",
-                      "value": "sgnmanagement.contentmanagement.compilation.delete",
-                      "description": "Permission to delete Compilations",
-                      "children": []
-                    }
-                  ]
-                },
-                {
-                  "name": "Publications",
-                  "value": "sgnmanagement.contentmanagement.publication.view",
-                  "description": "Permission to view Publications menu",
-                  "children": [
-                    {
-                      "name": "Publications Approval",
-                      "value": "frsmgt.accesscontrol.publication.approve",
-                      "description": "Permission to approve publications",
-                      "children": []
-                    },
-                    {
-                      "name": "Approval Email Alert",
-                      "value": "frsmgt.accesscontrol.publication.email",
-                      "description": "Receive email alert when publication created",
-                      "children": []
-                    },
-                    {
-                      "name": "Create Publication",
-                      "value": "sgnmanagement.contentmanagement.publication.create",
-                      "description": "Permission to create Publications",
-                      "children": []
-                    },
-                    {
-                      "name": "Update Publication",
-                      "value": "sgnmanagement.contentmanagement.publication.update",
-                      "description": "Permission to update Publications",
-                      "children": []
-                    },
-                    {
-                      "name": "Delete Publication",
-                      "value": "sgnmanagement.contentmanagement.publication.delete",
-                      "description": "Permission to delete Publications",
-                      "children": []
-                    }
-                  ]
+                    "name": "View Meal Order System Admin menu",
+                    "value": "mosmgt.sysadminmgt.view",
+                    "description": "Permission to view Meal Order System Admin menu",
+                    "children": []
                 }
-              ]
-            },
-            {
-              "name": "View Directory Listing Menu",
-              "value": "sgnmanagement.directorylisting.view",
-              "description": "Permission to view Directory Listing menu",
-              "children": [
-                {
-                  "name": "Directory Category",
-                  "value": "sgnmanagement.directorylisting.directorycategory.view",
-                  "description": "Permission to view Directory Category menu",
-                  "children": []
-                },
-                {
-                  "name": "Directory Listing",
-                  "value": "sgnmanagement.directorylisting.directorylisting.view",
-                  "description": "Permission to view Directory Listing menu",
-                  "children": []
-                },
-                {
-                  "name": "Building",
-                  "value": "sgnmanagement.directorylisting.building.view",
-                  "description": "Permission to view Building menu",
-                  "children": []
-                },
-                {
-                  "name": "Floor",
-                  "value": "sgnmanagement.directorylisting.floor.view",
-                  "description": "Permission to view Floor menu",
-                  "children": []
-                },
-                {
-                  "name": "Map",
-                  "value": "sgnmanagement.directorylisting.map.view",
-                  "description": "Permission to view Map menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "View Queue Display Interface Menu",
-              "value": "sgnmanagement.qdi.view",
-              "description": "Permission to view Queue Display Interface menu",
-              "children": [
-                {
-                  "name": "Queue Matrix Menu",
-                  "value": "sgnmanagement.qdi.queuematrix.view",
-                  "description": "Permission to view Queue Matrix menu",
-                  "children": []
-                },
-                {
-                  "name": "Queue Display Logs Menu",
-                  "value": "sgnmanagement.qdi.queuedisplaylog.view",
-                  "description": "Permission to view Queue Display Logs menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "View Facility Booking Interface Menu",
-              "value": "sgnmanagement.fbi.view",
-              "description": "Permission to view Facility Booking Interface menu",
-              "children": [
-                {
-                  "name": "Resource Matrix",
-                  "value": "sgnmanagement.fbi.resourcematrix.view",
-                  "description": "Permission to view Resource Matrix menu",
-                  "children": []
-                },
-                {
-                  "name": "Interface Logs",
-                  "value": "sgnmanagement.fbi.interfacelog.view",
-                  "description": "Permission to view Interface Logs menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "View Device Management Menu",
-              "value": "sgnmanagement.devicemgt.view",
-              "description": "Permission to view Device Management menu",
-              "children": [
-                {
-                  "name": "Devices",
-                  "value": "sgnmanagement.devicemgt.device.view",
-                  "description": "Permission to view Devices",
-                  "children": [
-                    {
-                      "name": "Manage Devices",
-                      "value": "sgnmanagement.devicemgt.device.manage",
-                      "description": "Permission to manage Devices",
-                      "children": []
-                    },
-                    {
-                      "name": "Approval",
-                      "value": "sgnmanagement.devicemgt.device.approve",
-                      "description": "Permission to approve Devices",
-                      "children": []
-                    }
-                  ]
-                },
-                {
-                  "name": "EMS",
-                  "value": "sgnmanagement.devicemgt.ems.view",
-                  "description": "Permission to view EMS menu",
-                  "children": []
-                },
-                {
-                  "name": "EMS Profile",
-                  "value": "sgnmanagement.devicemgt.emsprofile.view",
-                  "description": "Permission to view EMS Profile menu",
-                  "children": []
-                },
-                {
-                  "name": "EMS Schedule",
-                  "value": "sgnmanagement.devicemgt.emsschedule.view",
-                  "description": "Permission to view EMS Schedule menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "View Epaper Management Menu",
-              "value": "sgnmanagement.epapermgt.view",
-              "description": "Permission to view Epaper Management menu",
-              "children": [
-                {
-                  "name": "Epaper Template",
-                  "value": "sgnmanagement.epapermgt.template.view",
-                  "description": "Permission to view Epaper Template menu",
-                  "children": []
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "View Reports Menu",
-          "value": "reportmgt.view",
-          "description": "Permission to view Reports menu",
-          "children": [
-            {
-              "name": "View Facility Management",
-              "value": "reportmgt.facilitymgt.view",
-              "description": "Permission to view Facilitiy Management Reports menu",
-              "children": [
-                {
-                  "name": "Vehicle Logs",
-                  "value": "reportmgt.facilitymgt.vehiclelog.view",
-                  "description": "Permission to view Vehicle Logs menu",
-                  "children": []
-                },
-                {
-                  "name": "Occupancy Logs",
-                  "value": "reportmgt.facilitymgt.occupancylog.view",
-                  "description": "Permission to view Occupancy Logs menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Signages and Kiosks",
-              "value": "reportmgt.sgn.view",
-              "description": "Permission to view Signages and Kiosks Reports menu",
-              "children": [
-                {
-                  "name": "Up/Downtime Logs",
-                  "value": "reportmgt.sgn.updownlog.view",
-                  "description": "Permission to view Up/Downtime Logs menu",
-                  "children": []
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "View Asset Management Menu",
-          "value": "assetmgt.view",
-          "description": "Permission to view System Settings menu",
-          "children": [
-            {
-              "name": "Asset Type",
-              "value": "assetmgt.assettype.view",
-              "description": "Permission to view Asset Type menu",
-              "children": [
-                {
-                  "name": "Manage Asset Type",
-                  "value": "assetmgt.assettype.manage",
-                  "description": "Permission to manage Asset Type menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Asset Model",
-              "value": "assetmgt.assetmodel.view",
-              "description": "Permission to view Asset Model menu",
-              "children": [
-                {
-                  "name": "Manage Asset Model",
-                  "value": "assetmgt.assetmodel.manage",
-                  "description": "Permission to manage Asset Model menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Asset",
-              "value": "assetmgt.asset.view",
-              "description": "Permission to view Asset menu",
-              "children": [
-                {
-                  "name": "Manage Asset",
-                  "value": "assetmgt.asset.manage",
-                  "description": "Permission to manage Asset menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Service Contract",
-              "value": "assetmgt.servicecontract.view",
-              "description": "Permission to view Service Contract menu",
-              "children": [
-                {
-                  "name": "Manage Service Contract",
-                  "value": "assetmgt.servicecontract.manage",
-                  "description": "Permission to manage Service Contract menu",
-                  "children": []
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "View System Settings Menu",
-          "value": "systemsetting.view",
-          "description": "Permission to view System Settings menu",
-          "children": [
-            {
-              "name": "Location Tree",
-              "value": "systemsetting.locationtree.view",
-              "description": "Permission to view Location Tree menu",
-              "children": [
-                {
-                  "name": "Manage Location Tree",
-                  "value": "systemsetting.locationtree.manage",
-                  "description": "Permission to manage Location Tree menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Institution",
-              "value": "systemsetting.institution.view",
-              "description": "Permission to view Institution menu",
-              "children": [
-                {
-                  "name": "Manage Institution",
-                  "value": "systemsetting.institution.manage",
-                  "description": "Permission to manage Institution menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Department",
-              "value": "systemsetting.department.view",
-              "description": "Permission to view Department menu",
-              "children": [
-                {
-                  "name": "Manage Department",
-                  "value": "systemsetting.department.manage",
-                  "description": "Permission to manage Department menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Building",
-              "value": "systemsetting.building.view",
-              "description": "Permission to view Building menu",
-              "children": []
-            },
-            {
-              "name": "User Group",
-              "value": "systemsetting.usergroup.view",
-              "description": "Permission to view User Group menu",
-              "children": [
-                {
-                  "name": "Manage User Group",
-                  "value": "systemsetting.usergroup.manage",
-                  "description": "Permission to view User Group menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Image Reference Type",
-              "value": "systemsetting.imagereferencetype.view",
-              "description": "Permission to view Image Reference Type menu",
-              "children": [
-                {
-                  "name": "Manage Image Reference Type",
-                  "value": "systemsetting.imagereferencetype.manage",
-                  "description": "Permission to view Image Reference Type menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Image Reference Color",
-              "value": "systemsetting.imagereferencecolor.view",
-              "description": "Permission to view Image Reference Color menu",
-              "children": [
-                {
-                  "name": "Manage Image Reference Color",
-                  "value": "systemsetting.imagereferencecolor.manage",
-                  "description": "Permission to view Image Reference Color menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Device Type",
-              "value": "systemsetting.devicetype.view",
-              "description": "Permission to view Device Type menu",
-              "children": [
-                {
-                  "name": "Manage Device Type",
-                  "value": "systemsetting.devicetype.manage",
-                  "description": "Permission to manage Device Type menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "User Management",
-              "value": "systemsetting.user.view",
-              "description": "Permission to view Users menu",
-              "children": [
-                {
-                  "name": "User",
-                  "value": "systemsetting.user.manage",
-                  "description": "Permission to view Users menu",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Role Management Menu",
-              "value": "systemsetting.role.view",
-              "description": "Permission to view Role menu",
-              "children": [
-                {
-                  "name": "Manage Role",
-                  "value": "systemsetting.role.manage",
-                  "description": "Permission to create, delete and modify roles",
-                  "children": []
-                },
-                {
-                  "name": "Assign Role",
-                  "value": "systemsetting.role.assign",
-                  "description": "Permission to assign roles to users",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Audit Logs Menu",
-              "value": "systemsetting.audit.view",
-              "description": "Permission to view Audit Logs menu",
-              "children": [
-                {
-                  "name": "Authentication Logs",
-                  "value": "systemsetting.audit.authlog.view",
-                  "description": "Permission to view authentication logs",
-                  "children": []
-                },
-                {
-                  "name": "Data Logs",
-                  "value": "systemsetting.audit.datalog.view",
-                  "description": "Permission to view data logs",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "name": "Application Setting Menu",
-              "value": "systemsetting.applicationsetting.view",
-              "description": "Permission to view Application Setting menu",
-              "children": []
-            },
-            {
-              "name": "Module Setting Menu",
-              "value": "systemsetting.modulesetting.view",
-              "description": "Permission to view Module Setting menu",
-              "children": []
-            },
-            {
-              "name": "Email Queue Menu",
-              "value": "systemsetting.emailqueue.view",
-              "description": "Permission to view Email Queue menu",
-              "children": []
-            },
-            {
-              "name": "Dashboard Menu",
-              "value": "systemsetting.dashboard.view",
-              "description": "Permission to view Dashboard menu",
-              "children": [
-                {
-                  "name": "Signage Dashboard",
-                  "value": "systemsetting.dashboard.sgn.view",
-                  "description": "Permission to view Signage Dashboard menu",
-                  "children": [
-                    {
-                      "name": "Preview",
-                      "value": "systemsetting.dashboard.sgn.controls.preview",
-                      "description": "Permission to allow preview of signage",
-                      "children": []
-                    },
-                    {
-                      "name": "Reboot",
-                      "value": "systemsetting.dashboard.sgn.controls.reboot",
-                      "description": "Permission to allow rebooting of devices",
-                      "children": []
-                    },
-                    {
-                      "name": "Refresh",
-                      "value": "systemsetting.dashboard.sgn.controls.refresh",
-                      "description": "Permission to allow refreshing of devices",
-                      "children": []
-                    },
-                    {
-                      "name": "Screenshot",
-                      "value": "systemsetting.dashboard.sgn.controls.screenshot",
-                      "description": "Permission to download screenshot",
-                      "children": []
-                    },
-                    {
-                      "name": "Push Message",
-                      "value": "systemsetting.dashboard.sgn.controls.pushmessage",
-                      "description": "Permission to push messages",
-                      "children": []
-                    },
-                    {
-                      "name": "Modify device information",
-                      "value": "systemsetting.dashboard.sgn.controls.deviceinfo",
-                      "description": "Permission to change device info",
-                      "children": []
-                    },
-                    {
-                      "name": "Publication",
-                      "value": "systemsetting.dashboard.sgn.controls.publication",
-                      "description": "Permission to change publication",
-                      "children": []
-                    }
-                  ]
-                },
-                {
-                  "name": "Upcoming Events",
-                  "value": "systemsetting.dashboard.upcomingevent.view",
-                  "description": "Permission to view Upcoming Events menu",
-                  "children": []
-                },
-                {
-                  "name": "Available Locations",
-                  "value": "systemsetting.dashboard.availablelocation.view",
-                  "description": "Permission to view Available Locations menu",
-                  "children": []
-                },
-                {
-                  "name": "Device Approval List",
-                  "value": "systemsetting.dashboard.deviceapproval.view",
-                  "description": "Permission to view Device Approval List menu",
-                  "children": []
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "View Meal Order Account menu",
-          "value": "mosmgt.accountmgt.view",
-          "description": "Permission to view Meal Order Account menu",
-          "children": []
-        },
-        {
-          "name": "View Order Meals",
-          "value": "mosmgt.mealmgt.order.view",
-          "description": "Permission to view Order Meals menu",
-          "children": [
-            {
-              "name": "View Restriction Types menu",
-              "value": "mosmgt.mealmgt.order.restrictiontypes.view",
-              "description": "Permission to view Restriction Types menu",
-              "children": []
-            },
-            {
-              "name": "View Restrictions menu",
-              "value": "mosmgt.mealmgt.order.restrictions.view",
-              "description": "Permission to view Restrictions menu",
-              "children": []
-            },
-            {
-              "name": "View Cuisines menu",
-              "value": "mosmgt.mealmgt.order.cuisines.view",
-              "description": "Permission to view Cuisines menu",
-              "children": []
-            },
-            {
-              "name": "View Delivery menu",
-              "value": "mosmgt.mealmgt.order.delivery.view",
-              "description": "Permission to view Delivery menu",
-              "children": []
-            },
-            {
-              "name": "View Benton Box Types menu",
-              "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.view",
-              "description": "Permission to view Benton Box Types menu",
-              "children": []
-            },
-            {
-              "name": "View Bento Assets menu",
-              "value": "mosmgt.mealmgt.order.delivery.bentoassets.view",
-              "description": "Permission to view Bento Assets menu",
-              "children": []
-            },
-            {
-              "name": "View Carton Types menu",
-              "value": "mosmgt.mealmgt.order.delivery.cartontypes.view",
-              "description": "Permission to view Carton Types menu",
-              "children": []
-            },
-            {
-              "name": "View Carton Assets menu",
-              "value": "mosmgt.mealmgt.order.delivery.cartonassets.view",
-              "description": "Permission to view Carton Assets menu",
-              "children": []
-            },
-            {
-              "name": "View Tracking Status menu",
-              "value": "mosmgt.mealmgt.order.delivery.trackingstatus.view",
-              "description": "Permission to view Tracking Status menu",
-              "children": []
-            },
-            {
-              "name": "View Delivery Order menu",
-              "value": "mosmgt.mealmgt.order.delivery.deliveryorders.view",
-              "description": "Permission to view Delivery Order menu",
-              "children": []
-            },
-            {
-              "name": "View Dishing Process menu",
-              "value": "mosmgt.mealmgt.order.delivery.dishingprocess.view",
-              "description": "Permission to view Dishing Process menu",
-              "children": []
-            },
-            {
-              "name": "View Packing Process menu",
-              "value": "mosmgt.mealmgt.order.delivery.packingprocess.view",
-              "description": "Permission to view Packing Process menu",
-              "children": []
-            },
-            {
-              "name": "View Drivers menu",
-              "value": "mosmgt.mealmgt.order.delivery.drivers.view",
-              "description": "Permission to view Drivers menu",
-              "children": []
-            },
-            {
-              "name": "View Routes menu",
-              "value": "mosmgt.mealmgt.order.delivery.routes.view",
-              "description": "Permission to view Routes menu",
-              "children": []
-            },
-            {
-              "name": "View Caterers menu",
-              "value": "mosmgt.settingmgt.caterers.view",
-              "description": "Permission to view Caterers menu",
-              "children": []
-            },
-            {
-              "name": "View Outlet Profiles menu",
-              "value": "mosmgt.settingmgt.outletprofiles.view",
-              "description": "Permission to view Outlet Profiles menu",
-              "children": []
-            },
-            {
-              "name": "View Outlets menu",
-              "value": "mosmgt.settingmgt.outlets.view",
-              "description": "Permission to view Outlets menu",
-              "children": []
-            },
-            {
-              "name": "View Store Info menu",
-              "value": "mosmgt.settingmgt.storeinfo.view",
-              "description": "Permission to view Store Info menu",
-              "children": []
-            },
-            {
-              "name": "Manage Restriction Types menu",
-              "value": "mosmgt.mealmgt.order.restrictiontypes.manage",
-              "description": "Permission to view Restriction Types menu",
-              "children": []
-            },
-            {
-              "name": "Manage Restrictions menu",
-              "value": "mosmgt.mealmgt.order.restrictions.manage",
-              "description": "Permission to view Restrictions menu",
-              "children": []
-            },
-            {
-              "name": "Manage Cuisines menu",
-              "value": "mosmgt.mealmgt.order.cuisines.manage",
-              "description": "Permission to view Cuisines menu",
-              "children": []
-            },
-            {
-              "name": "Manage Delivery menu",
-              "value": "mosmgt.mealmgt.order.delivery.manage",
-              "description": "Permission to view Delivery menu",
-              "children": []
-            },
-            {
-              "name": "Manage Benton Box Types menu",
-              "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.manage",
-              "description": "Permission to view Benton Box Types menu",
-              "children": []
-            },
-            {
-              "name": "Manage Bento Assets menu",
-              "value": "mosmgt.mealmgt.order.delivery.bentoassets.manage",
-              "description": "Permission to view Bento Assets menu",
-              "children": []
-            },
-            {
-              "name": "Manage Carton Types menu",
-              "value": "mosmgt.mealmgt.order.delivery.cartontypes.manage",
-              "description": "Permission to view Carton Types menu",
-              "children": []
-            },
-            {
-              "name": "Manage Carton Assets menu",
-              "value": "mosmgt.mealmgt.order.delivery.cartonassets.manage",
-              "description": "Permission to view Carton Assets menu",
-              "children": []
-            },
-            {
-              "name": "Manage Tracking Status menu",
-              "value": "mosmgt.mealmgt.order.delivery.trackingstatus.manage",
-              "description": "Permission to view Tracking Status menu",
-              "children": []
-            },
-            {
-              "name": "Manage Delivery Order menu",
-              "value": "mosmgt.mealmgt.order.delivery.deliveryorders.manage",
-              "description": "Permission to view Delivery Order menu",
-              "children": []
-            },
-            {
-              "name": "Manage Dishing Process menu",
-              "value": "mosmgt.mealmgt.order.delivery.dishingprocess.manage",
-              "description": "Permission to view Dishing Process menu",
-              "children": []
-            },
-            {
-              "name": "Manage Packing Process menu",
-              "value": "mosmgt.mealmgt.order.delivery.packingprocess.manage",
-              "description": "Permission to view Packing Process menu",
-              "children": []
-            },
-            {
-              "name": "Manage Drivers menu",
-              "value": "mosmgt.mealmgt.order.delivery.drivers.manage",
-              "description": "Permission to view Drivers menu",
-              "children": []
-            },
-            {
-              "name": "Manage Routes menu",
-              "value": "mosmgt.mealmgt.order.delivery.routes.manage",
-              "description": "Permission to view Routes menu",
-              "children": []
-            },
-            {
-              "name": "Manage Caterers menu",
-              "value": "mosmgt.settingmgt.caterers.manage",
-              "description": "Permission to view Caterers menu",
-              "children": []
-            },
-            {
-              "name": "Manage Outlet Profiles menu",
-              "value": "mosmgt.settingmgt.outletprofiles.manage",
-              "description": "Permission to view Outlet Profiles menu",
-              "children": []
-            },
-            {
-              "name": "Manage Outlets menu",
-              "value": "mosmgt.settingmgt.outlets.manage",
-              "description": "Permission to view Outlets menu",
-              "children": []
-            },
-            {
-              "name": "Manage Store Info menu",
-              "value": "mosmgt.settingmgt.storeinfo.manage",
-              "description": "Permission to view Store Info menu",
-              "children": []
-            }
-          ]
-        },
-        {
-          "name": "View Meal Order Organisation menu",
-          "value": "mosmgt.orgmgt.view",
-          "description": "Permission to view Meal Order Organisation menu",
-          "children": []
-        },
-        {
-          "name": "View Meal Order Setting menu",
-          "value": "mosmgt.settingmgt.view",
-          "description": "Permission to view Meal Order Setting menu",
-          "children": [{
-              "name": "Manage Payment Types",
-              "value": "mosmgt.settingmgt.payment.paymenttype.manage",
-              "description": "Permission to view Outlets menu",
-              "children": []
-            },
-            {
-              "name": "Manage Transaction Fees",
-              "value": "mosmgt.settingmgt.payment.transactionfee.manage",
-              "description": "Permission to view Store Info menu",
-              "children": []
-            },
-			{
-              "name": "Manage Voucher Types",
-              "value": "mosmgt.settingmgt.payment.vouchertype.manage",
-              "description": "Permission to view Voucher Types menu",
-              "children": []
-            },
-			{
-              "name": "Manage Vouchers",
-              "value": "mosmgt.settingmgt.payment.voucher.manage",
-              "description": "Permission to view Vouchers menu",
-              "children": []
-            },
-			{
-              "name": "Manage Waiver",
-              "value": "mosmgt.settingmgt.payment.waiver.manage",
-              "description": "Permission to view Waivers menu",
-              "children": []
-            }
-		  ]
-        },
-        {
-          "name": "View Meal Order Report menu",
-          "value": "mosmgt.reportmgt.view",
-          "description": "Permission to view Meal Order Report menu",
-          "children": []
-        },
-        {
-          "name": "View Meal Order System Admin menu",
-          "value": "mosmgt.sysadminmgt.view",
-          "description": "Permission to view Meal Order System Admin menu",
-          "children": []
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

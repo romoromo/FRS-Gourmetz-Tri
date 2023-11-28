@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ElementRef, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ElementRef, Inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -25,6 +25,9 @@ import { saveAs } from 'file-saver';
   styleUrls: ['./students-management.component.css']
 })
 export class StudentsManagementComponent implements OnInit {
+  @ViewChild('studentsTable') table: any;
+  expanded: any = {};
+
   columns: any[] = [];
   rows: Student[] = [];
   rowsCache: Student[] = [];
@@ -56,7 +59,8 @@ export class StudentsManagementComponent implements OnInit {
   studentEditorComponent: StudentEditorComponent;
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
-    private studentService: StudentService, public dialog: MatDialog) {
+    private studentService: StudentService, public dialog: MatDialog, public cdr: ChangeDetectorRef) {
+
   }
 
   openDialog(student: Student): void {
@@ -412,9 +416,6 @@ export class StudentsManagementComponent implements OnInit {
     });
   }
 
-  get canManageStudents() {
-    return true; //this.accountService.userHasPermission(Permission.manageStudentsPermission)
-  }
 
   createAccount() {
     const dialogRef = this.dialog.open(CreateAccountMultiple, {
@@ -429,8 +430,65 @@ export class StudentsManagementComponent implements OnInit {
   openStudentCalendar(student) {
     window.open(getBaseUrl() +'/studentcalendars/' + student.id, '_blank');
   }
+
+
+
+  // student orders
+  toggleExpandRow(row) {
+    console.log('Toggled Expand Row!', row);
+    this.table.rowDetail.toggleExpandRow(row);
+  }
+
+  onDetailToggle(event) {
+    console.log('Detail Toggled', event);
+  }
+
+
+
+  get canManageStudents() {
+    return true; //this.accountService.userHasPermission(Permission.manageStudentsPermission)
+  }
+
+  get canImportStudents() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletStudentMgtImportPermission)
+  }
+
+  get canAddStudent() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletStudentMgtPermissionNew)
+  }
+
+  get canEditStudent() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletStudentMgtPermissionEdit)
+  }
+
+  get canDeleteStudent() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletStudentMgtPermissionDelete)
+  }
+
+  get canCreateStudentAccount() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletStudentMgtPermissionCreateAccount)
+  }
+
+  get canManageStudentOrderMgt() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletStudentMgtPermissionOrderMgt)
+  }
+
+  get canManageStudentVoucher() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletStudentMgtPermissionVoucher)
+  }
+
+  get canManageStudentNotification() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletStudentMgtPermissionNotification)
+  }
+
+  get canManageStudentCalendar() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletStudentMgtPermissionCalendar)
+  }
+
 }
 
+
+// TODO: Move this to another file
 @Component({
   selector: 'create-account-multiple',
   templateUrl: 'create-account-multiple.html',
@@ -462,7 +520,7 @@ export class CreateAccountMultiple {
 
   @ViewChild('selectedContainer') private selectedContainer: ElementRef;
 
-  constructor(private alertService: AlertService,
+  constructor(private alertService: AlertService, private accountService: AccountService,
     public dialogRef: MatDialogRef<any>,
     @Inject(MAT_DIALOG_DATA) public data: any, public studentService: StudentService) {
   }

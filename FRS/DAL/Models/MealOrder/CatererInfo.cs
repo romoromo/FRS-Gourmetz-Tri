@@ -28,5 +28,6 @@ namespace DAL.Models.MealOrder
 
         public virtual List<CatererOutlet> CatererOutlets { get; set; }
         public virtual ICollection<OutletProfile> OutletProfiles { get; set; }
+        public virtual ICollection<UserCaterer> UserCaterers { get; set; }
     }
 }

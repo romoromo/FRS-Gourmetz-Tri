@@ -81,7 +81,58 @@ export type PermissionValues =
   "mosmgt.settingmgt.payment.transactionfee.manage" |
   "mosmgt.settingmgt.payment.vouchertype.manage" |
   "mosmgt.settingmgt.payment.voucher.manage" |
-  "mosmgt.settingmgt.payment.waiver.manage";
+  "mosmgt.settingmgt.payment.waiver.manage" |
+  "mosmgt.outletmgt.terms.view" |
+  "mosmgt.outletmgt.terms.manage" |
+  "mosmgt.outletmgt.classbatches.view" |
+  "mosmgt.outletmgt.classbatches.manage" |
+  "mosmgt.outletmgt.levels.view" |
+  "mosmgt.outletmgt.levels.manage" |
+  "mosmgt.outletmgt.classes.view" |
+  "mosmgt.outletmgt.classes.manage" |
+  "mosmgt.outletmgt.students.view" |
+  "mosmgt.outletmgt.students.manage" |
+  "mosmgt.outletmgt.fas.view" |
+  "mosmgt.outletmgt.fas.manage" |
+  "mosmgt.outletmgt.studentgroups.view" |
+  "mosmgt.outletmgt.studentgroups.manage" |
+  "mosmgt.outletmgt.menus.view" |
+  "mosmgt.outletmgt.menus.manage" |
+  "mosmgt.outletmgt.cancellations.view" |
+  "mosmgt.outletmgt.cancellations.manage" |
+  "mosmgt.outletmgt.portalcontents.view" |
+  "mosmgt.outletmgt.portalcontents.manage" |
+  "mosmgt.outletmgt.emailtemplates.view" |
+  "mosmgt.outletmgt.emailtemplates.manage" |
+  "mosmgt.outletmgt.mealallocations.view" |
+  "mosmgt.outletmgt.mealallocations.manage" |
+  "mosmgt.outletmgt.packingallocations.view" |
+  "mosmgt.outletmgt.packingallocations.manage" |
+  "mosmgt.settingmgt.contactus.subject.manage" |
+  "mosmgt.settingmgt.contactus.question.manage" |
+  "mosmgt.settingmgt.notifications.settings.manage" |
+  "mosmgt.settingmgt.notifications.events.manage" |
+  "mosmgt.settingmgt.orders.cancelrequest.manage" |
+
+  "mosmgt.outletmgt.stores.view" |
+  "mosmgt.outletmgt.stores.manage" |
+
+  "mosmgt.outletmgt.caterers.view" |
+  "mosmgt.outletmgt.caterers.manage" |
+
+  "mosmgt.outletmgt.reports.view" |
+  "mosmgt.outletmgt.mealsummary.manage" |
+
+  "mosmgt.outletmgt.students.import.view" |
+  "mosmgt.outletmgt.students.manage.create" |
+  "mosmgt.outletmgt.students.manage.edit" |
+  "mosmgt.outletmgt.students.manage.delete" |
+  "mosmgt.outletmgt.students.manage.account.create" |
+  "mosmgt.outletmgt.students.manage.order" |
+  "mosmgt.outletmgt.students.manage.voucher" |
+  "mosmgt.outletmgt.students.manage.notification" |
+  "mosmgt.outletmgt.students.manage.calendar" 
+;
 
 export class Permission {
 
@@ -243,6 +294,92 @@ export class Permission {
   public static readonly manageMOSOrderMgtVoucherTypesPermission: PermissionValues = "mosmgt.settingmgt.payment.vouchertype.manage";
   public static readonly manageMOSOrderMgtVouchersPermission: PermissionValues = "mosmgt.settingmgt.payment.voucher.manage";
   public static readonly manageMOSOrderMgtWaiversPermission: PermissionValues = "mosmgt.settingmgt.payment.waiver.manage";
+  public static readonly manageMOSOrderMgtContactUsSubjectsPermission: PermissionValues = "mosmgt.settingmgt.contactus.subject.manage";
+  public static readonly manageMOSOrderMgtContactUsQuestionsPermission: PermissionValues = "mosmgt.settingmgt.contactus.question.manage";
+  public static readonly manageMOSOrderMgtNotificationSettingsPermission: PermissionValues = "mosmgt.settingmgt.notifications.settings.manage";
+  public static readonly manageMOSOrderMgtNotificationEventsPermission: PermissionValues = "mosmgt.settingmgt.notifications.events.manage";
+
+  // MOS SETTINGS MAIN MENU
+
+  public static readonly manageMOSOrderMgtCancelRequestsPermission: PermissionValues = "mosmgt.settingmgt.orders.cancelrequest.manage";
+  //Stores
+  public static readonly viewMOSOutletMgtStoresPermission: PermissionValues = "mosmgt.outletmgt.stores.view";
+  public static readonly manageMOSOutletMgtStoresPermission: PermissionValues = "mosmgt.outletmgt.stores.manage";
+
+  //Caterers
+  public static readonly viewMOSOutletMgtCaterersPermission: PermissionValues = "mosmgt.outletmgt.caterers.view";
+  public static readonly manageMOSOutletMgtCaterersPermission: PermissionValues = "mosmgt.outletmgt.caterers.manage";
+
+  //Reports
+  public static readonly viewMOSOutletMgtReportsPermission: PermissionValues = "mosmgt.outletmgt.reports.view";
+
+  //Meal Summary
+  public static readonly manageMOSOutletMgtMealSummaryPermission: PermissionValues = "mosmgt.outletmgt.mealsummary.manage";
+
+  //----OUTLET TABS-----
+
+  //Terms
+  public static readonly viewMOSOutletMgtTermsPermission: PermissionValues = "mosmgt.outletmgt.terms.view";
+  public static readonly manageMOSOutletMgtTermsPermission: PermissionValues = "mosmgt.outletmgt.terms.manage";
+
+  //Class Batches
+  public static readonly viewMOSOutletMgtClassBatchesPermission: PermissionValues = "mosmgt.outletmgt.classbatches.view";
+  public static readonly manageMOSOutletMgtClassBatchesPermission: PermissionValues = "mosmgt.outletmgt.classbatches.manage";
+
+  //Class Levels
+  public static readonly viewMOSOutletMgtClassLevelsPermission: PermissionValues = "mosmgt.outletmgt.levels.view";
+  public static readonly manageMOSOutletMgtClassLevelsPermission: PermissionValues = "mosmgt.outletmgt.levels.manage";
+
+  //Classes
+  public static readonly viewMOSOutletMgtClassesPermission: PermissionValues = "mosmgt.outletmgt.classes.view";
+  public static readonly manageMOSOutletMgtClassesPermission: PermissionValues = "mosmgt.outletmgt.classes.manage";
+
+  //Students
+  public static readonly viewMOSOutletMgtStudentsPermission: PermissionValues = "mosmgt.outletmgt.students.view";
+  public static readonly manageMOSOutletMgtStudentsPermission: PermissionValues = "mosmgt.outletmgt.students.manage";
+
+  //----STUDENT TABS----
+  public static readonly viewMOSOutletStudentMgtImportPermission: PermissionValues = "mosmgt.outletmgt.students.import.view";
+  public static readonly manageMOSOutletStudentMgtPermissionNew: PermissionValues = "mosmgt.outletmgt.students.manage.create";
+  public static readonly manageMOSOutletStudentMgtPermissionEdit: PermissionValues = "mosmgt.outletmgt.students.manage.edit";
+  public static readonly manageMOSOutletStudentMgtPermissionDelete: PermissionValues = "mosmgt.outletmgt.students.manage.delete";
+  public static readonly manageMOSOutletStudentMgtPermissionCreateAccount: PermissionValues = "mosmgt.outletmgt.students.manage.account.create";
+  public static readonly manageMOSOutletStudentMgtPermissionOrderMgt: PermissionValues = "mosmgt.outletmgt.students.manage.order";
+  public static readonly manageMOSOutletStudentMgtPermissionVoucher: PermissionValues = "mosmgt.outletmgt.students.manage.voucher";
+  public static readonly manageMOSOutletStudentMgtPermissionNotification: PermissionValues = "mosmgt.outletmgt.students.manage.notification";
+  public static readonly manageMOSOutletStudentMgtPermissionCalendar: PermissionValues = "mosmgt.outletmgt.students.manage.calendar";
+
+  //FAS
+  public static readonly viewMOSOutletMgtFasPermission: PermissionValues = "mosmgt.outletmgt.fas.view";
+  public static readonly manageMOSOutletMgtFasPermission: PermissionValues = "mosmgt.outletmgt.fas.manage";
+
+  //Student Groups
+  public static readonly viewMOSOutletMgtStudentGroupsPermission: PermissionValues = "mosmgt.outletmgt.studentgroups.view";
+  public static readonly manageMOSOutletMgtStudentGroupsPermission: PermissionValues = "mosmgt.outletmgt.studentgroups.manage";
+
+  //Menu Groups
+  public static readonly viewMOSOutletMgtMenusPermission: PermissionValues = "mosmgt.outletmgt.menus.view";
+  public static readonly manageMOSOutletMgtMenusPermission: PermissionValues = "mosmgt.outletmgt.menus.manage";
+
+  //Order Cancellations
+  public static readonly viewMOSOutletMgtCancellationsPermission: PermissionValues = "mosmgt.outletmgt.cancellations.view";
+  public static readonly manageMOSOutletMgtCancellationsPermission: PermissionValues = "mosmgt.outletmgt.cancellations.manage";
+
+  //Order Portal Content
+  public static readonly viewMOSOutletMgtPortalContentsPermission: PermissionValues = "mosmgt.outletmgt.portalcontents.view";
+  public static readonly manageMOSOutletMgtPortalContentsPermission: PermissionValues = "mosmgt.outletmgt.portalcontents.manage";
+
+  //Email Templates
+  public static readonly viewMOSOutletMgtEmailTemplatesPermission: PermissionValues = "mosmgt.outletmgt.emailtemplates.view";
+  public static readonly manageMOSOutletMgtEmailTemplatesPermission: PermissionValues = "mosmgt.outletmgt.emailtemplates.manage";
+
+  //Meal Allocations
+  public static readonly viewMOSOutletMgtMealAllocationsPermission: PermissionValues = "mosmgt.outletmgt.mealallocations.view";
+  public static readonly manageMOSOutletMgtMealAllocationsPermission: PermissionValues = "mosmgt.outletmgt.mealallocations.manage";
+
+  //Packing Allocations
+  public static readonly viewMOSOutletMgtPackingAllocationsPermission: PermissionValues = "mosmgt.outletmgt.packingallocations.view";
+  public static readonly manageMOSOutletMgtPackingAllocationsPermission: PermissionValues = "mosmgt.outletmgt.packingallocations.manage";
 
   public static readonly viewEmailQueuesPermission: PermissionValues = "systemsetting.emailqueue.view";
   constructor(name?: PermissionNames, value?: PermissionValues, groupName?: string, description?: string) {

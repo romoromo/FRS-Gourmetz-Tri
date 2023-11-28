@@ -3,9 +3,9 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    };
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,7 +19,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CommonEndpoint = void 0;
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/common/http");
 var operators_1 = require("rxjs/operators");
@@ -36,22 +35,22 @@ var CommonEndpoint = /** @class */ (function (_super) {
     }
     Object.defineProperty(CommonEndpoint.prototype, "facilitiesUrl", {
         get: function () { return this.configurations.baseUrl + this._facilitiesUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(CommonEndpoint.prototype, "facilityByFacilityNameUrl", {
         get: function () { return this.configurations.baseUrl + this._facilityByFacilityNameUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(CommonEndpoint.prototype, "facilityTypesUrl", {
         get: function () { return this.configurations.baseUrl + this._facilityTypesUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(CommonEndpoint.prototype, "facilityTypeByFacilityTypeNameUrl", {
         get: function () { return this.configurations.baseUrl + this._facilityTypeByFacilityTypeNameUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     //Common methods

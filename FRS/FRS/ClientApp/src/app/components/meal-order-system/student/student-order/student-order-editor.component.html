@@ -1,0 +1,131 @@
+<h1 mat-dialog-title>New Order</h1>
+<div>
+  <form class="form-horizontal" name="studentEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? saveOrder() : ''">
+    <div mat-dialog-content>
+      <div class="row">
+        <!--<div class="col-sm-12">
+          <h4>Order Information</h4>
+        </div>-->
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>Transaction Date/Time</mat-label>
+          <input matInput placeholder="Transaction Date/Time" [disabled]="true" style="display:none" [value]="order.transactionTime">
+          <span>{{order.transactionTime | dateTimeOnly }}</span>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>Processed By:</mat-label>
+          <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.processedBy">
+          <span>{{order.processedBy | default: '-'}}</span>
+        </mat-form-field>
+
+        <mat-form-field class="clearfix col-xs-12 col-md-6">
+          <mat-label>Delivery Date</mat-label>
+          <input matInput [matDatepicker]="deliveryDate" (dateChange)="onDateSelected($event)" placeholder="Delivery Date"  [min]="minDate"  [value]="order.deliveryDate">
+          <mat-datepicker-toggle matSuffix [for]="deliveryDate"></mat-datepicker-toggle>
+          <mat-datepicker #deliveryDate></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>Session</mat-label>
+          <mat-select required placeholder="Session" name="session" [(ngModel)]="order.mealSessionDetailId" #session="ngModel">
+            <mat-option *ngFor="let session of sessions" [value]="session.id">{{session.mealSessionName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!--<mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>Meal Description</mat-label>
+          <input matInput placeholder="Meal Description" [disabled]="true" style="display:none" [value]="order.mealDescription">
+          <span>{{order.mealDescription | default: '-' }}</span>
+        </mat-form-field>-->
+        <!--<hr class="clearfix" />
+        <div class="col-sm-12">
+          <h4>Payment Information</h4>
+        </div>
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>Payment Method</mat-label>
+          <input matInput placeholder="Payment Method" [disabled]="true" style="display:none" [value]="order.paymentTypeName">
+          <span>{{order.paymentTypeName | default: '-' }}</span>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>Invoice No.</mat-label>
+          <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.invoiceNumber">
+          <span>{{order.invoiceNumber | default: '-' }}</span>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>Order No.</mat-label>
+          <input matInput placeholder="Order No." [disabled]="true" style="display:none" [value]="order.paymentNumber">
+          <span>{{order.paymentNumber | default: '-' }}</span>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>FOMO No.</mat-label>
+          <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.fomoId">
+          <span>{{order.fomoId | default: '-' }}</span>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>Voucher</mat-label>
+          <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.voucherCode">
+          <span>{{order.voucherCode | default: '-' }}</span>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+          <mat-label>Total</mat-label>
+          <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.totalAmount">
+          <span>{{order.totalAmount | default: '-' }}</span>
+        </mat-form-field>-->
+        <hr class="clearfix"/>
+        <div class="col-sm-12">
+          <h4>Meals</h4>
+        </div>
+        <div class="col-sm-12">
+          <div *ngFor="let set of combined; let i=index">
+            <div *ngIf="isValidSet(set)">
+              <div *ngIf="i === 0 || set.sequenceLabel !== combined[i - 1].sequenceLabel || set.price !== combined[i - 1].price">
+                <div>
+                  <span class="font-bold text-lg">
+                    {{set.sequenceLabel | default: ''}}
+                  </span>
+                  <br />
+                </div>
+              </div>
+              <div *ngFor="let dish of set.displayMenus" style="margin-bottom:10px">
+                <div class="flex gap-2" style="display:flex">
+                  <div style="background-color: gray;height:75px;width:75px;min-width:75px;border-radius:1rem">
+                    <div *ngIf="dish.filePath">
+                      <img alt="" [src]="getFileImage(dish.filePath)"
+                           style="width: 100%;height:100%;object-fit: cover;border-radius: 0.5rem;" />
+                    </div>
+                  </div>
+                  <!--TODO-->
+                  <div style="flex-grow:1;display: flex;align-items: center;justify-content: center;">
+                    <span class=" label-text font-bold font-sm text-sm" style="color:black">
+                      {{dish.dishLabel}}
+                    </span>
+                    <br />
+                  </div>
+                  <div class="flex flex-col justify-start gap-2" style="display: flex;align-items: center;justify-content: center">
+                    <span class="label-text font-bold font-sm text-sm " style="color:black;padding-right:20px">
+                      {{dec2(set.price)}}
+                    </span>
+                    <div *ngIf="!order.totalPayment || order.totalPayment == 0">
+                      <input type="radio" name="rbDishes"
+                             class="checkbox checkbox-primary"
+                             style="align-self: center;"
+                             [checked]="selectedDish && selectedDish.dishId == dish.dishId && set.id == dish.setId"
+                             (click)="selectDish(dish, set)" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="canManageStudents" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageStudents" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

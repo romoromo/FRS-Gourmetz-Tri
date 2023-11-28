@@ -80,8 +80,9 @@ namespace FRS.ViewModels
         public WalletDTO[] UserWallets { get; set; }
         public RewardDTO[] UserRewards { get; set; }
 
-        public List<StudentManageAccountViewModel> Students { get; set; } 
-
+        public List<StudentManageAccountViewModel> Students { get; set; }
+        public List<UserOutletViewModel> UserOutlets { get; set; }
+        public List<UserCatererViewModel> UserCaterers { get; set; }
         public string DirectoryListingCode { get; set; }
         public string DirectoryListingLabel { get; set; }
     }
@@ -159,7 +160,19 @@ namespace FRS.ViewModels
         public bool IsActive { get; set; }
     }
 
+    public class UserOutletViewModel
+    {
+        public int UserId { get; set; }
+        public int OutletId { get; set; }
+        public string OutletName { get; set; }
+    }
 
+    public class UserCatererViewModel
+    {
+        public int UserId { get; set; }
+        public int CatererId { get; set; }
+        public string CatererName { get; set; }
+    }
     ////Todo: ***Using DataAnnotations for validations until Swashbuckle supports FluentValidation***
     //public class UserViewModelValidator : AbstractValidator<UserViewModel>
     //{

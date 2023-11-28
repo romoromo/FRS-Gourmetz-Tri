@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DepartmentService = void 0;
 var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
@@ -23,7 +22,7 @@ var DepartmentService = /** @class */ (function () {
     DepartmentService_1 = DepartmentService;
     Object.defineProperty(DepartmentService.prototype, "departmentUrl", {
         get: function () { return this.configurations.baseUrl + this._departmentUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     DepartmentService.prototype.onDepartmentsChanged = function (departments, op) {

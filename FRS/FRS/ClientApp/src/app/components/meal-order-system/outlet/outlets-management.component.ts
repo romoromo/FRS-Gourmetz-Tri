@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -6,7 +6,7 @@ import { AppTranslationService } from "../../../services/app-translation.service
 import { AccountService } from '../../../services/account.service';
 import { Utilities } from '../../../services/utilities';
 import { Filter, PagedResult } from '../../../models/sieve-filter.model';
-import { Permission } from '../../../models/permission.model';
+import { Permission, PermissionValues } from '../../../models/permission.model';
 import { MatDialog } from '@angular/material';
 import { Outlet } from 'src/app/models/meal-order/outlet.model';
 import { OutletEditorComponent } from './outlet-editor.component';
@@ -32,7 +32,7 @@ export class OutletsManagementComponent implements OnInit {
   columns: any[] = [];
   rows: Outlet[] = [];
   rowsCache: Outlet[] = [];
-  allPermissions: Permission[] = [];
+  allPermissions: PermissionValues[] = [];
   editedOutlet: Outlet;
   sourceOutlet: Outlet;
   loadingIndicator: boolean;
@@ -55,6 +55,7 @@ export class OutletsManagementComponent implements OnInit {
 
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog, private cdr: ChangeDetectorRef, private menuService: MenuService) {
+    this.allPermissions = this.accountService.permissions;
   }
 
   openDialog(outlet: Outlet): void {
@@ -117,8 +118,8 @@ export class OutletsManagementComponent implements OnInit {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(IsActive)==true,(Name)@=' + this.keyword;
-    
+    this.filter.filters = `(IsActive)==true,(Name)@=${this.keyword},(OutletByUserId)==${this.accountService.currentUser.id}`;
+
     this.deliveryService.getOutletsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
@@ -325,9 +326,79 @@ export class OutletsManagementComponent implements OnInit {
     console.log('Detail Toggled', event);
   }
 
-  get canManageOutlets() {
-    return true; //this.accountService.userHasPermission(Permission.manageOutletsPermission)
+  get canViewOutlets() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtOutletsPermission)
   }
 
+  get canManageOutlets() {
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtOutletsPermission)
+  }
 
+  get canManageOutletCaterers() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtCaterersPermission)
+  }
+
+  get canManageOutletStores() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStoresPermission)
+  }
+
+  get canViewOutletReports() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtReportsPermission)
+  }
+
+  get canManageOutletMealSummary() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtMealSummaryPermission)
+  }
+
+  get canManageTerms() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtTermsPermission)
+  }
+
+  get canManageClassBatches() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassBatchesPermission)
+  }
+
+  get canManageClassLevels() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassLevelsPermission)
+  }
+
+  get canManageClasses() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassesPermission)
+  }
+
+  get canManageStudents() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentsPermission)
+  }
+
+  get canManageFas() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtFasPermission)
+  }
+
+  get canManageStudentGroups() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentGroupsPermission)
+  }
+
+  get canManageMenus() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtMenusPermission)
+  }
+
+  get canManageCancellations() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtCancellationsPermission)
+  }
+
+  get canManagePortalContents() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtPortalContentsPermission)
+  }
+
+  get canManageEmailTemplates() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtEmailTemplatesPermission)
+  }
+
+  get canManageMealAllocations() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtMealAllocationsPermission)
+  }
+
+  get canManagePackingAllocations() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtPackingAllocationsPermission)
+  }
 }

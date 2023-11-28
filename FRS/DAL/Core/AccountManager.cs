@@ -453,6 +453,31 @@ namespace DAL.Core
                 user.Students = stus;
             }
 
+            if (user.UserOutlets != null)
+            {
+                var stus = new List<UserOutlet>();
+                foreach (var ug in user.UserOutlets)
+                {
+                    var uw = await _appContext.UserOutlets.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.OutletId == ug.OutletId);
+                    if (uw == null) uw = ug;
+                    stus.Add(uw);
+                }
+
+                user.UserOutlets = stus;
+            }
+
+            if (user.UserCaterers != null)
+            {
+                var stus = new List<UserCaterer>();
+                foreach (var ug in user.UserCaterers)
+                {
+                    var uw = await _appContext.UserCaterers.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.CatererId == ug.CatererId);
+                    if (uw == null) uw = ug;
+                    stus.Add(uw);
+                }
+
+                user.UserCaterers = stus;
+            }
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)

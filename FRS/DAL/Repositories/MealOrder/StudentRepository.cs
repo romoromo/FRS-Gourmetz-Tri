@@ -477,6 +477,23 @@ namespace DAL.Repositories.MealOrder
                     student.Users = stus;
                 }
 
+                //if (user.UserOutlets != null)
+                //{
+                //    var stus = new List<UserOutlet>();
+                //    foreach (var ug in user.UserOutlets)
+                //    {
+                //        if (ug.Id == 0 && ug.IsActive == false) continue;
+
+                //        var uw = await _appContext.UserOutlets.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.Id == ug.Id);
+                //        if (uw == null) uw = ug;
+                //        else uw.IsActive = ug.IsActive;
+
+
+                //        stus.Add(uw);
+                //    }
+                //    user.UserOutlets = stus;
+                //}
+
                 f.CopyFrom(student);
 
                 Update(f);

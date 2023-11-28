@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LocationTreeFilter = exports.ImageReference = exports.LocationType = exports.Location = void 0;
 var Location = /** @class */ (function () {
     function Location(name, description, locationTypeId, locationTypeName, institutionName, facilities, facilityIds, institutionIds, facilityNames, directoryName, directoryId, capacity, parentLocationId, institutionId, colorTheme, locationGroup) {
         this.name = name;

@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LocationTimeInterval = exports.BookingGrid = exports.BookingGridRow = void 0;
 var BookingGridRow = /** @class */ (function () {
     function BookingGridRow(location, locationTimeIntervals, count) {
         this.location = location;

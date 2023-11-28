@@ -117,7 +117,7 @@ export class CatererInfosManagementComponent implements OnInit {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(IsActive)==true,(Name)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
+    this.filter.filters = `(IsActive)==true,(Name)@=${this.keyword},(InstitutionId)==${this.accountService.currentUser.institutionId},(CatererByUserId)==${this.accountService.currentUser.id}`;
     
     this.deliveryService.getCatererInfosByFilter(this.filter)
       .subscribe(results => {

@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConfigurationService = void 0;
 var core_1 = require("@angular/core");
 var db_Keys_1 = require("./db-Keys");
 var utilities_1 = require("./utilities");
@@ -151,7 +150,7 @@ var ConfigurationService = /** @class */ (function () {
             this.saveToLocalStore(value, db_Keys_1.DBkeys.LANGUAGE);
             this.translationService.changeLanguage(value);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(ConfigurationService.prototype, "homeUrl", {
@@ -164,7 +163,7 @@ var ConfigurationService = /** @class */ (function () {
             this._homeUrl = value;
             this.saveToLocalStore(value, db_Keys_1.DBkeys.HOME_URL);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(ConfigurationService.prototype, "theme", {
@@ -177,7 +176,7 @@ var ConfigurationService = /** @class */ (function () {
             this._theme = value;
             this.saveToLocalStore(value, db_Keys_1.DBkeys.THEME);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(ConfigurationService.prototype, "showDashboardStatistics", {
@@ -190,7 +189,7 @@ var ConfigurationService = /** @class */ (function () {
             this._showDashboardStatistics = value;
             this.saveToLocalStore(value, db_Keys_1.DBkeys.SHOW_DASHBOARD_STATISTICS);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(ConfigurationService.prototype, "showDashboardNotifications", {
@@ -203,7 +202,7 @@ var ConfigurationService = /** @class */ (function () {
             this._showDashboardNotifications = value;
             this.saveToLocalStore(value, db_Keys_1.DBkeys.SHOW_DASHBOARD_NOTIFICATIONS);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(ConfigurationService.prototype, "showDashboardTodo", {
@@ -216,7 +215,7 @@ var ConfigurationService = /** @class */ (function () {
             this._showDashboardTodo = value;
             this.saveToLocalStore(value, db_Keys_1.DBkeys.SHOW_DASHBOARD_TODO);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(ConfigurationService.prototype, "showDashboardBanner", {
@@ -229,7 +228,7 @@ var ConfigurationService = /** @class */ (function () {
             this._showDashboardBanner = value;
             this.saveToLocalStore(value, db_Keys_1.DBkeys.SHOW_DASHBOARD_BANNER);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     var ConfigurationService_1;

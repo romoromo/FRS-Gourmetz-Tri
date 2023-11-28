@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AccountService = void 0;
 var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
@@ -29,12 +28,12 @@ var AccountService = /** @class */ (function () {
     AccountService_1 = AccountService;
     Object.defineProperty(AccountService.prototype, "accountUserUrl", {
         get: function () { return this.configurations.baseUrl + this._accountUserUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountService.prototype, "accountRoleUrl", {
         get: function () { return this.configurations.baseUrl + this._accountRoleUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AccountService.prototype.loadConfig = function () {
@@ -213,14 +212,14 @@ var AccountService = /** @class */ (function () {
         get: function () {
             return this.authService.userPermissions;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountService.prototype, "currentUser", {
         get: function () {
             return this.authService.currentUser;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AccountService.prototype.signalRConnection = function (url, skipAuth) {
@@ -282,7 +281,7 @@ var AccountService = /** @class */ (function () {
             }
             return null;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AccountService.prototype.getUserPhonebooks = function (userId, page, pageSize) {

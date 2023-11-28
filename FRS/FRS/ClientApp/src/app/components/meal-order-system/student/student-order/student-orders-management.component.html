@@ -1,0 +1,213 @@
+<div>
+  <header class="pageHeader">
+    <h3>Orders for {{studentName}}</h3>
+  </header>
+  <div class="row control-box">
+
+    <!--<mat-form-field class="col-xs-12 col-sm-3">
+      <input matInput autocomplete="off" type="text" id="keyword" name="keyword" placeholder="Student Name/Email"
+             [(ngModel)]="filter.keyword" #keyword="ngModel" />
+    </mat-form-field>-->
+
+    <mat-form-field class="col-xs-12 col-sm-3">
+      <input matInput autocomplete="off" type="text" id="invNo" name="invNo" placeholder="Invoice No."
+             [(ngModel)]="filter.invoiceNumber" #invNo="ngModel" />
+    </mat-form-field>
+
+    <mat-form-field class="col-xs-12 col-sm-3">
+      <input matInput autocomplete="off" type="text" id="orderNo" name="orderNo" placeholder="Order No."
+             [(ngModel)]="filter.orderNumber" #orderNo="ngModel" />
+    </mat-form-field>
+
+
+    <mat-form-field class="col-xs-12 col-sm-3">
+      <input matInput [matDatepicker]="startpicker" placeholder="Delivery Start Date" [value]="start"
+             (dateChange)="onChangeDate('start', $event)">
+      <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+      <mat-datepicker #startpicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field class="col-xs-12 col-sm-3">
+      <input matInput [matDatepicker]="endpicker" placeholder="Delivery End Date" [value]="end"
+             (dateChange)="onChangeDate('end',$event)">
+      <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+      <mat-datepicker #endpicker></mat-datepicker>
+    </mat-form-field>
+    <div class="clearfix"></div>
+    <div class="col-xs-6 col-sm-3 col-md-2">
+      <mat-form-field>
+        <mat-select name="status" [(ngModel)]="status" placeholder="Status">
+          <mat-option *ngFor="let t of statuses" [value]="t.val">
+            {{t.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-xs-12 col-sm-3 col-md-3" style="padding-top:10px;">
+      <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
+      <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6" style="padding-top:10px;">
+      <button type="button" class="btn btn-sm btn-info" (click)="addOrder();" style="margin-left:10px">Add Order</button>
+      <button type="button" class="btn btn-sm btn-warning" (click)="cancelOrder();" style="margin-left:10px">Cancel Order</button>
+
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <ngx-datatable class="material colored-header student-order" #orderTable
+                   [loadingIndicator]="loadingIndicator"
+                   [rows]="rows"
+                   [rowHeight]="40"
+                   [headerHeight]="40"
+                   [footerHeight]="35"
+                   [scrollbarH]="true"
+                   [columnMode]="'force'"
+                   [externalPaging]="true"
+                   [externalSorting]="true"
+                   [count]="pagedResult.totalCount"
+                   [limit]="pagedResult.filter.pageSize"
+                   [selected]="selected"
+                   [selectionType]="'checkbox'"
+                   (select)="onSelect($event)"
+                   (page)="loadData($event)"
+                   (sort)="loadData($event)">
+      <ngx-datatable-column name="Select All" width="30" [frozenLeft]="true">
+        <!--<ng-template ngx-datatable-header-template>
+          <input type="checkbox" [(ngModel)]="selectAll" (change)="selectAllRows()" />
+        </ng-template>
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <input type="checkbox" [(ngModel)]="row.selected" (change)="selectRow(row)" />
+        </ng-template>-->
+        <ng-template ngx-datatable-header-template #hdrTpl let-column="column"
+                     let-selectFn="selectFn"
+                     let-allRowsSelected="allRowsSelected"
+                     let-value="value">
+          <input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" />
+        </ng-template>
+        <ng-template ngx-datatable-cell-template #indexTemplate
+                     let-value="value"
+                     let-isSelected="isSelected"
+                     let-onCheckboxChangeFn="onCheckboxChangeFn"
+                     let-rowCount="rowCount"
+                     let-pageSize="pageSize"
+                     let-curPage="curPage"
+                     let-offset="offset">
+          <input type="checkbox"
+                 [checked]="isSelected"
+                 (change)="onCheckboxChangeFn($event)" />
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Delivery Date" width="150" [frozenLeft]="true">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ row.deliveryDate | dateOnly }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Date" width="150" [frozenLeft]="true">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ row.transactionTime | dateTimeOnly }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Session" prop="mealSessionName" [frozenLeft]="true"></ngx-datatable-column>
+      <!--<ngx-datatable-column name="Session" width="150" [frozenLeft]="true">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ row.mealSessionName }}</span>
+        </ng-template>
+      </ngx-datatable-column>-->
+      <ngx-datatable-column name="Meal Description" [frozenLeft]="true">
+        <ng-template #mealDescriptionTemplate let-row="row" let-value="value" let-i="index" ngx-datatable-cell-template>
+          <span *ngFor="let t of row.tokens">
+            <span *ngFor="let sd of t.selectedDishes">
+              {{sd.dishLabel}}
+            </span>
+          </span>
+        </ng-template>
+      </ngx-datatable-column>
+      <!--<ngx-datatable-column name="Meal Description" width="150" [frozenLeft]="true">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ row.mealDescription }}</span>
+        </ng-template>
+      </ngx-datatable-column>-->
+      <ngx-datatable-column name="Total" prop="totalAmount"></ngx-datatable-column>
+      <!--<ngx-datatable-column name="Total" width="150">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ row.totalAmount }}</span>
+        </ng-template>
+      </ngx-datatable-column>-->
+      <ngx-datatable-column name="Status" width="150" prop="status">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="!editing[row.id]">{{ row.status }}</span>
+          <span *ngIf="editing[row.id]">
+            <app-status-dropdown [selectedStatus]="row.status"
+                                 (statusChanged)="onStatusChange(row, $event)"></app-status-dropdown>
+          </span>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Payment" prop="paymentTypeName"></ngx-datatable-column>
+      <!--<ngx-datatable-column name="Payment" width="150">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ row.paymentTypeName }}</span>
+        </ng-template>
+      </ngx-datatable-column>-->
+      <ngx-datatable-column name="Invoice" width="300">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="!editing[row.id]">{{ row.invoiceNumber }}</span>
+          <input *ngIf="editing[row.id]" [(ngModel)]="row.invoiceNumber" class="form-control" />
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="FOMO ID" width="300">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="!editing[row.id]">{{ row.fomoId }}</span>
+          <input *ngIf="editing[row.id]" [(ngModel)]="row.fomoId" class="form-control" />
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Voucher" prop="voucherCode"></ngx-datatable-column>
+      <!--<ngx-datatable-column name="Voucher" width="150">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ row.voucherCode }}</span>
+        </ng-template>
+      </ngx-datatable-column>-->
+      <ngx-datatable-column name="Processed By" prop="processedBy"></ngx-datatable-column>
+      <!--<ngx-datatable-column name="Processed By" width="150">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ row.processedBy }}</span>
+        </ng-template>
+      </ngx-datatable-column>-->
+      <ngx-datatable-column name="Action" width="150" [frozenRight]="true">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <a *ngIf="!editing[row.id]" class="btn btn-sm btn-info" href="javascript:;" (click)="startEditing(row)">Amend</a>
+          <a *ngIf="editing[row.id]" class="btn btn-sm btn-info" href="javascript:;" (click)="saveRow(row)">Save</a>
+          <a *ngIf="editing[row.id]" class="btn btn-sm btn-warning" href="javascript:;" (click)="cancelEditing(row)">Cancel</a>
+          <a *ngIf="!editing[row.id]" style="margin-left:3px;" class="btn btn-sm btn-info" href="javascript:;" (click)="viewOrder(row)">View</a>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+  <ng-template #hdrTpl let-column="column"
+               let-selectFn="selectFn"
+               let-allRowsSelected="allRowsSelected"
+               let-value="value">
+    <input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" />
+  </ng-template>
+
+  <ng-template #indexTemplate
+               let-value="value"
+               let-isSelected="isSelected"
+               let-onCheckboxChangeFn="onCheckboxChangeFn"
+               let-rowCount="rowCount"
+               let-pageSize="pageSize"
+               let-curPage="curPage"
+               let-offset="offset">
+    <input type="checkbox"
+           [checked]="isSelected"
+           (change)="onCheckboxChangeFn($event)" />
+  </ng-template>
+
+  <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="!editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="startEditing(row)">Amend</a>
+    <a *ngIf="!editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="saveRow(row)">Save</a>
+    <a *ngIf="editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="cancelEditing(row)">Cancel</a>
+    <a *ngIf="!editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="startEditing(row)">View</a>
+  </ng-template>
+</div>

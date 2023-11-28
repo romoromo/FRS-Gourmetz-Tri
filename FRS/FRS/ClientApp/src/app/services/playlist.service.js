@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PlaylistService = void 0;
 var core_1 = require("@angular/core");
 //export type ContactGroupsChangedOperation = "add" | "delete" | "modify";
 //export type ContactGroupsChangedEventArg = { contactgroups: ContactGroup[] | string[], operation: ContactGroupsChangedOperation };
@@ -25,7 +24,7 @@ var PlaylistService = /** @class */ (function () {
     }
     Object.defineProperty(PlaylistService.prototype, "playlistUrl", {
         get: function () { return this.configurations.baseUrl + this._playlistUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     //private onContactGroupsChanged(contactgroups: ContactGroup[] | string[], op: ContactGroupsChangedOperation) {

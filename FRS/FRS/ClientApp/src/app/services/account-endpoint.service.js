@@ -3,9 +3,9 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    };
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -19,7 +19,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AccountEndpoint = void 0;
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/common/http");
 var operators_1 = require("rxjs/operators");
@@ -51,92 +50,92 @@ var AccountEndpoint = /** @class */ (function (_super) {
     }
     Object.defineProperty(AccountEndpoint.prototype, "usersRegisterUrl", {
         get: function () { return this.configurations.baseUrl + this._usersRegisterUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "usersUrl", {
         get: function () { return this.configurations.baseUrl + this._usersUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "userByUserNameUrl", {
         get: function () { return this.configurations.baseUrl + this._userByUserNameUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "currentUserUrl", {
         get: function () { return this.configurations.baseUrl + this._currentUserUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "currentUserPreferencesUrl", {
         get: function () { return this.configurations.baseUrl + this._currentUserPreferencesUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "unblockUserUrl", {
         get: function () { return this.configurations.baseUrl + this._unblockUserUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "resetUserPasswordUrl", {
         get: function () { return this.configurations.baseUrl + this._resetUserPasswordUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "rolesUrl", {
         get: function () { return this.configurations.baseUrl + this._rolesUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "roleByRoleNameUrl", {
         get: function () { return this.configurations.baseUrl + this._roleByRoleNameUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "permissionsUrl", {
         get: function () { return this.configurations.baseUrl + this._permissionsUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "permissionsTreeUrl", {
         get: function () { return this.configurations.baseUrl + this._permissionsTreeUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "userPhonebooksUrl", {
         get: function () { return this.configurations.baseUrl + this._userPhonebooksUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "userVehiclesUrl", {
         get: function () { return this.configurations.baseUrl + this._userVehiclesUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "userCardIdsUrl", {
         get: function () { return this.configurations.baseUrl + this._userCardIdsUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "configUrl", {
         get: function () { return this.configurations.baseUrl + this._configUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "walletTransactUrl", {
         get: function () { return this.configurations.baseUrl + this._walletTransactUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "walletByUserUrl", {
         get: function () { return this.configurations.baseUrl + this._walletUrl + '/user'; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AccountEndpoint.prototype, "rewardTransactUrl", {
         get: function () { return this.configurations.baseUrl + this._rewardTransactUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AccountEndpoint.prototype.loadConfig = function () {

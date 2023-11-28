@@ -1452,5 +1452,40 @@ namespace FRS.Controllers
         }
 
         #endregion
+
+        #region Student Order
+        [HttpGet("students/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllDepartmentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetStudentOrders(StudentOrderFilter filter)
+        {
+            var logs = await _service.GetStudentOrdersAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
+        }
+
+        [HttpPost("students/amend")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> AmendOrder([FromBody] AmendOrderViewModel model)
+        {
+            var result = await _service.AmendOrder(model.Id, model.Status, model.InvoiceNumber, model.FomoId, model.UpdatedById, model.Reason);
+            return Ok(result);
+        }
+
+        [HttpPost("students/prepaid")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> CreatePrepaidOrder([FromBody] PrepaidOrderDTO model)
+        {
+            var result = await _service.CreatePrepaidOrderAsync(model);
+
+            return Ok(result);
+        }
+
+        #endregion
     }
 }

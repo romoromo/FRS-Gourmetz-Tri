@@ -117,22 +117,22 @@
     </div>
 
     <!--<div class="form-group">
-      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="isAD-{{uniqueId}}">Active Directory</label>
-      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
-        <mat-slide-toggle [checked]="user.isAD"
-                          [disabled]="true"
-                          attr.id="isAD-{{uniqueId}}" name="isAD"
-                          [(ngModel)]="user.isAD" #isAD="ngModel">
-        </mat-slide-toggle>
-      </div>
-      <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
-        <mat-slide-toggle [checked]="userEdit.isAD"
-                          [disabled]="isViewOnly"
-                          attr.id="isAD-{{uniqueId}}" name="isAD"
-                          [(ngModel)]="userEdit.isAD" #isAD="ngModel">
-        </mat-slide-toggle>
-      </div>
-    </div>-->
+    <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="isAD-{{uniqueId}}">Active Directory</label>
+    <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+      <mat-slide-toggle [checked]="user.isAD"
+                        [disabled]="true"
+                        attr.id="isAD-{{uniqueId}}" name="isAD"
+                        [(ngModel)]="user.isAD" #isAD="ngModel">
+      </mat-slide-toggle>
+    </div>
+    <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+      <mat-slide-toggle [checked]="userEdit.isAD"
+                        [disabled]="isViewOnly"
+                        attr.id="isAD-{{uniqueId}}" name="isAD"
+                        [(ngModel)]="userEdit.isAD" #isAD="ngModel">
+      </mat-slide-toggle>
+    </div>
+  </div>-->
 
 
     <div *ngIf="isEditMode" class="row">
@@ -267,7 +267,7 @@
         </p>
       </div>
       <div *ngIf="isEditMode && canManageDepartments" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && departments.valid, 'has-error' : f.submitted && !departments.valid}">
-        <select id="departments-user-info" name="departments" [(ngModel)]="userEdit.departmentId" #departments="ngModel" #departmentsSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect 
+        <select id="departments-user-info" name="departments" [(ngModel)]="userEdit.departmentId" #departments="ngModel" #departmentsSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect
                 data-live-search="false" data-actions-box="false" data-live-search-placeholder="Search..." title="Select Department">
           <option *ngFor="let department of allDepartments" attr.data-content="<span title='{{department.description}}'>{{department.name}}</span>" attr.value="{{department.id}}">
             {{department.name}}
@@ -280,6 +280,84 @@
       </div>
     </div>
 
+    <!--******************************************************************************************************-->
+
+    <div *ngIf="!isEditMode || canAssignRoles" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="!isEditMode || canAssignRoles" class="form-group has-feedback">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="outlets-user-info">Outlets</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p ngPreserveWhitespaces class="form-control-static">
+          <span *ngFor="let outlet of user.userOutlets">
+            <span title='{{outlet.outletName}}' class="badge">{{outlet.outletName}}</span>
+          </span>
+        </p>
+      </div>
+      <div *ngIf="isEditMode && canAssignRoles" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && outlets.valid, 'has-error' : f.submitted && !outlets.valid}">
+        <select id="outlets-user-info" name="outlets" [ngModel]="selectedUserOutletIds" (ngModelChange)="selectUserOutlet($event)" #outlets="ngModel" #outletsSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect multiple
+                data-live-search="true" data-actions-box="false" data-live-search-placeholder="Search..." title="Select Outlets">
+          <option *ngFor="let outlet of allUserOutlets" attr.data-content="<span title='{{outlet.name}}'>{{outlet.name}}</span>" attr.value="{{outlet.id}}">
+            {{outlet.name}}
+          </option>
+        </select>
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': outlets.valid, 'glyphicon-remove' : !outlets.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !outlets.valid" class="errorMessage">
+          Outlet is required.
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="!isEditMode || canAssignRoles" class="row">
+      <div class="col-md-12">
+        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
+      </div>
+    </div>
+
+    <div *ngIf="!isEditMode || canAssignRoles" class="form-group has-feedback">
+      <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="caterers-user-info">Caterers</label>
+      <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+        <p ngPreserveWhitespaces class="form-control-static">
+          <span *ngFor="let caterer of user.userCaterers">
+            <span title='{{caterer.catererName}}' class="badge">{{caterer.catererName}}</span>
+          </span>
+        </p>
+      </div>
+      <div *ngIf="isEditMode && canAssignRoles" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && caterers.valid, 'has-error' : f.submitted && !caterers.valid}">
+        <select id="caterers-user-info" name="caterers" [ngModel]="selectedUserCatererIds" (ngModelChange)="selectUserCaterer($event)" #caterers="ngModel" #caterersSelector="bootstrap-select" class="selectpicker form-control" bootstrapSelect multiple
+                data-live-search="true" data-actions-box="false" data-live-search-placeholder="Search..." title="Select Caterers">
+          <option *ngFor="let caterer of allUserCaterers" attr.data-content="<span title='{{caterer.name}}'>{{caterer.name}}</span>" attr.value="{{caterer.id}}">
+            {{caterer.name}}
+          </option>
+        </select>
+        <span *ngIf="showValidationErrors && f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': caterers.valid, 'glyphicon-remove' : !caterers.valid}"></span>
+        <span *ngIf="showValidationErrors && f.submitted && !caterers.valid" class="errorMessage">
+          Caterer is required.
+        </span>
+      </div>
+    </div>
+
+    <!--<div *ngIf="!isEditMode || canAssignRoles" class="form-group has-feedback">
+    <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="outlets-user-info">Outlets</label>
+    <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
+      <p ngPreserveWhitespaces class="form-control-static">
+        <span *ngFor="let outlet of user.userOutlets">
+          <span title='{{outlet.outletName}}' class="badge">{{outlet.outletName}}</span>
+        </span>
+      </p>
+    </div>
+    <div *ngIf="isEditMode && canAssignRoles" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly" [ngClass]="{'has-success': f.submitted && outlets.valid, 'has-error' : f.submitted && !outlets.valid}">
+      <select id="outlets-user-info" name="outlets-user-info" [ngModel]="selectedUserOutletIds" (ngModelChange)="selectUserOutlet($event)" class="selectpicker form-control" bootstrapSelect multiple
+              data-live-search="false" data-actions-box="false" data-live-search-placeholder="Search..." title="Select Outlets">
+        <option *ngFor="let ug of allUserOutlets" attr.data-content="<span title='{{ug.name}}'>{{ug.name}}</span>" attr.value="{{ug.id}}">
+          {{ug.name}}
+        </option>
+      </select>
+    </div>
+  </div>-->
     <!--******************************************************************************************************-->
 
     <div *ngIf="!isEditMode || canAssignUserGroups" class="row">
@@ -487,113 +565,113 @@
       </div>
     </div>
     <!--<div *ngIf="!isViewOnly" class="row">
-      <div class="col-md-12">
-        <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
-      </div>
+    <div class="col-md-12">
+      <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
     </div>
-    <div class="form-group">
-      <div class="col-xs-12 col-md-2 control-label">
-        <label class="control-label" for="wallet-{{uniqueId}}">Wallet :</label>
-      </div>
-      <div class="col-md-10" style="padding:10px;">
-        <div *ngIf="!isEditMode" class="col-md-1">
-          <p class="form-control-static">{{walletAmount}}</p>
-        </div>
-        <div *ngIf="isEditMode" class="col-md-1">
-          <p class="form-control-static">{{walletAmount}}</p>
-        </div>
-        <button *ngIf="(user && user.id > 0) || (userEdit && userEdit.id > 0 )" type="button" mat-button (click)="isTopUp = true; topUpAmount = 0" class="col-md-2">
-          <mat-icon>
-            account_balance_wallet
-          </mat-icon> Top Up
-        </button>
-
-      </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-12 col-md-2 control-label">
+      <label class="control-label" for="wallet-{{uniqueId}}">Wallet :</label>
     </div>
+    <div class="col-md-10" style="padding:10px;">
+      <div *ngIf="!isEditMode" class="col-md-1">
+        <p class="form-control-static">{{walletAmount}}</p>
+      </div>
+      <div *ngIf="isEditMode" class="col-md-1">
+        <p class="form-control-static">{{walletAmount}}</p>
+      </div>
+      <button *ngIf="(user && user.id > 0) || (userEdit && userEdit.id > 0 )" type="button" mat-button (click)="isTopUp = true; topUpAmount = 0" class="col-md-2">
+        <mat-icon>
+          account_balance_wallet
+        </mat-icon> Top Up
+      </button>
 
-    <div class="form-group">
-      <div *ngIf="isTopUp" class="col-md-offset-2 col-md-2">
-        <input autofocus type="number" attr.id="topup-{{uniqueId}}" name="topup" placeholder="Enter Amount" class="form-control col-md-8" [(ngModel)]="topUpAmount" />
-      </div>
-      <div class="clearfix"></div>
-      <div *ngIf="isTopUp" class="col-md-offset-2 col-md-6" style="padding:10px;">
-        <button type="button" mat-button (click)="isTopUp = false; topUpWallet()" color="primary">
-          <mat-icon>
-            save
-          </mat-icon>Submit
-        </button>
-        <button type="button" mat-button (click)="isTopUp = false;topUpAmount = 0;">
-          <mat-icon>
-            close
-          </mat-icon>Cancel
-        </button>
-      </div>
     </div>
-    <div class="form-group">
-      <div class="col-xs-12 col-md-2 control-label">
-        <label class="control-label" for="reward-{{uniqueId}}">Reward Points : </label>
-      </div>
-      <div class="col-md-10" style="padding:10px;">
-        <div *ngIf="!isEditMode" class="col-md-1">
-          <p class="form-control-static">{{(user.userRewards && user.userRewards.length > 0 ?  user.userRewards[0].balance : 0)}}</p>
-        </div>
-        <div *ngIf="isEditMode" class="col-md-1">
-          <p class="form-control-static">{{(userEdit.userRewards && userEdit.userRewards.length > 0 ?  userEdit.userRewards[0].balance : 0)}}</p>
-        </div>
+  </div>
 
+  <div class="form-group">
+    <div *ngIf="isTopUp" class="col-md-offset-2 col-md-2">
+      <input autofocus type="number" attr.id="topup-{{uniqueId}}" name="topup" placeholder="Enter Amount" class="form-control col-md-8" [(ngModel)]="topUpAmount" />
+    </div>
+    <div class="clearfix"></div>
+    <div *ngIf="isTopUp" class="col-md-offset-2 col-md-6" style="padding:10px;">
+      <button type="button" mat-button (click)="isTopUp = false; topUpWallet()" color="primary">
+        <mat-icon>
+          save
+        </mat-icon>Submit
+      </button>
+      <button type="button" mat-button (click)="isTopUp = false;topUpAmount = 0;">
+        <mat-icon>
+          close
+        </mat-icon>Cancel
+      </button>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-12 col-md-2 control-label">
+      <label class="control-label" for="reward-{{uniqueId}}">Reward Points : </label>
+    </div>
+    <div class="col-md-10" style="padding:10px;">
+      <div *ngIf="!isEditMode" class="col-md-1">
+        <p class="form-control-static">{{(user.userRewards && user.userRewards.length > 0 ?  user.userRewards[0].balance : 0)}}</p>
       </div>
-    </div>-->
+      <div *ngIf="isEditMode" class="col-md-1">
+        <p class="form-control-static">{{(userEdit.userRewards && userEdit.userRewards.length > 0 ?  userEdit.userRewards[0].balance : 0)}}</p>
+      </div>
+
+    </div>
+  </div>-->
     <!--<div class="form-group row">
-      <div class="col-md-2 text-align-right">
-        <label class="control-label">Vehicles</label>
-      </div>
-      <div class="col-md-10"></div>
-      <div class="col-md-2"></div>
-      <div class="col-md-10">
-        <button type="button" mat-button (click)="addVehicle()" *ngIf="isEditMode">
-          <mat-icon>
-            directions_car
-          </mat-icon> Add Vehicle
-        </button>
-      </div>
-      <div class="col-md-2"></div>
-      <div class="col-sm-10">
-        <table class="table table-sm" *ngIf="isEditMode">
-          <thead>
-            <tr>
-              <th scope="col">Plate No</th>
-              <th scope="col">Status</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of userEdit.userVehicles">
-              <td>{{row.plateNumber}}</td>
-              <td>{{row.vehicleStatus}}</td>
-              <td>
-                <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteVehicle(row)">
-                  <i class="fa fa-trash-o" aria-hidden="true"></i>
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <table class="table table-sm" *ngIf="!isEditMode">
-          <thead>
-            <tr>
-              <th scope="col">Plate No</th>
-              <th scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of user.userVehicles">
-              <td>{{row.plateNumber}}</td>
-              <td>{{row.vehicleStatus}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>-->
+    <div class="col-md-2 text-align-right">
+      <label class="control-label">Vehicles</label>
+    </div>
+    <div class="col-md-10"></div>
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      <button type="button" mat-button (click)="addVehicle()" *ngIf="isEditMode">
+        <mat-icon>
+          directions_car
+        </mat-icon> Add Vehicle
+      </button>
+    </div>
+    <div class="col-md-2"></div>
+    <div class="col-sm-10">
+      <table class="table table-sm" *ngIf="isEditMode">
+        <thead>
+          <tr>
+            <th scope="col">Plate No</th>
+            <th scope="col">Status</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of userEdit.userVehicles">
+            <td>{{row.plateNumber}}</td>
+            <td>{{row.vehicleStatus}}</td>
+            <td>
+              <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteVehicle(row)">
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-sm" *ngIf="!isEditMode">
+        <thead>
+          <tr>
+            <th scope="col">Plate No</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of user.userVehicles">
+            <td>{{row.plateNumber}}</td>
+            <td>{{row.vehicleStatus}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>-->
 
     <div class="form-group row">
       <div class="col-md-2 text-align-right">

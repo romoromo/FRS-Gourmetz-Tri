@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VehicleLogFilter = exports.CalendarFilter = exports.ReservationInvitee = exports.ImageReference = exports.ReservationPicture = exports.Reservation = void 0;
 var reservationtime_model_1 = require("./reservationtime.model");
 var Reservation = /** @class */ (function () {
     function Reservation(shortDescription, longDescription, startDate, startTime, endDate, endTime, repeatEndDateTime, facilityName, facilityId, locationName, locationId, isAllDay, status, repeatType, repeatEndDate, facilities, locationObj, timeIntervals, invitees, isAttendee) {

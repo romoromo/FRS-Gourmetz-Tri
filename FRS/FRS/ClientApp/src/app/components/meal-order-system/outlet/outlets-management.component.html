@@ -40,49 +40,49 @@
     <ngx-datatable-row-detail [rowHeight]="'100%'" #myDetailRow (toggle)="onDetailToggle($event)">
       <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
         <div style="padding-left:25px;min-height:300px">
-          <h4>{{row.name}} Details</h4>
+          <!--<h4>{{row.name}} Details</h4>-->
           <mat-tab-group dynamicHeight>
-            <mat-tab label="Terms">
+            <mat-tab label="Meal Plan Grouping" *ngIf="canManageTerms">
               <div class="container-fluid" style="padding-top:20px">
                 <outlet-terms-management [isHideHeader]="true" [outletId]="row.id"></outlet-terms-management>
               </div>
             </mat-tab>
-            <mat-tab label="Class Batches">
+            <mat-tab label="Class Batches" *ngIf="canManageClassBatches">
               <div class="container-fluid" style="padding-top:20px">
                 <class-batches-management [isHideHeader]="true" [outletId]="row.id"></class-batches-management>
               </div>
             </mat-tab>
-            <mat-tab label="Class Levels">
+            <mat-tab label="Class Levels" *ngIf="canManageClassLevels">
               <div class="container-fluid" style="padding-top:20px">
                 <class-levels-management [isHideHeader]="true" [outletId]="row.id"></class-levels-management>
               </div>
             </mat-tab>
-            <mat-tab label="Classes">
+            <mat-tab label="Classes" *ngIf="canManageClasses">
               <div class="container-fluid" style="padding-top:20px">
                 <classes-management [isHideHeader]="true" [outletId]="row.id"></classes-management>
               </div>
             </mat-tab>
-            <mat-tab label="Students">
+            <mat-tab label="Students" *ngIf="canManageStudents">
               <div class="container-fluid" style="padding-top:20px">
                 <students-management [isHideHeader]="true" [outletId]="row.id"></students-management>
               </div>
             </mat-tab>
-            <mat-tab label="FAS Meal Ordering">
+            <mat-tab label="FAS Meal Ordering" *ngIf="canManageFas">
               <div class="container-fluid" style="padding-top:20px">
                 <fas-meal-order-summary [isHideHeader]="true" [outletId]="row.id"></fas-meal-order-summary>
               </div>
             </mat-tab>
-            <mat-tab label="Student Groups">
+            <mat-tab label="Student Groups" *ngIf="canManageStudentGroups">
               <div class="container-fluid" style="padding-top:20px">
                 <student-groups-management [isHideHeader]="true" [outletId]="row.id"></student-groups-management>
               </div>
             </mat-tab>
-            <mat-tab label="Menu Groups">
+            <mat-tab label="Menu Groups" *ngIf="canManageMenus">
               <div class="container-fluid" style="padding-top:20px">
                 <menu-groups-management [isHideHeader]="true" [outletId]="row.id"></menu-groups-management>
               </div>
             </mat-tab>
-            <mat-tab label="Order Cancellation">
+            <mat-tab label="Order Cancellation" *ngIf="canManageCancellations">
               <div class="container-fluid" style="padding-top:20px">
                 <order-cancellations-management [isHideHeader]="true" [outletId]="row.id"></order-cancellations-management>
               </div>
@@ -102,22 +102,22 @@
       <interest-groups-management [isHideHeader]="true" [outletId]="row.id"></interest-groups-management>
     </div>
   </mat-tab>-->
-            <mat-tab label="Order Portal Content">
+            <mat-tab label="Order Portal Content" *ngIf="canManagePortalContents">
               <div class="container-fluid" style="padding-top:20px">
                 <order-portal-content-management [isHideHeader]="true" [outletId]="row.id"></order-portal-content-management>
               </div>
             </mat-tab>
-            <mat-tab label="Email Templates">
+            <mat-tab label="Email Templates" *ngIf="canManageEmailTemplates">
               <div class="container-fluid" style="padding-top:20px">
                 <email-templates-management [isHideHeader]="true" [outletId]="row.id"></email-templates-management>
               </div>
             </mat-tab>
-            <mat-tab label="Meal Allocations">
+            <mat-tab label="Meal Allocations" *ngIf="canManageMealAllocations">
               <div class="container-fluid" style="padding-top:20px">
                 <meal-allocations-management [isHideHeader]="true" [outletId]="row.id"></meal-allocations-management>
               </div>
             </mat-tab>
-            <mat-tab label="Packing Allocations">
+            <mat-tab label="Packing Allocations" *ngIf="canManagePackingAllocations">
               <div class="container-fluid" style="padding-top:20px">
                 <packing-allocations-management [isHideHeader]="true" [outletId]="row.id"></packing-allocations-management>
               </div>
@@ -136,14 +136,13 @@
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="requestCaterer(row)"><i class="fa" aria-hidden="true"></i> Caterer</a>
-    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="editOutlet(row)"><i class="fa fa-pencil-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
-    <a *ngIf="!canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="editOutlet(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
+    <a *ngIf="canManageOutletCaterers" class="btn btn-link btn-xs" href="javascript:;" (click)="editOutlet(row)"><i class="fa fa-pencil-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
     <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteOutlet(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
-    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="toggleExpandRow(row)">Details</a>
-    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openOutletStore(row)"><i class="fa" aria-hidden="true"></i> Stores</a>
-    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openOrderReport(row)"><i class="fa" aria-hidden="true"></i> Order Report</a>
-    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openDeliveryOrderReport(row)"><i class="fa" aria-hidden="true"></i>Delivery Report</a>
-    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openMealSummaryReport(row)"><i class="fa" aria-hidden="true"></i>Meal Summary</a>
+    <a *ngIf="canViewOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="toggleExpandRow(row)">Details</a>
+    <a *ngIf="canManageOutletStores" class="btn btn-link btn-xs" href="javascript:;" (click)="openOutletStore(row)"><i class="fa" aria-hidden="true"></i> Stores</a>
+    <a *ngIf="canViewOutletReports" class="btn btn-link btn-xs" href="javascript:;" (click)="openOrderReport(row)"><i class="fa" aria-hidden="true"></i> Order Report</a>
+    <a *ngIf="canViewOutletReports" class="btn btn-link btn-xs" href="javascript:;" (click)="openDeliveryOrderReport(row)"><i class="fa" aria-hidden="true"></i>Delivery Report</a>
+    <a *ngIf="canManageOutletMealSummary" class="btn btn-link btn-xs" href="javascript:;" (click)="openMealSummaryReport(row)"><i class="fa" aria-hidden="true"></i>Meal Summary</a>
     <!--<a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openPrintLabel(row)"><i class="fa" aria-hidden="true"></i> Print Label</a>-->
     <!--<a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openMealSession(row)"><i class="fa" aria-hidden="true"></i> Sessions</a>-->
     <!--<a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openOutletCalendar(row)"><i class="fa" aria-hidden="true"></i> Calendar</a>-->

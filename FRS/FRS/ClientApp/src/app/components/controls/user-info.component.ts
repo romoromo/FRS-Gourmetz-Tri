@@ -3,7 +3,7 @@ import { Component, OnInit, ViewChild, Input, ViewEncapsulation, OnDestroy } fro
 import { AlertService, MessageSeverity, DialogType } from '../../services/alert.service';
 import { AccountService } from "../../services/account.service";
 import { Utilities } from '../../services/utilities';
-import { User } from '../../models/user.model';
+import { User, UserOutlet, UserCaterer } from '../../models/user.model';
 import { UserEdit } from '../../models/user-edit.model';
 import { Role } from '../../models/role.model';
 import { Permission } from '../../models/permission.model';
@@ -22,6 +22,9 @@ import { Subscription } from 'rxjs';
 import { WalletOperation } from 'src/app/models/userwallet.model';
 import { StudentService } from '../../services/meal-order/student.service';
 import { FormControl } from '@angular/forms';
+import { Outlet } from 'src/app/models/meal-order/outlet.model';
+import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
+import { CatererInfo } from 'src/app/models/meal-order/caterer-info.model';
 
 
 @Component({
@@ -45,9 +48,14 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   private allRoles: Role[] = [];
   private allDepartments: Department[] = [];
   private allUserGroups: UserGroup[] = [];
+  private allUserOutlets: Outlet[] = [];
+  private allUserCaterers: CatererInfo[] = [];
   private allStatuses: string[] = ['AVAILABLE', 'ENGAGED', 'OFFDUTY', 'CUSTOM'];
   private selectedStatus: string;
   private selectedUserGroupIds: string[];
+  private selectedUserOutletIds: string[];
+  private selectedUserCatererIds: string[];
+  
   public formResetToggle = true;
   private topUpAmount:number = 0;
   private walletAmount: number = 0;
@@ -94,6 +102,8 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   @ViewChild('rolesSelector')
   private rolesSelector;
 
+  @ViewChild('outletsSelector')
+  private outletsSelector;
   //@ViewChild('userGroupsSelector')
   //private userGroupsSelector;
 
@@ -107,7 +117,8 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     studentId: any;
 
   constructor(private alertService: AlertService, private accountService: AccountService, private departmentService: DepartmentService,
-    private fileService: FileService, public dialog: MatDialog, private userGroupService: UserGroupService, private studentService: StudentService) {
+    private fileService: FileService, public dialog: MatDialog, private userGroupService: UserGroupService, private studentService: StudentService,
+    private deliveryService: DeliveryService) {
 
     this.getStudents();
   }
@@ -158,6 +169,8 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     this.isTopUp = false;
     //this.loadDepartmets();
     this.loadUserGroups();
+    this.loadUserOutlets();
+    this.loadUserCaterers();
     if (!this.isGeneralEditor) {
       this.loadCurrentUserData();
       
@@ -201,6 +214,46 @@ export class UserInfoComponent implements OnInit, OnDestroy {
         }));
   }
 
+  private loadUserOutlets() {
+    let filter = new Filter(-1, -1);
+    filter.filters = '(IsActive)==true';
+
+    this.subscription.add(this.deliveryService.getOutletsByFilter(filter)
+      .subscribe(results => {
+        var allUserOutlets = results.pagedData;
+        allUserOutlets.map(cg => {
+          let outlet = new Outlet(cg.id, cg.name);
+          this.allUserOutlets.push(outlet);
+        });
+
+        this.allUserOutlets = [...this.allUserOutlets];
+      },
+        error => {
+          this.alertService.showMessage("Load Error", "Loading user outlets from the server failed!", MessageSeverity.warn);
+          this.alertService.logError(error);
+        }));
+  }
+
+  private loadUserCaterers() {
+    let filter = new Filter(-1, -1);
+    filter.filters = '(IsActive)==true';
+
+    this.subscription.add(this.deliveryService.getCatererInfosByFilter(filter)
+      .subscribe(results => {
+        var allUserCaterers = results.pagedData;
+        allUserCaterers.map(cg => {
+          let caterer = new CatererInfo(cg.id, cg.name);
+          this.allUserCaterers.push(caterer);
+        });
+
+        this.allUserCaterers = [...this.allUserCaterers];
+      },
+        error => {
+          //this.alertService.showMessage("Load Error", "Loading user outlets from the server failed!", MessageSeverity.warn);
+          this.alertService.logError(error);
+        }));
+  }
+
   private loadDepartmets() {
     this.subscription.add(this.departmentService.getDepartments(1, 10, this.accountService.currentUser.institutionId)
       .subscribe(results => {
@@ -224,7 +277,57 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     this.allDepartments = departments;
 
     this.selectedUserGroupIds = user.userGroupIds;
+    this.selectedUserOutletIds = [];
+    if (user.userOutlets) {
+      user.userOutlets.map(cg => {
+        this.selectedUserOutletIds.push(cg.outletId);
+      });
+    }
+
+    this.selectedUserCatererIds = [];
+    if (user.userCaterers) {
+      user.userCaterers.map(cg => {
+        this.selectedUserCatererIds.push(cg.catererId);
+      });
+    }
+
     this.getWalletByUserId(user.id);
+  }
+
+  selectUserOutlet(ev) {
+    console.log(ev);
+    //this.selectedUserOutletIds = ev;
+
+    if (ev) {
+      this.userEdit.userOutlets = [];
+      ev.forEach((ug, index) => {
+        if (ug) {
+          let m = new UserOutlet();
+          m.outletId = ug;
+          m.userId = this.userEdit.id;
+          this.userEdit.userOutlets.push(m);
+        }
+      });
+
+    }
+  }
+
+  selectUserCaterer(ev) {
+    console.log(ev);
+    //this.selectedUserOutletIds = ev;
+
+    if (ev) {
+      this.userEdit.userCaterers = [];
+      ev.forEach((ug, index) => {
+        if (ug) {
+          let m = new UserCaterer();
+          m.catererId = ug;
+          m.userId = this.userEdit.id;
+          this.userEdit.userCaterers.push(m);
+        }
+      });
+
+    }
   }
 
   private onCurrentUserDataLoadFailed(error: any) {
@@ -241,7 +344,10 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     return this.allRoles.find((r) => r.name == name)
   }
 
-
+  private getOutletById(id: string) {
+    console.log('calling outlets 2...');
+    return this.allUserOutlets.find((r) => r.id == id)
+  }
 
   private showErrorAlert(caption: string, message: string) {
     this.alertService.showMessage(caption, message, MessageSeverity.error);
@@ -281,6 +387,25 @@ export class UserInfoComponent implements OnInit, OnDestroy {
         this.selectedStatus = this.userEdit.status;
       }
     }
+
+    this.selectedUserGroupIds = this.userEdit.userGroupIds;
+    this.selectedUserOutletIds = [];
+    if (this.userEdit.userOutlets) {
+      this.userEdit.userOutlets.map(cg => {
+        this.selectedUserOutletIds.push(cg.outletId);
+      });
+    }
+
+    this.selectedUserCatererIds = [];
+    if (this.userEdit.userCaterers){
+      this.userEdit.userCaterers.map(cg => {
+        this.selectedUserCatererIds.push(cg.catererId);
+      });
+    }
+
+    console.log(this.allUserOutlets);
+    console.log('calling outlets...');
+    setTimeout(() => this.outletsSelector.refresh());
   }
 
 
@@ -300,6 +425,19 @@ export class UserInfoComponent implements OnInit, OnDestroy {
       });
       
     }
+
+    //if (this.selectedUserOutletIds) {
+    //  this.userEdit.userOutlets = [];
+    //  this.selectedUserOutletIds.forEach((ug, index) => {
+    //    if (ug) {
+    //      let m = new UserOutlet();
+    //      m.outletId = ug;
+    //      m.userId = this.userEdit.id;
+    //      this.userEdit.userOutlets.push(m);
+    //    }
+    //  });
+
+    //}
     
     if (!this.userEdit.institutionId) {
       this.userEdit.institutionId = this.accountService.currentUser.institutionId;

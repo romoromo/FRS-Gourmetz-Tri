@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthService = void 0;
 var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
@@ -31,32 +30,32 @@ var AuthService = /** @class */ (function () {
     }
     Object.defineProperty(AuthService.prototype, "isEnableMFA", {
         get: function () { return this.configurations.enableMFA; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "loginUrl", {
         get: function () { return this.configurations.loginUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "login2FAUrl", {
         get: function () { return this.configurations.multifactorUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "homeUrl", {
         get: function () { return this.configurations.homeUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "registerUrl", {
         get: function () { return this.configurations.registerUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "resetPasswordUrl", {
         get: function () { return this.configurations.resetPasswordUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AuthService.prototype.initializeLoginStatus = function () {
@@ -245,14 +244,14 @@ var AuthService = /** @class */ (function () {
             this.reevaluateLoginStatus(user);
             return user;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "userPermissions", {
         get: function () {
             return this.localStorage.getDataObject(db_Keys_1.DBkeys.USER_PERMISSIONS) || [];
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "accessToken", {
@@ -260,7 +259,7 @@ var AuthService = /** @class */ (function () {
             this.reevaluateLoginStatus();
             return this.localStorage.getData(db_Keys_1.DBkeys.ACCESS_TOKEN);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "accessTokenExpiryDate", {
@@ -268,7 +267,7 @@ var AuthService = /** @class */ (function () {
             this.reevaluateLoginStatus();
             return this.localStorage.getDataObject(db_Keys_1.DBkeys.TOKEN_EXPIRES_IN, true);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "isSessionExpired", {
@@ -280,7 +279,7 @@ var AuthService = /** @class */ (function () {
             //console.log(new Date());
             return !(this.accessTokenExpiryDate.valueOf() > new Date().valueOf());
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "idToken", {
@@ -288,7 +287,7 @@ var AuthService = /** @class */ (function () {
             this.reevaluateLoginStatus();
             return this.localStorage.getData(db_Keys_1.DBkeys.ID_TOKEN);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "refreshToken", {
@@ -296,7 +295,7 @@ var AuthService = /** @class */ (function () {
             this.reevaluateLoginStatus();
             return this.localStorage.getData(db_Keys_1.DBkeys.REFRESH_TOKEN);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "isLoggedIn", {
@@ -304,14 +303,14 @@ var AuthService = /** @class */ (function () {
             return this.isEnableMFA ? this.currentUser != null && typeof (this.currentUser.last2FAValidatedTime) != typeof (undefined)
                 : this.currentUser != null;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthService.prototype, "rememberMe", {
         get: function () {
             return this.localStorage.getDataObject(db_Keys_1.DBkeys.REMEMBER_ME) == true;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AuthService.prototype.signalRConnection = function (url, skipAuth, currentConnection) {

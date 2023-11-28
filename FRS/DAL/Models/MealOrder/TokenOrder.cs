@@ -60,6 +60,8 @@ namespace DAL.Models.MealOrder
 
         public string Remarks { get; set; }
 
+        public string AmendReason { get; set; }
+
         [ForeignKey("ProfileId")]
         public virtual Student Student { get; set; }
         public virtual ICollection<TokenOrdered> Tokens { get; set; }

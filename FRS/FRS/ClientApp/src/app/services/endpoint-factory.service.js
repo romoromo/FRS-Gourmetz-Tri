@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EndpointFactory = void 0;
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/common/http");
 var rxjs_1 = require("rxjs");
@@ -26,22 +25,22 @@ var EndpointFactory = /** @class */ (function () {
     EndpointFactory_1 = EndpointFactory;
     Object.defineProperty(EndpointFactory.prototype, "loginUrl", {
         get: function () { return this.configurations.baseUrl + this._loginUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(EndpointFactory.prototype, "forgotPasswordUrl", {
         get: function () { return this.configurations.baseUrl + this._forgotPasswordUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(EndpointFactory.prototype, "resetPasswordUrl", {
         get: function () { return this.configurations.baseUrl + this._resetPasswordUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(EndpointFactory.prototype, "login2FAUrl", {
         get: function () { return this.configurations.baseUrl + this._login2FAUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(EndpointFactory.prototype, "authService", {
@@ -50,7 +49,7 @@ var EndpointFactory = /** @class */ (function () {
                 this._authService = this.injector.get(auth_service_1.AuthService);
             return this._authService;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     EndpointFactory.prototype.getForgotPasswordEndpoint = function (email, institutionCode) {

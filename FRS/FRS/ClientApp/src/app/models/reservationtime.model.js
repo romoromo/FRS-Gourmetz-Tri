@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TimeIntervalFilter = exports.ReservationTime = void 0;
 var ReservationTime = /** @class */ (function () {
     function ReservationTime(id, description, value, hour, minutes) {
         this.id = id;

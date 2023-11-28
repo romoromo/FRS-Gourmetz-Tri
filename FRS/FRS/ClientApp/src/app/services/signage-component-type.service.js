@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SignageComponentTypeService = void 0;
 var core_1 = require("@angular/core");
 var signage_component_type_model_1 = require("../models/signage-component-type.model");
 var free_html_component_1 = require("../components/signage/signage-component-types/free-html/free-html.component");

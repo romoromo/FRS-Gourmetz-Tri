@@ -142,7 +142,7 @@ export class OutletTermsManagementComponent implements OnInit {
   }
 
   newOutletTerm() {
-    this.header = 'New Outlet Term';
+    this.header = 'New Meal Plan Grouping';
     this.editedOutletTerm = new OutletTerm();
     this.editedOutletTerm.outletId = this.outletId;
     this.openDialog(this.editedOutletTerm);
@@ -151,7 +151,7 @@ export class OutletTermsManagementComponent implements OnInit {
 
   editOutletTerm(row: OutletTerm) {
     this.editedOutletTerm = row;
-    this.header = 'Edit Outlet Term';
+    this.header = 'Edit Meal Plan Grouping';
     this.openDialog(this.editedOutletTerm);
   }
 

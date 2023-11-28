@@ -55,6 +55,7 @@ export class MealSessionDetail {
   public isActive: boolean;
   public routeInterval: number;
   public overheadInterval: number;
+  public mealPeriodId: string;
 }
 
 export class MealSessionMealPeriod {

@@ -1,1 +1,1 @@
-{"version":3,"file":"facility-type.model.js","sourceRoot":"","sources":["facility-type.model.ts"],"names":[],"mappings":";;;AAGA;IAEE,sBAAY,IAAa,EAAE,WAAoB;QAE7C,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,WAAW,GAAG,WAAW,CAAC;IACjC,CAAC;IAOH,mBAAC;AAAD,CAAC,AAbD,IAaC;AAbY,oCAAY"}
+{"version":3,"file":"facility-type.model.js","sourceRoot":"","sources":["facility-type.model.ts"],"names":[],"mappings":";;AAGA;IAEE,sBAAY,IAAa,EAAE,WAAoB;QAE7C,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,WAAW,GAAG,WAAW,CAAC;IACjC,CAAC;IAOH,mBAAC;AAAD,CAAC,AAbD,IAaC;AAbY,oCAAY"}

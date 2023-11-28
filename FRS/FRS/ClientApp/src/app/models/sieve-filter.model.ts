@@ -53,6 +53,14 @@ export class OrderCancellationFilter extends Filter {
   public keyword: string;
 }
 
+export class StudentOrderFilter extends Filter {
+  public invoiceNumber: string;
+  public orderNumber: string;
+  public outletId: string;
+  public keyword: string;
+  public studentId: string;
+}
+
 export class SalesOrderReportFilter extends Filter {
   public reportDateFrom: string;
   public reportDateTo: string;

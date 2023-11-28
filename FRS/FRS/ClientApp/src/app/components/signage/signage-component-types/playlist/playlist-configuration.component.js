@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SignagePlaylistConfiguration = void 0;
 var core_1 = require("@angular/core");
 var SignagePlaylistConfiguration = /** @class */ (function () {
     function SignagePlaylistConfiguration(playlistService) {

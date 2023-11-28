@@ -113,6 +113,37 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        public async Task<PagedEntity<TokenOrder>> GetStudentOrdersAsync(StudentOrderFilter filter)
+        {
+            IQueryable<TokenOrder> query = _appContext.TokenOrders.Where(e => e.ProfileId == filter.StudentId)
+                                        .Include(e => e.Tokens);
+
+            if (filter.OutletId.HasValue)
+            {
+                query = query.Where(e => e.Student.OutletId == filter.OutletId);
+            }
+
+            if (!string.IsNullOrEmpty(filter.InvoiceNumber))
+            {
+                query = query.Where(e => e.Payment.InvoiceNumber.Trim() == filter.InvoiceNumber.Trim());
+            }
+
+            if (!string.IsNullOrEmpty(filter.OrderNumber))
+            {
+                query = query.Where(e => e.Payment.PaymentNumber.Trim() == filter.OrderNumber.Trim());
+            }
+
+            //if (!string.IsNullOrEmpty(filter.Keyword))
+            //{
+            //    query = query.Where(e => e.Student.Name.Trim().Contains(filter.Keyword.Trim()) ||
+            //                 e.Student.Email.Trim().Contains(filter.Keyword.Trim()));
+            //}
+
+            var result = await this._sieveProcessor.GetPagedAsync(query, filter);
+
+            return result;
+        }
+
         #endregion
 
         public async Task<BaseOperationResponse> CancelOrders(List<int> orderIds, int cancelledById, string reason)
@@ -180,6 +211,180 @@ namespace DAL.Repositories.MealOrder
 
             result.IsSuccess = true;
             return result;
+        }
+
+        public async Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason)
+        {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.ORDER_UPDATE.ToString(),
+                Remarks = $"Order {id} was updated by {updatedById}."
+            };
+
+            var result = new BaseOperationResponse();
+
+            var order = _appContext.TokenOrders.Include(e => e.Payment).FirstOrDefault(t => t.Id == id);
+
+            if (order != null)
+            {
+                order.Status = status;
+
+                if(!string.IsNullOrEmpty(invoiceNumber) || !string.IsNullOrEmpty(fomoId))
+                {
+                    if(order.Payment == null)
+                    {
+                        result.Message = "This order has no payment record.";
+                        result.IsSuccess = false;
+                        return result;
+                    }
+                }
+
+                if (order.Payment != null)
+                {
+                    order.Payment.InvoiceNumber = invoiceNumber;
+                    order.Payment.fomoid = fomoId;
+                }
+
+                order.UpdatedBy = updatedById;
+                order.UpdatedDate = DateTime.Now;
+                order.AmendReason += "\n" + reason;
+                Update(order);
+
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+                    result.IsSuccess = false;
+                }
+            }
+            else
+            {
+                result.Message = "Order not found";
+                result.IsSuccess = false;
+            }
+
+            _appContext.ResetAuditUserAction();
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> CreatePrepaidOrderAsync(PrepaidOrderDTO order)
+        {
+            var result = new BaseOperationResponse();
+            string invoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmssffffff");
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                            new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
+                            TransactionScopeAsyncFlowOption.Enabled))
+            {
+                if(order.Tokens == null || !order.Tokens.Any())
+                {
+                    result.Message = "Please select a dish.";
+                    return result;
+                }
+
+                var outlet = await _appContext.Outlets.FindAsync(order.OutletId);
+                if (outlet == null)
+                {
+                    result.Message = "Outlet not found!";
+                    return result;
+                }
+
+                bool hasOrder = _appContext.TokenOrders.Any(e =>
+                                            order.ProfileId == e.ProfileId.GetValueOrDefault() &&
+                                            e.IsActive && e.Status != "cancelled" &&
+                                            e.DeliveryDate.Date >= order.DeliveryDate.Date &&
+                                            e.DeliveryDate.Date <= order.DeliveryDate.Date &&
+                                            e.StoreId == order.StoreId &&
+                                            e.MealSessionDetailId == order.MealSessionDetailId);
+
+                if (hasOrder)
+                {
+                    result.Message = "Student has an existing order. Please cancel the order first before creating a new one.";
+                    return result;
+                }
+
+                _appContext.AuditUserActivityType = new AuditUserActivityType
+                {
+                    GroupId = Common.GenerateUniqueStringId(),
+                    ActionName = UserActivityType.ORDER_CREATE.ToString(),
+                    Remarks = "Order was created."
+                };
+
+                var dish = order.Tokens.FirstOrDefault();
+
+                if (!dish.MeaTypeId.HasValue)
+                {
+                    var mealType = await _appContext.MealTypes.FirstOrDefaultAsync();
+                    dish.MeaTypeId = mealType?.Id ?? 0;
+                }
+
+
+                var tokenOrder = new TokenOrder
+                {
+                    DeliveryDate = order.DeliveryDate,
+                    TransactionTime = DateTime.Now,
+                    MealSessionDetailId = order.MealSessionDetailId,
+                    ProfileId = order.ProfileId,
+                    Status = "paid",
+                    StoreId = order.StoreId,
+                    CreatedBy = order.CreatedBy,
+                    TotalAmount = order.TotalAmount,
+                    TotalPayment = order.TotalAmount,
+                    Tokens = new List<TokenOrdered>
+                            {
+                                new TokenOrdered
+                                {
+                                    TokenId = dish.MeaTypeId.Value,
+                                    Qty = dish.Qty,
+                                    TokenDesc = dish.TokenDesc,
+                                    SelectedDishes = new List<TokenOrderDish>
+                                    {
+                                            new TokenOrderDish
+                                            {
+                                                DishId = dish.DishId,
+                                                Qty = dish.Qty
+                                            }
+                                    }
+                                }
+                            }
+                };
+
+                var payment = new Payment
+                {
+                    StudentId = order.ProfileId,
+                    email = order.StudentEmail,
+                    subtotal = (decimal)order.TotalAmount,
+                    total = (decimal)order.TotalAmount,
+                    UserId = order.CreatedBy,
+                    InvoiceNumber = invoiceNumber,
+                    Status = "SUCCESS"
+                };
+
+                tokenOrder.Payment = payment;
+
+                var f = await AddAsync(tokenOrder);
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    result.Data = f;
+                    scope.Complete();
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+
+                }
+            }
+
+            _appContext.ResetAuditUserAction();
+            return result;
+
         }
 
         public async Task<List<TokenOrder>> GetUnupdatedTokenOrdersAsync()

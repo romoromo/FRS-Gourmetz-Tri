@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LocationService = void 0;
 var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
@@ -26,17 +25,17 @@ var LocationService = /** @class */ (function () {
     LocationService_1 = LocationService;
     Object.defineProperty(LocationService.prototype, "locationUrl", {
         get: function () { return this.configurationService.baseUrl + this._locationUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(LocationService.prototype, "institutionUrl", {
         get: function () { return this.configurationService.baseUrl + this._institutionUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(LocationService.prototype, "simpleresultUrl", {
         get: function () { return this.configurationService.baseUrl + this._simpleresultUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     LocationService.prototype.onLocationsChanged = function (locations, op) {

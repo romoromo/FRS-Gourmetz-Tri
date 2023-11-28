@@ -27,6 +27,7 @@ export class TokenOrder {
   public profileName: string;
   public periodName: string;
   public paymentTypeName: string;
+  public selected: boolean;
 }
 
 export class TokenOrdered {
@@ -121,4 +122,31 @@ export class TokenDishLabel {
   public p_qty: number;
   public a_qty: number;
   public t_qty: number;
+}
+
+export class NewOrder {
+  public transactionTime: Date;
+  public profileId: string;
+  public deliveryDate: any;
+  public periodId: string;
+  public studentName: string;
+  public studentEmail: string;
+  public quantity: number;
+  public totalAmount: number;
+  public remarks: string;
+  public tokens: NewOrderToken[];
+  public mealSessionDetailId: string;
+  public mealSessionId: string;
+  public createdBy?: string;
+  public processedBy: string;
+  public storeId: string;
+  public outletId: string;
+}
+
+export class NewOrderToken {
+  public tokenId: string;
+  public mealTypeId: string;
+  public tokenDesc: string;
+  public qty: number;
+  public dishId: string;
 }

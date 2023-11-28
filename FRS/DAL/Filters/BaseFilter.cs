@@ -47,6 +47,15 @@ namespace DAL.Filters
         public string Keyword { get; set; }
     }
 
+    public class StudentOrderFilter : BaseFilter
+    {
+        public string InvoiceNumber { get; set; }
+        public string OrderNumber { get; set; }
+        public int? OutletId { get; set; }
+        public int StudentId { get; set; }
+        public string Keyword { get; set; }
+    }
+
     public class SalesOrderReportFilter : BaseFilter
     {
         public DateTime ReportDateFrom { get; set; }

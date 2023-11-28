@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PermissionTree = exports.Permission = void 0;
 var Permission = /** @class */ (function () {
     function Permission(name, value, groupName, description) {
         this.name = name;
@@ -85,6 +84,120 @@ var Permission = /** @class */ (function () {
     Permission.manageAssetsPermission = "assetmgt.asset.manage";
     Permission.viewServiceContractsPermission = "assetmgt.servicecontract.view";
     Permission.manageServiceContractsPermission = "assetmgt.servicecontract.manage";
+    //MEAL ORDER SYSTEM ACL
+    Permission.viewMOSAccountMgtPermission = "mosmgt.accountmgt.view";
+    Permission.viewMOSMealMgtPermission = "mosmgt.mealmgt.order.view";
+    Permission.viewMOSOrgMgtPermission = "mosmgt.orgmgt.view";
+    Permission.viewMOSSettingMgtPermission = "mosmgt.settingmgt.view";
+    Permission.viewMOSReportMgtPermission = "mosmgt.reportmgt.view";
+    Permission.viewMOSSysAdminMgtPermission = "mosmgt.sysadminmgt.view";
+    Permission.viewMOSOrderMgtRestrictionTypesPermission = "mosmgt.mealmgt.order.restrictiontypes.view";
+    Permission.viewMOSOrderMgtRestrictionsPermission = "mosmgt.mealmgt.order.restrictions.view";
+    Permission.viewMOSOrderMgtCuisinesPermission = "mosmgt.mealmgt.order.cuisines.view";
+    Permission.viewMOSOrderMgtDeliveryPermission = "mosmgt.mealmgt.order.delivery.view";
+    Permission.viewMOSOrderMgtBentoBoxTypesPermission = "mosmgt.mealmgt.order.delivery.bentoboxtypes.view";
+    Permission.viewMOSOrderMgtBentoAssetsPermission = "mosmgt.mealmgt.order.delivery.bentoassets.view";
+    Permission.viewMOSOrderMgtCartonTypesPermission = "mosmgt.mealmgt.order.delivery.cartontypes.view";
+    Permission.viewMOSOrderMgtCartonAssetsPermission = "mosmgt.mealmgt.order.delivery.cartonassets.view";
+    Permission.viewMOSOrderMgtTrackingStatusPermission = "mosmgt.mealmgt.order.delivery.trackingstatus.view";
+    Permission.viewMOSOrderMgtDeliveryOrdersPermission = "mosmgt.mealmgt.order.delivery.deliveryorders.view";
+    Permission.viewMOSOrderMgtDishingProcessPermission = "mosmgt.mealmgt.order.delivery.dishingprocess.view";
+    Permission.viewMOSOrderMgtPackingProcessPermission = "mosmgt.mealmgt.order.delivery.packingprocess.view";
+    Permission.viewMOSOrderMgtDriversPermission = "mosmgt.mealmgt.order.delivery.drivers.view";
+    Permission.viewMOSOrderMgtRoutesPermission = "mosmgt.mealmgt.order.delivery.routes.view";
+    Permission.viewMOSOrderMgtCaterersPermission = "mosmgt.settingmgt.caterers.view";
+    Permission.viewMOSOrderMgtOutletProfilesPermission = "mosmgt.settingmgt.outletprofiles.view";
+    Permission.viewMOSOrderMgtOutletsPermission = "mosmgt.settingmgt.outlets.view";
+    Permission.viewMOSOrderMgtStoreInfoPermission = "mosmgt.settingmgt.storeinfo.view";
+    Permission.manageMOSOrderMgtRestrictionTypesPermission = "mosmgt.mealmgt.order.restrictiontypes.manage";
+    Permission.manageMOSOrderMgtRestrictionsPermission = "mosmgt.mealmgt.order.restrictions.manage";
+    Permission.manageMOSOrderMgtCuisinesPermission = "mosmgt.mealmgt.order.cuisines.manage";
+    Permission.manageMOSOrderMgtDeliveryPermission = "mosmgt.mealmgt.order.delivery.manage";
+    Permission.manageMOSOrderMgtBentoBoxTypesPermission = "mosmgt.mealmgt.order.delivery.bentoboxtypes.manage";
+    Permission.manageMOSOrderMgtBentoAssetsPermission = "mosmgt.mealmgt.order.delivery.bentoassets.manage";
+    Permission.manageMOSOrderMgtCartonTypesPermission = "mosmgt.mealmgt.order.delivery.cartontypes.manage";
+    Permission.manageMOSOrderMgtCartonAssetsPermission = "mosmgt.mealmgt.order.delivery.cartonassets.manage";
+    Permission.manageMOSOrderMgtTrackingStatusPermission = "mosmgt.mealmgt.order.delivery.trackingstatus.manage";
+    Permission.manageMOSOrderMgtDeliveryOrdersPermission = "mosmgt.mealmgt.order.delivery.deliveryorders.manage";
+    Permission.manageMOSOrderMgtDishingProcessPermission = "mosmgt.mealmgt.order.delivery.dishingprocess.manage";
+    Permission.manageMOSOrderMgtPackingProcessPermission = "mosmgt.mealmgt.order.delivery.packingprocess.manage";
+    Permission.manageMOSOrderMgtDriversPermission = "mosmgt.mealmgt.order.delivery.drivers.manage";
+    Permission.manageMOSOrderMgtRoutesPermission = "mosmgt.mealmgt.order.delivery.routes.manage";
+    Permission.manageMOSOrderMgtCaterersPermission = "mosmgt.settingmgt.caterers.manage";
+    Permission.manageMOSOrderMgtOutletProfilesPermission = "mosmgt.settingmgt.outletprofiles.manage";
+    Permission.manageMOSOrderMgtOutletsPermission = "mosmgt.settingmgt.outlets.manage";
+    Permission.manageMOSOrderMgtStoreInfoPermission = "mosmgt.settingmgt.storeinfo.manage";
+    Permission.manageMOSOrderMgtPaymentTypesPermission = "mosmgt.settingmgt.payment.paymenttype.manage";
+    Permission.manageMOSOrderMgtTransactionFeesPermission = "mosmgt.settingmgt.payment.transactionfee.manage";
+    Permission.manageMOSOrderMgtVoucherTypesPermission = "mosmgt.settingmgt.payment.vouchertype.manage";
+    Permission.manageMOSOrderMgtVouchersPermission = "mosmgt.settingmgt.payment.voucher.manage";
+    Permission.manageMOSOrderMgtWaiversPermission = "mosmgt.settingmgt.payment.waiver.manage";
+    Permission.manageMOSOrderMgtContactUsSubjectsPermission = "mosmgt.settingmgt.contactus.subject.manage";
+    Permission.manageMOSOrderMgtContactUsQuestionsPermission = "mosmgt.settingmgt.contactus.question.manage";
+    Permission.manageMOSOrderMgtNotificationSettingsPermission = "mosmgt.settingmgt.notifications.settings.manage";
+    Permission.manageMOSOrderMgtNotificationEventsPermission = "mosmgt.settingmgt.notifications.events.manage";
+    // MOS SETTINGS MAIN MENU
+    Permission.manageMOSOrderMgtCancelRequestsPermission = "mosmgt.settingmgt.orders.cancelrequest.manage";
+    //Stores
+    Permission.viewMOSOutletMgtStoresPermission = "mosmgt.outletmgt.stores.view";
+    Permission.manageMOSOutletMgtStoresPermission = "mosmgt.outletmgt.stores.manage";
+    //Caterers
+    Permission.viewMOSOutletMgtCaterersPermission = "mosmgt.outletmgt.caterers.view";
+    Permission.manageMOSOutletMgtCaterersPermission = "mosmgt.outletmgt.caterers.manage";
+    //Reports
+    Permission.viewMOSOutletMgtReportsPermission = "mosmgt.outletmgt.reports.view";
+    //Meal Summary
+    Permission.manageMOSOutletMgtMealSummaryPermission = "mosmgt.outletmgt.mealsummary.manage";
+    //----OUTLET TABS-----
+    //Terms
+    Permission.viewMOSOutletMgtTermsPermission = "mosmgt.outletmgt.terms.view";
+    Permission.manageMOSOutletMgtTermsPermission = "mosmgt.outletmgt.terms.manage";
+    //Class Batches
+    Permission.viewMOSOutletMgtClassBatchesPermission = "mosmgt.outletmgt.classbatches.view";
+    Permission.manageMOSOutletMgtClassBatchesPermission = "mosmgt.outletmgt.classbatches.manage";
+    //Class Levels
+    Permission.viewMOSOutletMgtClassLevelsPermission = "mosmgt.outletmgt.levels.view";
+    Permission.manageMOSOutletMgtClassLevelsPermission = "mosmgt.outletmgt.levels.manage";
+    //Classes
+    Permission.viewMOSOutletMgtClassesPermission = "mosmgt.outletmgt.classes.view";
+    Permission.manageMOSOutletMgtClassesPermission = "mosmgt.outletmgt.classes.manage";
+    //Students
+    Permission.viewMOSOutletMgtStudentsPermission = "mosmgt.outletmgt.students.view";
+    Permission.manageMOSOutletMgtStudentsPermission = "mosmgt.outletmgt.students.manage";
+    //----STUDENT TABS----
+    Permission.viewMOSOutletStudentMgtImportPermission = "mosmgt.outletmgt.students.import.view";
+    Permission.manageMOSOutletStudentMgtPermissionNew = "mosmgt.outletmgt.students.manage.create";
+    Permission.manageMOSOutletStudentMgtPermissionEdit = "mosmgt.outletmgt.students.manage.edit";
+    Permission.manageMOSOutletStudentMgtPermissionDelete = "mosmgt.outletmgt.students.manage.delete";
+    Permission.manageMOSOutletStudentMgtPermissionCreateAccount = "mosmgt.outletmgt.students.manage.account.create";
+    Permission.manageMOSOutletStudentMgtPermissionOrderMgt = "mosmgt.outletmgt.students.manage.order";
+    Permission.manageMOSOutletStudentMgtPermissionVoucher = "mosmgt.outletmgt.students.manage.voucher";
+    Permission.manageMOSOutletStudentMgtPermissionNotification = "mosmgt.outletmgt.students.manage.notification";
+    Permission.manageMOSOutletStudentMgtPermissionCalendar = "mosmgt.outletmgt.students.manage.calendar";
+    //FAS
+    Permission.viewMOSOutletMgtFasPermission = "mosmgt.outletmgt.fas.view";
+    Permission.manageMOSOutletMgtFasPermission = "mosmgt.outletmgt.fas.manage";
+    //Student Groups
+    Permission.viewMOSOutletMgtStudentGroupsPermission = "mosmgt.outletmgt.studentgroups.view";
+    Permission.manageMOSOutletMgtStudentGroupsPermission = "mosmgt.outletmgt.studentgroups.manage";
+    //Menu Groups
+    Permission.viewMOSOutletMgtMenusPermission = "mosmgt.outletmgt.menus.view";
+    Permission.manageMOSOutletMgtMenusPermission = "mosmgt.outletmgt.menus.manage";
+    //Order Cancellations
+    Permission.viewMOSOutletMgtCancellationsPermission = "mosmgt.outletmgt.cancellations.view";
+    Permission.manageMOSOutletMgtCancellationsPermission = "mosmgt.outletmgt.cancellations.manage";
+    //Order Portal Content
+    Permission.viewMOSOutletMgtPortalContentsPermission = "mosmgt.outletmgt.portalcontents.view";
+    Permission.manageMOSOutletMgtPortalContentsPermission = "mosmgt.outletmgt.portalcontents.manage";
+    //Email Templates
+    Permission.viewMOSOutletMgtEmailTemplatesPermission = "mosmgt.outletmgt.emailtemplates.view";
+    Permission.manageMOSOutletMgtEmailTemplatesPermission = "mosmgt.outletmgt.emailtemplates.manage";
+    //Meal Allocations
+    Permission.viewMOSOutletMgtMealAllocationsPermission = "mosmgt.outletmgt.mealallocations.view";
+    Permission.manageMOSOutletMgtMealAllocationsPermission = "mosmgt.outletmgt.mealallocations.manage";
+    //Packing Allocations
+    Permission.viewMOSOutletMgtPackingAllocationsPermission = "mosmgt.outletmgt.packingallocations.view";
+    Permission.manageMOSOutletMgtPackingAllocationsPermission = "mosmgt.outletmgt.packingallocations.manage";
     Permission.viewEmailQueuesPermission = "systemsetting.emailqueue.view";
     return Permission;
 }());

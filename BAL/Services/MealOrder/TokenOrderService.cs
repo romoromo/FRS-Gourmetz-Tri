@@ -73,6 +73,34 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<PagedEntity<TokenOrderDTO>> GetStudentOrdersAsync(StudentOrderFilter filter)
+        {
+            var result = Mapper.Map<PagedEntity<TokenOrderDTO>>(await this._uow.TokenOrders.GetStudentOrdersAsync(filter));
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason)
+        {
+            var result = Mapper.Map<BaseOperationResponse>(await this._uow.TokenOrders.AmendOrder(id, status, invoiceNumber, fomoId, updatedById, reason));
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> CreatePrepaidOrderAsync(PrepaidOrderDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.TokenOrders.CreatePrepaidOrderAsync(dto);
+
+            if (result.IsSuccess)
+            {
+                var to = (TokenOrder)result.Data;
+                var history = Mapper.Map<TokensOrderHistoryDTO>(to);
+                await CreateTokensOrderHistoryAsync(history, to);
+                result.Data = null;
+            }
+
+            return result;
+        }
+
         public async Task<List<TokenOrderDTO>> GetUnupdatedTokenOrdersAsync()
         {
             var result = Mapper.Map<List<TokenOrderDTO>>(await this._uow.TokenOrders.GetUnupdatedTokenOrdersAsync());

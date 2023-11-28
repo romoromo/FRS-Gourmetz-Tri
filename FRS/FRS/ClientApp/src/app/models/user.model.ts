@@ -80,6 +80,22 @@ export class User {
   public userRewards: UserReward[];
   public last2FAValidatedTime: string;
   public isAD: boolean;
+  public userOutlets: UserOutlet[];
+  public userCaterers: UserCaterer[];
+}
+
+export class UserOutlet {
+  public id: string;
+  public userId: string;
+  public outletId: string;
+  public outletName: string;
+}
+
+export class UserCaterer {
+  public id: string;
+  public userId: string;
+  public catererId: string;
+  public catererName: string;
 }
 
 @Injectable()

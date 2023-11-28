@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeviceService = void 0;
 var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
@@ -28,17 +27,17 @@ var DeviceService = /** @class */ (function () {
     DeviceService_1 = DeviceService;
     Object.defineProperty(DeviceService.prototype, "deviceUrl", {
         get: function () { return this.configurations.baseUrl + this._deviceUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(DeviceService.prototype, "institutionUrl", {
         get: function () { return this.configurations.baseUrl + this._institutionUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(DeviceService.prototype, "deviceTypeUrl", {
         get: function () { return this.configurations.baseUrl + this._deviceTypeUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     DeviceService.prototype.onDevicesChanged = function (devices, op) {

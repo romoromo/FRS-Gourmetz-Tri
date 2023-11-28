@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DevicePushMessage = exports.DeviceFilter = exports.Device = void 0;
 var Device = /** @class */ (function () {
     function Device(id, code, ipAddress, macAddress, serialNumber, isApproved, startDate, endDate, facilityId, facilityName, status, locationId, locationName) {
         this.code = code;

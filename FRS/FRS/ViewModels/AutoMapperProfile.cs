@@ -41,6 +41,8 @@ namespace FRS.ViewModels
                 .ForMember(d => d.Status, map => map.MapFrom(s => !string.IsNullOrEmpty(s.Status) ? s.Status : UserConnectionStatus.OFFDUTY.ToString()))
                 .ForMember(d => d.IsConnected, map => map.MapFrom(s => s.UserConnections != null && s.UserConnections.Any(e => e.IsActive)))
                 //.ForMember(d => d.Students, map => map.MapFrom(s => s.Students != null ? s.Students.Where(f => f.Student != null && f.Student.IsActive && f.IsActive) : null))
+                .ForMember(d => d.UserOutlets, map => map.MapFrom(s => s.UserOutlets.Where(f => f.IsActive)))
+                .ForMember(d => d.UserCaterers, map => map.MapFrom(s => s.UserCaterers.Where(f => f.IsActive)))
                 ;
 
             CreateMap<ApplicationUser, UserSimpleViewModel>();
@@ -52,6 +54,14 @@ namespace FRS.ViewModels
                 .ForMember(d => d.ClassName, map => map.MapFrom(s => s.Student != null && s.Student.Class != null ? s.Student.Class.Name : string.Empty))
                 ;
             CreateMap<StudentManageAccountViewModel, StudentManageAccount>();
+
+            CreateMap<UserOutlet, UserOutletViewModel>()
+                .ForMember(d => d.OutletName, map => map.MapFrom(s => s.Outlet != null ? s.Outlet.Name : string.Empty));
+            CreateMap<UserOutletViewModel, UserOutlet>();
+
+            CreateMap<UserCaterer, UserCatererViewModel>()
+                .ForMember(d => d.CatererName, map => map.MapFrom(s => s.Caterer != null ? s.Caterer.Name : string.Empty));
+            CreateMap<UserCatererViewModel, UserCaterer>();
 
             CreateMap<UserViewModel, ApplicationUser>()
                 .ForMember(d => d.Roles, map => map.Ignore())

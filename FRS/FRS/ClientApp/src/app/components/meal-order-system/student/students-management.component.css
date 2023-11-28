@@ -24,3 +24,26 @@
         margin: 0 14px;
     }
 }
+
+
+/* Set the width of ngx-datatable-row-detail to cover the entire screen */
+
+::ng-deep ngx-datatable-row-detail {
+  width: 90vw !important;
+  min-width: 90vw !important;
+}
+
+/*::ng-deep ngx-datatable {
+  width: 100%; 
+}
+::ng-deep ngx-datatable-scroller {
+  width: 90vw !important;
+}
+
+datatable-scroller {
+  width: 90vw !important;
+}*/
+
+.students datatable-scroller {
+  width: 100% !important;
+}

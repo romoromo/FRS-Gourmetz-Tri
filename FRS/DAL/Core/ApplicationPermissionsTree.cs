@@ -281,6 +281,7 @@ namespace DAL.Core
         public static ApplicationPermissionsTree AMServiceContractManage = new ApplicationPermissionsTree(id++, "Manage Service Contract", "assetmgt.servicecontract.manage", "Permission to manage Service Contract menu", AMServiceContractMenu);
 
         #endregion
+
         #region System Settings
         public static ApplicationPermissionsTree ViewSystemSettingsMenu = new ApplicationPermissionsTree(id++, "View System Settings Menu", "systemsetting.view", "Permission to view System Settings menu", Root);
 
@@ -400,8 +401,75 @@ namespace DAL.Core
         public static ApplicationPermissionsTree ViewMOSOrderMgtOutletProfilesMenu = new ApplicationPermissionsTree(id++, "View Outlet Profiles menu", "mosmgt.settingmgt.outletprofiles.view", "Permission to view Outlet Profiles menu", ViewMOSMealMgtAccountMgtMenu);
         public static ApplicationPermissionsTree ManageMOSOrderMgtOutletProfilesMenu = new ApplicationPermissionsTree(id++, "Manage Outlet Profiles menu", "mosmgt.settingmgt.outletprofiles.manage", "Permission to view Outlet Profiles menu", ViewMOSMealMgtAccountMgtMenu);
 
-        public static ApplicationPermissionsTree ViewMOSOrderMgtOutletsMenu = new ApplicationPermissionsTree(id++, "View Outlets menu", "mosmgt.settingmgt.outlets.view", "Permission to view Outlets menu", ViewMOSMealMgtAccountMgtMenu);
-        public static ApplicationPermissionsTree ManageMOSOrderMgtOutletsMenu = new ApplicationPermissionsTree(id++, "Manage Outlets menu", "mosmgt.settingmgt.outlets.manage", "Permission to view Outlets menu", ViewMOSMealMgtAccountMgtMenu);
+        #region Outlets menu
+
+        public static ApplicationPermissionsTree ViewMOSOrderMgtOutletsMenu = new ApplicationPermissionsTree(id++, "View Outlets menu", "mosmgt.settingmgt.outlets.view", "Permission to view Outlets menu", ViewMOSSettingMgtMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtOutletsMenu = new ApplicationPermissionsTree(id++, "Manage Outlets menu", "mosmgt.settingmgt.outlets.manage", "Permission to view Outlets menu", ViewMOSSettingMgtMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtTermsPermission = new ApplicationPermissionsTree(id++, "View Meal Plan Groupings menu", "mosmgt.outletmgt.terms.view", "Permission to view Meal Plan Groupings menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtTermsPermission = new ApplicationPermissionsTree(id++, "Manage Meal Plan Groupings menu", "mosmgt.outletmgt.terms.manage", "Permission to manage Meal Plan Groupings menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtStoresPermission = new ApplicationPermissionsTree(id++, "View Outlet Stores menu", "mosmgt.outletmgt.stores.view", "Permission to view stores menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtStoresPermission = new ApplicationPermissionsTree(id++, "Manage Outlet Stores menu", "mosmgt.outletmgt.stores.manage", "Permission to manage stores menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtCaterersPermission = new ApplicationPermissionsTree(id++, "View Outlet Caterers menu", "mosmgt.outletmgt.caterers.view", "Permission to view Caterers menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtCaterersPermission = new ApplicationPermissionsTree(id++, "Manage Outlet Caterers menu", "mosmgt.outletmgt.caterers.manage", "Permission to manage Caterers menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtReportsPermission = new ApplicationPermissionsTree(id++, "View Outlet Reports menu", "mosmgt.outletmgt.reports.view", "Permission to view Reports menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ManageMOSOutletMgtMealSummaryPermission = new ApplicationPermissionsTree(id++, "Manage Outlet Meal Summary menu", "mosmgt.outletmgt.mealsummary.manage", "Permission to manage Meal Summary menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtClassBatchesPermission = new ApplicationPermissionsTree(id++, "View Class Batches menu", "mosmgt.outletmgt.classbatches.view", "Permission to view Class Batches menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtClassBatchesPermission = new ApplicationPermissionsTree(id++, "Manage Class Batches menu", "mosmgt.outletmgt.classbatches.manage", "Permission to manage Class Batches menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtClassLevelsPermission = new ApplicationPermissionsTree(id++, "View Class Levels menu", "mosmgt.outletmgt.levels.view", "Permission to view Class Levels menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtClassLevelsPermission = new ApplicationPermissionsTree(id++, "Manage Class Levels menu", "mosmgt.outletmgt.levels.manage", "Permission to manage Class Levels menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtClassesPermission = new ApplicationPermissionsTree(id++, "View Classes menu", "mosmgt.outletmgt.classes.view", "Permission to view Classes menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtClassesPermission = new ApplicationPermissionsTree(id++, "Manage Classes menu", "mosmgt.outletmgt.classes.manage", "Permission to manage Classes menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtStudentsPermission = new ApplicationPermissionsTree(id++, "View Students menu", "mosmgt.outletmgt.students.view", "Permission to view Students menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtStudentsPermission = new ApplicationPermissionsTree(id++, "Manage Students menu", "mosmgt.outletmgt.students.manage", "Permission to manage Students menu", ViewMOSOrderMgtOutletsMenu);
+
+        #region Students Directory
+
+        public static ApplicationPermissionsTree ViewMOSOutletStudentMgtImportPermission = new ApplicationPermissionsTree(id++, "Import Students", "mosmgt.outletmgt.students.import.view", "Permission to import Students menu", ViewMOSOutletMgtStudentsPermission);
+        public static ApplicationPermissionsTree ManageMOSOutletStudentMgtPermissionNew = new ApplicationPermissionsTree(id++, "Create Students", "mosmgt.outletmgt.students.manage.create", "Permission to manage Students menu", ViewMOSOutletMgtStudentsPermission);
+        public static ApplicationPermissionsTree ManageMOSOutletStudentMgtPermissionEdit = new ApplicationPermissionsTree(id++, "Update Students", "mosmgt.outletmgt.students.manage.edit", "Permission to manage Students menu", ViewMOSOutletMgtStudentsPermission);
+        public static ApplicationPermissionsTree ManageMOSOutletStudentMgtPermissionDelete = new ApplicationPermissionsTree(id++, "Delete Students", "mosmgt.outletmgt.students.manage.delete", "Permission to manage Students menu", ViewMOSOutletMgtStudentsPermission);
+        public static ApplicationPermissionsTree ManageMOSOutletStudentMgtPermissionCreateAccount = new ApplicationPermissionsTree(id++, "Create Student Accounts", "mosmgt.outletmgt.students.manage.account.create", "Permission to manage Student Accounts Creation", ViewMOSOutletMgtStudentsPermission);
+        public static ApplicationPermissionsTree ManageMOSOutletStudentMgtPermissionOrderMgt = new ApplicationPermissionsTree(id++, "Student Orders Management", "mosmgt.outletmgt.students.manage.order", "Permission to manage Student Orders", ViewMOSOutletMgtStudentsPermission);
+        public static ApplicationPermissionsTree ManageMOSOutletStudentMgtPermissionVoucher = new ApplicationPermissionsTree(id++, "Student Vouchers Management", "mosmgt.outletmgt.students.manage.voucher", "Permission to manage Student Vouchers", ViewMOSOutletMgtStudentsPermission);
+        public static ApplicationPermissionsTree ManageMOSOutletStudentMgtPermissionNotification = new ApplicationPermissionsTree(id++, "Student Notifications Management", "mosmgt.outletmgt.students.manage.notification", "Permission to manage Student Notifications", ViewMOSOutletMgtStudentsPermission);
+        public static ApplicationPermissionsTree ManageMOSOutletStudentMgtPermissionCalendar = new ApplicationPermissionsTree(id++, "Student Calendars Management", "mosmgt.outletmgt.students.manage.calendar", "Permission to manage Student Calendars", ViewMOSOutletMgtStudentsPermission);
+
+        #endregion
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtFasPermission = new ApplicationPermissionsTree(id++, "View FAS menu", "mosmgt.outletmgt.fas.view", "Permission to view FAS menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtFasPermission = new ApplicationPermissionsTree(id++, "Manage FAS menu", "mosmgt.outletmgt.fas.manage", "Permission to manage FAS menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtStudentGroupsPermission = new ApplicationPermissionsTree(id++, "View Student Groups menu", "mosmgt.outletmgt.studentgroups.view", "Permission to view Student Groups menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtStudentGroupsPermission = new ApplicationPermissionsTree(id++, "Manage Student Groups menu", "mosmgt.outletmgt.studentgroups.manage", "Permission to manage Student Groups menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtMenusPermission = new ApplicationPermissionsTree(id++, "View Menu Groups menu", "mosmgt.outletmgt.menus.view", "Permission to view Menu Groups menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtMenusPermission = new ApplicationPermissionsTree(id++, "Manage Menu Groups menu", "mosmgt.outletmgt.menus.manage", "Permission to manage Menu Groups menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtCancellationsPermission = new ApplicationPermissionsTree(id++, "View Order Cancellations menu", "mosmgt.outletmgt.cancellations.view", "Permission to view Order Cancellations menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtCancellationsPermission = new ApplicationPermissionsTree(id++, "Manage Order Cancellations menu", "mosmgt.outletmgt.cancellations.manage", "Permission to manage Order Cancellations menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtPortalContentsPermission = new ApplicationPermissionsTree(id++, "View Portal Contents menu", "mosmgt.outletmgt.portalcontents.view", "Permission to view Portal Contents menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtPortalContentsPermission = new ApplicationPermissionsTree(id++, "Manage Portal Contents menu", "mosmgt.outletmgt.portalcontents.manage", "Permission to manage Portal Contents menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtEmailTemplatesPermission = new ApplicationPermissionsTree(id++, "View Email Templates menu", "mosmgt.outletmgt.emailtemplates.view", "Permission to view Email Templates menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtEmailTemplatesPermission = new ApplicationPermissionsTree(id++, "Manage Email Templates menu", "mosmgt.outletmgt.emailtemplates.manage", "Permission to manage Email Templates menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtMealAllocationsPermission = new ApplicationPermissionsTree(id++, "View Meal Allocations menu", "mosmgt.outletmgt.mealallocations.view", "Permission to view Meal Allocations menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtMealAllocationsPermission = new ApplicationPermissionsTree(id++, "Manage Meal Allocations menu", "mosmgt.outletmgt.mealallocations.manage", "Permission to view Meal Allocations menu", ViewMOSOrderMgtOutletsMenu);
+
+        public static ApplicationPermissionsTree ViewMOSOutletMgtPackingAllocationsPermission = new ApplicationPermissionsTree(id++, "View Packing Allocations menu", "mosmgt.outletmgt.packingallocations.view", "Permission to view Packing Allocations menu", ViewMOSOrderMgtOutletsMenu);
+        public static ApplicationPermissionsTree ManageMOSOutletMgtPackingAllocationsPermission = new ApplicationPermissionsTree(id++, "Manage Packing Allocations menu", "mosmgt.outletmgt.packingallocations.manage", "Permission to manage Packing Allocations menu", ViewMOSOrderMgtOutletsMenu);
+
+        #endregion
 
         public static ApplicationPermissionsTree ViewMOSOrderMgtStoreInfoMenu = new ApplicationPermissionsTree(id++, "View Store Info menu", "mosmgt.settingmgt.storeinfo.view", "Permission to view Store Info menu", ViewMOSMealMgtAccountMgtMenu);
         public static ApplicationPermissionsTree ManageMOSOrderMgtStoreInfoMenu = new ApplicationPermissionsTree(id++, "Manage Store Info menu", "mosmgt.settingmgt.storeinfo.manage", "Permission to view Store Info menu", ViewMOSMealMgtAccountMgtMenu);
@@ -420,6 +488,17 @@ namespace DAL.Core
 
         public static ApplicationPermissionsTree ViewMOSOrderMgtWaiversMenu = new ApplicationPermissionsTree(id++, "View Waiver menu", "mosmgt.settingmgt.payment.waiver.view", "Permission to view Waiver menu", ViewMOSMealMgtAccountMgtMenu);
         public static ApplicationPermissionsTree ManageMOSOrderMgtWaiversMenu = new ApplicationPermissionsTree(id++, "Manage Waiver menu", "mosmgt.settingmgt.payment.waiver.manage", "Permission to view Waiver menu", ViewMOSMealMgtAccountMgtMenu);
+
+        public static ApplicationPermissionsTree ManageMOSOrderMgtContactUsSubjectsPermission = new ApplicationPermissionsTree(id++, "Manage Contact Us Subjects menu", "mosmgt.settingmgt.contactus.subject.manage", "Permission to manage Contact Us Subjects menu", ViewMOSMealMgtAccountMgtMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtContactUsQuestionsPermission = new ApplicationPermissionsTree(id++, "Manage Contact Us Questions menu", "mosmgt.settingmgt.contactus.question.manage", "Permission to manage Contact Us Questions menu", ViewMOSMealMgtAccountMgtMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtNotificationSettingsPermission = new ApplicationPermissionsTree(id++, "Manage Notification Settings menu", "mosmgt.settingmgt.notifications.settings.manage", "Permission to manage Notification Settings menu", ViewMOSMealMgtAccountMgtMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtNotificationEventsPermission = new ApplicationPermissionsTree(id++, "Manage Notification Events menu", "mosmgt.settingmgt.notifications.events.manage", "Permission to manage Notification Events menu", ViewMOSMealMgtAccountMgtMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtCancelRequestsPermission = new ApplicationPermissionsTree(id++, "Manage Cancel Requests menu", "mosmgt.settingmgt.orders.cancelrequest.manage", "Permission to manage Cancel Requests menu", ViewMOSMealMgtAccountMgtMenu);
+
+
+        #region Outlets
+
+        #endregion
 
         #endregion
 
@@ -651,52 +730,84 @@ namespace DAL.Core
                 ViewMOSSystemMgtMenu,
 
                 ViewMOSOrderMgtRestrictionTypesMenu,
-                ViewMOSOrderMgtRestrictionsMenu,
-                ViewMOSOrderMgtCuisinesMenu,
-                ViewMOSOrderMgtDeliveryMenu,
-                ViewMOSOrderMgtBentoBoxTypesMenu,
-                ViewMOSOrderMgtBentoAssetsMenu,
-                ViewMOSOrderMgtCartonTypesMenu,
-                ViewMOSOrderMgtCartonAssetsMenu,
-                ViewMOSOrderMgtTrackingStatusMenu,
-                ViewMOSOrderMgtDeliveryOrdersMenu,
-                ViewMOSOrderMgtDishingProcessMenu,
-                ViewMOSOrderMgtPackingProcessMenu,
-                ViewMOSOrderMgtDriversMenu,
-                ViewMOSOrderMgtRoutesMenu,
-                ViewMOSOrderMgtCaterersMenu,
-                ViewMOSOrderMgtOutletProfilesMenu,
-                ViewMOSOrderMgtOutletsMenu,
-                ViewMOSOrderMgtStoreInfoMenu,
-                ViewMOSOrderMgtPaymentTypesMenu,
-                ViewMOSOrderMgtTransactionFeesMenu,
                 ManageMOSOrderMgtRestrictionTypesMenu,
+
+                ViewMOSOrderMgtRestrictionsMenu,
                 ManageMOSOrderMgtRestrictionsMenu,
+
+                ViewMOSOrderMgtCuisinesMenu,
                 ManageMOSOrderMgtCuisinesMenu,
+
+                ViewMOSOrderMgtDeliveryMenu,
                 ManageMOSOrderMgtDeliveryMenu,
+
+                ViewMOSOrderMgtBentoBoxTypesMenu,
                 ManageMOSOrderMgtBentoBoxTypesMenu,
+
+                ViewMOSOrderMgtBentoAssetsMenu,
                 ManageMOSOrderMgtBentoAssetsMenu,
+
+                ViewMOSOrderMgtCartonTypesMenu,
                 ManageMOSOrderMgtCartonTypesMenu,
+
+                ViewMOSOrderMgtCartonAssetsMenu,
                 ManageMOSOrderMgtCartonAssetsMenu,
+
+                ViewMOSOrderMgtTrackingStatusMenu,
                 ManageMOSOrderMgtTrackingStatusMenu,
+
+                ViewMOSOrderMgtDeliveryOrdersMenu,
                 ManageMOSOrderMgtDeliveryOrdersMenu,
+
+                ViewMOSOrderMgtDishingProcessMenu,
                 ManageMOSOrderMgtDishingProcessMenu,
+
+                ViewMOSOrderMgtPackingProcessMenu,
                 ManageMOSOrderMgtPackingProcessMenu,
+
+                ViewMOSOrderMgtDriversMenu,
                 ManageMOSOrderMgtDriversMenu,
+
+                ViewMOSOrderMgtRoutesMenu,
                 ManageMOSOrderMgtRoutesMenu,
+
+                ViewMOSOrderMgtCaterersMenu,
                 ManageMOSOrderMgtCaterersMenu,
+
+                ViewMOSOrderMgtOutletProfilesMenu,
                 ManageMOSOrderMgtOutletProfilesMenu,
+
+                ViewMOSOrderMgtOutletsMenu,
                 ManageMOSOrderMgtOutletsMenu,
+
+                ViewMOSOrderMgtStoreInfoMenu,
                 ManageMOSOrderMgtStoreInfoMenu,
+
+                ViewMOSOrderMgtPaymentTypesMenu,
                 ManageMOSOrderMgtPaymentTypesMenu,
+
+                ViewMOSOrderMgtTransactionFeesMenu,
                 ManageMOSOrderMgtTransactionFeesMenu,
+
+                ViewMOSOutletMgtStoresPermission,
+                ManageMOSOutletMgtStoresPermission,
+
+                ViewMOSOutletMgtCaterersPermission,
+                ManageMOSOutletMgtCaterersPermission,
+
+
+                ViewMOSOutletMgtReportsPermission,
+
+                ManageMOSOutletMgtMealSummaryPermission,
 
                 ViewMOSOrderMgtVoucherTypesMenu,
                 ManageMOSOrderMgtVoucherTypesMenu,
+
                 ViewMOSOrderMgtVouchersMenu,
                 ManageMOSOrderMgtVouchersMenu,
+
                 ViewMOSOrderMgtWaiversMenu,
-                ManageMOSOrderMgtWaiversMenu
+                ManageMOSOrderMgtWaiversMenu,
 
                 //ViewAccountsMenu,
                 //ViewFRSMenu,
@@ -776,6 +887,61 @@ namespace DAL.Core
 
                 //ViewUserGroups,
                 //ManageUserGroups
+
+                 ViewMOSOutletMgtTermsPermission,
+                 ManageMOSOutletMgtTermsPermission,
+
+                 ViewMOSOutletMgtClassBatchesPermission,
+                 ManageMOSOutletMgtClassBatchesPermission,
+
+                 ViewMOSOutletMgtClassLevelsPermission,
+                 ManageMOSOutletMgtClassLevelsPermission,
+
+                 ViewMOSOutletMgtClassesPermission,
+                 ManageMOSOutletMgtClassesPermission,
+
+                 ViewMOSOutletMgtStudentsPermission,
+                 ManageMOSOutletMgtStudentsPermission,
+
+                 ViewMOSOutletStudentMgtImportPermission,
+                 ManageMOSOutletStudentMgtPermissionNew,
+                 ManageMOSOutletStudentMgtPermissionEdit,
+                 ManageMOSOutletStudentMgtPermissionDelete,
+                 ManageMOSOutletStudentMgtPermissionCreateAccount,
+                 ManageMOSOutletStudentMgtPermissionOrderMgt,
+                 ManageMOSOutletStudentMgtPermissionVoucher,
+                 ManageMOSOutletStudentMgtPermissionNotification,
+                 ManageMOSOutletStudentMgtPermissionCalendar,
+
+                 ViewMOSOutletMgtFasPermission,
+                 ManageMOSOutletMgtFasPermission,
+
+                 ViewMOSOutletMgtStudentGroupsPermission,
+                 ManageMOSOutletMgtStudentGroupsPermission,
+
+                 ViewMOSOutletMgtMenusPermission,
+                 ManageMOSOutletMgtMenusPermission,
+
+                 ViewMOSOutletMgtCancellationsPermission,
+                 ManageMOSOutletMgtCancellationsPermission,
+
+                 ViewMOSOutletMgtPortalContentsPermission,
+                 ManageMOSOutletMgtPortalContentsPermission,
+
+                 ViewMOSOutletMgtEmailTemplatesPermission,
+                 ManageMOSOutletMgtEmailTemplatesPermission,
+
+                 ViewMOSOutletMgtMealAllocationsPermission,
+                 ManageMOSOutletMgtMealAllocationsPermission,
+
+                 ViewMOSOutletMgtPackingAllocationsPermission,
+                 ManageMOSOutletMgtPackingAllocationsPermission,
+
+                 ManageMOSOrderMgtContactUsSubjectsPermission,
+                 ManageMOSOrderMgtContactUsQuestionsPermission,
+                 ManageMOSOrderMgtNotificationSettingsPermission,
+                 ManageMOSOrderMgtNotificationEventsPermission,
+                 ManageMOSOrderMgtCancelRequestsPermission
             };
         }
 

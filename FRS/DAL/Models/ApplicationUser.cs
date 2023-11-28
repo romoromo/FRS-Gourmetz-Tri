@@ -113,5 +113,7 @@ namespace DAL.Models
         public virtual ICollection<StudentManageAccount> Students { get; set; }
         public virtual ICollection<UsedPassword> UsedPasswords { get; set; }
         public virtual ICollection<UserOrderAlert> UserOrderAlerts { get; set; }
+        public virtual ICollection<UserOutlet> UserOutlets { get; set; }
+        public virtual ICollection<UserCaterer> UserCaterers { get; set; }
     }
 }

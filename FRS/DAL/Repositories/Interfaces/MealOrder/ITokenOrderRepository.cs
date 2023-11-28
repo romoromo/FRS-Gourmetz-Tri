@@ -38,6 +38,8 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<List<StudentGroupMealPlan>> GetStudentMealPlansAsync(int studentId, DateTime? orderDate);
         Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool skip = true);
         Task<StudentGroupTokenOrderSummaryDTO> GetStudentGroupOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails);
-
+        Task<PagedEntity<TokenOrder>> GetStudentOrdersAsync(StudentOrderFilter filter);
+        Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason);
+        Task<BaseOperationResponse> CreatePrepaidOrderAsync(PrepaidOrderDTO order);
     }
 }

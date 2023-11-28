@@ -258,6 +258,8 @@ namespace DAL
         public DbSet<OrderPortalBanner> OrderPortalBanners { get; set; }
         public DbSet<OutletTerm> OutletTerms { get; set; }
         public DbSet<StudentGroupSession> StudentGroupSessions { get; set; }
+        public DbSet<UserOutlet> UserOutlets { get; set; }
+        public DbSet<UserCaterer> UserCaterers { get; set; }
 
         #region Stored Procedures
 
@@ -285,7 +287,9 @@ namespace DAL
             builder.Entity<ApplicationUser>().HasMany(u => u.ContactGroupMembers).WithOne(e => e.User).HasForeignKey(r => r.UserId).OnDelete(DeleteBehavior.Restrict);
             builder.Entity<ApplicationUser>().HasIndex(e => new { e.IsActive, e.UserName, e.FullName, e.InstitutionId }).HasName("IX_User_ActiveUser");
             builder.Entity<ApplicationUser>().Property(u => u.ConcurrencyStamp).IsConcurrencyToken();
-            
+            builder.Entity<ApplicationUser>().HasMany(u => u.UserOutlets).WithOne(e => e.User).HasForeignKey(r => r.UserId).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<ApplicationUser>().HasMany(u => u.UserCaterers).WithOne(e => e.User).HasForeignKey(r => r.UserId).OnDelete(DeleteBehavior.Cascade);
+
             //builder.Entity<ApplicationUser>()
             //.HasOne(b => b.Student)
             //.WithOne(i => i.User)
@@ -602,6 +606,8 @@ namespace DAL
             builder.Entity<OrderPortalBanner>().TrackAllProperties();
             builder.Entity<OutletTerm>().TrackAllProperties();
             builder.Entity<StudentGroupSession>().TrackAllProperties();
+            builder.Entity<UserOutlet>().TrackAllProperties();
+            builder.Entity<UserCaterer>().TrackAllProperties();
 
             #endregion
 

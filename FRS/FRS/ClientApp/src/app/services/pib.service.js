@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PIBService = void 0;
 var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
@@ -26,12 +25,12 @@ var PIBService = /** @class */ (function () {
     PIBService_1 = PIBService;
     Object.defineProperty(PIBService.prototype, "pibUrl", {
         get: function () { return this.configurations.baseUrl + this._pibUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(PIBService.prototype, "templateUrl", {
         get: function () { return this.configurations.baseUrl + this._templateUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     PIBService.prototype.onPIBChanged = function (pibs, op) {

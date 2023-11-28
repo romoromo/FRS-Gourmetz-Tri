@@ -501,6 +501,36 @@ namespace DAL.Filters
             }
         }
 
+        public IQueryable<Outlet> OutletByUserId(IQueryable<Outlet> source, string op, string[] values) // The method is given the {Operator} & {Value}
+        {
+            var result = source;
+
+            if (values != null && values.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(values[0]))
+                {
+                    int userId = Convert.ToInt32(values[0]);
+                    result = result.Where(c => c.UserOutlets.Any(f => f.UserId == userId));
+                }
+            }
+            return result; // Must return modified IQueryable<TEntity>
+        }
+
+        public IQueryable<CatererInfo> CatererByUserId(IQueryable<CatererInfo> source, string op, string[] values) // The method is given the {Operator} & {Value}
+        {
+            var result = source;
+
+            if (values != null && values.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(values[0]))
+                {
+                    int userId = Convert.ToInt32(values[0]);
+                    result = result.Where(c => c.UserCaterers.Any(f => f.UserId == userId));
+                }
+            }
+            return result; // Must return modified IQueryable<TEntity>
+        }
+
         //public IQueryable<TokenOrder> OrderCurrentSession(IQueryable<TokenOrder> source, string op, string[] values) // The method is given the {Operator} & {Value}
         //{
         //    var result = source;

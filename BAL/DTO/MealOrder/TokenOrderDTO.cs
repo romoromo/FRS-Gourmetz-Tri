@@ -88,6 +88,7 @@ namespace BAL.DTO.MealOrder
         public string BentoCode { get; set; }
 
         public DateTime? ReturnTime { get; set; }
+        public string AmendReason { get; set; }
 
         public List<TokensOrderHistoryDTO> TokensOrderHistorys { get; set; }
     }

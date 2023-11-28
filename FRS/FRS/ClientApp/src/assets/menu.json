@@ -750,12 +750,12 @@
       ]
     },
     {
-      "label": "Order Meals",
+      "label": "Platform Setup",
       "active": true,
       "link": "",
       "showLabel": true,
       "showLogo": true,
-      "logoClass": "fa fa-cutlery",
+      "logoClass": "fa fa-cubes",
       "permissions": [ "mosmgt.mealmgt.order.view" ],
       "childMenus": [
         {
@@ -779,13 +779,73 @@
           "childMenus": []
         },
         {
-          "label": "Cuisines",
+          "label": "Bento Box Types",
           "active": true,
-          "link": "/cuisines",
+          "link": "/bentoboxtypes",
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.cuisines.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery.bentoboxtypes.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "Bento Assets",
+          "active": true,
+          "link": "/bentoassets",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [ "mosmgt.mealmgt.order.delivery.bentoassets.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "Carton Types",
+          "active": true,
+          "link": "/cartontypes",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [ "mosmgt.mealmgt.order.delivery.cartontypes.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "Carton Assets",
+          "active": true,
+          "link": "/cartonassets",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [ "mosmgt.mealmgt.order.delivery.cartonassets.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "Delivery Orders",
+          "active": true,
+          "link": "/deliveryordernews",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [ "mosmgt.mealmgt.order.delivery.deliveryorders.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "Dishing",
+          "active": true,
+          "link": "/dishingprocess",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [ "mosmgt.mealmgt.order.delivery.dishingprocess.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "Packing",
+          "active": true,
+          "link": "/packingprocess",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [ "mosmgt.mealmgt.order.delivery.packingprocess.view" ],
           "childMenus": []
         },
         {
@@ -796,119 +856,18 @@
           "showLogo": true,
           "logoClass": "",
           "permissions": [ "mosmgt.mealmgt.order.delivery.view" ],
-          "childMenus": [
-            {
-              "label": "Bento Box Types",
-              "active": true,
-              "link": "/bentoboxtypes",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.bentoboxtypes.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Bento Assets",
-              "active": true,
-              "link": "/bentoassets",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.bentoassets.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Carton Types",
-              "active": true,
-              "link": "/cartontypes",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.cartontypes.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Carton Assets",
-              "active": true,
-              "link": "/cartonassets",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.cartonassets.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Tracking Status",
-              "active": true,
-              "link": "/trackingstatus",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.trackingstatus.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Delivery Orders",
-              "active": true,
-              "link": "/deliveryordernews",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.deliveryorders.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Dishing",
-              "active": true,
-              "link": "/dishingprocess",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.dishingprocess.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Packing",
-              "active": true,
-              "link": "/packingprocess",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.packingprocess.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Drivers",
-              "active": true,
-              "link": "/drivers",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.drivers.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Routes",
-              "active": true,
-              "link": "/routes",
-              "showLabel": true,
-              "showLogo": true,
-              "logoClass": "",
-              "permissions": [ "mosmgt.mealmgt.order.delivery.routes.view" ],
-              "childMenus": []
-            }
-          ]
+          "childMenus": []
         }
       ]
     },
     {
-      "label": "Settings",
+      "label": "Caterers",
       "active": true,
       "link": "",
       "showLabel": true,
       "showLogo": true,
-      "logoClass": "fa fa-gears",
-      "permissions": [ "mosmgt.settingmgt.view" ],
+      "logoClass": "fa fa-cutlery",
+      "permissions": [ "mosmgt.settingmgt.caterers.view" ],
       "childMenus": [
         {
           "label": "Caterers",
@@ -921,25 +880,36 @@
           "childMenus": []
         },
         {
-          "label": "Outlet Profiles",
+          "label": "Delivery Routes",
           "active": true,
-          "link": "/outletprofiles",
+          "link": "/routes",
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.outletprofiles.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery.routes.view" ],
           "childMenus": []
-        },
-        {
-          "label": "Outlets",
-          "active": true,
-          "link": "/outlets",
-          "showLabel": true,
-          "showLogo": true,
-          "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.outlets.view" ],
-          "childMenus": []
-        },
+        }
+      ]
+    },
+    {
+      "label": "Outlets",
+      "active": true,
+      "link": "/outlets",
+      "showLabel": true,
+      "showLogo": true,
+      "logoClass": "fa fa-building-o",
+      "permissions": [ "mosmgt.settingmgt.outlets.view" ],
+      "childMenus": []
+    },
+    {
+      "label": "Settings",
+      "active": true,
+      "link": "",
+      "showLabel": true,
+      "showLogo": true,
+      "logoClass": "fa fa-gears",
+      "permissions": [ "mosmgt.settingmgt.view" ],
+      "childMenus": [
         {
           "label": "Store",
           "active": true,
@@ -957,10 +927,9 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.settingmgt.orders.cancelrequest.view" ],
           "childMenus": []
         },
-
         {
           "label": "Payment Types",
           "active": true,
@@ -988,7 +957,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.settingmgt.payment.vouchertype.manage" ],
           "childMenus": []
         },
         {
@@ -998,7 +967,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.settingmgt.payment.voucher.manage" ],
           "childMenus": []
         },
         {
@@ -1008,7 +977,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.settingmgt.payment.waiver.manage" ],
           "childMenus": []
         },
         {
@@ -1018,7 +987,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.settingmgt.contactus.manage" ],
           "childMenus": []
         },
         {
@@ -1028,17 +997,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [],
-          "childMenus": []
-        },
-        {
-          "label": "Email Templates",
-          "active": true,
-          "link": "/emailtemplates",
-          "showLabel": true,
-          "showLogo": true,
-          "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.settingmgt.contactus.question.manage" ],
           "childMenus": []
         },
         {
@@ -1048,7 +1007,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.settingmgt.notifications.settings.manage" ],
           "childMenus": []
         },
         {
@@ -1058,17 +1017,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [],
-          "childMenus": []
-        },
-        {
-          "label": "Order Portal Content",
-          "active": true,
-          "link": "/orderportalcontents",
-          "showLabel": true,
-          "showLogo": true,
-          "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.settingmgt.notifications.events.manage" ],
           "childMenus": []
         },
         {

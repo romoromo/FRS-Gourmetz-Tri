@@ -25,7 +25,7 @@
             <mat-error *ngIf="showValidationErrors && f.submitted">Name is required</mat-error>
           </mat-form-field>
           <mat-form-field class="col-md-6 col-xs-12" *ngIf="groupEdit.type == 'Meal Plan'">
-            <mat-label>Terms</mat-label>
+            <mat-label>Meal Plan Grouping</mat-label>
             <mat-select id="outletTermId" name="outletTermId" [(ngModel)]="groupEdit.outletTermId" #outletTermId="ngModel" required>
               <mat-option *ngFor="let term of terms" [value]="term.id">
                 {{term.label}}

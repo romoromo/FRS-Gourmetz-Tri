@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EmployeeDataService = void 0;
 var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
@@ -23,7 +22,7 @@ var EmployeeDataService = /** @class */ (function () {
     EmployeeDataService_1 = EmployeeDataService;
     Object.defineProperty(EmployeeDataService.prototype, "employeeDataUrl", {
         get: function () { return this.configurations.baseUrl + this._employeeDataUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     EmployeeDataService.prototype.onEmployeeDatasChanged = function (employeeDatas, op) {

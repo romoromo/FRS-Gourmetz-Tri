@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserRoleReportFilter = exports.UserReportFilter = exports.FRSHubConnections = exports.User = void 0;
 var core_1 = require("@angular/core");
 var User = /** @class */ (function () {
     // Note: Using only optional constructor properties without backing store disables typescript's type checking for the type
@@ -32,12 +31,18 @@ var User = /** @class */ (function () {
                 name = this.jobTitle + " " + name;
             return name;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     return User;
 }());
 exports.User = User;
+var UserOutlet = /** @class */ (function () {
+    function UserOutlet() {
+    }
+    return UserOutlet;
+}());
+exports.UserOutlet = UserOutlet;
 var FRSHubConnections = /** @class */ (function () {
     function FRSHubConnections() {
     }

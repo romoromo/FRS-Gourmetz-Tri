@@ -124,15 +124,14 @@
     border-top: 0;
 }
 
-.ngx-datatable.material .datatable-header .datatable-row-left,
+
 .ngx-datatable.material .datatable-body .datatable-row-left {
-    background-color: #FFF;
+    background-color: #fff;
     background-position: 100% 0;
     background-repeat: repeat-y;
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAABCAYAAAD5PA/NAAAAFklEQVQIHWPSkNeSBmJhTQVtbiDNCgASagIIuJX8OgAAAABJRU5ErkJggg==);
 }
 
-.ngx-datatable.material .datatable-header .datatable-row-right,
 .ngx-datatable.material .datatable-body .datatable-row-right {
     background-position: 0 0;
     background-color: #fff;
@@ -146,12 +145,22 @@
     border-bottom: 1px solid #ddd;
 }
 
-
-.ngx-datatable.material.colored-header .datatable-header {
-    padding: .9rem 0;
-    color: #fff;
-    background-color: #027FF4;
+.ngx-datatable.material .datatable-header .datatable-row-center{
+  padding: 5px 0;
 }
+
+.ngx-datatable.material .datatable-header .datatable-row-left,
+.ngx-datatable.material.colored-header .datatable-header {
+    padding: 1px 0;
+    color: #fff;
+    background-color: #007f7b;
+}
+
+  .ngx-datatable.material .datatable-header .datatable-row-right {
+    padding: 5px 0;
+    color: #fff;
+    background-color: #007f7b;
+  }
 
 .ngx-datatable.material.table .datatable-body .datatable-body-row,
 .ngx-datatable.material.table-bordered .datatable-body .datatable-body-row {

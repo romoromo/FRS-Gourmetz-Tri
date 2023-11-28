@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReservationService = void 0;
 var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
@@ -25,7 +24,7 @@ var ReservationService = /** @class */ (function () {
     ReservationService_1 = ReservationService;
     Object.defineProperty(ReservationService.prototype, "reservationUrl", {
         get: function () { return this.configurations.baseUrl + this._reservationUrl; },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     ReservationService.prototype.onReservationsChanged = function (reservations, op) {
