@@ -206,7 +206,7 @@ export class DishesManagementComponent implements OnInit {
   }
 
   get canManageDishes() {
-    return true; //this.accountService.userHasPermission(Permission.manageDishesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCatererDishesMenu)
   }
 
 }

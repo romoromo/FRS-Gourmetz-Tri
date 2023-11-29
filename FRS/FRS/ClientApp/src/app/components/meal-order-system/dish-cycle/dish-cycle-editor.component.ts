@@ -744,6 +744,6 @@ export class DishCycleEditorComponent {
   }
 
   get canManageDishCycles() {
-    return true; //this.accountService.userHasPermission(Permission.manageDishCyclesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCatererDishCyclesMenu)
   }
 }

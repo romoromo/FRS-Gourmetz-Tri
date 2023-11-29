@@ -201,7 +201,7 @@ export class MealPeriodsManagementComponent implements OnInit {
   }
 
   get canManageMealPeriods() {
-    return true; //this.accountService.userHasPermission(Permission.manageMealPeriodsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCatererMealPeriodsMenu)
   }
 
 }

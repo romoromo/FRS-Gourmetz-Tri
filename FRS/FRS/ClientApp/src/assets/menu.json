@@ -16,740 +16,6 @@
       "permissions": []
     },
     {
-      "label": "Facilities Management",
-      "active": true,
-      "link": "",
-      "logoClass": "fa fa-building-o",
-      "showLabel": true,
-      "showLogo": true,
-      "permissions": [ "frsmgt.calendar.view" ],
-      "childMenus": [
-        {
-          "label": "Resource Booking",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "frsmgt.resourcebooking.view" ],
-          "childMenus": [
-            {
-              "label": "Equipment",
-              "active": true,
-              "link": "/equipments",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.equipment.manage" ],
-              "childMenus": []
-            },
-            {
-              "label": "Facility Types",
-              "active": true,
-              "link": "/facilitytypes",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.equipmenttype.manage" ],
-              "childMenus": []
-            },
-            {
-              "label": "Calendar",
-              "active": true,
-              "link": "/calendar",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.calendar.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Reservations",
-              "active": true,
-              "link": "/reservations",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.calendar.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Scheduler Logs",
-              "active": true,
-              "link": "/smartroomschedulerlogs",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.smartroomschedulerlog.view" ],
-              "childMenus": []
-            }
-          ]
-        },
-        {
-          "label": "Access Control",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "childMenus": [
-            {
-              "label": "Vehicle Management",
-              "active": true,
-              "link": "/uservehicles",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.accesscontrol.uservehicle.manage" ],
-              "childMenus": []
-            },
-            {
-              "label": "Contact Groups",
-              "active": true,
-              "link": "/contactgroups",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.accesscontrol.contactgroup.manage" ],
-              "childMenus": []
-            },
-            {
-              "label": "My Contacts",
-              "active": true,
-              "link": "/phonebooks",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.accesscontrol.phonebook.manage" ],
-              "childMenus": []
-            }
-          ]
-        },
-        {
-          "label": "Workforce Management",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "childMenus": [
-            {
-              "label": "Designation/Title",
-              "active": true,
-              "link": "/employeedesignation",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.workforcemanagement.designation.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Employee Master",
-              "active": true,
-              "link": "/employee",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.workforcemanagement.employeemaster.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Employee Roster",
-              "active": true,
-              "link": "",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "frsmgt.workforcemanagement.employeeroster.view" ],
-              "childMenus": []
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "label": "Signages & Kiosks",
-      "active": true,
-      "link": "",
-      "showLabel": true,
-      "showLogo": true,
-      "logoClass": "fa fa-desktop",
-      "permissions": [ "sgnmanagement.view" ],
-      "childMenus": [
-        {
-          "label": "Content Management",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "sgnmanagement.contentmanagement.view" ],
-          "childMenus": [
-            {
-              "label": "Media Group",
-              "active": true,
-              "link": "/mediagroup",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.contentmanagement.mediagroup.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Media Extension",
-              "active": true,
-              "link": "/mediaextension",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [],
-              "childMenus": []
-            },
-            {
-              "label": "Media Library",
-              "active": true,
-              "link": "/medialibrary",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.contentmanagement.medialibrary.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Playlists",
-              "active": true,
-              "link": "/playlist",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.contentmanagement.playlist.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Components",
-              "active": true,
-              "link": "/signagecomponents",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.contentmanagement.component.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Compilations",
-              "active": true,
-              "link": "/signagecompilations",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.contentmanagement.compilation.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Publications",
-              "active": true,
-              "link": "/signagepublications",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.contentmanagement.publication.view" ],
-              "childMenus": []
-            }
-          ]
-        },
-        {
-          "label": "Directory Listing",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "sgnmanagement.directorylisting.view" ],
-          "childMenus": [
-            {
-              "label": "Directory Category",
-              "active": true,
-              "link": "/directorylistingcategory",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.directorylisting.directorycategory.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Directory Listing",
-              "active": true,
-              "link": "/directorylistings",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.directorylisting.directorylisting.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Building",
-              "active": true,
-              "link": "/buildings",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.directorylisting.building.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Floor",
-              "active": true,
-              "link": "/floors",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [],
-              "childMenus": []
-            },
-            {
-              "label": "Maps",
-              "active": true,
-              "link": "/maps",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.directorylisting.map.view" ],
-              "childMenus": []
-            }
-          ]
-        },
-        {
-          "label": "Queue Display Interface",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "sgnmanagement.qdi.queuematrix.view" ],
-          "childMenus": [
-            {
-              "label": "Queue Matrix",
-              "active": true,
-              "link": "/queuemonitor",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.qdi.queuematrix.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Queue Display Logs",
-              "active": true,
-              "link": "",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.qdi.queuedisplaylog.view" ],
-              "childMenus": []
-            }
-          ]
-        },
-        {
-          "label": "Facility Booking Interface",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "sgnmanagement.fbi.view" ],
-          "childMenus": [
-            {
-              "label": "Resource Matrix",
-              "active": true,
-              "link": "",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.fbi.resourcematrix.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Interface Logs",
-              "active": true,
-              "link": "",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.fbi.interfacelog.view" ],
-              "childMenus": []
-            }
-          ]
-        },
-        {
-          "label": "Device Management",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "sgnmanagement.devicemgt.device.view" ],
-          "childMenus": [
-            {
-              "label": "Devices",
-              "active": true,
-              "link": "/devices/unknown",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.devicemgt.device.manage" ],
-              "childMenus": []
-            },
-            {
-              "label": "Approval",
-              "active": true,
-              "link": "/devices/approval",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.devicemgt.device.approve" ],
-              "childMenus": []
-            },
-            {
-              "label": "EMS",
-              "active": true,
-              "link": "/ems",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.devicemgt.ems.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "EMS Profile",
-              "active": true,
-              "link": "/emsprofile",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.devicemgt.emsprofile.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "EMS Schedules",
-              "active": true,
-              "link": "/emsschedule",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "sgnmanagement.devicemgt.emsschedule.view" ],
-              "childMenus": []
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "label": "Reports",
-      "active": true,
-      "link": "/reports",
-      "showLabel": true,
-      "showLogo": true,
-      "logoClass": "fa fa-table",
-      "permissions": [ "reportmgt.view" ],
-      "childMenus": [
-        {
-          "label": "Facility Management",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "reportmgt.facilitymgt.view" ],
-          "childMenus": [
-            {
-              "label": "Vehicle Logs",
-              "active": true,
-              "link": "/reports",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "reportmgt.facilitymgt.vehiclelog.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Occupancy Logs",
-              "active": true,
-              "link": "/occupancylogs",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "reportmgt.facilitymgt.occupancylog.view" ],
-              "childMenus": []
-            }
-          ]
-        },
-        {
-          "label": "Signages & Kiosks",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [],
-          "childMenus": [
-            {
-              "label": "Up/Downtime Logs",
-              "active": true,
-              "link": "/updowntimelogs",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "reportmgt.sgn.updownlog.view" ],
-              "childMenus": []
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "label": "Asset Management",
-      "active": true,
-      "link": "",
-      "showLabel": true,
-      "showLogo": true,
-      "logoClass": "fa fa-briefcase",
-      "permissions": [ "assetmgt.view" ],
-      "childMenus": [
-        {
-          "label": "Asset Type",
-          "active": true,
-          "link": "/assettypes",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "assetmgt.assettype.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Asset Model",
-          "active": true,
-          "link": "/assetmodels",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "assetmgt.assetmodel.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Assets",
-          "active": true,
-          "link": "/assets",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "assetmgt.asset.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Service Contract",
-          "active": true,
-          "link": "/servicecontracts",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "assetmgt.servicecontract.manage" ],
-          "childMenus": []
-        }
-      ]
-    },
-    {
-      "label": "System Settings",
-      "active": true,
-      "link": "/settings",
-      "showLabel": true,
-      "showLogo": true,
-      "logoClass": "fa fa-gears",
-      "permissions": [ "systemsetting.view" ],
-      "childMenus": [
-        {
-          "label": "Location Tree",
-          "active": true,
-          "link": "/locations",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.locationtree.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Device Type",
-          "active": true,
-          "link": "/devicetypes",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.devicetype.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Image Reference Type",
-          "active": true,
-          "link": "/imagereferencetypes",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.imagereferencetype.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Image Reference Colour",
-          "active": true,
-          "link": "/imagereferencecolors",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.imagereferencecolor.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Institutions",
-          "active": true,
-          "link": "/institutions",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.institution.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Departments",
-          "active": true,
-          "link": "/departments",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.department.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Buildings",
-          "active": true,
-          "link": "/buildings",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.building.view" ],
-          "childMenus": []
-        },
-        {
-          "label": "System User Groups",
-          "active": true,
-          "link": "/usergroups",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.usergroup.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "System Users",
-          "active": true,
-          "link": "/users",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.user.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "System Roles",
-          "active": true,
-          "link": "/roles",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.role.manage" ],
-          "childMenus": []
-        },
-        {
-          "label": "Audit Logs",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.audit.view" ],
-          "childMenus": [
-            {
-              "label": "Authentication Logs",
-              "active": true,
-              "link": "/authlogs",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "systemsetting.audit.authlog.view" ],
-              "childMenus": []
-            },
-            {
-              "label": "Data Logs",
-              "active": true,
-              "link": "/auditlogs",
-              "showLabel": true,
-              "showLogo": false,
-              "logoClass": "",
-              "permissions": [ "systemsetting.audit.datalog.view" ],
-              "childMenus": []
-            }
-          ]
-        },
-        {
-          "label": "Application Settings",
-          "active": true,
-          "link": "/applicationsettings",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.applicationsetting.view" ],
-          "childMenus": []
-        },
-        {
-          "label": "Module Settings",
-          "active": true,
-          "link": "/modules",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.modulesetting.view" ],
-          "childMenus": []
-        },
-        {
-          "label": "Email Queue",
-          "active": true,
-          "link": "/emailqueues",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.emailqueue.view" ],
-          "childMenus": []
-        },
-        {
-          "label": "Kiosk Settings",
-          "active": true,
-          "link": "/kiosksettings",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.building.view" ],
-          "childMenus": []
-        },
-        {
-          "label": "Channels",
-          "active": true,
-          "link": "/channelinfos",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "systemsetting.channels.view" ],
-          "childMenus": []
-        }
-      ]
-    },
-    {
       "label": "Platform Setup",
       "active": true,
       "link": "",
@@ -765,7 +31,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.restrictiontypes.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.restrictiontypes" ],
           "childMenus": []
         },
         {
@@ -775,7 +41,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.restrictions.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.restrictions" ],
           "childMenus": []
         },
         {
@@ -795,7 +61,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.bentoassets.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery.bentoassets" ],
           "childMenus": []
         },
         {
@@ -805,7 +71,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.cartontypes.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery.cartontypes" ],
           "childMenus": []
         },
         {
@@ -815,7 +81,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.cartonassets.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery.cartonassets" ],
           "childMenus": []
         },
         {
@@ -825,7 +91,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.deliveryorders.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery.deliveryorders" ],
           "childMenus": []
         },
         {
@@ -835,7 +101,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.dishingprocess.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery.dishingprocess" ],
           "childMenus": []
         },
         {
@@ -845,7 +111,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.packingprocess.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery.packingprocess" ],
           "childMenus": []
         },
         {
@@ -855,7 +121,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery" ],
           "childMenus": []
         }
       ]
@@ -867,7 +133,7 @@
       "showLabel": true,
       "showLogo": true,
       "logoClass": "fa fa-cutlery",
-      "permissions": [ "mosmgt.settingmgt.caterers.view" ],
+      "permissions": [ "mosmgt.caterermgt.view" ],
       "childMenus": [
         {
           "label": "Caterers",
@@ -876,7 +142,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.caterers.view" ],
+          "permissions": [ "mosmgt.settingmgt.caterers" ],
           "childMenus": []
         },
         {
@@ -886,7 +152,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.routes.view" ],
+          "permissions": [ "mosmgt.mealmgt.order.delivery.routes" ],
           "childMenus": []
         }
       ]
@@ -898,7 +164,7 @@
       "showLabel": true,
       "showLogo": true,
       "logoClass": "fa fa-building-o",
-      "permissions": [ "mosmgt.settingmgt.outlets.view" ],
+      "permissions": [ "mosmgt.outletmgt.view" ],
       "childMenus": []
     },
     {
@@ -917,7 +183,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.storeinfo.view" ],
+          "permissions": [ "mosmgt.settingmgt.storeinfo" ],
           "childMenus": []
         },
         {
@@ -927,7 +193,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.orders.cancelrequest.view" ],
+          "permissions": [ "mosmgt.settingmgt.orders.cancelrequest" ],
           "childMenus": []
         },
         {
@@ -937,7 +203,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.paymenttype.manage" ],
+          "permissions": [ "mosmgt.settingmgt.payment.paymenttype" ],
           "childMenus": []
         },
         {
@@ -947,7 +213,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.transactionfee.manage" ],
+          "permissions": [ "mosmgt.settingmgt.payment.transactionfee" ],
           "childMenus": []
         },
         {
@@ -957,7 +223,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.vouchertype.manage" ],
+          "permissions": [ "mosmgt.settingmgt.payment.vouchertype" ],
           "childMenus": []
         },
         {
@@ -967,7 +233,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.voucher.manage" ],
+          "permissions": [ "mosmgt.settingmgt.payment.voucher" ],
           "childMenus": []
         },
         {
@@ -977,7 +243,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.waiver.manage" ],
+          "permissions": [ "mosmgt.settingmgt.payment.waiver" ],
           "childMenus": []
         },
         {
@@ -987,7 +253,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.contactus.manage" ],
+          "permissions": [ "mosmgt.settingmgt.contactus.subject" ],
           "childMenus": []
         },
         {
@@ -997,7 +263,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.contactus.question.manage" ],
+          "permissions": [ "mosmgt.settingmgt.contactus.question" ],
           "childMenus": []
         },
         {
@@ -1007,7 +273,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.notifications.settings.manage" ],
+          "permissions": [ "mosmgt.settingmgt.notifications.settings" ],
           "childMenus": []
         },
         {
@@ -1017,7 +283,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.notifications.events.manage" ],
+          "permissions": [ "mosmgt.settingmgt.notifications.events" ],
           "childMenus": []
         },
         {
@@ -1058,7 +324,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "systemsetting.user.manage" ],
+          "permissions": [ "systemsetting.user" ],
           "childMenus": []
         },
         {
@@ -1068,7 +334,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "systemsetting.role.manage" ],
+          "permissions": [ "systemsetting.role" ],
           "childMenus": []
         }
       ]
@@ -1089,7 +355,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.reportmgt.portallogin.view" ],
           "childMenus": []
         },
         {
@@ -1099,7 +365,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.reportmgt.order.view" ],
           "childMenus": []
         },
         {
@@ -1109,7 +375,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.reportmgt.ordercancellation.view" ],
           "childMenus": []
         },
         {
@@ -1119,7 +385,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.reportmgt.useraccount.view" ],
           "childMenus": []
         },
         {
@@ -1129,7 +395,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.reportmgt.role.view" ],
           "childMenus": []
         },
         {
@@ -1139,7 +405,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.reportmgt.useractivity.view" ],
           "childMenus": []
         }
       ]

@@ -56,7 +56,16 @@ export type PermissionValues =
   "mosmgt.mealmgt.order.delivery.drivers.view" |
   "mosmgt.mealmgt.order.delivery.routes.view" |
   "mosmgt.settingmgt.caterers.view" |
+  "mosmgt.settingmgt.caterers.dishcalendar.view" |
+  "mosmgt.settingmgt.caterers.outlets.view" |
+
   "mosmgt.settingmgt.outletprofiles.view" |
+  "mosmgt.settingmgt.caterers.mealtypes.view" |
+  "mosmgt.settingmgt.caterers.mealperiods.view" |
+  "mosmgt.settingmgt.caterers.dishtypes.view" |
+  "mosmgt.settingmgt.caterers.dishes.view" |
+  "mosmgt.settingmgt.caterers.dishcycles.view" |
+
   "mosmgt.settingmgt.outlets.view" |
   "mosmgt.settingmgt.storeinfo.view" |
   "mosmgt.mealmgt.order.restrictiontypes.manage" |
@@ -75,6 +84,13 @@ export type PermissionValues =
   "mosmgt.mealmgt.order.delivery.routes.manage" |
   "mosmgt.settingmgt.caterers.manage" |
   "mosmgt.settingmgt.outletprofiles.manage" |
+
+  "mosmgt.settingmgt.caterers.mealtypes.manage" |
+  "mosmgt.settingmgt.caterers.mealperiods.manage" |
+  "mosmgt.settingmgt.caterers.dishtypes.manage" |
+  "mosmgt.settingmgt.caterers.dishes.manage" |
+  "mosmgt.settingmgt.caterers.dishcycles.manage" |
+
   "mosmgt.settingmgt.outlets.manage" |
   "mosmgt.settingmgt.storeinfo.manage" |
   "mosmgt.settingmgt.payment.paymenttype.manage" |
@@ -268,7 +284,15 @@ export class Permission {
   public static readonly viewMOSOrderMgtDriversPermission: PermissionValues = "mosmgt.mealmgt.order.delivery.drivers.view";
   public static readonly viewMOSOrderMgtRoutesPermission: PermissionValues = "mosmgt.mealmgt.order.delivery.routes.view";
   public static readonly viewMOSOrderMgtCaterersPermission: PermissionValues = "mosmgt.settingmgt.caterers.view";
+  public static readonly viewMOSOrderMgtCatererDishCalendarMenu: PermissionValues = "mosmgt.settingmgt.caterers.dishcalendar.view";
+  public static readonly viewMOSOrderMgtCatererOutletsMenu: PermissionValues = "mosmgt.settingmgt.caterers.outlets.view";
   public static readonly viewMOSOrderMgtOutletProfilesPermission: PermissionValues = "mosmgt.settingmgt.outletprofiles.view";
+  public static readonly viewMOSOrderMgtCatererMealTypesMenu: PermissionValues = "mosmgt.settingmgt.caterers.mealtypes.view";
+  public static readonly viewMOSOrderMgtCatererMealPeriodsMenu: PermissionValues = "mosmgt.settingmgt.caterers.mealperiods.view";
+  public static readonly viewMOSOrderMgtCatererDishTypesMenu: PermissionValues = "mosmgt.settingmgt.caterers.dishtypes.view";
+  public static readonly viewMOSOrderMgtCatererDishesMenu: PermissionValues = "mosmgt.settingmgt.caterers.dishes.view";
+  public static readonly viewMOSOrderMgtCatererDishCyclesMenu: PermissionValues = "mosmgt.settingmgt.caterers.dishcycles.view";
+
   public static readonly viewMOSOrderMgtOutletsPermission: PermissionValues = "mosmgt.settingmgt.outlets.view";
   public static readonly viewMOSOrderMgtStoreInfoPermission: PermissionValues = "mosmgt.settingmgt.storeinfo.view";
   public static readonly manageMOSOrderMgtRestrictionTypesPermission: PermissionValues = "mosmgt.mealmgt.order.restrictiontypes.manage";
@@ -287,6 +311,13 @@ export class Permission {
   public static readonly manageMOSOrderMgtRoutesPermission: PermissionValues = "mosmgt.mealmgt.order.delivery.routes.manage";
   public static readonly manageMOSOrderMgtCaterersPermission: PermissionValues = "mosmgt.settingmgt.caterers.manage";
   public static readonly manageMOSOrderMgtOutletProfilesPermission: PermissionValues = "mosmgt.settingmgt.outletprofiles.manage";
+
+  public static readonly manageMOSOrderMgtCatererMealTypesMenu: PermissionValues = "mosmgt.settingmgt.caterers.mealtypes.manage";
+  public static readonly manageMOSOrderMgtCatererMealPeriodsMenu: PermissionValues = "mosmgt.settingmgt.caterers.mealperiods.manage";
+  public static readonly manageMOSOrderMgtCatererDishTypesMenu: PermissionValues = "mosmgt.settingmgt.caterers.dishtypes.manage";
+  public static readonly manageMOSOrderMgtCatererDishesMenu: PermissionValues = "mosmgt.settingmgt.caterers.dishes.manage";
+  public static readonly manageMOSOrderMgtCatererDishCyclesMenu: PermissionValues = "mosmgt.settingmgt.caterers.dishcycles.manage";
+
   public static readonly manageMOSOrderMgtOutletsPermission: PermissionValues = "mosmgt.settingmgt.outlets.manage";
   public static readonly manageMOSOrderMgtStoreInfoPermission: PermissionValues = "mosmgt.settingmgt.storeinfo.manage";
   public static readonly manageMOSOrderMgtPaymentTypesPermission: PermissionValues = "mosmgt.settingmgt.payment.paymenttype.manage";

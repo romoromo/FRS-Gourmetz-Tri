@@ -171,6 +171,6 @@ export class CatererInfoEditorComponent {
 
 
   get canManageCatererInfos() {
-    return true; //this.accountService.userHasPermission(Permission.manageCatererInfosPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCaterersPermission)
   }
 }

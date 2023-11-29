@@ -222,7 +222,42 @@ export class CatererInfosManagementComponent implements OnInit {
   }
 
   get canManageCatererInfos() {
-    return true; //this.accountService.userHasPermission(Permission.manageCatererInfosPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCaterersPermission)
   }
 
+  get canViewCatererInfos() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtCaterersPermission)
+  }
+
+  get canViewDishCalendar() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtCatererDishCalendarMenu)
+  }
+
+  get canManageCatererOutlets() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtCatererOutletsMenu)
+  }
+
+  get canViewOutletProfiles() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtOutletProfilesPermission)
+  }
+
+  get canViewMealTypes() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtCatererMealTypesMenu)
+  }
+
+  get canViewMealPeriods() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtCatererMealPeriodsMenu)
+  }
+
+  get canViewDishTypes() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtCatererDishTypesMenu)
+  }
+
+  get canViewDishes() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtCatererDishesMenu)
+  }
+
+  get canViewDishCycles() {
+    return this.accountService.userHasPermission(Permission.viewMOSOrderMgtCatererDishCyclesMenu)
+  }
 }

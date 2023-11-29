@@ -42,33 +42,33 @@
         <div style="padding-left:25px;min-height:300px" >
           <h4>{{row.name}} Details</h4>
           <mat-tab-group dynamicHeight>
-            <mat-tab label="Outlet Profiles">
+            <mat-tab label="Outlet Profiles" *ngIf="canViewOutletProfiles">
               <div class="container-fluid" style="padding-top:20px">
                 <outlet-profiles-management #outletProfileTab [isHideHeader]="true" [catererId]="row.id"></outlet-profiles-management>
               </div>
 
             </mat-tab>
-            <mat-tab label="Meal Types">
+            <mat-tab label="Meal Types" *ngIf="canViewMealTypes">
               <div class="container-fluid" style="padding-top:20px">
                 <meal-types-management [isHideHeader]="true" [catererId]="row.id"></meal-types-management>
               </div>
             </mat-tab>
-            <mat-tab label="Meal Periods">
+            <mat-tab label="Meal Periods" *ngIf="canViewMealPeriods">
               <div class="container-fluid" style="padding-top:20px">
                 <meal-periods-management [isHideHeader]="true" [catererId]="row.id"></meal-periods-management>
               </div>
             </mat-tab>
-            <mat-tab label="Dish Types">
+            <mat-tab label="Dish Types" *ngIf="canViewDishTypes">
               <div class="container-fluid" style="padding-top:20px">
                 <dish-types-management [isHideHeader]="true" [catererId]="row.id"></dish-types-management>
               </div>
             </mat-tab>
-            <mat-tab label="Dishes">
+            <mat-tab label="Dishes" *ngIf="canViewDishes">
               <div class="container-fluid" style="padding-top:20px">
                 <dishes-management [isHideHeader]="true" [catererId]="row.id"></dishes-management>
               </div>
             </mat-tab>
-            <mat-tab label="Dish Cycles">
+            <mat-tab label="Dish Cycles" *ngIf="canViewDishCycles">
               <div class="container-fluid" style="padding-top:20px">
                 <dish-cycles-management [isHideHeader]="true" [catererId]="row.id"></dish-cycles-management>
               </div>
@@ -97,11 +97,11 @@
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <a *ngIf="canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="editCatererInfo(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
-    <a *ngIf="!canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="editCatererInfo(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
+    <a *ngIf="canViewCatererInfos && !canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="editCatererInfo(row)"><i class="fa fa-eye" aria-hidden="true"></i> View </a>
     <a *ngIf="canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="toggleExpandRow(row)">Details</a>
     <!--<a *ngIf="canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="openCalendar(row)"><i class="fa" aria-hidden="true"></i> Calendar</a>-->
-    <a *ngIf="canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="openDishCalendar(row)"><i class="fa" aria-hidden="true"></i> Dish Calendar</a>
-    <a *ngIf="canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="approveOutlet(row)"><i aria-hidden="true"></i> Outlets</a>
+    <a *ngIf="canViewDishCalendar" class="btn btn-link btn-xs" href="javascript:;" (click)="openDishCalendar(row)"><i class="fa" aria-hidden="true"></i> Dish Calendar</a>
+    <a *ngIf="canManageCatererOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="approveOutlet(row)"><i aria-hidden="true"></i> Outlets</a>
 
     <a *ngIf="canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteCatererInfo(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
   </ng-template>

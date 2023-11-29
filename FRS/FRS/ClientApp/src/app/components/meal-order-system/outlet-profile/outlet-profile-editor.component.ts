@@ -168,6 +168,6 @@ export class OutletProfileEditorComponent {
 
 
   get canManageOutletProfiles() {
-    return true; //this.accountService.userHasPermission(Permission.manageOutletProfilesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtOutletProfilesPermission)
   }
 }

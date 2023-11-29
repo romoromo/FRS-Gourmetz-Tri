@@ -43,6 +43,12 @@ var UserOutlet = /** @class */ (function () {
     return UserOutlet;
 }());
 exports.UserOutlet = UserOutlet;
+var UserCaterer = /** @class */ (function () {
+    function UserCaterer() {
+    }
+    return UserCaterer;
+}());
+exports.UserCaterer = UserCaterer;
 var FRSHubConnections = /** @class */ (function () {
     function FRSHubConnections() {
     }
