@@ -64,7 +64,19 @@ namespace DAL.Filters
         public bool? IsFas { get; set; }
         public string Keyword { get; set; }
         public int ReportType { get; set; }
+        public int? StudentGroupId { get; set; }
     }
+
+    //public class OrderCollectionReportFilter : BaseFilter
+    //{
+    //    public DateTime ReportDateFrom { get; set; }
+    //    public DateTime ReportDateTo { get; set; }
+    //    public string Status { get; set; }
+    //    public bool? IsFas { get; set; }
+    //    public string Keyword { get; set; }
+    //    public int ReportType { get; set; }
+    //    public int StudentGroupId { get; set; }
+    //}
 
     public class RoleReportFilter : BaseFilter
     {

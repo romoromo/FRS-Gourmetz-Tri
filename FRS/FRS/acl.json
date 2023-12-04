@@ -1,1241 +1,1254 @@
 {
-    "name": null,
-    "value": null,
-    "description": null,
-    "children": [
+  "name": null,
+  "value": null,
+  "description": null,
+  "children": [
+    {
+      "name": "Root",
+      "value": "root.view",
+      "description": "Root",
+      "children": [
         {
-            "name": "Root",
-            "value": "root.view",
-            "description": "Root",
-            "children": [
+          "name": "View System Settings",
+          "value": "systemsetting.view",
+          "description": "Permission to view System Settings",
+          "children": [
+            {
+              "name": "Institution",
+              "value": "systemsetting.institution.view",
+              "description": "Permission to view Institution",
+              "children": [
                 {
-                    "name": "View System Settings",
-                    "value": "systemsetting.view",
-                    "description": "Permission to view System Settings",
-                    "children": [
-                        {
-                            "name": "Institution",
-                            "value": "systemsetting.institution.view",
-                            "description": "Permission to view Institution",
-                            "children": [
-                                {
-                                    "name": "Manage Institution",
-                                    "value": "systemsetting.institution.manage",
-                                    "description": "Permission to add, edit and delete Institution",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Department",
-                            "value": "systemsetting.department.view",
-                            "description": "Permission to view Department",
-                            "children": [
-                                {
-                                    "name": "Manage Department",
-                                    "value": "systemsetting.department.manage",
-                                    "description": "Permission to add, edit and delete Department",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "User Group",
-                            "value": "systemsetting.usergroup.view",
-                            "description": "Permission to view User Group",
-                            "children": [
-                                {
-                                    "name": "Manage User Group",
-                                    "value": "systemsetting.usergroup.manage",
-                                    "description": "Permission to view User Group",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "User Management",
-                            "value": "systemsetting.user",
-                            "description": "Permission to view Users",
-                            "children": [
-                                {
-                                    "name": "View User",
-                                    "value": "systemsetting.user.view",
-                                    "description": "Permission to view Users",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage User",
-                                    "value": "systemsetting.user.manage",
-                                    "description": "Permission to view Users",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Role Management",
-                            "value": "systemsetting.role",
-                            "description": "Permission to view Role",
-                            "children": [
-                                {
-                                    "name": "View Role",
-                                    "value": "systemsetting.role.view",
-                                    "description": "Permission to view Role",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Role",
-                                    "value": "systemsetting.role.manage",
-                                    "description": "Permission to create, delete and modify roles",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Assign Role",
-                                    "value": "systemsetting.role.assign",
-                                    "description": "Permission to assign roles to users",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Audit Logs",
-                            "value": "systemsetting.audit.view",
-                            "description": "Permission to view Audit Logs",
-                            "children": [
-                                {
-                                    "name": "Authentication Logs",
-                                    "value": "systemsetting.audit.authlog.view",
-                                    "description": "Permission to view authentication logs",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Data Logs",
-                                    "value": "systemsetting.audit.datalog.view",
-                                    "description": "Permission to view data logs",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Application Setting",
-                            "value": "systemsetting.applicationsetting.view",
-                            "description": "Permission to view Application Setting",
-                            "children": []
-                        },
-                        {
-                            "name": "Email Queue",
-                            "value": "systemsetting.emailqueue.view",
-                            "description": "Permission to view Email Queue",
-                            "children": []
-                        },
-                    ]
+                  "name": "Manage Institution",
+                  "value": "systemsetting.institution.manage",
+                  "description": "Permission to add, edit and delete Institution",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Department",
+              "value": "systemsetting.department.view",
+              "description": "Permission to view Department",
+              "children": [
+                {
+                  "name": "Manage Department",
+                  "value": "systemsetting.department.manage",
+                  "description": "Permission to add, edit and delete Department",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "User Group",
+              "value": "systemsetting.usergroup.view",
+              "description": "Permission to view User Group",
+              "children": [
+                {
+                  "name": "Manage User Group",
+                  "value": "systemsetting.usergroup.manage",
+                  "description": "Permission to view User Group",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "User Management",
+              "value": "systemsetting.user",
+              "description": "Permission to view Users",
+              "children": [
+                {
+                  "name": "View User",
+                  "value": "systemsetting.user.view",
+                  "description": "Permission to view Users",
+                  "children": []
                 },
                 {
-                    "name": "Platform Setup",
-                    "value": "mosmgt.mealmgt.order.view",
-                    "description": "Permission to view platform setup",
-                    "children": [
-                        {
-                            "name": "Restriction Types",
-                            "value": "mosmgt.mealmgt.order.restrictiontypes",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Restriction Types",
-                                    "value": "mosmgt.mealmgt.order.restrictiontypes.view",
-                                    "description": "Permission to view Restriction Types",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Restriction Types",
-                                    "value": "mosmgt.mealmgt.order.restrictiontypes.manage",
-                                    "description": "Permission to view Restriction Types",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Restrictions",
-                            "value": "mosmgt.mealmgt.order.restrictions",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Restrictions",
-                                    "value": "mosmgt.mealmgt.order.restrictions.view",
-                                    "description": "Permission to view Restrictions",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Restrictions",
-                                    "value": "mosmgt.mealmgt.order.restrictions.manage",
-                                    "description": "Permission to view Restrictions",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Cuisines",
-                            "value": "mosmgt.mealmgt.order.cuisines",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Cuisines",
-                                    "value": "mosmgt.mealmgt.order.cuisines.view",
-                                    "description": "Permission to view Cuisines",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Cuisines",
-                                    "value": "mosmgt.mealmgt.order.cuisines.manage",
-                                    "description": "Permission to view Cuisines",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Delivery",
-                            "value": "mosmgt.mealmgt.order.delivery",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Delivery",
-                                    "value": "mosmgt.mealmgt.order.delivery.view",
-                                    "description": "Permission to view Delivery",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Delivery",
-                                    "value": "mosmgt.mealmgt.order.delivery.manage",
-                                    "description": "Permission to add, edit and delete Delivery",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Bento Box Types",
-                            "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Bento Box Types",
-                                    "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.view",
-                                    "description": "Permission to view Bento Box Types",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Bento Box Types",
-                                    "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.manage",
-                                    "description": "Permission to add, edit and delete Bento Box Types",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Bento Assets",
-                            "value": "mosmgt.mealmgt.order.delivery.bentoassets",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Bento Assets",
-                                    "value": "mosmgt.mealmgt.order.delivery.bentoassets.view",
-                                    "description": "Permission to view Bento Assets",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Bento Assets",
-                                    "value": "mosmgt.mealmgt.order.delivery.bentoassets.manage",
-                                    "description": "Permission to add, edit and delete Bento Assets",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Carton Types",
-                            "value": "mosmgt.mealmgt.order.delivery.cartontypes",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Carton Types",
-                                    "value": "mosmgt.mealmgt.order.delivery.cartontypes.view",
-                                    "description": "Permission to view Carton Types",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Carton Types",
-                                    "value": "mosmgt.mealmgt.order.delivery.cartontypes.manage",
-                                    "description": "Permission to add, edit and delete Carton Types",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Carton Assets",
-                            "value": "mosmgt.mealmgt.order.delivery.cartonassets",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Carton Assets",
-                                    "value": "mosmgt.mealmgt.order.delivery.cartonassets.view",
-                                    "description": "Permission to view Carton Assets",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Carton Assets",
-                                    "value": "mosmgt.mealmgt.order.delivery.cartonassets.manage",
-                                    "description": "Permission to add, edit and delete Carton Assets",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Tracking Status",
-                            "value": "mosmgt.mealmgt.order.delivery.trackingstatus",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Tracking Status",
-                                    "value": "mosmgt.mealmgt.order.delivery.trackingstatus.view",
-                                    "description": "Permission to view Tracking Status",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Tracking Status",
-                                    "value": "mosmgt.mealmgt.order.delivery.trackingstatus.manage",
-                                    "description": "Permission to add, edit and delete Tracking Status",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Delivery Order",
-                            "value": "mosmgt.mealmgt.order.delivery.deliveryorders",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Delivery Order",
-                                    "value": "mosmgt.mealmgt.order.delivery.deliveryorders.view",
-                                    "description": "Permission to view Delivery Order",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Delivery Order",
-                                    "value": "mosmgt.mealmgt.order.delivery.deliveryorders.manage",
-                                    "description": "Permission to add, edit and delete Delivery Order",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Dishing Process",
-                            "value": "mosmgt.mealmgt.order.delivery.dishingprocess",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Dishing Process",
-                                    "value": "mosmgt.mealmgt.order.delivery.dishingprocess.view",
-                                    "description": "Permission to view Dishing Process",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Dishing Process",
-                                    "value": "mosmgt.mealmgt.order.delivery.dishingprocess.manage",
-                                    "description": "Permission to view Dishing Process",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Packing Process",
-                            "value": "mosmgt.mealmgt.order.delivery.packingprocess",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Packing Process",
-                                    "value": "mosmgt.mealmgt.order.delivery.packingprocess.view",
-                                    "description": "Permission to view Packing Process",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Packing Process",
-                                    "value": "mosmgt.mealmgt.order.delivery.packingprocess.manage",
-                                    "description": "Permission to add, edit and delete Packing Process",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Drivers",
-                            "value": "mosmgt.mealmgt.order.delivery.drivers",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Drivers",
-                                    "value": "mosmgt.mealmgt.order.delivery.drivers.view",
-                                    "description": "Permission to view Drivers",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Drivers",
-                                    "value": "mosmgt.mealmgt.order.delivery.drivers.manage",
-                                    "description": "Permission to add, edit and delete Drivers",
-                                    "children": []
-                                }
-                            ]
-                        }
-                    ]
+                  "name": "Manage User",
+                  "value": "systemsetting.user.manage",
+                  "description": "Permission to view Users",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Role Management",
+              "value": "systemsetting.role",
+              "description": "Permission to view Role",
+              "children": [
+                {
+                  "name": "View Role",
+                  "value": "systemsetting.role.view",
+                  "description": "Permission to view Role",
+                  "children": []
                 },
                 {
-                    "name": "Caterers",
-                    "value": "mosmgt.caterermgt.view",
-                    "description": "Permission to view Meal Order Setting",
-                    "children": [
-                        {
-                            "name": "Caterers",
-                            "value": "mosmgt.settingmgt.caterers",
-                            "description": "",
-                          "children": [
-                            {
-                              "name": "View Caterers",
-                              "value": "mosmgt.settingmgt.caterers.view",
-                              "description": "Permission to view Caterers",
-                              "children": []
-                            },
-                            {
-                              "name": "Manage Caterers",
-                              "value": "mosmgt.settingmgt.caterers.manage",
-                              "description": "Permission to add, edit and delete Caterers",
-                              "children": []
-                            },
-                            {
-                              "name": "Dish Calendar",
-                              "value": "mosmgt.settingmgt.caterers.dishcalendar",
-                              "description": "",
-                              "children": [
-                                {
-                                  "name": "View Dish Calendar",
-                                  "value": "mosmgt.settingmgt.caterers.dishcalendar.view",
-                                  "description": "Permission to view Dish Calendar",
-                                  "children": []
-                                },
-                                {
-                                  "name": "Manage Dish Calendar",
-                                  "value": "mosmgt.settingmgt.caterers.dishcalendar.manage",
-                                  "description": "Permission to manage Dish Calendar",
-                                  "children": []
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Outlets",
-                              "value": "mosmgt.settingmgt.caterers.outlets",
-                              "description": "",
-                              "children": [
-                                {
-                                  "name": "View Outlets",
-                                  "value": "mosmgt.settingmgt.caterers.outlets.view",
-                                  "description": "Permission to view Outlets",
-                                  "children": []
-                                },
-                                {
-                                  "name": "Manage Outlets",
-                                  "value": "mosmgt.settingmgt.caterers.outlets.manage",
-                                  "description": "Permission to manage Outlets",
-                                  "children": []
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Meal Types",
-                              "value": "mosmgt.settingmgt.caterers.mealtypes",
-                              "description": "",
-                              "children": [
-                                {
-                                  "name": "View Meal Types",
-                                  "value": "mosmgt.settingmgt.caterers.mealtypes.view",
-                                  "description": "Permission to view Meal Types",
-                                  "children": []
-                                },
-                                {
-                                  "name": "Manage Meal Types",
-                                  "value": "mosmgt.settingmgt.caterers.mealtypes.manage",
-                                  "description": "Permission to add, edit and delete Meal Types",
-                                  "children": []
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Meal Periods",
-                              "value": "mosmgt.settingmgt.caterers.mealperiods",
-                              "description": "",
-                              "children": [
-                                {
-                                  "name": "View Meal Periods",
-                                  "value": "mosmgt.settingmgt.caterers.mealperiods.view",
-                                  "description": "Permission to view Meal Periods",
-                                  "children": []
-                                },
-                                {
-                                  "name": "Manage Meal Periods",
-                                  "value": "mosmgt.settingmgt.caterers.mealperiods.manage",
-                                  "description": "Permission to add, edit and delete Meal Periods",
-                                  "children": []
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Dish Types",
-                              "value": "mosmgt.settingmgt.caterers.dishtypes",
-                              "description": "",
-                              "children": [
-                                {
-                                  "name": "View Dish Types",
-                                  "value": "mosmgt.settingmgt.caterers.dishtypes.view",
-                                  "description": "Permission to view Dish Types",
-                                  "children": []
-                                },
-                                {
-                                  "name": "Manage Dish Types",
-                                  "value": "mosmgt.settingmgt.caterers.dishtypes.manage",
-                                  "description": "Permission to add, edit and delete Dish Types",
-                                  "children": []
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Dish Types",
-                              "value": "mosmgt.settingmgt.caterers.dishes",
-                              "description": "",
-                              "children": [
-                                {
-                                  "name": "View Dish Types",
-                                  "value": "mosmgt.settingmgt.caterers.dishes.view",
-                                  "description": "Permission to view Dishes",
-                                  "children": []
-                                },
-                                {
-                                  "name": "Manage Dish Types",
-                                  "value": "mosmgt.settingmgt.caterers.dishes.manage",
-                                  "description": "Permission to add, edit and delete Dishes",
-                                  "children": []
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Dish Cycles",
-                              "value": "mosmgt.settingmgt.caterers.dishcycles",
-                              "description": "",
-                              "children": [
-                                {
-                                  "name": "View Dish Cycles",
-                                  "value": "mosmgt.settingmgt.caterers.dishcycles.view",
-                                  "description": "Permission to view Dishes",
-                                  "children": []
-                                },
-                                {
-                                  "name": "Manage Dish Cycles",
-                                  "value": "mosmgt.settingmgt.caterers.dishcycles.manage",
-                                  "description": "Permission to add, edit and delete Dishes",
-                                  "children": []
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Outlet Profiles",
-                              "value": "mosmgt.settingmgt.outletprofiles",
-                              "description": "",
-                              "children": [
-                                {
-                                  "name": "View Outlet Profiles",
-                                  "value": "mosmgt.settingmgt.outletprofiles.view",
-                                  "description": "Permission to view Outlet Profiles",
-                                  "children": []
-                                },
-                                {
-                                  "name": "Manage Outlet Profiles",
-                                  "value": "mosmgt.settingmgt.outletprofiles.manage",
-                                  "description": "Permission to add, edit and delete Outlet Profiles",
-                                  "children": []
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                            "name": "Routes",
-                            "value": "mosmgt.mealmgt.order.delivery.routes",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Routes",
-                                    "value": "mosmgt.mealmgt.order.delivery.routes.view",
-                                    "description": "Permission to view Routes",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Routes",
-                                    "value": "mosmgt.mealmgt.order.delivery.routes.manage",
-                                    "description": "Permission to add, edit and delete Routes",
-                                    "children": []
-                                }
-                            ]
-                        }
-                    ]
+                  "name": "Manage Role",
+                  "value": "systemsetting.role.manage",
+                  "description": "Permission to create, delete and modify roles",
+                  "children": []
                 },
                 {
-                    "name": "Outlets",
-                    "value": "mosmgt.outletmgt.view",
-                    "description": "Permission to view Meal Order Setting",
-                    "children": [
-                        {
-                            "name": "Outlets",
-                            "value": "mosmgt.settingmgt.outlets.outlets",
-                            "description": "",
-                            "children": []
-                        },
-                        {
-                            "name": "Outlet Caterers",
-                            "value": "mosmgt.outletmgt.caterers",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Outlet Caterers",
-                                    "value": "mosmgt.outletmgt.caterers.view",
-                                    "description": "Permission to view Caterers",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Outlet Caterers",
-                                    "value": "mosmgt.outletmgt.caterers.manage",
-                                    "description": "Permission to add, edit and delete Caterers",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Outlet Stores",
-                            "value": "mosmgt.outletmgt.stores",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Outlet Stores",
-                                    "value": "mosmgt.outletmgt.stores.view",
-                                    "description": "Permission to view stores",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Outlet Stores",
-                                    "value": "mosmgt.outletmgt.stores.manage",
-                                    "description": "Permission to add, edit and delete stores",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Outlet Reports",
-                            "value": "mosmgt.outletmgt.reports",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Outlet Reports",
-                                    "value": "mosmgt.outletmgt.reports.view",
-                                    "description": "Permission to view Outlet Order and Delivery Reports",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Outlet Meal Summary",
-                                    "value": "mosmgt.outletmgt.mealsummary.manage",
-                                    "description": "Permission to view Meal Summary Report",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Meal Plan Groupings",
-                            "value": "mosmgt.outletmgt.terms",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Meal Plan Groupings",
-                                    "value": "mosmgt.outletmgt.terms.view",
-                                    "description": "Permission to view Meal Plan Groupings",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Meal Plan Groupings",
-                                    "value": "mosmgt.outletmgt.terms.manage",
-                                    "description": "Permission to add, edit and delete Meal Plan Groupings",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Class Batches",
-                            "value": "mosmgt.outletmgt.classbatches",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Class Batches",
-                                    "value": "mosmgt.outletmgt.classbatches.view",
-                                    "description": "Permission to view Class Batches",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Class Batches",
-                                    "value": "mosmgt.outletmgt.classbatches.manage",
-                                    "description": "Permission to add, edit and delete Class Batches",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Class Levels",
-                            "value": "mosmgt.outletmgt.levels",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Class Levels",
-                                    "value": "mosmgt.outletmgt.levels.view",
-                                    "description": "Permission to view Class Levels",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Class Levels",
-                                    "value": "mosmgt.outletmgt.levels.manage",
-                                    "description": "Permission to add, edit and delete Class Levels",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Classes",
-                            "value": "mosmgt.outletmgt.classes",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Classes",
-                                    "value": "mosmgt.outletmgt.classes.view",
-                                    "description": "Permission to view Classes",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Classes",
-                                    "value": "mosmgt.outletmgt.classes.manage",
-                                    "description": "Permission to add, edit and delete Classes",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Students",
-                            "value": "mosmgt.outletmgt.students",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Students",
-                                    "value": "mosmgt.outletmgt.students.view",
-                                    "description": "Permission to view Students",
-                                    "children": [
-                                        {
-                                            "name": "Import Students",
-                                            "value": "mosmgt.outletmgt.students.import.view",
-                                            "description": "Permission to import Students",
-                                            "children": []
-                                        },
-                                        {
-                                            "name": "Create Students",
-                                            "value": "mosmgt.outletmgt.students.manage.create",
-                                            "description": "Permission to add, edit and delete Students",
-                                            "children": []
-                                        },
-                                        {
-                                            "name": "Update Students",
-                                            "value": "mosmgt.outletmgt.students.manage.edit",
-                                            "description": "Permission to add, edit and delete Students",
-                                            "children": []
-                                        },
-                                        {
-                                            "name": "Delete Students",
-                                            "value": "mosmgt.outletmgt.students.manage.delete",
-                                            "description": "Permission to add, edit and delete Students",
-                                            "children": []
-                                        },
-                                        {
-                                            "name": "Create Student Accounts",
-                                            "value": "mosmgt.outletmgt.students.manage.account.create",
-                                            "description": "Permission to add, edit and delete Student Accounts Creation",
-                                            "children": []
-                                        },
-                                        {
-                                            "name": "Student Orders Management",
-                                            "value": "mosmgt.outletmgt.students.manage.order",
-                                            "description": "Permission to add, edit and delete Student Orders",
-                                            "children": []
-                                        },
-                                        {
-                                            "name": "Student Vouchers Management",
-                                            "value": "mosmgt.outletmgt.students.manage.voucher",
-                                            "description": "Permission to add, edit and delete Student Vouchers",
-                                            "children": []
-                                        },
-                                        {
-                                            "name": "Student Notifications Management",
-                                            "value": "mosmgt.outletmgt.students.manage.notification",
-                                            "description": "Permission to add, edit and delete Student Notifications",
-                                            "children": []
-                                        },
-                                        {
-                                            "name": "Student Calendars Management",
-                                            "value": "mosmgt.outletmgt.students.manage.calendar",
-                                            "description": "Permission to add, edit and delete Student Calendars",
-                                            "children": []
-                                        }
-                                    ]
-                                },
-                                {
-                                    "name": "Manage Students",
-                                    "value": "mosmgt.outletmgt.students.manage",
-                                    "description": "Permission to manage Students",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "FAS",
-                            "value": "mosmgt.outletmgt.fas",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View FAS",
-                                    "value": "mosmgt.outletmgt.fas.view",
-                                    "description": "Permission to view FAS",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage FAS",
-                                    "value": "mosmgt.outletmgt.fas.manage",
-                                    "description": "Permission to add, edit and delete FAS",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Student Groups",
-                            "value": "mosmgt.outletmgt.studentgroups",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Student Groups",
-                                    "value": "mosmgt.outletmgt.studentgroups.view",
-                                    "description": "Permission to view Student Groups",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Student Groups",
-                                    "value": "mosmgt.outletmgt.studentgroups.manage",
-                                    "description": "Permission to add, edit and delete Student Groups",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Menu Groups",
-                            "value": "mosmgt.outletmgt.menus",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Groups",
-                                    "value": "mosmgt.outletmgt.menus.view",
-                                    "description": "Permission to view Groups",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Groups",
-                                    "value": "mosmgt.outletmgt.menus.manage",
-                                    "description": "Permission to add, edit and delete Groups",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Order Cancellations",
-                            "value": "mosmgt.outletmgt.cancellations",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Order Cancellations",
-                                    "value": "mosmgt.outletmgt.cancellations.view",
-                                    "description": "Permission to view Order Cancellations",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Order Cancellations",
-                                    "value": "mosmgt.outletmgt.cancellations.manage",
-                                    "description": "Permission to manage Order Cancellations",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Portal Contents",
-                            "value": "mosmgt.outletmgt.portalcontents",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Portal Contents",
-                                    "value": "mosmgt.outletmgt.portalcontents.view",
-                                    "description": "Permission to view Portal Contents",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Portal Contents",
-                                    "value": "mosmgt.outletmgt.portalcontents.manage",
-                                    "description": "Permission to add, edit and delete Portal Contents",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Email Templates",
-                            "value": "mosmgt.outletmgt.emailtemplates",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Email Templates",
-                                    "value": "mosmgt.outletmgt.emailtemplates.view",
-                                    "description": "Permission to view Email Templates",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Email Templates",
-                                    "value": "mosmgt.outletmgt.emailtemplates.manage",
-                                    "description": "Permission to add, edit and delete Email Templates",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Meal Allocations",
-                            "value": "mosmgt.outletmgt.mealallocations",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Meal Allocations",
-                                    "value": "mosmgt.outletmgt.mealallocations.view",
-                                    "description": "Permission to view Meal Allocations",
-                                    "children": []
-                                },
-                                {
-                                    "name": "Manage Meal Allocations",
-                                    "value": "mosmgt.outletmgt.mealallocations.manage",
-                                    "description": "Permission to view Meal Allocations",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Packing Allocations",
-                            "value": "mosmgt.outletmgt.packingallocations",
-                            "description": "",
-                            "children": []
-                        }
-                    ]
+                  "name": "Assign Role",
+                  "value": "systemsetting.role.assign",
+                  "description": "Permission to assign roles to users",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Audit Logs",
+              "value": "systemsetting.audit.view",
+              "description": "Permission to view Audit Logs",
+              "children": [
+                {
+                  "name": "Authentication Logs",
+                  "value": "systemsetting.audit.authlog.view",
+                  "description": "Permission to view authentication logs",
+                  "children": []
                 },
                 {
-                    "name": "Meal Order System Setting",
-                    "value": "mosmgt.settingmgt.view",
-                    "description": "Permission to view Meal Order Setting",
+                  "name": "Data Logs",
+                  "value": "systemsetting.audit.datalog.view",
+                  "description": "Permission to view data logs",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Application Setting",
+              "value": "systemsetting.applicationsetting.view",
+              "description": "Permission to view Application Setting",
+              "children": []
+            },
+            {
+              "name": "Email Queue",
+              "value": "systemsetting.emailqueue.view",
+              "description": "Permission to view Email Queue",
+              "children": []
+            },
+          ]
+        },
+        {
+          "name": "Platform Setup",
+          "value": "mosmgt.mealmgt.order.view",
+          "description": "Permission to view platform setup",
+          "children": [
+            {
+              "name": "Restriction Types",
+              "value": "mosmgt.mealmgt.order.restrictiontypes",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Restriction Types",
+                  "value": "mosmgt.mealmgt.order.restrictiontypes.view",
+                  "description": "Permission to view Restriction Types",
+                  "children": []
+                },
+                {
+                  "name": "Manage Restriction Types",
+                  "value": "mosmgt.mealmgt.order.restrictiontypes.manage",
+                  "description": "Permission to view Restriction Types",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Restrictions",
+              "value": "mosmgt.mealmgt.order.restrictions",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Restrictions",
+                  "value": "mosmgt.mealmgt.order.restrictions.view",
+                  "description": "Permission to view Restrictions",
+                  "children": []
+                },
+                {
+                  "name": "Manage Restrictions",
+                  "value": "mosmgt.mealmgt.order.restrictions.manage",
+                  "description": "Permission to view Restrictions",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Cuisines",
+              "value": "mosmgt.mealmgt.order.cuisines",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Cuisines",
+                  "value": "mosmgt.mealmgt.order.cuisines.view",
+                  "description": "Permission to view Cuisines",
+                  "children": []
+                },
+                {
+                  "name": "Manage Cuisines",
+                  "value": "mosmgt.mealmgt.order.cuisines.manage",
+                  "description": "Permission to view Cuisines",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Delivery",
+              "value": "mosmgt.mealmgt.order.delivery",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Delivery",
+                  "value": "mosmgt.mealmgt.order.delivery.view",
+                  "description": "Permission to view Delivery",
+                  "children": []
+                },
+                {
+                  "name": "Manage Delivery",
+                  "value": "mosmgt.mealmgt.order.delivery.manage",
+                  "description": "Permission to add, edit and delete Delivery",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Bento Box Types",
+              "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Bento Box Types",
+                  "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.view",
+                  "description": "Permission to view Bento Box Types",
+                  "children": []
+                },
+                {
+                  "name": "Manage Bento Box Types",
+                  "value": "mosmgt.mealmgt.order.delivery.bentoboxtypes.manage",
+                  "description": "Permission to add, edit and delete Bento Box Types",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Bento Assets",
+              "value": "mosmgt.mealmgt.order.delivery.bentoassets",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Bento Assets",
+                  "value": "mosmgt.mealmgt.order.delivery.bentoassets.view",
+                  "description": "Permission to view Bento Assets",
+                  "children": []
+                },
+                {
+                  "name": "Manage Bento Assets",
+                  "value": "mosmgt.mealmgt.order.delivery.bentoassets.manage",
+                  "description": "Permission to add, edit and delete Bento Assets",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Carton Types",
+              "value": "mosmgt.mealmgt.order.delivery.cartontypes",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Carton Types",
+                  "value": "mosmgt.mealmgt.order.delivery.cartontypes.view",
+                  "description": "Permission to view Carton Types",
+                  "children": []
+                },
+                {
+                  "name": "Manage Carton Types",
+                  "value": "mosmgt.mealmgt.order.delivery.cartontypes.manage",
+                  "description": "Permission to add, edit and delete Carton Types",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Carton Assets",
+              "value": "mosmgt.mealmgt.order.delivery.cartonassets",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Carton Assets",
+                  "value": "mosmgt.mealmgt.order.delivery.cartonassets.view",
+                  "description": "Permission to view Carton Assets",
+                  "children": []
+                },
+                {
+                  "name": "Manage Carton Assets",
+                  "value": "mosmgt.mealmgt.order.delivery.cartonassets.manage",
+                  "description": "Permission to add, edit and delete Carton Assets",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Tracking Status",
+              "value": "mosmgt.mealmgt.order.delivery.trackingstatus",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Tracking Status",
+                  "value": "mosmgt.mealmgt.order.delivery.trackingstatus.view",
+                  "description": "Permission to view Tracking Status",
+                  "children": []
+                },
+                {
+                  "name": "Manage Tracking Status",
+                  "value": "mosmgt.mealmgt.order.delivery.trackingstatus.manage",
+                  "description": "Permission to add, edit and delete Tracking Status",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Delivery Order",
+              "value": "mosmgt.mealmgt.order.delivery.deliveryorders",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Delivery Order",
+                  "value": "mosmgt.mealmgt.order.delivery.deliveryorders.view",
+                  "description": "Permission to view Delivery Order",
+                  "children": []
+                },
+                {
+                  "name": "Manage Delivery Order",
+                  "value": "mosmgt.mealmgt.order.delivery.deliveryorders.manage",
+                  "description": "Permission to add, edit and delete Delivery Order",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Dishing Process",
+              "value": "mosmgt.mealmgt.order.delivery.dishingprocess",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Dishing Process",
+                  "value": "mosmgt.mealmgt.order.delivery.dishingprocess.view",
+                  "description": "Permission to view Dishing Process",
+                  "children": []
+                },
+                {
+                  "name": "Manage Dishing Process",
+                  "value": "mosmgt.mealmgt.order.delivery.dishingprocess.manage",
+                  "description": "Permission to view Dishing Process",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Packing Process",
+              "value": "mosmgt.mealmgt.order.delivery.packingprocess",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Packing Process",
+                  "value": "mosmgt.mealmgt.order.delivery.packingprocess.view",
+                  "description": "Permission to view Packing Process",
+                  "children": []
+                },
+                {
+                  "name": "Manage Packing Process",
+                  "value": "mosmgt.mealmgt.order.delivery.packingprocess.manage",
+                  "description": "Permission to add, edit and delete Packing Process",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Drivers",
+              "value": "mosmgt.mealmgt.order.delivery.drivers",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Drivers",
+                  "value": "mosmgt.mealmgt.order.delivery.drivers.view",
+                  "description": "Permission to view Drivers",
+                  "children": []
+                },
+                {
+                  "name": "Manage Drivers",
+                  "value": "mosmgt.mealmgt.order.delivery.drivers.manage",
+                  "description": "Permission to add, edit and delete Drivers",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Caterers",
+          "value": "mosmgt.caterermgt.view",
+          "description": "Permission to view Meal Order Setting",
+          "children": [
+            {
+              "name": "Caterers",
+              "value": "mosmgt.settingmgt.caterers",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Caterers",
+                  "value": "mosmgt.settingmgt.caterers.view",
+                  "description": "Permission to view Caterers",
+                  "children": []
+                },
+                {
+                  "name": "Manage Caterers",
+                  "value": "mosmgt.settingmgt.caterers.manage",
+                  "description": "Permission to add, edit and delete Caterers",
+                  "children": []
+                },
+                {
+                  "name": "Dish Calendar",
+                  "value": "mosmgt.settingmgt.caterers.dishcalendar",
+                  "description": "",
                   "children": [
                     {
-                      "name": "View Outlets",
-                      "value": "mosmgt.settingmgt.outlets.view",
-                      "description": "Permission to view Outlets",
-                      "children": [
-                        {
-                          "name": "View Packing Allocations",
-                          "value": "mosmgt.outletmgt.packingallocations.view",
-                          "description": "Permission to view Packing Allocations",
-                          "children": []
-                        },
-                        {
-                          "name": "Manage Packing Allocations",
-                          "value": "mosmgt.outletmgt.packingallocations.manage",
-                          "description": "Permission to add, edit and delete Packing Allocations",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Manage Outlets",
-                      "value": "mosmgt.settingmgt.outlets.manage",
-                      "description": "Permission to add, edit and delete Outlets",
+                      "name": "View Dish Calendar",
+                      "value": "mosmgt.settingmgt.caterers.dishcalendar.view",
+                      "description": "Permission to view Dish Calendar",
                       "children": []
                     },
                     {
-                      "name": "Stores",
-                      "value": "mosmgt.settingmgt.storeinfo",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "View Stores",
-                          "value": "mosmgt.settingmgt.storeinfo.view",
-                          "description": "Permission to view Store Info",
-                          "children": []
-                        },
-                        {
-                          "name": "Manage Stores",
-                          "value": "mosmgt.settingmgt.storeinfo.manage",
-                          "description": "Permission to view Store Info",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Payment Types",
-                      "value": "mosmgt.settingmgt.payment.paymenttype",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "View Payment Type",
-                          "value": "mosmgt.settingmgt.payment.paymenttype.view",
-                          "description": "Permission to view Payment Type",
-                          "children": []
-                        },
-                        {
-                          "name": "Manage Payment Type",
-                          "value": "mosmgt.settingmgt.payment.paymenttype.manage",
-                          "description": "Permission to view Payment Type",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Transaction Fees",
-                      "value": "mosmgt.settingmgt.payment.transactionfee",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "View Transaction Fee",
-                          "value": "mosmgt.settingmgt.payment.transactionfee.view",
-                          "description": "Permission to view Transaction Fee",
-                          "children": []
-                        },
-                        {
-                          "name": "Manage Transaction Fee",
-                          "value": "mosmgt.settingmgt.payment.transactionfee.manage",
-                          "description": "Permission to add, edit and delete Transaction Fee",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Voucher Types",
-                      "value": "mosmgt.settingmgt.payment.vouchertype",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "View Voucher Type",
-                          "value": "mosmgt.settingmgt.payment.vouchertype.view",
-                          "description": "Permission to view Voucher Type",
-                          "children": []
-                        },
-                        {
-                          "name": "Manage Voucher Type",
-                          "value": "mosmgt.settingmgt.payment.vouchertype.manage",
-                          "description": "Permission to view Voucher Type",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Voucher Types",
-                      "value": "mosmgt.settingmgt.payment.voucher",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "View Voucher",
-                          "value": "mosmgt.settingmgt.payment.voucher.view",
-                          "description": "Permission to view Voucher",
-                          "children": []
-                        },
-                        {
-                          "name": "Manage Voucher",
-                          "value": "mosmgt.settingmgt.payment.voucher.manage",
-                          "description": "Permission to view Voucher",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Voucher Types",
-                      "value": "mosmgt.settingmgt.payment.waiver",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "View Waiver",
-                          "value": "mosmgt.settingmgt.payment.waiver.view",
-                          "description": "Permission to view Waiver",
-                          "children": []
-                        },
-                        {
-                          "name": "Manage Waiver",
-                          "value": "mosmgt.settingmgt.payment.waiver.manage",
-                          "description": "Permission to view Waiver",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Contact Us Subjects",
-                      "value": "mosmgt.settingmgt.contactus.subject",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "Manage Contact Us Subjects",
-                          "value": "mosmgt.settingmgt.contactus.subject.manage",
-                          "description": "Permission to add, edit and delete Contact Us Subjects",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Contact Us Questions",
-                      "value": "mosmgt.settingmgt.contactus.question",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "Manage Contact Us Questions",
-                          "value": "mosmgt.settingmgt.contactus.question.manage",
-                          "description": "Permission to add, edit and delete Contact Us Questions",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Notification Settings",
-                      "value": "mosmgt.settingmgt.notifications.settings",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "Manage Notification Settings",
-                          "value": "mosmgt.settingmgt.notifications.settings.manage",
-                          "description": "Permission to add, edit and delete Notification Settings",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Notification Events",
-                      "value": "mosmgt.settingmgt.notifications.events",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "Manage Notification Events",
-                          "value": "mosmgt.settingmgt.notifications.events.manage",
-                          "description": "Permission to add, edit and delete Notification Events",
-                          "children": []
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Cancel Requests",
-                      "value": "mosmgt.settingmgt.orders.cancelrequest",
-                      "description": "",
-                      "children": [
-                        {
-                          "name": "Manage Cancel Requests",
-                          "value": "mosmgt.settingmgt.orders.cancelrequest.manage",
-                          "description": "Permission to add, edit and delete Cancel Requests",
-                          "children": []
-                        }
-                      ]
+                      "name": "Manage Dish Calendar",
+                      "value": "mosmgt.settingmgt.caterers.dishcalendar.manage",
+                      "description": "Permission to manage Dish Calendar",
+                      "children": []
                     }
                   ]
                 },
                 {
-                    "name": "Reports",
-                    "value": "mosmgt.reportmgt.view",
-                    "description": "Permission to view Meal Order Report",
-                    "children": [
-                        {
-                            "name": "Portal Login",
-                            "value": "mosmgt.reportmgt.portallogin",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Portal Login Report",
-                                    "value": "mosmgt.reportmgt.portallogin.view",
-                                    "description": "Permission to view Order Portal Login Report",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Order Report",
-                            "value": "mosmgt.reportmgt.order",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Order Report",
-                                    "value": "mosmgt.reportmgt.order.view",
-                                    "description": "Permission to view Order Report",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "Order Cancellation Report",
-                            "value": "mosmgt.reportmgt.ordercancellation",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Order Cancellation Report",
-                                    "value": "mosmgt.reportmgt.ordercancellation.view",
-                                    "description": "Permission to view Order Cancellation Report",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "User Account Report",
-                            "value": "mosmgt.reportmgt.useraccount",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View User Account Report",
-                                    "value": "mosmgt.reportmgt.useraccount.view",
-                                    "description": "Permission to view User Account Report",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "User Role Report",
-                            "value": "mosmgt.reportmgt.role",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Role Report",
-                                    "value": "mosmgt.reportmgt.role.view",
-                                    "description": "Permission to view Role Report",
-                                    "children": []
-                                }
-                            ]
-                        },
-                        {
-                            "name": "User Activity Report",
-                            "value": "mosmgt.reportmgt.useractivity",
-                            "description": "",
-                            "children": [
-                                {
-                                    "name": "View Activity Report",
-                                    "value": "mosmgt.reportmgt.useractivity.view",
-                                    "description": "Permission to view User Activity Report",
-                                    "children": []
-                                }
-                            ]
-                        }
-                    ]
+                  "name": "Outlets",
+                  "value": "mosmgt.settingmgt.caterers.outlets",
+                  "description": "",
+                  "children": [
+                    {
+                      "name": "View Outlets",
+                      "value": "mosmgt.settingmgt.caterers.outlets.view",
+                      "description": "Permission to view Outlets",
+                      "children": []
+                    },
+                    {
+                      "name": "Manage Outlets",
+                      "value": "mosmgt.settingmgt.caterers.outlets.manage",
+                      "description": "Permission to manage Outlets",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Meal Types",
+                  "value": "mosmgt.settingmgt.caterers.mealtypes",
+                  "description": "",
+                  "children": [
+                    {
+                      "name": "View Meal Types",
+                      "value": "mosmgt.settingmgt.caterers.mealtypes.view",
+                      "description": "Permission to view Meal Types",
+                      "children": []
+                    },
+                    {
+                      "name": "Manage Meal Types",
+                      "value": "mosmgt.settingmgt.caterers.mealtypes.manage",
+                      "description": "Permission to add, edit and delete Meal Types",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Meal Periods",
+                  "value": "mosmgt.settingmgt.caterers.mealperiods",
+                  "description": "",
+                  "children": [
+                    {
+                      "name": "View Meal Periods",
+                      "value": "mosmgt.settingmgt.caterers.mealperiods.view",
+                      "description": "Permission to view Meal Periods",
+                      "children": []
+                    },
+                    {
+                      "name": "Manage Meal Periods",
+                      "value": "mosmgt.settingmgt.caterers.mealperiods.manage",
+                      "description": "Permission to add, edit and delete Meal Periods",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Dish Types",
+                  "value": "mosmgt.settingmgt.caterers.dishtypes",
+                  "description": "",
+                  "children": [
+                    {
+                      "name": "View Dish Types",
+                      "value": "mosmgt.settingmgt.caterers.dishtypes.view",
+                      "description": "Permission to view Dish Types",
+                      "children": []
+                    },
+                    {
+                      "name": "Manage Dish Types",
+                      "value": "mosmgt.settingmgt.caterers.dishtypes.manage",
+                      "description": "Permission to add, edit and delete Dish Types",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Dish Types",
+                  "value": "mosmgt.settingmgt.caterers.dishes",
+                  "description": "",
+                  "children": [
+                    {
+                      "name": "View Dish Types",
+                      "value": "mosmgt.settingmgt.caterers.dishes.view",
+                      "description": "Permission to view Dishes",
+                      "children": []
+                    },
+                    {
+                      "name": "Manage Dish Types",
+                      "value": "mosmgt.settingmgt.caterers.dishes.manage",
+                      "description": "Permission to add, edit and delete Dishes",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Dish Cycles",
+                  "value": "mosmgt.settingmgt.caterers.dishcycles",
+                  "description": "",
+                  "children": [
+                    {
+                      "name": "View Dish Cycles",
+                      "value": "mosmgt.settingmgt.caterers.dishcycles.view",
+                      "description": "Permission to view Dishes",
+                      "children": []
+                    },
+                    {
+                      "name": "Manage Dish Cycles",
+                      "value": "mosmgt.settingmgt.caterers.dishcycles.manage",
+                      "description": "Permission to add, edit and delete Dishes",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Outlet Profiles",
+                  "value": "mosmgt.settingmgt.outletprofiles",
+                  "description": "",
+                  "children": [
+                    {
+                      "name": "View Outlet Profiles",
+                      "value": "mosmgt.settingmgt.outletprofiles.view",
+                      "description": "Permission to view Outlet Profiles",
+                      "children": []
+                    },
+                    {
+                      "name": "Manage Outlet Profiles",
+                      "value": "mosmgt.settingmgt.outletprofiles.manage",
+                      "description": "Permission to add, edit and delete Outlet Profiles",
+                      "children": []
+                    }
+                  ]
                 }
-            ]
+              ]
+            },
+            {
+              "name": "Routes",
+              "value": "mosmgt.mealmgt.order.delivery.routes",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Routes",
+                  "value": "mosmgt.mealmgt.order.delivery.routes.view",
+                  "description": "Permission to view Routes",
+                  "children": []
+                },
+                {
+                  "name": "Manage Routes",
+                  "value": "mosmgt.mealmgt.order.delivery.routes.manage",
+                  "description": "Permission to add, edit and delete Routes",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Outlets",
+          "value": "mosmgt.outletmgt.view",
+          "description": "Permission to view Meal Order Setting",
+          "children": [
+            {
+              "name": "Outlets",
+              "value": "mosmgt.settingmgt.outlets.outlets",
+              "description": "",
+              "children": []
+            },
+            {
+              "name": "Outlet Caterers",
+              "value": "mosmgt.outletmgt.caterers",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Outlet Caterers",
+                  "value": "mosmgt.outletmgt.caterers.view",
+                  "description": "Permission to view Caterers",
+                  "children": []
+                },
+                {
+                  "name": "Manage Outlet Caterers",
+                  "value": "mosmgt.outletmgt.caterers.manage",
+                  "description": "Permission to add, edit and delete Caterers",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Outlet Stores",
+              "value": "mosmgt.outletmgt.stores",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Outlet Stores",
+                  "value": "mosmgt.outletmgt.stores.view",
+                  "description": "Permission to view stores",
+                  "children": []
+                },
+                {
+                  "name": "Manage Outlet Stores",
+                  "value": "mosmgt.outletmgt.stores.manage",
+                  "description": "Permission to add, edit and delete stores",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Outlet Reports",
+              "value": "mosmgt.outletmgt.reports",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Outlet Reports",
+                  "value": "mosmgt.outletmgt.reports.view",
+                  "description": "Permission to view Outlet Order and Delivery Reports",
+                  "children": []
+                },
+                {
+                  "name": "Manage Outlet Meal Summary",
+                  "value": "mosmgt.outletmgt.mealsummary.manage",
+                  "description": "Permission to view Meal Summary Report",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Meal Plan Groupings",
+              "value": "mosmgt.outletmgt.terms",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Meal Plan Groupings",
+                  "value": "mosmgt.outletmgt.terms.view",
+                  "description": "Permission to view Meal Plan Groupings",
+                  "children": []
+                },
+                {
+                  "name": "Manage Meal Plan Groupings",
+                  "value": "mosmgt.outletmgt.terms.manage",
+                  "description": "Permission to add, edit and delete Meal Plan Groupings",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Class Batches",
+              "value": "mosmgt.outletmgt.classbatches",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Class Batches",
+                  "value": "mosmgt.outletmgt.classbatches.view",
+                  "description": "Permission to view Class Batches",
+                  "children": []
+                },
+                {
+                  "name": "Manage Class Batches",
+                  "value": "mosmgt.outletmgt.classbatches.manage",
+                  "description": "Permission to add, edit and delete Class Batches",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Class Levels",
+              "value": "mosmgt.outletmgt.levels",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Class Levels",
+                  "value": "mosmgt.outletmgt.levels.view",
+                  "description": "Permission to view Class Levels",
+                  "children": []
+                },
+                {
+                  "name": "Manage Class Levels",
+                  "value": "mosmgt.outletmgt.levels.manage",
+                  "description": "Permission to add, edit and delete Class Levels",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Classes",
+              "value": "mosmgt.outletmgt.classes",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Classes",
+                  "value": "mosmgt.outletmgt.classes.view",
+                  "description": "Permission to view Classes",
+                  "children": []
+                },
+                {
+                  "name": "Manage Classes",
+                  "value": "mosmgt.outletmgt.classes.manage",
+                  "description": "Permission to add, edit and delete Classes",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Students",
+              "value": "mosmgt.outletmgt.students",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Students",
+                  "value": "mosmgt.outletmgt.students.view",
+                  "description": "Permission to view Students",
+                  "children": [
+                    {
+                      "name": "Import Students",
+                      "value": "mosmgt.outletmgt.students.import.view",
+                      "description": "Permission to import Students",
+                      "children": []
+                    },
+                    {
+                      "name": "Create Students",
+                      "value": "mosmgt.outletmgt.students.manage.create",
+                      "description": "Permission to add, edit and delete Students",
+                      "children": []
+                    },
+                    {
+                      "name": "Update Students",
+                      "value": "mosmgt.outletmgt.students.manage.edit",
+                      "description": "Permission to add, edit and delete Students",
+                      "children": []
+                    },
+                    {
+                      "name": "Delete Students",
+                      "value": "mosmgt.outletmgt.students.manage.delete",
+                      "description": "Permission to add, edit and delete Students",
+                      "children": []
+                    },
+                    {
+                      "name": "Create Student Accounts",
+                      "value": "mosmgt.outletmgt.students.manage.account.create",
+                      "description": "Permission to add, edit and delete Student Accounts Creation",
+                      "children": []
+                    },
+                    {
+                      "name": "Student Orders Management",
+                      "value": "mosmgt.outletmgt.students.manage.order",
+                      "description": "Permission to add, edit and delete Student Orders",
+                      "children": []
+                    },
+                    {
+                      "name": "Student Vouchers Management",
+                      "value": "mosmgt.outletmgt.students.manage.voucher",
+                      "description": "Permission to add, edit and delete Student Vouchers",
+                      "children": []
+                    },
+                    {
+                      "name": "Student Notifications Management",
+                      "value": "mosmgt.outletmgt.students.manage.notification",
+                      "description": "Permission to add, edit and delete Student Notifications",
+                      "children": []
+                    },
+                    {
+                      "name": "Student Calendars Management",
+                      "value": "mosmgt.outletmgt.students.manage.calendar",
+                      "description": "Permission to add, edit and delete Student Calendars",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Manage Students",
+                  "value": "mosmgt.outletmgt.students.manage",
+                  "description": "Permission to manage Students",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "FAS",
+              "value": "mosmgt.outletmgt.fas",
+              "description": "",
+              "children": [
+                {
+                  "name": "View FAS",
+                  "value": "mosmgt.outletmgt.fas.view",
+                  "description": "Permission to view FAS",
+                  "children": []
+                },
+                {
+                  "name": "Manage FAS",
+                  "value": "mosmgt.outletmgt.fas.manage",
+                  "description": "Permission to add, edit and delete FAS",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Student Groups",
+              "value": "mosmgt.outletmgt.studentgroups",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Student Groups",
+                  "value": "mosmgt.outletmgt.studentgroups.view",
+                  "description": "Permission to view Student Groups",
+                  "children": []
+                },
+                {
+                  "name": "Manage Student Groups",
+                  "value": "mosmgt.outletmgt.studentgroups.manage",
+                  "description": "Permission to add, edit and delete Student Groups",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Menu Groups",
+              "value": "mosmgt.outletmgt.menus",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Groups",
+                  "value": "mosmgt.outletmgt.menus.view",
+                  "description": "Permission to view Groups",
+                  "children": []
+                },
+                {
+                  "name": "Manage Groups",
+                  "value": "mosmgt.outletmgt.menus.manage",
+                  "description": "Permission to add, edit and delete Groups",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Order Cancellations",
+              "value": "mosmgt.outletmgt.cancellations",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Order Cancellations",
+                  "value": "mosmgt.outletmgt.cancellations.view",
+                  "description": "Permission to view Order Cancellations",
+                  "children": []
+                },
+                {
+                  "name": "Manage Order Cancellations",
+                  "value": "mosmgt.outletmgt.cancellations.manage",
+                  "description": "Permission to manage Order Cancellations",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Portal Contents",
+              "value": "mosmgt.outletmgt.portalcontents",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Portal Contents",
+                  "value": "mosmgt.outletmgt.portalcontents.view",
+                  "description": "Permission to view Portal Contents",
+                  "children": []
+                },
+                {
+                  "name": "Manage Portal Contents",
+                  "value": "mosmgt.outletmgt.portalcontents.manage",
+                  "description": "Permission to add, edit and delete Portal Contents",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Email Templates",
+              "value": "mosmgt.outletmgt.emailtemplates",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Email Templates",
+                  "value": "mosmgt.outletmgt.emailtemplates.view",
+                  "description": "Permission to view Email Templates",
+                  "children": []
+                },
+                {
+                  "name": "Manage Email Templates",
+                  "value": "mosmgt.outletmgt.emailtemplates.manage",
+                  "description": "Permission to add, edit and delete Email Templates",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Meal Allocations",
+              "value": "mosmgt.outletmgt.mealallocations",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Meal Allocations",
+                  "value": "mosmgt.outletmgt.mealallocations.view",
+                  "description": "Permission to view Meal Allocations",
+                  "children": []
+                },
+                {
+                  "name": "Manage Meal Allocations",
+                  "value": "mosmgt.outletmgt.mealallocations.manage",
+                  "description": "Permission to view Meal Allocations",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Packing Allocations",
+              "value": "mosmgt.outletmgt.packingallocations",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Packing Allocations",
+                  "value": "mosmgt.outletmgt.packingallocations.view",
+                  "description": "Permission to view Packing Allocations",
+                  "children": []
+                },
+                {
+                  "name": "Manage Packing Allocations",
+                  "value": "mosmgt.outletmgt.packingallocations.manage",
+                  "description": "Permission to add, edit and delete Packing Allocations",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Meal Order System Setting",
+          "value": "mosmgt.settingmgt.view",
+          "description": "Permission to view Meal Order Setting",
+          "children": [
+            {
+              "name": "View Outlets",
+              "value": "mosmgt.settingmgt.outlets.view",
+              "description": "Permission to view Outlets",
+              "children": []
+            },
+            {
+              "name": "Manage Outlets",
+              "value": "mosmgt.settingmgt.outlets.manage",
+              "description": "Permission to add, edit and delete Outlets",
+              "children": []
+            },
+            {
+              "name": "Stores",
+              "value": "mosmgt.settingmgt.storeinfo",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Stores",
+                  "value": "mosmgt.settingmgt.storeinfo.view",
+                  "description": "Permission to view Store Info",
+                  "children": []
+                },
+                {
+                  "name": "Manage Stores",
+                  "value": "mosmgt.settingmgt.storeinfo.manage",
+                  "description": "Permission to view Store Info",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Payment Types",
+              "value": "mosmgt.settingmgt.payment.paymenttype",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Payment Type",
+                  "value": "mosmgt.settingmgt.payment.paymenttype.view",
+                  "description": "Permission to view Payment Type",
+                  "children": []
+                },
+                {
+                  "name": "Manage Payment Type",
+                  "value": "mosmgt.settingmgt.payment.paymenttype.manage",
+                  "description": "Permission to view Payment Type",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Transaction Fees",
+              "value": "mosmgt.settingmgt.payment.transactionfee",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Transaction Fee",
+                  "value": "mosmgt.settingmgt.payment.transactionfee.view",
+                  "description": "Permission to view Transaction Fee",
+                  "children": []
+                },
+                {
+                  "name": "Manage Transaction Fee",
+                  "value": "mosmgt.settingmgt.payment.transactionfee.manage",
+                  "description": "Permission to add, edit and delete Transaction Fee",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Voucher Types",
+              "value": "mosmgt.settingmgt.payment.vouchertype",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Voucher Type",
+                  "value": "mosmgt.settingmgt.payment.vouchertype.view",
+                  "description": "Permission to view Voucher Type",
+                  "children": []
+                },
+                {
+                  "name": "Manage Voucher Type",
+                  "value": "mosmgt.settingmgt.payment.vouchertype.manage",
+                  "description": "Permission to view Voucher Type",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Voucher",
+              "value": "mosmgt.settingmgt.payment.voucher",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Voucher",
+                  "value": "mosmgt.settingmgt.payment.voucher.view",
+                  "description": "Permission to view Voucher",
+                  "children": []
+                },
+                {
+                  "name": "Manage Voucher",
+                  "value": "mosmgt.settingmgt.payment.voucher.manage",
+                  "description": "Permission to view Voucher",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Waiver",
+              "value": "mosmgt.settingmgt.payment.waiver",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Waiver",
+                  "value": "mosmgt.settingmgt.payment.waiver.view",
+                  "description": "Permission to view Waiver",
+                  "children": []
+                },
+                {
+                  "name": "Manage Waiver",
+                  "value": "mosmgt.settingmgt.payment.waiver.manage",
+                  "description": "Permission to view Waiver",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Contact Us Subjects",
+              "value": "mosmgt.settingmgt.contactus.subject",
+              "description": "",
+              "children": [
+                {
+                  "name": "Manage Contact Us Subjects",
+                  "value": "mosmgt.settingmgt.contactus.subject.manage",
+                  "description": "Permission to add, edit and delete Contact Us Subjects",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Contact Us Questions",
+              "value": "mosmgt.settingmgt.contactus.question",
+              "description": "",
+              "children": [
+                {
+                  "name": "Manage Contact Us Questions",
+                  "value": "mosmgt.settingmgt.contactus.question.manage",
+                  "description": "Permission to add, edit and delete Contact Us Questions",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Notification Settings",
+              "value": "mosmgt.settingmgt.notifications.settings",
+              "description": "",
+              "children": [
+                {
+                  "name": "Manage Notification Settings",
+                  "value": "mosmgt.settingmgt.notifications.settings.manage",
+                  "description": "Permission to add, edit and delete Notification Settings",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Notification Events",
+              "value": "mosmgt.settingmgt.notifications.events",
+              "description": "",
+              "children": [
+                {
+                  "name": "Manage Notification Events",
+                  "value": "mosmgt.settingmgt.notifications.events.manage",
+                  "description": "Permission to add, edit and delete Notification Events",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Cancel Requests",
+              "value": "mosmgt.settingmgt.orders.cancelrequest",
+              "description": "",
+              "children": [
+                {
+                  "name": "Manage Cancel Requests",
+                  "value": "mosmgt.settingmgt.orders.cancelrequest.manage",
+                  "description": "Permission to add, edit and delete Cancel Requests",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Reports",
+          "value": "mosmgt.reportmgt.view",
+          "description": "Permission to view Meal Order Report",
+          "children": [
+            {
+              "name": "Portal Login",
+              "value": "mosmgt.reportmgt.portallogin",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Portal Login Report",
+                  "value": "mosmgt.reportmgt.portallogin.view",
+                  "description": "Permission to view Order Portal Login Report",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Order Report",
+              "value": "mosmgt.reportmgt.order",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Order Report",
+                  "value": "mosmgt.reportmgt.order.view",
+                  "description": "Permission to view Order Report",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Order Cancellation Report",
+              "value": "mosmgt.reportmgt.ordercancellation",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Order Cancellation Report",
+                  "value": "mosmgt.reportmgt.ordercancellation.view",
+                  "description": "Permission to view Order Cancellation Report",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "User Account Report",
+              "value": "mosmgt.reportmgt.useraccount",
+              "description": "",
+              "children": [
+                {
+                  "name": "View User Account Report",
+                  "value": "mosmgt.reportmgt.useraccount.view",
+                  "description": "Permission to view User Account Report",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "User Role Report",
+              "value": "mosmgt.reportmgt.role",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Role Report",
+                  "value": "mosmgt.reportmgt.role.view",
+                  "description": "Permission to view Role Report",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "User Activity Report",
+              "value": "mosmgt.reportmgt.useractivity",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Activity Report",
+                  "value": "mosmgt.reportmgt.useractivity.view",
+                  "description": "Permission to view User Activity Report",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Order Collection Report",
+              "value": "mosmgt.outletmgt.reports.ordercollection",
+              "description": "",
+              "children": [
+                {
+                  "name": "Order Collection Report",
+                  "value": "mosmgt.outletmgt.reports.ordercollection.view",
+                  "description": "Permission to view Order Collection Report",
+                  "children": []
+                }
+              ]
+            }
+          ]
         }
-    ]
+      ]
+    }
+  ]
 }

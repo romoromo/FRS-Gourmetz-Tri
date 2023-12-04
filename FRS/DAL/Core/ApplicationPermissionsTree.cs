@@ -731,6 +731,11 @@ namespace DAL.Core
         public static ApplicationPermissionsTree ViewMOSreportMgtUserActivityReportMenu = new ApplicationPermissionsTree(id++, "View Activity Report", "mosmgt.reportmgt.useractivity.view", "Permission to view User Activity Report", MOSreportMgtUserActivityReportMenu);
         #endregion
 
+        #region Order Collection Report
+        public static ApplicationPermissionsTree MOSreportMgtOrderCollectionReportMenu = new ApplicationPermissionsTree(id++, "Order Collection Report", "mosmgt.outletmgt.reports.ordercollection", "", ViewMOSreportMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSreportMgtOrderCollectionReportMenu = new ApplicationPermissionsTree(id++, "View Order Collection Report", "mosmgt.outletmgt.reports.ordercollection.view", "Permission to view User Activity Report", MOSreportMgtOrderCollectionReportMenu);
+        #endregion
+
         #endregion
 
         #endregion
@@ -1194,6 +1199,8 @@ namespace DAL.Core
                 MOSreportMgtUserActivityReportMenu,
                 ViewMOSreportMgtUserActivityReportMenu,
 
+                MOSreportMgtOrderCollectionReportMenu,
+                ViewMOSreportMgtOrderCollectionReportMenu
             };
         }
 

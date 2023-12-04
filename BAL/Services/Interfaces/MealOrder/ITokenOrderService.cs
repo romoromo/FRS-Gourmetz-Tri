@@ -103,5 +103,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<PagedEntity<TokenOrderDTO>> GetStudentOrdersAsync(StudentOrderFilter filter);
         Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason);
         Task<BaseOperationResponse> CreatePrepaidOrderAsync(PrepaidOrderDTO dto);
+        Task<byte[]> GenerateOrderCollectionXls(SalesOrderReportFilter filter);
     }
 }

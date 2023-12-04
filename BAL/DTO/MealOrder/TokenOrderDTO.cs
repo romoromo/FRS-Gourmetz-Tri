@@ -37,6 +37,7 @@ namespace BAL.DTO.MealOrder
         public string Remarks { get; set; }
 
         public int? StudentGroupId { get; set; }
+        public string StudentGroupName { get; set; }
         public List<TokenOrderedDTO> Tokens { get; set; }
 
         public int? MealSessionDetailId { get; set; }

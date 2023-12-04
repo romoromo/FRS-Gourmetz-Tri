@@ -1,31 +1,32 @@
 import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, OnDestroy } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
-import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
-import { AppTranslationService } from "../../../services/app-translation.service";
-import { AccountService } from '../../../services/account.service';
-import { Utilities } from '../../../services/utilities';
-import { Filter, PagedResult, SalesOrderReportFilter } from '../../../models/sieve-filter.model';
-import { Permission } from '../../../models/permission.model';
 import { MatDatepickerInputEvent, MatDialog } from '@angular/material';
 import { AuditService } from 'src/app/services/audit.service';
 import { DateOnlyPipe, DateTimeOnlyPipe } from 'src/app/pipes/datetime.pipe';
 import { Subscription } from 'rxjs';
-import { SearchBoxComponent } from '../../controls/search-box.component';
 import { saveAs } from 'file-saver';
 import * as moment from 'moment';
 import { TokenOrder } from 'src/app/models/meal-order/token-order.model';
-import { ReportService } from 'src/app/services/report.service';
+import { SalesOrderReportFilter, PagedResult, Filter } from 'src/app/models/sieve-filter.model';
+import { SearchBoxComponent } from 'src/app/components/controls/search-box.component';
+import { AlertService, MessageSeverity } from 'src/app/services/alert.service';
+import { AppTranslationService } from 'src/app/services/app-translation.service';
+import { AccountService } from 'src/app/services/account.service';
+import { Utilities } from 'src/app/services/utilities';
+import { Permission } from 'src/app/models/permission.model';
 import { SalesOrderReportType } from 'src/app/models/enums';
+import { StudentService } from 'src/app/services/meal-order/student.service';
 
 
 @Component({
-  selector: 'order-cancellation-report-management',
-  templateUrl: './order-cancellations-management.component.html',
-  styleUrls: ['./order-cancellations-management.component.css']
+  selector: 'order-collection-logs-management',
+  templateUrl: './order-logs-management.component.html',
+  styleUrls: ['./order-logs-management.component.css']
 })
-export class OrderCancellationReportManagementComponent implements OnInit, OnDestroy {
+export class OrderCollectionLogsManagementComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
+  statuses = ['All', 'pending', 'paid', 'cancelled', 'deleted'];
   columns: any[] = [];
   rows: TokenOrder[] = [];
   rowsCache: TokenOrder[] = [];
@@ -38,6 +39,7 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
   isFAS: boolean = false;
   start = new Date();
   end = new Date();
+  groups: any[] = [];
 
   tstart = new Date();
   tend = new Date();
@@ -56,10 +58,10 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
   @ViewChild('mealDescription')
   mealDescriptionTemplate: TemplateRef<any>;
 
-  @ViewChild('orderCancellationTable') table: any;
+  @ViewChild('orderLogTable') table: any;
 
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
-    private service: ReportService) {
+    private orderLogService: AuditService, private studentService: StudentService) {
   }
 
   ngOnDestroy(): void {
@@ -85,27 +87,34 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
 
     this.columns = [
       //{ prop: "index", name: '#', width: 50, cellTemplate: this.indexTemplate, canAutoResize: false },
-      { prop: 'paymentNumber', name: 'Order Number' },
+      { prop: 'studentGroupName', name: 'Group' },
+      { prop: 'invoiceNumber', name: 'Invoice No.' },
       { prop: 'profileName', name: 'Profile' },
       { prop: 'className', name: 'Class' },
-      { prop: 'cancelledOn', name: 'Cancelled Date', pipe: new DateOnlyPipe('en-SG') },
       { prop: 'transactionTime', name: 'Order Date', pipe: new DateOnlyPipe('en-SG') },
+      { prop: 'status', name: 'Status' },
+      //{ prop: 'cancellationReason', name: 'Cancellation Reason' },
       { prop: 'deliveryDate', name: 'Delivery Date', pipe: new DateOnlyPipe('en-SG') },
-      { prop: 'mealSessionName', name: 'Meal Session' },
+      { prop: 'mealSessionName', name: 'Session' },
       { prop: 'mealDescription', name: 'Meal Description', sortable: false, draggable: false },
-      { prop: 'voucherCode', name: 'Voucher' },
-      //{ prop: 'quantity', name: 'Qty', sortable: false, draggable: false },
-      { prop: 'subtotal', name: 'Subtotal', sortable: false, draggable: false },
-      { prop: 'discount', name: 'Discount' },
-      //{ prop: 'subDiscTotal', name: 'Subtotal after discount', sortable: false, draggable: false },
-      //{ prop: 'paymentGst', name: 'Tax', sortable: false },
-      { prop: 'paymentTransactionFee', name: 'T.Fee', sortable: false },
-      { prop: 'paymentFixedTransactionFee', name: 'Fixed T.Fee', sortable: false },
-      { prop: 'totalAmount', name: 'Total Amount' },
-      //{ prop: 'paymentMethod', name: 'Payment Method' },
-      //{ prop: 'paymentStatus', name: 'Payment Status' },
-      //{ prop: 'status', name: 'Order Status' },
-      { prop: 'cancellationReason', name: 'Cancellation Reason' }
+      //{ prop: 'qty', name: 'Quantity', sortable: false },
+      { prop: 'collectionTime', name: 'Collected Date/Time', pipe: new DateTimeOnlyPipe('en-SG') },
+      { prop: 'bentoCode', name: 'Bento Code', sortable: false },
+      { prop: 'returnTime', name: 'Returned Date/Time', pipe: new DateTimeOnlyPipe('en-SG') },
+      { prop: 'isFASDisplay', name: 'FAS', sortable: false }
+      //{ prop: 'mealDescription', name: 'Meal Description', cellTemplate: this.mealDescriptionTemplate, sortable: false, draggable: false },
+      
+      //{ prop: 'discount', name: 'Discount' },
+      //{ prop: 'totalAmount', name: 'Total Amount' },
+      
+      //{ prop: 'remarks', name: 'Remarks' },
+      //{ prop: 'paymentTypeName', name: 'Payment Type' },
+      //{ prop: 'paymentNumber', name: 'Order No.' },
+      //{ prop: 'fomoId', name: 'Fomo ID' },
+      
+      //{ prop: 'voucherCode', name: 'Voucher' },
+      
+      //{ prop: 'processedBy', name: 'Processed By' }
     ];
   }
 
@@ -116,6 +125,8 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
   }
 
   ngOnInit() {
+
+    this.getStudentGroups();
     this.initializeFilter();
     this.initializePagedResult();
     this.initializeTableDefinition();
@@ -136,7 +147,7 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(profileName|processedBy|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(status)==cancelled,(OrderCancelledDateRange)==' + this.start.toDateString() + '|' + this.end.toDateString();
+    this.filter.filters = '(profileName|processedBy|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(status)==' + (this.status== 'All' ? '' : this.status) + ',(AuditOrderLogDateRange)==' + this.start.toDateString() + '|' + this.end.toDateString();
 
     if (this.isFAS) {
       this.filter.filters += ',(isFas)==true';
@@ -144,12 +155,12 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
 
     this.filter.reportDateFrom = this.start.toDateString();
     this.filter.reportDateTo = this.end.toDateString();
-    this.filter.status = 'cancelled';
+    this.filter.status = (this.status == 'All' ? '' : this.status);
     this.filter.keyword = this.keyword;
-    this.filter.reportType = SalesOrderReportType.CancellationReport;
+    this.filter.reportType = SalesOrderReportType.CollectionReport;
     if (this.isFAS) this.filter.isFas = true;
 
-    this.service.getCancelledOrdersByFilter(this.filter)
+    this.subscription.add(this.orderLogService.getOrderLogsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
         console.log(this.pagedResult);
@@ -171,9 +182,24 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
           this.alertService.stopLoadingMessage();
           this.loadingIndicator = false;
 
-          this.alertService.showStickyMessage("Load Error", `Unable to retrieve orders from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Load Error", `Unable to retrieve order logs from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
-        });
+        }));
+  }
+
+  getStudentGroups() {
+    let filter = new Filter();
+    filter.filters = '(IsActive)==true';
+    this.subscription.add(this.studentService.getStudentGroupsSimpleByFilter(filter)
+      .subscribe(results => {
+        this.groups = results.pagedData;
+        console.log("groups: ", this.groups);
+      },
+        error => {
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving student groups.\r\n"`,
+            MessageSeverity.error);
+        }));
   }
 
   onChangeDate(type: string, event: MatDatepickerInputEvent<Date>) {
@@ -185,10 +211,23 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
       this.end = new Date(event.value);
     }
 
+    if (type == 'tstart') {
+      this.tstart = new Date(event.value);
+    }
+
+    if (type == 'tend') {
+      this.tend = new Date(event.value);
+    }
+
+    //this.loadData();
+
+    //this.loadData();
   }
 
   onSearchChanged(value: string) {
+    //this.rows = this.rowsCache.filter(r => Utilities.searchArray(value, false, r.name, r.description));
     this.keyword = value;
+    //this.loadData(null);
   }
 
   onSearch() {
@@ -205,15 +244,16 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
   }
 
   downloadResults() {
-    const fileName = moment().format('DDMMYYYY_hhmmss') + '_CancelledOrders.xlsx';
+    const fileName = moment().format('DDMMYYYY_hhmmss') + '_Orders.xlsx';
     this.filter.page = null;
     this.filter.pageSize = null;
     this.filter.reportDateFrom = this.start.toDateString();
     this.filter.reportDateTo = this.end.toDateString();
-    this.filter.status = 'cancelled';
+    this.filter.status = (this.status == 'All' ? '' : this.status);
     this.filter.keyword = this.keyword;
+    this.filter.reportType = SalesOrderReportType.CollectionReport;
     if (this.isFAS) this.filter.isFas = true;
-    this.service.downloadCancelledOrdersReport(this.filter).subscribe(
+    this.orderLogService.downloadOrderLogsReport(this.filter).subscribe(
       data => {
         console.log(data);
         saveAs(data, fileName);
@@ -226,15 +266,15 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
   }
 
   downloadFlattentResults() {
-    const fileName = moment().format('DDMMYYYY_hhmmss') + '_OrdersDetails.xlsx';
+    const fileName = moment().format('DDMMYYYY_hhmmss') + '_OrderCollection.xlsx';
     this.filter.page = null;
     this.filter.pageSize = null;
     this.filter.reportDateFrom = this.start.toDateString();
     this.filter.reportDateTo = this.end.toDateString();
-    this.filter.status = 'cancelled';
+    this.filter.status = (this.status == 'All' ? '' : this.status);
     this.filter.keyword = this.keyword;
     if (this.isFAS) this.filter.isFas = true;
-    this.service.downloadFlattenCancelledOrdersReport(this.filter).subscribe(
+    this.orderLogService.downloadOrderCollectionLogsReport(this.filter).subscribe(
       data => {
         console.log(data);
         saveAs(data, fileName);
@@ -246,8 +286,8 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
     );
   }
 
-  get canManageAuthLogs() {
-    return true;// this.accountService.userHasPermission(Permission.viewAuthLogsPermission)
+  get canViewCollectionReport() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtReportsOrderCollectionPermission)
   }
 
 }

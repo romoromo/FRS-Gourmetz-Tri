@@ -28,6 +28,9 @@ export class TokenOrder {
   public periodName: string;
   public paymentTypeName: string;
   public selected: boolean;
+  public bentoCode: string;
+  public collectionTime?: Date;
+  public returnTime?: Date;
 }
 
 export class TokenOrdered {

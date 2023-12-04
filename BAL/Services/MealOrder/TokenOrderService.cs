@@ -3791,6 +3791,287 @@ namespace BAL.Services.MealOrder
         }
         #endregion
 
+        public async Task<byte[]> GenerateOrderCollectionXls(SalesOrderReportFilter filter)
+        {
+            var orders = await _uow.TokenOrders.GetSalesOrders(filter);
+            string dateFormat = "dd/MM/yy";
+            string dateTimeFormat = "dd/MM/yy hh:mm tt";
+            string decimalFormat = "0.00";
+
+            if (orders != null)
+            {
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    var wb = new XSSFWorkbook();
+                    var rowCount = 0;
+                    var sheet = (XSSFSheet)wb.CreateSheet("Orders");
+                    var headers = new List<string>
+                    {
+                        "Group",
+                        "Invoice No.",
+                        "Name",
+                        //"Outlet",
+                        "Class/Department",
+                        "Order Date",
+                        "Status",
+                        //"Cancellation Reason",
+                        //"Discount Code",
+                        //"Subtotal",
+                        //"Discount",
+                        //"Total Gst",
+                        //"Transaction Fee",
+                        //"Fix Transaction Fee",
+                        //"Total Amount",
+                        //"FomoId",
+                        //"Payment Status",
+                        "Delivery Date",
+                        "Meal Session",
+                        "Meal Type",
+                        "Meal Name",
+                        //"Qty",
+                        //"Dish Price",
+                        "Collected Date/Time",
+                        "Bento Code",
+                        "Returned Date/Time",
+                        "IsFAS"
+                    };
+
+                    #region Headers
+
+                    var headerStyle = wb.CreateCellStyle();
+                    var headerFont = wb.CreateFont();
+                    headerFont.FontName = "Calibri";
+                    headerFont.FontHeightInPoints = 11;
+                    headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                    headerStyle.SetFont(headerFont);
+                    headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    var row = sheet.CreateRow(rowCount++);
+                    var borderedHeaderStyle = wb.CreateCellStyle();
+                    borderedHeaderStyle.SetFont(headerFont);
+                    borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    //borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                    //borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                    //borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                    //borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+
+                    ICell cell;
+
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue("Order Collection Report");
+                    cell.CellStyle = borderedHeaderStyle;
+
+                    row = sheet.CreateRow(rowCount++);
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue("Start Date");
+                    cell.CellStyle = borderedHeaderStyle;
+
+                    cell = row.CreateCell(1);
+                    cell.SetCellValue(filter.ReportDateFrom.ToString(dateFormat));
+                    cell.CellStyle = borderedHeaderStyle;
+
+                    row = sheet.CreateRow(rowCount++);
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue("End Date");
+                    cell.CellStyle = borderedHeaderStyle;
+
+                    cell = row.CreateCell(1);
+                    cell.SetCellValue(filter.ReportDateTo.ToString(dateFormat));
+                    cell.CellStyle = borderedHeaderStyle;
+
+                    rowCount += 2;
+                    row = sheet.CreateRow(rowCount++);
+                    for (int headerIndex = 0; headerIndex < headers.Count; headerIndex++)
+                    {
+                        cell = row.CreateCell(headerIndex);
+                        cell.SetCellValue(headers[headerIndex]);
+                        cell.CellStyle = borderedHeaderStyle;
+                    }
+
+                    #endregion
+
+                    #region Content
+                    var contentStyle = wb.CreateCellStyle();
+                    var contentFont = wb.CreateFont();
+                    contentFont.FontName = "Calibri";
+                    contentFont.FontHeightInPoints = 11;
+                    contentStyle.SetFont(contentFont);
+                    //contentStyle.BorderTop = BorderStyle.Thin;
+                    //contentStyle.BorderBottom = BorderStyle.Thin;
+                    //contentStyle.BorderLeft = BorderStyle.Thin;
+                    //contentStyle.BorderRight = BorderStyle.Thin;
+                    contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentStyle.Alignment = HorizontalAlignment.Left;
+                    //contentStyle.WrapText = true;
+                    var dataFormatCustom = wb.CreateDataFormat();
+
+
+                    var createHelper = wb.GetCreationHelper();
+                    var format = wb.CreateDataFormat();
+                    var dateCellStyle = wb.CreateCellStyle();
+                    dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
+                    dateCellStyle.Alignment = HorizontalAlignment.Right;
+                    dateCellStyle.SetFont(contentFont);
+
+                    var dateTimeCellStyle = wb.CreateCellStyle();
+                    dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
+                    dateTimeCellStyle.Alignment = HorizontalAlignment.Right;
+                    dateTimeCellStyle.SetFont(contentFont);
+
+                    var numericCellStyle = wb.CreateCellStyle();
+                    numericCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(decimalFormat);
+                    numericCellStyle.Alignment = HorizontalAlignment.Right;
+                    numericCellStyle.SetFont(contentFont);
+
+
+                    int col = 0;
+                    string invoice = null;
+                    string studentName = null;
+                    orders.ForEach(dt =>
+                    {
+                        col = 0;
+                        row = sheet.CreateRow(rowCount++);
+
+                        #region Payment 
+                        invoice = dt.InvoiceNumber;
+
+                        invoice = dt.InvoiceNumber;
+                        studentName = dt.StudentName;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.StudentGroupName);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.InvoiceNumber);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.StudentName);
+                        cell.CellStyle = contentStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.Outlet);
+                        //cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.ClassName);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.OrderDate.ToString(dateFormat));
+                        cell.CellStyle = dateCellStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.Status);
+                        cell.CellStyle = contentStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.CancellationReason);
+                        //cell.CellStyle = contentStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.DiscountCode);
+                        //cell.CellStyle = contentStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.Subtotal);
+                        //cell.SetCellType(CellType.Numeric);
+                        //cell.CellStyle = numericCellStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.Discount);
+                        //cell.SetCellType(CellType.Numeric);
+                        //cell.CellStyle = numericCellStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.PaymentGst);
+                        //cell.SetCellType(CellType.Numeric);
+                        //cell.CellStyle = numericCellStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.PaymentTransactionFee);
+                        //cell.SetCellType(CellType.Numeric);
+                        //cell.CellStyle = numericCellStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.PaymentFixedTransactionFee);
+                        //cell.SetCellType(CellType.Numeric);
+                        //cell.CellStyle = numericCellStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.PaymentTotalAmount);
+                        //cell.SetCellType(CellType.Numeric);
+                        //cell.CellStyle = numericCellStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.FomoId);
+                        //cell.CellStyle = contentStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.PaymentStatus);
+                        //cell.CellStyle = contentStyle;
+
+                        #endregion
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.DeliveryDate.ToString(dateFormat));
+                        cell.CellStyle = dateCellStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.MealSessionDetailName);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.MealTypeName);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.DishLabel);
+                        cell.CellStyle = contentStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.Quantity.ToString());
+                        //cell.CellStyle = contentStyle;
+
+                        //cell = row.CreateCell(col++);
+                        //cell.SetCellValue(dt.DishPrice);
+                        //cell.SetCellType(CellType.Numeric);
+                        //cell.CellStyle = numericCellStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.CollectionTime);
+                        cell.CellStyle = dateTimeCellStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.BentoCode);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.ReturnTime);
+                        cell.CellStyle = dateTimeCellStyle;
+
+                        cell = row.CreateCell(col++);
+                        cell.SetCellValue(dt.IsFAS ? "Y" : "N");
+                        cell.CellStyle = dateTimeCellStyle;
+                    });
+
+                    #endregion
+
+                    for (var i = 0; i < 30; i++)
+                    {
+                        sheet.AutoSizeColumn(i, true);
+                    }
+
+                    wb.Write(stream);
+
+                    return stream.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
         #endregion
 
         #region CancelOrderRequest

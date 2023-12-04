@@ -714,20 +714,22 @@ namespace FRS.Controllers
                     continue;
 
 
-                var destinations = new List<string> { OpenIdConnectConstants.Destinations.AccessToken };
+                var destinations = new List<string> { OpenIdConnectConstants.Destinations.AccessToken, OpenIdConnectConstants.Destinations.IdentityToken };
 
                 // Only add the iterated claim to the id_token if the corresponding scope was granted to the client application.
                 // The other claims will only be added to the access_token, which is encrypted when using the default format.
                 if ((claim.Type == OpenIdConnectConstants.Claims.Subject && ticket.HasScope(OpenIdConnectConstants.Scopes.OpenId)) ||
                     (claim.Type == OpenIdConnectConstants.Claims.Name && ticket.HasScope(OpenIdConnectConstants.Scopes.Profile)) ||
-                    (claim.Type == OpenIdConnectConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles)) ||
-                    (claim.Type == CustomClaimTypes.Permission && ticket.HasScope(OpenIddictConstants.Claims.Roles)))
+                    (claim.Type == OpenIdConnectConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles))) // ||
+                    //(claim.Type == CustomClaimTypes.Permission && ticket.HasScope(OpenIddictConstants.Claims.Roles)))
                 {
-                    destinations.Add(OpenIdConnectConstants.Destinations.IdentityToken);
+                    claim.SetDestinations(destinations);
                 }
-
-
-                claim.SetDestinations(destinations);
+                else
+                {
+                    claim.SetDestinations(new List<string> { OpenIdConnectConstants.Destinations.IdentityToken });
+                    //destinations.Add(OpenIdConnectConstants.Destinations.IdentityToken);
+                }
             }
 
 

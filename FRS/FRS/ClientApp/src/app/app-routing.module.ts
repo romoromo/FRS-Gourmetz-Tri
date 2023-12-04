@@ -151,6 +151,7 @@ import { MultiFactorLoginComponent } from './components/multi-factor-login/multi
 import { OrderPortalContent } from './models/meal-order/order-portal-content.model';
 import { UserActivityLogsManagementComponent } from './components/audit/user-activity-log/user-activity-logs-management.component';
 import { OutletTermsManagementComponent } from './components/meal-order-system/outlet/outlet-term/outlet-terms-management.component';
+import { OrderCollectionLogsManagementComponent } from './components/meal-order-system/student-group/order-log/order-logs-management.component';
 
  
 
@@ -312,7 +313,8 @@ const routes: Routes = [
       { path: "ordercancellationreport", component: OrderCancellationReportManagementComponent, canActivate: [AuthGuard], data: { title: "Order Cancellation Report" } },
       { path: "notificationsettings", component: NotificationSettingComponent, canActivate: [AuthGuard], data: { title: "Notification Setting" } },
       { path: "useractivityreport", component: UserActivityLogsManagementComponent, canActivate: [AuthGuard], data: { title: "User Activity Report" } },
-      { path: "outlettersm", component: OutletTermsManagementComponent, canActivate: [AuthGuard], data: { title: "Terms" } },
+      { path: "ordercollectionreport", component: OrderCollectionLogsManagementComponent, canActivate: [AuthGuard], data: { title: "Order Collection Report" } },
+      { path: "outletterms", component: OutletTermsManagementComponent, canActivate: [AuthGuard], data: { title: "Terms" } },
       //{ path: "orderportalcontents", component: OrderPortalContentComponent, canActivate: [AuthGuard], data: { title: "Order Portal Content" } },
 
       //{ path: "display/:mac", redirectTo: "/display/:mac" },

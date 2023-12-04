@@ -16,3 +16,9 @@ export enum UserActivityLogType {
   Roster = "Roster",
   Payment = "Payment"
 }
+
+export enum SalesOrderReportType {
+  SalesOrderReport = 1,
+  CancellationReport = 2,
+  CollectionReport = 3
+}

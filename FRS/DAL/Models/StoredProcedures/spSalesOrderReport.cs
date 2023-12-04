@@ -18,6 +18,7 @@ namespace DAL.Models.StoredProcedures
         public string PaymentNumber { get; set; }
         public int StudentId { get; set; }
         public string StudentName { get; set; }
+        public string StudentGroupName { get; set; }
         public string Outlet { get; set; }
         public string ClassName { get; set; }
         public DateTime OrderDate { get; set; }

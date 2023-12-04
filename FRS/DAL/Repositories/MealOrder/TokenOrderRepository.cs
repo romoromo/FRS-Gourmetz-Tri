@@ -54,6 +54,7 @@ namespace DAL.Repositories.MealOrder
             var sortByCol = new SqlParameter("@SortBy", System.Data.SqlDbType.VarChar);
             var sortBy = new SqlParameter("@SortDirection", System.Data.SqlDbType.Bit);
             var reportType = new SqlParameter("@ReportType", System.Data.SqlDbType.Int);
+            var studentGroupId = new SqlParameter("@StudentGroupId", System.Data.SqlDbType.Int);
 
             from.Value = filter.ReportDateFrom;
             to.Value = filter.ReportDateTo;
@@ -63,17 +64,53 @@ namespace DAL.Repositories.MealOrder
             pageSize.Value = (object)filter.PageSize ?? int.MaxValue;
             keywords.Value = (object)filter.Keyword ?? DBNull.Value;
             reportType.Value = (object)filter.ReportType ?? 1;
+            studentGroupId.Value = (object)filter.StudentGroupId ?? DBNull.Value;
 
             bool isDesc = filter.Sorts.Contains("-");
             sortByCol.Value = isDesc ? filter.Sorts.Substring(1) : filter.Sorts;
             sortBy.Value = isDesc;
 
             var orders = await _appContext.spSalesOrderReport
-                            .FromSql($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType",
-                                    from, to, status, isFas, page, pageSize, keywords, sortByCol, sortBy, reportType).ToListAsync();
+                            .FromSql($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupId",
+                                    from, to, status, isFas, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupId).ToListAsync();
 
             return orders;
         }
+
+        //public async Task<List<spSalesOrderReport>> GetOrderCollection(OrderCollectionReportFilter filter)
+        //{
+        //    var from = new SqlParameter("@ReportDateFrom", System.Data.SqlDbType.Date);
+        //    var to = new SqlParameter("@ReportDateTo", System.Data.SqlDbType.Date);
+        //    var status = new SqlParameter("@Status", System.Data.SqlDbType.VarChar);
+        //    var isFas = new SqlParameter("@IsFAS", System.Data.SqlDbType.Bit);
+        //    var page = new SqlParameter("@Page", System.Data.SqlDbType.Int);
+        //    var pageSize = new SqlParameter("@PageSize", System.Data.SqlDbType.Int);
+        //    var keywords = new SqlParameter("@Keywords", System.Data.SqlDbType.VarChar);
+        //    var sortByCol = new SqlParameter("@SortBy", System.Data.SqlDbType.VarChar);
+        //    var sortBy = new SqlParameter("@SortDirection", System.Data.SqlDbType.Bit);
+        //    var reportType = new SqlParameter("@ReportType", System.Data.SqlDbType.Int);
+        //    var studentGroupId = new SqlParameter("@StudentGroupId", System.Data.SqlDbType.Int);
+
+        //    from.Value = filter.ReportDateFrom;
+        //    to.Value = filter.ReportDateTo;
+        //    status.Value = (object)filter.Status ?? DBNull.Value;
+        //    isFas.Value = (object)filter.IsFas ?? DBNull.Value;
+        //    page.Value = (object)filter.Page ?? 1;
+        //    pageSize.Value = (object)filter.PageSize ?? int.MaxValue;
+        //    keywords.Value = (object)filter.Keyword ?? DBNull.Value;
+        //    reportType.Value = (object)filter.ReportType ?? 1;
+        //    studentGroupId.Value = (object)filter.StudentGroupId ?? 0;
+
+        //    bool isDesc = filter.Sorts.Contains("-");
+        //    sortByCol.Value = isDesc ? filter.Sorts.Substring(1) : filter.Sorts;
+        //    sortBy.Value = isDesc;
+
+        //    var orders = await _appContext.spSalesOrderReport
+        //                    .FromSql($"exec spOrderCollectionReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupId",
+        //                            from, to, status, isFas, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupId).ToListAsync();
+
+        //    return orders;
+        //}
 
         public async Task<PagedEntity<TokenOrder>> GetTokenOrdersAsync(BaseFilter filter)
         {

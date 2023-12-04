@@ -164,7 +164,7 @@
       "showLabel": true,
       "showLogo": true,
       "logoClass": "fa fa-building-o",
-      "permissions": [ "mosmgt.outletmgt.view" ],
+      "permissions": [ "mosmgt.settingmgt.outlets.outlets" ],
       "childMenus": []
     },
     {
@@ -406,6 +406,16 @@
           "showLogo": false,
           "logoClass": "",
           "permissions": [ "mosmgt.reportmgt.useractivity.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "Order Collection Report",
+          "active": true,
+          "link": "/ordercollectionreport",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.outletmgt.reports.ordercollection.view" ],
           "childMenus": []
         }
       ]

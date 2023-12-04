@@ -487,6 +487,7 @@ import { StudentOrderManagementComponent, StatusDropdownComponent } from './comp
 import { StudentOrderDetailComponent } from './components/meal-order-system/student/student-order/student-order-details.component';
 import { DefaultPipe } from './pipes/default-string-val.pipe';
 import { StudentOrderEditorComponent } from './components/meal-order-system/student/student-order/student-order-editor.component';
+import { OrderCollectionLogsManagementComponent } from './components/meal-order-system/student-group/order-log/order-logs-management.component';
  
  
 
@@ -714,7 +715,8 @@ export const configFactory = (configService: ConfigurationService) => {
     OutletTermsManagementComponent, OutletTermEditorComponent,
     StudentOrderManagementComponent, StatusDropdownComponent, StudentOrderDetailComponent,
     StudentEditorComponent, StudentOrderEditorComponent,
-    DefaultPipe
+    DefaultPipe,
+    OrderCollectionLogsManagementComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },
@@ -891,7 +893,8 @@ export const configFactory = (configService: ConfigurationService) => {
     UserActivityLogsManagementComponent, UserActivityLogViewerComponent,
     OutletTermsManagementComponent, OutletTermEditorComponent,
     StudentOrderManagementComponent, StatusDropdownComponent, StudentOrderDetailComponent,
-    StudentEditorComponent, StudentOrderEditorComponent
+    StudentEditorComponent, StudentOrderEditorComponent,
+    OrderCollectionLogsManagementComponent
   ],
 })
 export class AppModule {

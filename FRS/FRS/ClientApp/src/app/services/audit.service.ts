@@ -80,4 +80,8 @@ export class AuditService {
   downloadFlattenUserActivityLogsReport(filter: Filter) {
     return this.commonEndpoint.getFile<any>(this.auditUrl + '/exportuseractivity/flatten', filter);
   }
+
+  downloadOrderCollectionLogsReport(filter: Filter) {
+    return this.commonEndpoint.getFile<any>(this.auditUrl + '/export/collection/flatten', filter);
+  }
 }

@@ -41,5 +41,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<PagedEntity<TokenOrder>> GetStudentOrdersAsync(StudentOrderFilter filter);
         Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason);
         Task<BaseOperationResponse> CreatePrepaidOrderAsync(PrepaidOrderDTO order);
+        //Task<List<spSalesOrderReport>> GetOrderCollection(SalesOrderReportFilter filter);
     }
 }
