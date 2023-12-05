@@ -179,7 +179,6 @@ export class RoleEditorComponent implements AfterViewInit {
       }
     }
 
-    console.log(this.selectedPermissions);
   }
 
   ngAfterViewInit() {

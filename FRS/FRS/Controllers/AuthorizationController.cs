@@ -720,7 +720,8 @@ namespace FRS.Controllers
                 // The other claims will only be added to the access_token, which is encrypted when using the default format.
                 if ((claim.Type == OpenIdConnectConstants.Claims.Subject && ticket.HasScope(OpenIdConnectConstants.Scopes.OpenId)) ||
                     (claim.Type == OpenIdConnectConstants.Claims.Name && ticket.HasScope(OpenIdConnectConstants.Scopes.Profile)) ||
-                    (claim.Type == OpenIdConnectConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles))) // ||
+                    (claim.Type == OpenIdConnectConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles)) ||
+                    (claim.Type == CustomClaimTypes.Permission && IsIncludedCustomClaim(claim.Value)))
                     //(claim.Type == CustomClaimTypes.Permission && ticket.HasScope(OpenIddictConstants.Claims.Roles)))
                 {
                     claim.SetDestinations(destinations);
@@ -778,6 +779,20 @@ namespace FRS.Controllers
             return ticket;
         }
 
+        private bool IsIncludedCustomClaim(string value)
+        {
+            var customClaims = new List<string>
+            {
+                ApplicationPermissionsTrees.SSUserMenu,
+                ApplicationPermissionsTrees.SSManageUserMenu,
+                ApplicationPermissionsTrees.SSRoleMenu,
+                ApplicationPermissionsTrees.SSManageRoleMenu,
+                ApplicationPermissionsTrees.SSDepartmentMenu,
+                ApplicationPermissionsTrees.SSDepartmentManage
+            };
+
+            return customClaims.Contains(value);
+        }
         private bool ValidateADAccount(string username, string userpassword)
         {
             var ldapServer = _configuration["AppSettings:AD_Server"];
