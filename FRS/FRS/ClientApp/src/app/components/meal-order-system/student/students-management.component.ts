@@ -385,24 +385,41 @@ export class StudentsManagementComponent implements OnInit {
     window.open(getBaseUrl() + '/Download/FileByPath?filePath=/' + encodeURIComponent(path), '_blank');
   }
 
-  //downloadTemplate() {
-  //  const fileName = 'YISS Student or Staff Import Template.xlsx';
+  downloadTemplateWithStudent() {
+    const fileName = moment().format('DDMMYYYY_hhmmss') + '_Template with Student Information.xlsx';
 
-  //  let f = new Filter(-1, -1);
-  //  f.filters = this.filter.filters;
-  //  f.sorts = this.filter.sorts;
-  //  f.page = -1;
-  //  this.studentService.downloadTemplateStudentCardFile().subscribe(
-  //    data => {
-  //      console.log(data);
-  //      saveAs(data, fileName);
-  //    },
-  //    err => {
-  //      alert("Problem while downloading the file.");
-  //      console.error(err);
-  //    }
-  //  );
-  //}
+    let f = new Filter(-1, -1);
+    f.filters = this.filter.filters;
+    f.sorts = this.filter.sorts;
+    f.page = -1;
+    this.studentService.downloadTemplateWithStudent(f).subscribe(
+      data => {
+        console.log(data);
+        saveAs(data, fileName);
+      },
+      err => {
+        alert("Problem while downloading the file.");
+        console.error(err);
+      }
+    );
+
+    //const fileName = 'YISS Student or Staff Import Template.xlsx';
+
+    //let f = new Filter(-1, -1);
+    //f.filters = this.filter.filters;
+    //f.sorts = this.filter.sorts;
+    //f.page = -1;
+    //this.studentService.downloadTemplateStudentCardFile().subscribe(
+    //  data => {
+    //    console.log(data);
+    //    saveAs(data, fileName);
+    //  },
+    //  err => {
+    //    alert("Problem while downloading the file.");
+    //    console.error(err);
+    //  }
+    //);
+  }
 
   openTokenOrder(row) {
     const dialogRef = this.dialog.open(TokenOrdersManagementComponent, {

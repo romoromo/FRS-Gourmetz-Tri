@@ -26,5 +26,6 @@ namespace DAL.Core.DTO
         public string CardId { get; set; }
         public string CardNumber { get; set; }
         public string Email { get; set; }
+        public string AssociatedEmail { get; set; }
     }
 }

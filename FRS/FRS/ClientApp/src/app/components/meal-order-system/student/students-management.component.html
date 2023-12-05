@@ -11,15 +11,21 @@
     <div class="col-sm-4">
       <div class="navbar action-box">
         <ul class="nav navbar-nav navbar-right">
-          <li *ngIf="canImportStudents" class="toolbaritem">
-            <a href="javascript:;" (click)="downloadTemplate()">
-              <i class="fa fa-download"></i> Template
+          <li *ngIf="canImportStudents" class="toolbaritem" [matMenuTriggerFor]="templateMenu">
+            <a style="cursor:pointer">
+              <i class="fa fa-download"></i> Download Template
             </a>
+            <mat-menu #templateMenu="matMenu">
+              <!-- Add menu items as needed -->
+              <button mat-menu-item (click)="downloadTemplate()">Empty Template</button>
+              <button mat-menu-item (click)="downloadTemplateWithStudent()">Template with Students</button>
+              <!-- Add more menu items as needed -->
+            </mat-menu>
           </li>
 
           <li *ngIf="canImportStudents" class="toolbaritem">
             <a href="javascript:;" (click)="fileStudentCardImport.click()">
-              <i class="fa fa-upload"></i> Import
+              <i class="fa fa-upload"></i> Batch Import
             </a>
             <input type="file" #fileStudentCardImport placeholder="Choose file" (change)="importedStudentCardFile(fileStudentCardImport.files)" style="display:none;" accept="{{fileTypes}}">
 

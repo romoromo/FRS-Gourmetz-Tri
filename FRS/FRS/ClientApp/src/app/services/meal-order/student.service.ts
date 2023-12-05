@@ -75,6 +75,10 @@ export class StudentService {
     return this.commonEndpoint.getFile<any>(this.studentUrl + '/cards/import/template', {});
   }
 
+  downloadTemplateWithStudent(filter: Filter) {
+    return this.commonEndpoint.getFile<any>(this.studentUrl + '/cards/import/template-with-details', filter);
+  }
+
   createAccount(ids: string[]) {
     return this.commonEndpoint.get(this.studentUrl + '/createaccount', true, ids);
   }
@@ -127,6 +131,10 @@ export class StudentService {
 
   getStudentGroupsByFilter(filter: Filter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.studentGroupUrl + '/sieve/list', filter);
+  }
+
+  getStudentGroupsSimpleByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.studentGroupUrl + '/simple/list', filter);
   }
 
   updateStudentGroup(group: StudentGroup) {

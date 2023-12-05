@@ -812,16 +812,49 @@ namespace DAL.Repositories.MealOrder
                                 await _appContext.SaveChangesAsync();
                             }
 
-                            var student = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive &&
+                            var students = _appContext.Students.Where(e => e.IsActive && e.OutletId == row.OutletId &&
                                                 e.Name.Equals(row.Name, StringComparison.InvariantCultureIgnoreCase));
 
+                            var parentAccount = await _appContext.Users.FirstOrDefaultAsync(e => e.IsActive &&
+                                                e.Email.Equals(row.AssociatedEmail, StringComparison.InvariantCultureIgnoreCase));
+
+                            var studentNameIds = students.Select(e => e.Id).ToList();
+                            Student student = parentAccount?.Students?.FirstOrDefault(e => studentNameIds.Contains(e.StudentId))?.Student;
+
+                            if (student == null)
+                            {
+                                // existing student with their own email
+                                student = await students.FirstOrDefaultAsync(e => !string.IsNullOrEmpty(e.Email) && e.Email.Equals(row.Email, StringComparison.InvariantCultureIgnoreCase));
+                            }
+
+                            if (student == null)
+                            {
+                                if (students.Any(e => !string.IsNullOrEmpty(e.Email) && e.Email.Equals(row.AssociatedEmail, StringComparison.InvariantCultureIgnoreCase)))
+                                {
+                                    // student is existing and is using parent's email
+                                    student = await students.FirstOrDefaultAsync(e => !string.IsNullOrEmpty(e.Email) && e.Email.Equals(row.AssociatedEmail, StringComparison.InvariantCultureIgnoreCase));
+                                }
+
+                                //if(student == null)
+                                //{
+                                //    // student email is not tied to the student. It's maybe using the parents
+                                //    // check associate email (parent)
+                                //    var parentAccount = await _appContext.Users.FirstOrDefaultAsync(e => e.IsActive && e.Email.Equals(row.AssociatedEmail, StringComparison.InvariantCultureIgnoreCase));
+                                //    if (students.Any(e => !string.IsNullOrEmpty(e.Ass) && e.Email.Equals(row.Email, StringComparison.InvariantCultureIgnoreCase)))
+                                //    {
+                                //        student = await students.FirstOrDefaultAsync(e => !string.IsNullOrEmpty(e.Email) && e.Email.Equals(row.Email, StringComparison.InvariantCultureIgnoreCase));
+                                //    }
+                                //}
+                            }
+
                             string studentEmail = string.IsNullOrEmpty(row.Email) ? await GenerateStudentEmail(sClass.Name, row.Name, row.OutletId) : row.Email;
+
                             //check if student exists using account
                             if (student == null)
                             {
                                 if (!string.IsNullOrEmpty(studentEmail) && new EmailAddressAttribute().IsValid(studentEmail))
                                 {
-                                    student = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive && e.Email == studentEmail);
+                                    student = await _appContext.Students.FirstOrDefaultAsync(e => e.OutletId == row.OutletId && e.IsActive && e.Email == studentEmail);
                                 }
                             }
 
@@ -843,11 +876,12 @@ namespace DAL.Repositories.MealOrder
                                 });
 
                                 var cardToInsert = await studentCards.FirstOrDefaultAsync(e => e.CardId.Equals(row.CardId, StringComparison.InvariantCultureIgnoreCase));
-                                if(cardToInsert == null)
+                                if (cardToInsert == null)
                                 {
-                                    _appContext.StudentCards.Add(new StudentCard {
+                                    _appContext.StudentCards.Add(new StudentCard
+                                    {
                                         StudentId = student.Id,
-                                        CardId = row.CardId, 
+                                        CardId = row.CardId,
                                         Remarks = row.CardNumber,
                                         Status = StudentCardStatus.ACTIVE.ToString()
                                     });
@@ -868,6 +902,8 @@ namespace DAL.Repositories.MealOrder
                             else
                             {
                                 //no student record and no account yet
+                                var studentCards = _appContext.StudentCards.Where(e => e.IsActive && e.StudentId == student.Id);
+
                                 student = new Student
                                 {
                                     ClassBatchId = batch?.Id,
@@ -875,10 +911,46 @@ namespace DAL.Repositories.MealOrder
                                     Name = row.Name,
                                     Email = studentEmail,
                                     OutletId = row.OutletId,
-                                    StudentCards = new List<StudentCard>()
+                                    StudentCards = new List<StudentCard>(),
+                                    Users = new List<StudentManageAccount>()
                                 };
 
-                                student.StudentCards.Add(new StudentCard {
+                                // parent email exists
+                                if (parentAccount != null)
+                                {
+                                    student.Users.Add(new StudentManageAccount { UserId = parentAccount.Id });
+                                }
+                                else
+                                {
+                                    // create account
+                                    if (!string.IsNullOrEmpty(row.AssociatedEmail))
+                                    {
+                                        //create account
+                                        var user = await accountManager.GetUserByEmailAsync(row.AssociatedEmail);
+                                        if (user == null)
+                                        {
+                                            user = new ApplicationUser();
+                                            user.IsEnabled = true;
+                                            user.EmailConfirmed = true;
+                                            user.UserName = row.AssociatedEmail.Substring(0, row.AssociatedEmail.IndexOf('@'));
+                                            user.Email = row.AssociatedEmail;
+                                            user.IsActive = true;
+                                            string newPassword = PasswordHelper.GenerateRandomPassword();
+                                            var createUserResult = await accountManager.CreateUserAsync(user, new List<string>(), newPassword);
+                                            if (createUserResult.Item1)
+                                            {
+                                                student.Users.Add(new StudentManageAccount { UserId = user.Id });
+                                            }
+                                        }
+                                        else
+                                        {
+                                            student.Users.Add(new StudentManageAccount { UserId = user.Id });
+                                        }
+                                    }
+                                }
+
+                                student.StudentCards.Add(new StudentCard
+                                {
                                     CardId = row.CardId,
                                     Remarks = row.CardNumber,
                                     Status = StudentCardStatus.ACTIVE.ToString()
@@ -920,16 +992,16 @@ namespace DAL.Repositories.MealOrder
         private async Task<string> GenerateStudentEmail(string className, string name, int outletId)
         {
             
-            int classCount = _appContext.Students.Count(e => e.IsActive && e.Name.Equals(className, StringComparison.InvariantCultureIgnoreCase));
+            int classCount = _appContext.Students.Count(e => e.IsActive && e.Class.Name.Equals(className, StringComparison.InvariantCultureIgnoreCase));
             int retries = 20;
 
             //replace non a
             Regex rgx = new Regex("[^a-zA-Z -]");
             name = rgx.Replace(name, "");
             string[] names = name.ToLower().Split(' ');
-            string email = string.Join("", names.Where(e=> !string.IsNullOrEmpty(e)).Select(e => e.ToCharArray()[0]));
+            string email = string.Join("", names.Where(e => !string.IsNullOrEmpty(e)).Select(e => e));
             email = email.Remove(email.Length - 1);
-            string originalEmail = string.Format("{0}{1}@testsmv.com", email, names.Last());
+            string originalEmail = string.Format("{0}{1}@example.org", email, names.Last());
             string studentEmail = originalEmail;
             while (retries > 0)
             {

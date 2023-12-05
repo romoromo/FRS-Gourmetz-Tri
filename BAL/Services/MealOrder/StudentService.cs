@@ -150,8 +150,7 @@ namespace BAL.Services.MealOrder
                     headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
                     headerStyle.SetFont(headerFont);
                     headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
-                    var row = sheet.CreateRow(rowCount);
-                    var borderedHeaderStyle = wb.CreateCellStyle();
+                    var row = sheet.CreateRow(rowCount);var borderedHeaderStyle = wb.CreateCellStyle();
                     borderedHeaderStyle.SetFont(headerFont);
                     borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
                     borderedHeaderStyle.BorderTop = BorderStyle.Thin;
@@ -240,6 +239,126 @@ namespace BAL.Services.MealOrder
 
                         cell = row.CreateCell(i++);
                         cell.SetCellValue(cards);
+                        cell.CellStyle = contentStyle;
+                    });
+
+                    #endregion
+
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        sheet.AutoSizeColumn(i, true);
+                    }
+
+                    wb.Write(stream);
+
+                    return stream.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<byte[]> GenerateStudentReportForImportXls(BaseFilter filter)
+        {
+            var students = await _uow.Students.GetStudentsAsync(filter);
+
+            var users = students.PagedData.ToList();
+
+            if (users != null)
+            {
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    var wb = new XSSFWorkbook();
+                    var rowCount = 0;
+                    var sheet = (XSSFSheet)wb.CreateSheet("Students");
+                    var headers = new string[] { "NAME", "CLASS", "ISSUE DATE", "CARD ID", "CARD NUMBER", "EMAIL", "ASSOCIATED EMAIL" };
+
+                    #region Headers
+
+                    var headerStyle = wb.CreateCellStyle();
+                    var headerFont = wb.CreateFont();
+                    headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                    headerFont.FontName = "Verdana";
+                    headerStyle.SetFont(headerFont);
+                    headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    var row = sheet.CreateRow(rowCount);
+
+                    ICell cell;
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue("SATS Food Services Pte Ltd");
+                    cell.CellStyle = headerStyle;
+
+                    rowCount += 3;
+                    row = sheet.CreateRow(rowCount);
+
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue("STUDENTS");
+                    cell.CellStyle = headerStyle;
+
+                    var borderedHeaderStyle = wb.CreateCellStyle();
+                    borderedHeaderStyle.SetFont(headerFont);
+                    borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    //borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                    //borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                    //borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                    //borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                    row = sheet.CreateRow(++rowCount);
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue(headers[i]);
+                        cell.CellStyle = borderedHeaderStyle;
+                    }
+                    sheet.AutoSizeColumn(0);
+
+                    #endregion
+
+                    #region Content
+                    var contentStyle = wb.CreateCellStyle();
+                    contentStyle.BorderTop = BorderStyle.Thin;
+                    contentStyle.BorderBottom = BorderStyle.Thin;
+                    contentStyle.BorderLeft = BorderStyle.Thin;
+                    contentStyle.BorderRight = BorderStyle.Thin;
+                    contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentStyle.Alignment = HorizontalAlignment.Left;
+                    contentStyle.WrapText = true;
+                    var dataFormatCustom = wb.CreateDataFormat();
+                    users.ForEach(dt =>
+                    {
+                        int i = 0;
+                        row = sheet.CreateRow(++rowCount);
+
+                        cell = row.CreateCell(i++);
+                        cell.SetCellValue(dt.Name);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(i++);
+                        cell.SetCellValue(dt.Class?.Name);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(i++);
+                        var card = dt.StudentCards.OrderBy(e => e.UpdatedDate).FirstOrDefault(e => e.IsActive && e.Status?.ToLower() == "active");
+                        var issueDate = card != null ? card.CreatedDate.ToString("dd/MM/yyyy") : string.Empty;
+                        cell.SetCellValue(issueDate);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(i++);
+                        cell.SetCellValue(card != null ? card.CardId : string.Empty);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(i++);
+                        cell.SetCellValue(string.Empty);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(i++);
+                        cell.SetCellValue(dt.Email);
+                        cell.CellStyle = contentStyle;
+
+                        var associatedUser = dt.Users.FirstOrDefault(e => e.IsActive);
+                        cell = row.CreateCell(i++);
+                        cell.SetCellValue(associatedUser != null ? associatedUser.User.Email : string.Empty);
                         cell.CellStyle = contentStyle;
                     });
 

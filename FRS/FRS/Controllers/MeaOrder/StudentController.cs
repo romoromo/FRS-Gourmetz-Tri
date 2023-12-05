@@ -28,6 +28,7 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using OpenIddict.Validation;
 using Microsoft.Extensions.Configuration;
+using DAL.Core.Helpers;
 
 namespace FRS.Controllers
 {
@@ -270,6 +271,25 @@ namespace FRS.Controllers
         {
             var xls = await _service.GenerateStudentReportXls(filter);
             var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_StudentReport.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
+
+        [HttpPost("students/cards/import/template-with-details")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateStudentReportForImportXls(BaseFilter filter)
+        {
+            var xls = await _service.GenerateStudentReportForImportXls(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_Template with Student Information.xlsx";
 
             if (xls == null || xls.Length == 0)
             {
@@ -562,7 +582,7 @@ namespace FRS.Controllers
                     var sheet = (XSSFSheet)wb.GetSheetAt(x);
                     int colCount = sheet.GetRow(startRow).PhysicalNumberOfCells;
 
-                    if (colCount != 6) //number of columns required
+                    if (colCount != 7) //number of columns required
                     {
                         string errMsg = string.Format("There is a mismatch on the number of columns required. Please check the file. Sheet: {0}", x + 1);
                         return new Tuple<bool, string, List<StudentCardImportDTO>>(false, errMsg, null);
@@ -570,7 +590,7 @@ namespace FRS.Controllers
                     else
                     {
                         int rowCount = sheet.PhysicalNumberOfRows;
-                        for (int i = startRow; i < rowCount; i++)
+                        for (int i = startRow; ExcelUtility.GetRowWithNonEmptyCell(sheet, i) != null; i++)
                         {
                             var dto = new StudentCardImportDTO { OutletId = outletId, Batch = batch };
                             var fRow = sheet.GetRow(i);
@@ -585,7 +605,7 @@ namespace FRS.Controllers
                                 dto.Class = sClass != null ? sClass.ToString().Trim() : "";
 
                                 var issueDate = fRow.GetCell(c++);
-                                dto.IssueDate = issueDate != null ? Convert.ToDateTime(issueDate.ToString()) : (DateTime?)null;
+                                dto.IssueDate = issueDate != null && !string.IsNullOrEmpty(issueDate.ToString()) ? Convert.ToDateTime(issueDate.ToString()) : (DateTime?)null;
 
                                 DataFormatter formatter = new DataFormatter();
                                 var cardIdCell = fRow.GetCell(c++);
@@ -599,6 +619,10 @@ namespace FRS.Controllers
                                 var emailCell = fRow.GetCell(c++);
                                 string email = formatter.FormatCellValue(emailCell);
                                 dto.Email = email != null ? email.ToString().Trim() : "";
+
+                                var associatedEmailCell = fRow.GetCell(c++);
+                                string associatedEmail = formatter.FormatCellValue(associatedEmailCell);
+                                dto.AssociatedEmail = associatedEmail != null ? associatedEmail.ToString().Trim() : "";
 
                                 rows.Add(dto);
                             }
