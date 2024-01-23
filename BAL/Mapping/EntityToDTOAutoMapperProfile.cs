@@ -154,6 +154,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.Email, map => map.MapFrom(e => e.Account.User.Email))
                 .ForMember(e => e.FullName, map => map.MapFrom(e => e.Account.User.FullName))
                 .ForMember(e => e.OutletName, map => map.MapFrom(e => e.Outlet.Name))
+                .ForMember(e => e.DaysToFreezeOrdering, map => map.MapFrom(e => e.Outlet.DaysToFreezeOrdering))
                 .ForMember(e => e.Cards, map => map.MapFrom(e => e.Account != null ? e.Account.User.UserCardIds.Where(f => f.IsActive).ToList() : null))
                 .ForMember(d => d.Users, map => map.MapFrom(s => s.Users.Where(f => f.IsActive)))
                 .ForMember(e => e.StudentCards, map => map.MapFrom(e => e.StudentCards.Where(f => f.IsActive).ToList()))

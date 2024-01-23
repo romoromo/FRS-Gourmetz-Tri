@@ -38,6 +38,7 @@ namespace BAL.DTO.MealOrder
         public int? OutletId { get; set; }
 
         public string OutletName { get; set; }
+        public int DaysToFreezeOrdering { get; set; }
 
         public string UserType { get; set; }
 
