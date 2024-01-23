@@ -175,7 +175,7 @@ export class StoreInfoEditorComponent {
   getCatererInfos() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getCatererInfosByFilter(filter)
+    this.deliveryService.getCatererInfosSimpleByFilter(filter)
       .subscribe(results => {
         this.catererInfos = results.pagedData;
       },

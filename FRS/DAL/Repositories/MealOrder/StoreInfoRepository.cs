@@ -97,9 +97,9 @@ namespace DAL.Repositories.MealOrder
                     // check outlet cut off
                     var days = _appContext.CatererOutlets.Where(e => e.CatererInfoId == data.CatererInfoId).Select(e => e.Outlet.DaysToFreezeOrdering).ToList();
                     int.TryParse(data.CalendarDays, out int cd);
-                    if (days.Any(e => e < cd))
+                    if (days.Any(e => e > 0 && e < cd))
                     {
-                        result.Message = "";
+                        result.Message = "Calendar days must be equal or lesser than the cut-off days of the outlets.";
                         result.IsSuccess = false;
                         return result;
                     }
