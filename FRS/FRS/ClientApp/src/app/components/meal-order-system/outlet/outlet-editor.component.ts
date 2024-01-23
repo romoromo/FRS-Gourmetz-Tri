@@ -4,7 +4,7 @@ import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Outlet, OutletProfile } from 'src/app/models/meal-order/outlet.model';
+import { OutletSimple, OutletProfile } from 'src/app/models/meal-order/outlet.model';
 import { MealService } from 'src/app/services/meal-order/meal.service';
 import { Filter } from 'src/app/models/sieve-filter.model';
 import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
@@ -23,7 +23,7 @@ export class OutletEditorComponent {
   private isSaving: boolean;
   private showValidationErrors: boolean = true;
   private editingOutletCode: string;
-  private outletEdit: Outlet = new Outlet();
+  private outletEdit: OutletSimple = new OutletSimple();
   private allPermissions: Permission[] = [];
   private selectedValues: { [key: string]: boolean; } = {};
   public formResetToggle = true;
@@ -82,7 +82,7 @@ export class OutletEditorComponent {
   }
 
 
-  private saveSuccessHelper(outlet?: Outlet) {
+  private saveSuccessHelper(outlet?: OutletSimple) {
     if (outlet)
       Object.assign(this.outletEdit, outlet);
 
@@ -96,7 +96,7 @@ export class OutletEditorComponent {
       this.alertService.showMessage("Success", `Changes to caterer \"${this.outletEdit.name}\" was saved successfully`, MessageSeverity.success);
 
 
-    this.outletEdit = new Outlet();
+    this.outletEdit = new OutletSimple();
     this.resetForm();
 
 
@@ -122,7 +122,7 @@ export class OutletEditorComponent {
 
 
   private cancel() {
-    this.outletEdit = new Outlet();
+    this.outletEdit = new OutletSimple();
 
     this.showValidationErrors = false;
     this.resetForm();
@@ -132,7 +132,7 @@ export class OutletEditorComponent {
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close(true);
   }
 
   resetForm(replace = false) {
@@ -156,19 +156,19 @@ export class OutletEditorComponent {
 
     this.editingOutletCode = null;
     this.selectedValues = {};
-    this.outletEdit = new Outlet();
+    this.outletEdit = new OutletSimple();
 
     return this.outletEdit;
   }
 
-  editOutlet(outlet: Outlet) {
+  editOutlet(outlet: OutletSimple) {
     if (outlet) {
       this.isNewOutlet = false;
       this.showValidationErrors = true;
 
       this.editingOutletCode = outlet.name;
       this.selectedValues = {};
-      this.outletEdit = new Outlet();
+      this.outletEdit = new OutletSimple();
       Object.assign(this.outletEdit, outlet);
 
       return this.outletEdit;

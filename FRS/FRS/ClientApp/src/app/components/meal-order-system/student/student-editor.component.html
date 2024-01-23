@@ -237,7 +237,7 @@
           </mat-form-field>
           <mat-form-field class="col-md-12">
             <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="studentEmail" name="studentEmail" placeholder="Enter email" [(ngModel)]="studentEdit.email" #studentEmail="ngModel" required minlength="2" maxlength="200" />
-            <mat-error *ngIf="showValidationErrors && f.submitted">nEEmail is required</mat-error>
+            <mat-error *ngIf="showValidationErrors && f.submitted">Email is required</mat-error>
           </mat-form-field>
         </div>
         <div class="col-sm-12" *ngIf="isAddAccount">
@@ -245,6 +245,7 @@
           <!--<label for="newPassword" class="control-label col-md-2">{{'users.editor.Password' | translate}}</label>-->
           <div *ngIf="!isChangePassword && studentEdit.userId" class="col-md-12">
             <button type="button" (click)="changePassword()" class="btn btn-link">{{'users.editor.ChangePassword' | translate}}</button>
+            <button type="button" (click)="resetPassword(studentEdit)" class="btn btn-link">Reset Password</button>
           </div>
 
           <div *ngIf="isChangePassword || (isAddAccount && !studentEdit.userId)" class="col-md-12">

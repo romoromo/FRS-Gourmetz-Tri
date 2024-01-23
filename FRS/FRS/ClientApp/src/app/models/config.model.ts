@@ -11,4 +11,5 @@ export class Config {
   public resetPasswordUrl: string;
   public domainUrl: string;
   public enableMFA: boolean;
+  public enableMFAValidation: boolean;
 }

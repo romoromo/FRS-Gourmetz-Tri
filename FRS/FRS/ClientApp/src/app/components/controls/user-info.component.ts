@@ -218,7 +218,7 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     let filter = new Filter(-1, -1);
     filter.filters = '(IsActive)==true';
 
-    this.subscription.add(this.deliveryService.getOutletsByFilter(filter)
+    this.subscription.add(this.deliveryService.getOutletsSimpleByFilter(filter)
       .subscribe(results => {
         var allUserOutlets = results.pagedData;
         allUserOutlets.map(cg => {
@@ -238,7 +238,7 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     let filter = new Filter(-1, -1);
     filter.filters = '(IsActive)==true';
 
-    this.subscription.add(this.deliveryService.getCatererInfosByFilter(filter)
+    this.subscription.add(this.deliveryService.getCatererInfosSimpleByFilter(filter)
       .subscribe(results => {
         var allUserCaterers = results.pagedData;
         allUserCaterers.map(cg => {
@@ -438,6 +438,14 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     //  });
 
     //}
+
+    if (this.userEdit.email) {
+      this.userEdit.email = this.userEdit.email.replace(/\s/g, '');
+    }
+
+    if (this.userEdit.userName) {
+      this.userEdit.userName = this.userEdit.userName.replace(/\s/g, '');
+    }
     
     if (!this.userEdit.institutionId) {
       this.userEdit.institutionId = this.accountService.currentUser.institutionId;

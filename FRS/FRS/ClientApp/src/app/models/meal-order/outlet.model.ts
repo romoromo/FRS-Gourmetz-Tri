@@ -1,6 +1,7 @@
 import { CatererOutlet } from "./caterer-info.model";
 import { MealSession } from "./meal-session.model";
 import { StoreInfo } from "./store-info.model";
+import { extend } from "webdriver-js-extender";
 
 export class OutletProfile {
 
@@ -16,7 +17,7 @@ export class OutletProfile {
   public outlets: Outlet[];    
 }
 
-export class Outlet {
+export class OutletSimple {
 
   constructor(id?: string, name?: string) {
 
@@ -31,6 +32,14 @@ export class Outlet {
   public locationName: string;
   public outletProfileId: string;
   public daysToFreezeOrdering: string;
+}
+
+export class Outlet extends OutletSimple {
+
+  constructor(id?: string, name?: string) {
+    super(id, name);
+  }
+
   public catererOutlets: CatererOutlet[];
   public mealSessions: MealSession[];
   public stores: StoreInfo[];

@@ -295,6 +295,47 @@ namespace DAL.Core
             return Tuple.Create(true, new string[] { });
         }
 
+        public async Task<Tuple<bool, string[]>> CreateUserWithPasswordAsync(ApplicationUser user, IEnumerable<string> roles, string password)
+        {
+            if (user.IsAD) user.EmailConfirmed = true;
+
+            var result = user.IsAD ? await _userManager.CreateAsync(user) : await _userManager.CreateAsync(user, password);
+            if (!result.Succeeded)
+                return Tuple.Create(false, result.Errors.Select(e => e.Description).ToArray());
+
+
+            if (roles != null && roles.Any())
+            {
+                try
+                {
+                    result = await this._userManager.AddToRolesAsync(user, roles.Distinct());
+                }
+                catch
+                {
+                    await DeleteUserAsync(user);
+                    throw;
+                }
+            }
+            else
+            {
+                var defaultRole = await _appContext.Roles.FirstOrDefaultAsync(e => e.IsActive && e.IsDefault);
+                try
+                {
+                    result = await this._userManager.AddToRolesAsync(user, new List<string> { defaultRole.Name });
+                }
+                catch
+                {
+                }
+            }
+
+            if (!result.Succeeded)
+            {
+                await DeleteUserAsync(user);
+                return Tuple.Create(false, result.Errors.Select(e => e.Description).ToArray());
+            }
+
+            return Tuple.Create(true, new string[] { });
+        }
 
         public async Task<Tuple<bool, string[]>> UpdateUserAsync(ApplicationUser user)
         {

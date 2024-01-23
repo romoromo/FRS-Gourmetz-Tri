@@ -73,6 +73,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   public types = [StudentGroupType.OTHERS, StudentGroupType.MEAL_PLAN];
   public searchForm: FormControl = new FormControl();
   groupId: any;
+  daysToFreezeOrdering: number = 2;
 
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
@@ -97,6 +98,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
 
     //this.getStudents();
     this.getTerms();
+    this.getOutletDetail();
   }
 
   ngOnInit() {
@@ -109,6 +111,26 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   ngOnDestroy() {
     this.alertService.resetStickyMessage();
     this.subscription.unsubscribe();
+  }
+
+  getOutletDetail() {
+    this.getOutlet()
+      .subscribe(outlet => {
+        console.log(outlet);
+        if (outlet) {
+          this.daysToFreezeOrdering = outlet.daysToFreezeOrdering;
+        } else {
+          // set default 2
+          this.daysToFreezeOrdering = 2;
+        }
+      },
+        error => {
+          console.error(error);
+        });
+  }
+
+  getOutlet() {
+    return this.deliveryService.getOutletById(this.outletId);
   }
 
   getDishCode() {
@@ -263,7 +285,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close(true);
   }
 
   resetForm(replace = false) {
@@ -346,7 +368,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   getCutoffDate() {
     let now = new Date();
     now.setHours(0, 0, 0, 0);
-    now.setDate(now.getDate() + 3);
+    now.setDate(now.getDate() + this.daysToFreezeOrdering);
     return now;
   }
 

@@ -120,7 +120,9 @@ namespace FRS.Helpers
             foreach (string file in files)
             {
                 DateTime createdDate = File.GetCreationTime(file);
-                if (createdDate >= filterDate)
+                DateTime updatedDate = File.GetLastWriteTime(file);
+
+                if (createdDate >= filterDate || updatedDate >= filterDate)
                 {
                     string fileName = Path.GetFileName(file);
                     string destinationFilePath = Path.Combine(destinationDirectory, fileName);
@@ -133,7 +135,9 @@ namespace FRS.Helpers
             {
                 DateTime createdDate = Directory.GetCreationTime(subDirectory);
 
-                if (createdDate >= filterDate)// || Directory.GetDirectories(subDirectory).Length > 0)
+                DateTime updatedDate = Directory.GetLastWriteTime(subDirectory);
+
+                if (createdDate >= filterDate || updatedDate >= filterDate)// || Directory.GetDirectories(subDirectory).Length > 0)
                 {
                     string subDirectoryName = Path.GetFileName(subDirectory);
                     string destinationSubDirectoryPath = Path.Combine(destinationDirectory, subDirectoryName);

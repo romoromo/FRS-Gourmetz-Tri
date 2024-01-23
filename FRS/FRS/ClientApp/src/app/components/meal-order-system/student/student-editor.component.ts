@@ -16,6 +16,8 @@ import { UserCardId } from 'src/app/models/usercardid.model';
 import { RestrictionService } from 'src/app/services/meal-order/restriction.service';
 import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
 import { FormControl } from '@angular/forms';
+import { Utilities } from '../../../services/utilities';
+import { UserEdit } from '../../../models/user-edit.model';
 
 
 @Component({
@@ -88,7 +90,7 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
   getOutlets() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getOutletsByFilter(filter)
+    this.deliveryService.getOutletsSimpleByFilter(filter)
       .subscribe(results => {
         this.outlets = results.pagedData;
         this.getClassLevels(false, this.studentEdit.outletId);
@@ -299,6 +301,14 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
 
     });
 
+    if (this.studentEdit.username) {
+      this.studentEdit.username = this.studentEdit.username.replace(/\s/g, '');
+    }
+
+    if (this.studentEdit.email) {
+      this.studentEdit.email = this.studentEdit.email.replace(/\s/g, '');
+    }
+
     if (this.isNewStudent) {
       this.studentService.newStudent(this.studentEdit).subscribe(student => this.saveSuccessHelper(student), error => this.saveFailedHelper(error));
     }
@@ -412,6 +422,31 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
 
   private changePassword() {
     this.isChangePassword = true;
+  }
+
+  resetPassword(row: Student) {
+    this.alertService.showDialog('Are you sure you want to reset the password for \"' + row.email + '\"?', DialogType.confirm, () => this.resetPasswordHelper(row));
+  }
+
+
+  resetPasswordHelper(row: Student) {
+
+    this.alertService.startLoadingMessage("Resetting...");
+
+    this.subscription.add(this.accountService.resetPassword(row.email)
+      .subscribe(results => {
+        this.alertService.stopLoadingMessage();
+
+        if (results && results.isSuccess) {
+          this.alertService.showMessage('A link to reset the password has been sent to the email.');
+        }
+      },
+        error => {
+          this.alertService.stopLoadingMessage();
+
+          this.alertService.showStickyMessage("Reset Password Error", `An error occured while resetting the password.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+            MessageSeverity.error);
+        }));
   }
 
   public deletePasswordFromUser(student: Student) {

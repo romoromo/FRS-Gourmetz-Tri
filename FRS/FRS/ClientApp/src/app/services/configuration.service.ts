@@ -36,6 +36,7 @@ export class ConfigurationService {
   public multifactorUrl = environment.multifactorUrl;
   public fallbackBaseUrl = "http://localhost";
   public enableMFA = false;
+  public enableMFAValidation = false;
 
   //***Specify default configurations here***
   public static readonly defaultLanguage: string = "en";
@@ -81,6 +82,7 @@ export class ConfigurationService {
           this.baseUrl = this.config.baseUrl;
           this.domainUrl = this.config.domainUrl;
           this.enableMFA = this.config.enableMFA;
+          this.enableMFAValidation = this.config.enableMFAValidation;
         }
       });
   }

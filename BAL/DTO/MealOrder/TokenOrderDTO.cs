@@ -388,6 +388,7 @@ namespace BAL.DTO.MealOrder
         public string ImgUrl { get; set; }
         public string FileName { get; set; }
         public string UserName { get; set; }
+        public int? StudentId { get; set; }
     }
 
     public class CancelOrderRequestDTO : CreateCancelOrderRequestDTO
@@ -400,7 +401,6 @@ namespace BAL.DTO.MealOrder
         public DateTime SubmissionDate { get; set; }
         public bool IsApproved { get; set; }
         public string MealSessionName { get; set; }
-        public int? StudentId { get; set; }
         public string StudentName { get; set; }
         public string StudentEmail { get; set; }
         public bool IsNotifCancellationRequestStatus { get; set; }

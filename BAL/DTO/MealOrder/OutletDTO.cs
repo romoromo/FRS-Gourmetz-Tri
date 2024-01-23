@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BAL.DTO.MealOrder
 {
-    public class OutletDTO
+    public class OutletSimpleDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -15,6 +15,10 @@ namespace BAL.DTO.MealOrder
         public int? OutletProfileId { get; set; }
         public string OutletProfileName { get; set; }
         public int DaysToFreezeOrdering { get; set; }
+    }
+
+    public class OutletDTO : OutletSimpleDTO
+    {
         public List<CatererOutletDTO> CatererOutlets { get; set; }
         public List<MealSessionDTO> MealSessions { get; set; }
         public List<StoreInfoDTO> Stores { get; set; }

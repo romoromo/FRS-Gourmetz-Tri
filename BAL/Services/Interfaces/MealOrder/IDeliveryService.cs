@@ -10,11 +10,12 @@ namespace BAL.Services.Interfaces.MealOrder
 {
     public interface IDeliveryService
     {
-        Task<BaseOperationResponse> CreateCatererInfoAsync(CatererInfoDTO dto);
+        Task<BaseOperationResponse> CreateCatererInfoAsync(CatererInfoSimpleDTO dto);
         Task<BaseOperationResponse> DeleteCatererInfoAsync(int id);
-        Task<CatererInfoDTO> GetCatererInfoByIdAsync(int id);
+        Task<CatererInfoSimpleDTO> GetCatererInfoByIdAsync(int id);
         Task<PagedEntity<CatererInfoDTO>> GetCatererInfosAsync(BaseFilter filter);
-        Task<BaseOperationResponse> UpdateCatererInfoAsync(CatererInfoDTO dto);
+        Task<PagedEntity<CatererInfoSimpleDTO>> GetCatererInfosSimpleAsync(BaseFilter filter);
+        Task<BaseOperationResponse> UpdateCatererInfoAsync(CatererInfoSimpleDTO dto);
         Task<BaseOperationResponse> RequestOutlet(int catererId, int outletId, string status, bool isRsp, int? outletProfileId);
 
         Task<BaseOperationResponse> CreateOutletProfileAsync(OutletProfileDTO dto);
@@ -24,11 +25,13 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<PagedEntity<OutletProfileDTO>> GetOutletProfilesAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateOutletProfileAsync(OutletProfileDTO dto);
 
-        Task<BaseOperationResponse> CreateOutletAsync(OutletDTO dto);
+        Task<BaseOperationResponse> CreateOutletAsync(OutletSimpleDTO dto);
         Task<BaseOperationResponse> DeleteOutletAsync(int id);
         Task<OutletDTO> GetOutletByIdAsync(int id);
+        Task<OutletSimpleDTO> GetOutletByIdSimpleAsync(int id);
+        Task<PagedEntity<OutletSimpleDTO>> GetOutletsSimpleAsync(BaseFilter filter);
         Task<PagedEntity<OutletDTO>> GetOutletsAsync(BaseFilter filter);
-        Task<BaseOperationResponse> UpdateOutletAsync(OutletDTO dto);
+        Task<BaseOperationResponse> UpdateOutletAsync(OutletSimpleDTO dto);
         Task<BaseOperationResponse> UpdateStoresAsync(OutletDTO dto);
 
         Task<BaseOperationResponse> CreateBentoBoxTypeAsync(BentoBoxTypeDTO dto);

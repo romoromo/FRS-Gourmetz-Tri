@@ -65,6 +65,7 @@ export class SalesOrderReportFilter extends Filter {
   public reportDateFrom: string;
   public reportDateTo: string;
   public status: string;
+  public orderType: string;
   public isFas?: boolean;
   public keyword: string;
   public reportType: number;

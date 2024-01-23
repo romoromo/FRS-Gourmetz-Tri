@@ -31,7 +31,7 @@
     </mat-form-field>
     <mat-form-field class="col-md-3 col-sm-6 col-xs-12">
       <mat-label>Dish Type</mat-label>
-      <mat-select id="dishType" name="dishType" [(ngModel)]="dishTypeId" #dishType="ngModel" required>
+      <mat-select id="dishType" name="dishType" [(ngModel)]="dishTypeId" #dishType="ngModel" required [disabled]="isLoadingMealSessions">
         <mat-option *ngFor="let dishType of allDishTypes" [value]="dishType.id">
           {{dishType.name}}
         </mat-option>
@@ -45,13 +45,13 @@
     <!--<button *ngIf="canManageFasMealOrders" type="button" mat-stroked-button color="warning" [disabled]="isSaving && isClear" (click)="save(true)" style="margin-left:15px;">
       <i *ngIf="!isSaving && isClear" class='fa'></i><i *ngIf="isSaving && isClear" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving && isClear ? 'Processing orders' : 'Delete orders'}}
     </button>-->
-    <button *ngIf="canManageFasMealOrders" type="button" mat-stroked-button (click)="onChangeStore()" style="margin-left:15px;">
-      <i class='fa fa-refresh'></i> Reload Summary
+    <button *ngIf="canManageFasMealOrders" type="button" mat-stroked-button (click)="onShowSummary()" [disabled]="isShowSummary" style="margin-left:15px;">
+      <i *ngIf="!isShowSummary" class='fa fa-refresh'></i><i *ngIf="isShowSummary" class='fa fa-circle-o-notch fa-spin'></i> {{isShowSummary ? 'Loading summary' : 'Show Summary'}}
     </button>
   </div>
   <br />
   <b *ngIf="rows && rows.length > 0">Summary Order for {{delvdate.toDateString()}} to {{delvdateTo.toDateString()}}</b>
-  <ngx-datatable *ngIf="rows && rows.length > 0" class="material colored-header"
+  <!--<ngx-datatable *ngIf="rows && rows.length > 0" class="material colored-header"
                  [loadingIndicator]="loadingIndicator"
                  [rows]="rows"
                  [rowHeight]="50"
@@ -60,7 +60,26 @@
                  [scrollbarH]="true"
                  [columns]="columns"
                  [columnMode]="'force'">
-  </ngx-datatable>
+  </ngx-datatable>-->
+  <div class="table-container table-overflow">
+  <table class="table table-responsive table-sm material colored-header table-bordered">
+    <thead>
+      <tr *ngFor="let header of rows.headers">
+        <th class="stick-header" *ngFor="let cell of header.cells" scope="col" [attr.rowspan]="cell.rowspan" [attr.colspan]="cell.colspan">{{cell.val}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let header of rows.rows; let i = index;">
+        <td [ngClass]="j == 0 ? 'sticky-column' : ''" *ngFor="let cell of header.cells; let j = index" scope="col" [attr.rowspan]="cell.rowspan" [attr.colspan]="cell.colspan">{{cell.val}}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr *ngIf="rows.total">
+        <td [ngClass]="j == 0 ? 'sticky-column' : ''" *ngFor="let cell of rows.total.cells; let x = index" scope="col" [attr.rowspan]="cell.rowspan" [attr.colspan]="cell.colspan">{{cell.val}}</td>
+      </tr>
+    </tfoot>
+  </table>
+    </div>
   <!--
   <ng-template #indexTemplate let-row="row" let-value="value" let-i="index">
     <div>

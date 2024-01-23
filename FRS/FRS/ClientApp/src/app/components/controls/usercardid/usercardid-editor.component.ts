@@ -90,6 +90,10 @@ export class UserCardIdEditorComponent implements OnDestroy{
 
   private save() {
 
+    if (this.userCardIdEdit.cardId) {
+      this.userCardIdEdit.cardId = this.userCardIdEdit.cardId.replace(/\s/g, '');
+    }
+
     if (this.isUserInfo) {
       this.dialogRef.close(this.userCardIdEdit);
     } else {

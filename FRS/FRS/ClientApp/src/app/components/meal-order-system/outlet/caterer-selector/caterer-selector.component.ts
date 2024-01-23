@@ -26,36 +26,48 @@ export class CatererSelectorComponent implements OnInit {
     public dialogRef: MatDialogRef<CatererSelectorComponent>, public dialog: MatDialog, private configurationService: ConfigurationService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.outlet) != typeof (undefined)) {
-      this.editOutlet = data.outlet;
-      //this.catererId = data.catererId;
-      if (data.catererOutlets) {
-        this.editOutlet.catererOutlets = [];
-      }
-      this.selectedCaterers = data.outlet.catererOutlets;
+
+      this.deliveryService.getOutletById(data.outlet.id).subscribe(results => {
+        this.editOutlet = results;
+
+        this.alertService.startLoadingMessage("Loading caterer information");
+        this.selectedCaterers = results.catererOutlets;
+
+        let filter = new Filter();
+        //let f = this.catererId ? '(Id)==' + this.catererId + ',' : '';
+        filter.filters = '(IsActive)==true';
+
+        this.deliveryService.getCatererInfosByFilter(filter).subscribe(results => {
+          this.caterers = results.pagedData;
+
+          this.caterers.map(cg => {
+            if (this.editOutlet.catererOutlets && typeof (this.editOutlet.catererOutlets) != typeof (undefined)) {
+              let catererOutlet = this.editOutlet.catererOutlets.find(item => item.catererInfoId == cg.id && item.outletId == this.editOutlet.id);
+              if (catererOutlet) {
+                cg.status = catererOutlet.status;
+              }
+            }
+          });
+
+
+          this.caterersCache = this.caterers;
+          this.alertService.stopLoadingMessage();
+
+        }, error => { this.alertService.stopLoadingMessage(); });
+
+      }, error => { this.alertService.stopLoadingMessage(); });
+
+      //this.editOutlet = data.outlet;
+      ////this.catererId = data.catererId;
+      //if (data.catererOutlets) {
+      //  this.editOutlet.catererOutlets = [];
+      //}
+      //this.selectedCaterers = data.outlet.catererOutlets;
     }
   }
 
   ngOnInit() {
-    let filter = new Filter();
-    //let f = this.catererId ? '(Id)==' + this.catererId + ',' : '';
-    filter.filters = '(IsActive)==true';
-
-    this.deliveryService.getCatererInfosByFilter(filter).subscribe(results => {
-      this.caterers = results.pagedData;
-      
-      this.caterers.map(cg => {
-        if (this.editOutlet.catererOutlets && typeof (this.editOutlet.catererOutlets) != typeof (undefined)) {
-          let catererOutlet = this.editOutlet.catererOutlets.find(item => item.catererInfoId == cg.id && item.outletId == this.editOutlet.id);
-          if (catererOutlet) {
-            cg.status = catererOutlet.status;
-          }
-        }
-      });
-      
-
-      this.caterersCache = this.caterers;
-
-    }, error => { });
+    
   }
 
   private cancel() {

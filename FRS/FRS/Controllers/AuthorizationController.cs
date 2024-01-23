@@ -95,7 +95,7 @@ namespace FRS.Controllers
 
         [HttpPost("~/connect/token")]
         [Produces("application/json")]
-        public async Task<IActionResult> Exchange(OpenIdConnectRequest request = null, string institutionCode = null, bool isExternal = false, bool isExternalLogin = false, bool isAD = false, bool needConfirmationCode = false, string appId = null, bool mfa = false)
+        public async Task<IActionResult> Exchange(OpenIdConnectRequest request = null, string institutionCode = null, bool isExternal = false, bool isExternalLogin = false, bool isAD = false, bool needConfirmationCode = false, string appId = null, bool mfa = false, bool mfaValidation = false)
         {
             var uaParser = Parser.GetDefault();
             ClientInfo c = uaParser.Parse(_httpAccessor.HttpContext.Request.Headers["User-Agent"]);
@@ -277,9 +277,10 @@ namespace FRS.Controllers
                     await _auditLogService.CreateExternalLoginLogAsync(externalAppLog);
                     await _userManager.UpdateAsync(user);
 
-                    if (mfa)
+                    if (mfaValidation)
                     {
-                        await _emailSender.SendEmailAsync("Web Admin Portal", "smv.notification@gmail.com", user.FullName, user.Email, "Web Admin Portal Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+                        if (mfa)
+                            await _emailSender.SendEmailAsync("Web Admin Portal", "smv.notification@gmail.com", user.FullName, user.Email, "Web Admin Portal Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
                     }
                     else
                     {
@@ -786,6 +787,7 @@ namespace FRS.Controllers
                 ApplicationPermissionsTrees.SSUserMenu,
                 ApplicationPermissionsTrees.SSManageUserMenu,
                 ApplicationPermissionsTrees.SSRoleMenu,
+                ApplicationPermissionsTrees.SSAssignRoleMenu,
                 ApplicationPermissionsTrees.SSManageRoleMenu,
                 ApplicationPermissionsTrees.SSDepartmentMenu,
                 ApplicationPermissionsTrees.SSDepartmentManage

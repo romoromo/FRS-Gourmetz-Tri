@@ -29,6 +29,7 @@ using NPOI.XSSF.UserModel;
 using OpenIddict.Validation;
 using Microsoft.Extensions.Configuration;
 using DAL.Core.Helpers;
+using System.Globalization;
 
 namespace FRS.Controllers
 {
@@ -605,7 +606,8 @@ namespace FRS.Controllers
                                 dto.Class = sClass != null ? sClass.ToString().Trim() : "";
 
                                 var issueDate = fRow.GetCell(c++);
-                                dto.IssueDate = issueDate != null && !string.IsNullOrEmpty(issueDate.ToString()) ? Convert.ToDateTime(issueDate.ToString()) : (DateTime?)null;
+                                string format = "dd/MM/yyyy";
+                                dto.IssueDate = issueDate != null && !string.IsNullOrEmpty(issueDate.ToString()) ? DateTime.ParseExact(issueDate.ToString(), format, CultureInfo.InvariantCulture) : (DateTime?)null;
 
                                 DataFormatter formatter = new DataFormatter();
                                 var cardIdCell = fRow.GetCell(c++);

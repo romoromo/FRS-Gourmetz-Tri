@@ -8,7 +8,7 @@ import { Utilities } from '../../../services/utilities';
 import { Filter, PagedResult } from '../../../models/sieve-filter.model';
 import { Permission } from '../../../models/permission.model';
 import { MatDialog } from '@angular/material';
-import { CatererInfo } from 'src/app/models/meal-order/caterer-info.model';
+import { CatererInfoSimple } from 'src/app/models/meal-order/caterer-info.model';
 import { CatererInfoEditorComponent } from './caterer-info-editor.component';
 import { DishService } from 'src/app/services/meal-order/dish.service';
 import { StaffService } from '../../../services/meal-order/staff.service';
@@ -26,11 +26,11 @@ import { getBaseUrl } from 'src/app/app.module';
 })
 export class CatererInfosManagementComponent implements OnInit {
   columns: any[] = [];
-  rows: CatererInfo[] = [];
-  rowsCache: CatererInfo[] = [];
+  rows: CatererInfoSimple[] = [];
+  rowsCache: CatererInfoSimple[] = [];
   allPermissions: Permission[] = [];
-  editedCatererInfo: CatererInfo;
-  sourceCatererInfo: CatererInfo;
+  editedCatererInfo: CatererInfoSimple;
+  sourceCatererInfo: CatererInfoSimple;
   loadingIndicator: boolean;
   filter: Filter;
   pagedResult: PagedResult;
@@ -54,7 +54,7 @@ export class CatererInfosManagementComponent implements OnInit {
     private deliveryService: DeliveryService, public dialog: MatDialog, private cdr: ChangeDetectorRef, private configurationService: ConfigurationService) {
   }
 
-  openDialog(catererInfo: CatererInfo): void {
+  openDialog(catererInfo: CatererInfoSimple): void {
     const dialogRef = this.dialog.open(CatererInfoEditorComponent, {
       data: { header: this.header, catererInfo: catererInfo },
       width: '400px',
@@ -119,7 +119,7 @@ export class CatererInfosManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     this.filter.filters = `(IsActive)==true,(Name)@=${this.keyword},(InstitutionId)==${this.accountService.currentUser.institutionId},(CatererByUserId)==${this.accountService.currentUser.id}`;
     
-    this.deliveryService.getCatererInfosByFilter(this.filter)
+    this.deliveryService.getCatererInfosSimpleByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
 
@@ -166,23 +166,23 @@ export class CatererInfosManagementComponent implements OnInit {
 
   newCatererInfo() {
     this.header = 'New Caterer';
-    this.editedCatererInfo = new CatererInfo();
+    this.editedCatererInfo = new CatererInfoSimple();
     this.openDialog(this.editedCatererInfo);
   }
 
 
-  editCatererInfo(row: CatererInfo) {
+  editCatererInfo(row: CatererInfoSimple) {
     this.editedCatererInfo = row;
     this.header = 'Edit Caterer';
     this.openDialog(this.editedCatererInfo);
   }
 
-  deleteCatererInfo(row: CatererInfo) {
+  deleteCatererInfo(row: CatererInfoSimple) {
     this.alertService.showDialog('Are you sure you want to delete the \"' + row.name + '\" caterer?', DialogType.confirm, () => this.deleteCatererInfoHelper(row));
   }
 
 
-  deleteCatererInfoHelper(row: CatererInfo) {
+  deleteCatererInfoHelper(row: CatererInfoSimple) {
 
     this.alertService.startLoadingMessage("Deleting...");
     this.loadingIndicator = true;

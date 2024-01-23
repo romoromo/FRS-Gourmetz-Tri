@@ -1,10 +1,10 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, Inject, OnDestroy } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { MatDatepickerInputEvent, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ClassBatch } from 'src/app/models/meal-order/class-batch.model';
 import { ClassService } from 'src/app/services/meal-order/class.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
 import { StoreInfo } from 'src/app/models/meal-order/store-info.model';
 import { MealService } from 'src/app/services/meal-order/meal.service';
@@ -17,15 +17,16 @@ import { AlertService, MessageSeverity } from 'src/app/services/alert.service';
 import { AppTranslationService } from 'src/app/services/app-translation.service';
 import { AccountService } from 'src/app/services/account.service';
 import { StudentGroup, StudentGroupSession } from 'src/app/models/meal-order/student-group.model';
-
+import { takeUntil, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'meal-plan-summary',
   templateUrl: './meal-plans-summary.component.html',
   styleUrls: ['./meal-plans-summary.component.css']
 })
-export class MealPlanSummaryComponent implements OnInit {
+export class MealPlanSummaryComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
+  private cancelPreviousRequests = new Subject<void>();
   columns: any[] = [];
   rows: ClassBatch[] = [];
   rowsCache: ClassBatch[] = [];
@@ -39,6 +40,9 @@ export class MealPlanSummaryComponent implements OnInit {
   pagedResult: PagedResult;
   keyword: string = '';
   isSaving: boolean;
+  isShowSummary: boolean;
+  isLoadingMealSessions: boolean;
+  daysToFreezeOrdering: number = 2;
 
   storeId: string;
   delvdate: Date = new Date();
@@ -125,42 +129,83 @@ export class MealPlanSummaryComponent implements OnInit {
     }
     
     this.getMealSessions(this.delvdate, this.delvdateTo);
-    this.getMealPlanSummary(this.delvdate, this.delvdateTo);
+    //this.getMealPlanSummary(this.delvdate, this.delvdateTo);
   }
 
   onChangeStore() {
+    //this.getMealPlanSummary(this.delvdate, this.delvdateTo);
+    this.getMealSessions(this.delvdate, this.delvdateTo);
+  }
+
+  onShowSummary() {
     this.getMealPlanSummary(this.delvdate, this.delvdateTo);
   }
 
   getMealSessions(d: Date, dTo: Date) {
+    this.cancelPreviousRequests.next();
+    this.isLoadingMealSessions = true;
+    this.alertService.startLoadingMessage("Loading Meal Sessions...");
     this.menuService.getOutletSessionsByFilter(this.outletId, (d).toDateString(), (dTo).toDateString())
-      .subscribe(results => {
-        this.mealSessionDetails = results;
-        let mealSessions = [];
-        if (this.mealSessionDetails) {
-          this.mealSessionDetails.forEach((d, i, details) => {
-            let indx = mealSessions && mealSessions.length > 0 ? mealSessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
-            if (indx < 0) {
-              let ms = this.sessions && this.sessions.length > 0 ? this.sessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
-              if (ms > -1)
-                mealSessions.push({ mealSessionId: d.mealSessionId, mealSessionName: d.mealSessionName });
-            }
-          })
-        }
+      .pipe(
+        takeUntil(this.cancelPreviousRequests),
+        switchMap(results => {
+          this.mealSessionDetails = results;
+          let mealSessions = [];
+          if (this.mealSessionDetails) {
+            this.mealSessionDetails.forEach((d, i, details) => {
+              let indx = mealSessions && mealSessions.length > 0 ? mealSessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
+              if (indx < 0) {
+                let ms = this.sessions && this.sessions.length > 0 ? this.sessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
+                if (ms > -1)
+                  mealSessions.push({ mealSessionId: d.mealSessionId, mealSessionName: d.mealSessionName });
+              }
+            });
+          }
 
-        this.mealSessions = mealSessions;
-      },
-        error => {
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
-            MessageSeverity.error);
+          this.mealSessions = mealSessions;
+          this.isLoadingMealSessions = false;
+          this.alertService.stopLoadingMessage();
+          return [];
         })
+      )
+      .subscribe(
+        () => { this.isLoadingMealSessions = false; },
+        error => {
+          this.isLoadingMealSessions = false;
+          this.alertService.stopLoadingMessage();
+          this.alertService.showStickyMessage("Get Error", `An error occurred while retrieving records.\r\n"`, MessageSeverity.error);
+        }
+    );
+
+    //this.menuService.getOutletSessionsByFilter(this.outletId, (d).toDateString(), (dTo).toDateString())
+    //  .subscribe(results => {
+    //    this.mealSessionDetails = results;
+    //    let mealSessions = [];
+    //    if (this.mealSessionDetails) {
+    //      this.mealSessionDetails.forEach((d, i, details) => {
+    //        let indx = mealSessions && mealSessions.length > 0 ? mealSessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
+    //        if (indx < 0) {
+    //          let ms = this.sessions && this.sessions.length > 0 ? this.sessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
+    //          if (ms > -1)
+    //            mealSessions.push({ mealSessionId: d.mealSessionId, mealSessionName: d.mealSessionName });
+    //        }
+    //      })
+    //    }
+
+    //    this.mealSessions = mealSessions;
+    //  },
+    //    error => {
+    //      this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
+    //        MessageSeverity.error);
+    //    })
   }
 
   getMealPlanSummary(d: Date, dTo: Date) {
     if (this.outletId && this.storeId) {
+      this.isShowSummary = true;
       this.menuService.getMealPlanSummary(this.group.id, this.outletId, this.storeId, d.toDateString(), dTo.toDateString(), this.mealSessionId)
         .subscribe(results => {
-
+          this.isShowSummary = false;
           this.columns = [];
 
           if (results && results.cols) {
@@ -190,6 +235,7 @@ export class MealPlanSummaryComponent implements OnInit {
           }
         },
           error => {
+            this.isShowSummary = false;
             this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
               MessageSeverity.error);
           })
@@ -199,12 +245,39 @@ export class MealPlanSummaryComponent implements OnInit {
   ngOnInit() {
     this.getDeliveryLocations();
     this.getDishtTypes();
+    this.getOutlet()
+      .subscribe(outlet => {
+        console.log(outlet);
+        if (outlet) {
+          this.daysToFreezeOrdering = outlet.daysToFreezeOrdering;
+        } else {
+          // set default 2
+          this.daysToFreezeOrdering = 2;
+        }
+
+        let now = this.getCutoffDate();
+
+        this.delvdate = this.getCutoffDate();
+        this.delvdateTo = this.getCutoffDate();
+      },
+        error => {
+          console.error(error);
+        });
   }
+
+  ngOnDestroy() {
+    this.cancelPreviousRequests.next();
+  }
+
+  getOutlet() {
+    return this.deliveryService.getOutletByIdSimple(this.outletId);
+  }
+
 
   getCutoffDate() {
     let now = new Date();
     now.setHours(0, 0, 0, 0);
-    now.setDate(now.getDate() + 3);
+    now.setDate(now.getDate() + this.daysToFreezeOrdering);
     return now;
   }
 
@@ -233,7 +306,7 @@ export class MealPlanSummaryComponent implements OnInit {
           this.alertService.showMessage("Success", `Dishes are assigned to the meal plan.`, MessageSeverity.success);
           this.delvdate = new Date(this.minDate);
           this.delvdateTo = new Date(this.maxDate);
-          this.onChangeStore();
+          this.onShowSummary();
         } else {
           this.alertService.showMessage("Error", `Something went wrong with the assignment. ${response.message}`, MessageSeverity.error);
         }
