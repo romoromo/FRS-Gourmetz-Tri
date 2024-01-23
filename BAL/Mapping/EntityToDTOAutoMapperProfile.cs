@@ -218,6 +218,17 @@ namespace BAL.Mapping
                 .ForMember(e => e.IsFASDisplay, map => map.MapFrom(e => e.IsFAS ? "Y" : "N"))
                 ;
 
+            CreateMap<TokenOrderOrderingPortalDTO, TokenOrder>();
+
+            CreateMap<TokenOrder, TokenOrderOrderingPortalDTO>()
+                .ForMember(e => e.Tokens, map => map.MapFrom(e => e.Tokens.Where(f => f.IsActive).ToList()))
+                .ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.Session != null ? e.Session.Name : String.Empty))
+                .ForMember(e => e.MealSessionDetailName, map => map.MapFrom(e => e.Session != null ? e.Session.MealSessionName : String.Empty))
+                .ForMember(e => e.MealPeriodId, map => map.MapFrom(e => e.Session != null && e.Session.MealSession != null ? e.Session.MealSession.MealPeriodId : null))
+                .ForMember(e => e.MealPeriodName, map => map.MapFrom(e => e.Session != null && e.Session.MealSession != null && e.Session.MealSession.MealPeriod != null ? e.Session.MealSession.MealPeriod.Name : null))
+                .ForMember(e => e.MealSessionStartDate, map => map.MapFrom(e => e.Session.StartDate))
+                ;
+
             CreateMap<spSalesOrderReport, TokenOrderDTO>()
                 .ForMember(e => e.VoucherCode, map => map.MapFrom(e => e.DiscountCode))
                 .ForMember(e => e.ProfileName, map => map.MapFrom(e => e.StudentName))

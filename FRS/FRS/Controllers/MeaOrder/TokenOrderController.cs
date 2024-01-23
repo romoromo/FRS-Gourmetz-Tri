@@ -85,6 +85,20 @@ namespace FRS.Controllers
             return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(results));
         }
 
+        //[ApiKeyAuthorize]
+        [HttpGet("tokenorders/sieve/orderingportallist")]
+        //[Authorize(Authorization.Policies.ViewAllStudentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetTokenOrdersOrderingPortal(RequestFilter filter)
+        {
+            if (filter.isrequest) await _orderController.QueryAndUpdatePaymentStatus(filter.studentId);
+
+            PagedEntity<TokenOrderOrderingPortalDTO> results = await this._service.GetTokenOrdersOrderingPortalAsync(filter);
+            return Ok(results);
+        }
+
         #endregion
 
         [HttpGet("tokenorders/get/{id}")]

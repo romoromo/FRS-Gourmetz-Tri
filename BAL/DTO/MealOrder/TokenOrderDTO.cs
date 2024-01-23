@@ -94,6 +94,91 @@ namespace BAL.DTO.MealOrder
         public List<TokensOrderHistoryDTO> TokensOrderHistorys { get; set; }
     }
 
+    public class TokenOrderOrderingPortalDTO
+    {
+
+        public int Id { get; set; }
+
+        public DateTime TransactionTime { get; set; }
+
+        public int SchoolId { get; set; }
+
+        public string OrderProfile { get; set; }
+
+        public int? ProfileId { get; set; }
+
+        public DateTime DeliveryDate { get; set; }
+
+        public int? PeriodId { get; set; }
+
+        public int? PaymentId { get; set; }
+
+        public float TotalAmount { get; set; }
+
+        public DateTime PaymentTime { get; set; }
+
+        public float TotalPayment { get; set; }
+
+        public string Status { get; set; }
+
+        public string Remarks { get; set; }
+
+        public int? StudentGroupId { get; set; }
+        public string StudentGroupName { get; set; }
+        public List<TokenOrderedDTO> Tokens { get; set; }
+
+        public int? MealSessionDetailId { get; set; }
+        public string MealSessionName { get; set; }
+        public string MealSessionDetailName { get; set; }
+        public string ClassName { get; set; }
+
+        public int? MealPeriodId { get; set; }
+
+        public DateTime MealSessionStartDate { get; set; }
+
+        public int? StoreId { get; set; }
+
+        public int? CancelledById { get; set; }
+        public DateTime? CancelledOn { get; set; }
+        public string CancellationReason { get; set; }
+        public string CancelRequestStatus { get; set; }
+        public string ProfileName { get; set; }
+        public string PeriodName { get; set; }
+        public string PaymentTypeName { get; set; }
+        public int? CreatedBy { get; set; }
+        public string ProcessedBy { get; set; }
+        public string MealDescription { get; set; }
+        public string MealOption { get; set; }
+        public string PaymentStatus { get; set; }
+
+        public string StudentName { get; set; }
+        public string StudentEmail { get; set; }
+        public string MealPeriodName { get; set; }
+        public string IsFASDisplay { get; set; }
+        public bool IsFAS { get; set; }
+        public bool IsMealPlan { get; set; }
+        public bool IsStudentGroupOrder { get; set; }
+        public string PaymentNumber { get; set; }
+        public string FomoId { get; set; }
+        public string InvoiceNumber { get; set; }
+        public string VoucherCode { get; set; }
+        public decimal Discount { get; set; }
+        public decimal PaymentSubtotal { get; set; }
+        public decimal PaymentGst { get; set; }
+        public decimal PaymentTransactionFee { get; set; }
+        public decimal PaymentFixedTransactionFee { get; set; }
+        public decimal PaymentTotalAmount { get; set; }
+        public string PaymentMethod { get; set; }
+        public int Quantity { get; set; }
+        public int OrderCount { get; set; }
+        public DateTime? CollectionTime { get; set; }
+
+        public string BentoCode { get; set; }
+
+        public DateTime? ReturnTime { get; set; }
+        public string AmendReason { get; set; }
+    }
+
     public class TokenOrderedDTO
     {
         public int Id { get; set; }
