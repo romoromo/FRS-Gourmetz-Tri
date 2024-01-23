@@ -1,6 +1,6 @@
 import { Outlet } from "./outlet.model";
 
-export class CatererInfo {
+export class CatererInfoSimple {
 
   constructor(id?: string, name?: string) {
 
@@ -11,9 +11,18 @@ export class CatererInfo {
   public id: string;
   public name: string;
   public code: string;
-public address: string;
+  public address: string;
   public institutionId: string;
   public status: string;
+}
+
+export class CatererInfo extends CatererInfoSimple {
+
+  constructor(id?: string, name?: string) {
+
+    super(id, name);
+  }
+
   public catererOutlets: CatererOutlet[];    
 }
 

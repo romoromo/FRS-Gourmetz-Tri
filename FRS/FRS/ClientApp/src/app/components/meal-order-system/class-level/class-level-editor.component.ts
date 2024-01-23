@@ -52,7 +52,7 @@ export class ClassLevelEditorComponent {
   getOutlets() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getOutletsByFilter(filter)
+    this.deliveryService.getOutletsSimpleByFilter(filter)
       .subscribe(results => {
         this.outlets = results.pagedData;
       },

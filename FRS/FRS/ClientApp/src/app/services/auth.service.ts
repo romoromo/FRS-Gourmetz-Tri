@@ -20,6 +20,7 @@ import { connect } from 'tls';
 export class AuthService {
 
   public get isEnableMFA() { return this.configurations.enableMFA; }
+  public get isEnableMFAValidation() { return this.configurations.enableMFAValidation; }
   public get loginUrl() { return this.configurations.loginUrl; }
   public get login2FAUrl() { return this.configurations.multifactorUrl; }
   public get homeUrl() { return this.configurations.homeUrl; }

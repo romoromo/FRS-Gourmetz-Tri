@@ -171,8 +171,11 @@ namespace BAL.Services.MealOrder
             {
                 var to = (TokenOrder)result.Data;
                 var history = Mapper.Map<TokensOrderHistoryDTO>(to);
-                history.Status = "cancelled";
-                await CreateTokensOrderHistoryAsync(history, to);
+                if (history != null)
+                {
+                    history.Status = "cancelled";
+                    await CreateTokensOrderHistoryAsync(history, to);
+                }
             }
 
             return result;
@@ -293,12 +296,17 @@ namespace BAL.Services.MealOrder
             var result = new BaseOperationResponse();
             var order = Mapper.Map<TokensOrderHistory>(dto);
 
-            if (tokenOrder != null)
+            if (order != null)
             {
-                order.TokenOrderId = tokenOrder.Id;
-                order.TransactionTime = DateTime.Now;
-                order.Qty = tokenOrder.Tokens?.FirstOrDefault()?.Qty;
-                order.DishId = tokenOrder.Tokens?.FirstOrDefault()?.SelectedDishes?.FirstOrDefault()?.DishId;
+                if (tokenOrder != null)
+                {
+                    order.TokenOrderId = tokenOrder.Id;
+                    order.TransactionTime = DateTime.Now;
+                    order.Qty = tokenOrder.Tokens?.FirstOrDefault()?.Qty;
+                    order.DishId = tokenOrder.Tokens?.FirstOrDefault()?.SelectedDishes?.FirstOrDefault()?.DishId;
+                }
+
+                result = await this._uow.TokensOrderHistorys.CreateAsync(order);
             }
 
             result = await this._uow.TokensOrderHistorys.CreateAsync(order);
@@ -4127,8 +4135,11 @@ namespace BAL.Services.MealOrder
             {
                 var to = (TokenOrder)result.Data;
                 var history = Mapper.Map<TokensOrderHistoryDTO>(result.Data);
-                history.Status = "cancelled";
-                await CreateTokensOrderHistoryAsync(history, to);
+                if (history != null)
+                {
+                    history.Status = "cancelled";
+                    await CreateTokensOrderHistoryAsync(history, to);
+                }
             }
 
             //if (order.Status == "Approved")

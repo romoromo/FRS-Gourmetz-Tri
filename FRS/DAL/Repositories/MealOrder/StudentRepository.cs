@@ -26,6 +26,12 @@ using System.Reflection;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
+using NPOI.SS.Formula.Functions;
+using System.Data.SqlClient;
+using System.Data;
+using IsolationLevel = System.Transactions.IsolationLevel;
+using Microsoft.Extensions.Logging;
+using DAL.Core.Logging;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -34,12 +40,16 @@ namespace DAL.Repositories.MealOrder
         private ISieveProcessor _sieveProcessor;
         private int? _currentUserId;
         private int? _currentInstitutionId;
+        private IPasswordHasher<ApplicationUser> _passwordHasher;
+        private ILogger _logger;
 
         public StudentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
-            this._currentUserId = currentInstitutionId;
+            this._currentUserId = currentUserId;
+            _passwordHasher = new PasswordHasher<ApplicationUser>();
+            _logger = Logger.CreateLogger<DeviceRepository>();
         }
 
         public async Task<IQueryable<Student>> GetAllStudentsAsync()
@@ -249,268 +259,287 @@ namespace DAL.Repositories.MealOrder
         public async Task<BaseOperationResponse> UpdateAsync(IAccountManager accountManager, Student student, ApplicationUser user, string currentPassword, string newPassword, List<UserCardId> cards, List<StudentCard> studentCards, List<StudentRestriction> restrictions, List<StudentInterestGroup> interestGroups)
         {
             var result = new BaseOperationResponse();
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
-                            new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
-                            TransactionScopeAsyncFlowOption.Enabled))
+            try
             {
-                var f = await GetSingleOrDefaultAsync(e => e.Id == student.Id);
-
-                if (user != null && !string.IsNullOrEmpty(user.UserName))
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                                    new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
+                                    TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    var appUser = await accountManager.GetUserByIdAsync(user.Id);
+                    var f = await GetSingleOrDefaultAsync(e => e.Id == student.Id);
 
-                    if (appUser != null)
+                    if (user != null && !string.IsNullOrEmpty(user.UserName))
                     {
-                        //var appUser = await _appContext.Users.SingleOrDefaultAsync(e => e.Id == user.Id);
-                        var existingUsername = await accountManager.GetUserByUserNameAsync(user.UserName);
-                        if (existingUsername != null && existingUsername.Id != appUser.Id && existingUsername.IsActive)
-                        {
-                            //username exists
-                            result.Message = "Failed to save! Username already exists.";
-                            return result;
-                        }
+                        var appUser = await accountManager.GetUserByIdAsync(user.Id);
 
-                        appUser.UserType = user.UserType;
-                        appUser.UserName = user.UserName;
-                        appUser.Email = user.Email;
-                        appUser.IsActive = true;
-                        appUser.IsEnabled = true;
-                        appUser.EmailConfirmed = true;
-                        if (!appUser.InstitutionId.HasValue)
+                        if (appUser != null)
                         {
-                            appUser.InstitutionId = (await accountManager.GetCurrentInstitution())?.Id;
-                        }
+                            //var appUser = await _appContext.Users.SingleOrDefaultAsync(e => e.Id == user.Id);
+                            var existingUsername = await accountManager.GetUserByUserNameAsync(user.UserName);
+                            if (existingUsername != null && existingUsername.Id != appUser.Id && existingUsername.IsActive)
+                            {
+                                //username exists
+                                result.Message = "Failed to save! Username already exists.";
+                                return result;
+                            }
 
-                        var updateUserResult = await accountManager.UpdateUserAsync(appUser, new List<string>());
-                        if (updateUserResult.Item1)
+                            appUser.UserType = user.UserType;
+                            appUser.UserName = user.UserName;
+                            appUser.Email = user.Email;
+                            appUser.IsActive = true;
+                            appUser.IsEnabled = true;
+                            appUser.EmailConfirmed = true;
+                            if (!appUser.InstitutionId.HasValue)
+                            {
+                                appUser.InstitutionId = (await accountManager.GetCurrentInstitution())?.Id;
+                            }
+
+                            var updateUserResult = await accountManager.UpdateUserAsync(appUser, new List<string>());
+                            if (updateUserResult.Item1)
+                            {
+                                if (student.Account == null)
+                                {
+                                    student.Account = new StudentAccount();
+                                }
+
+                                student.Account.UserId = appUser.Id;
+
+                                if (!string.IsNullOrEmpty(newPassword))
+                                {
+                                    if (!string.IsNullOrWhiteSpace(newPassword))
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(currentPassword))
+                                            updateUserResult = await accountManager.UpdatePasswordAsync(appUser, currentPassword, newPassword);
+                                        else
+                                            updateUserResult = await accountManager.ResetPasswordAsync(appUser, newPassword);
+                                    }
+
+                                }
+                            }
+
+                            if (!updateUserResult.Item1)
+                            {
+                                result.Message = "Failed to save! " + updateUserResult.Item2;
+                                return result;
+                            }
+
+                            student.Account.User = appUser;
+
+                            _appContext.UserCardIds.Where(e => e.UserId == appUser.Id).ToList().ForEach(e =>
+                            {
+                                e.IsActive = false;
+                                _appContext.UserCardIds.Update(e);
+                            });
+
+                            //add/update cards here
+                            foreach (var c in cards)
+                            {
+                                UserCardId card;
+                                if (c.Id > 0)
+                                {
+                                    card = await _appContext.UserCardIds.SingleOrDefaultAsync(e => e.Id == c.Id);
+                                }
+                                else
+                                {
+                                    card = await _appContext.UserCardIds.SingleOrDefaultAsync(e => e.UserId == c.UserId && e.CardId.Equals(c.CardId, StringComparison.CurrentCultureIgnoreCase));
+                                }
+
+                                if (card == null || card.Id == 0)
+                                {
+                                    c.IsActive = true;
+                                    await _appContext.UserCardIds.AddAsync(c);
+                                }
+                                else
+                                {
+                                    int oldId = card.Id;
+
+                                    card.CopyFrom(c);
+                                    card.Id = oldId;
+                                    card.IsActive = true;
+                                    _appContext.UserCardIds.Update(card);
+                                }
+                            }
+                        }
+                        else
                         {
+                            appUser = user;
+                            appUser.IsEnabled = true;
+                            appUser.EmailConfirmed = true;
+                            appUser.UserCardIds = cards;
+                            appUser.IsActive = true;
+                            if (!appUser.InstitutionId.HasValue)
+                            {
+                                appUser.InstitutionId = (await accountManager.GetCurrentInstitution())?.Id;
+                            }
+                            var existingUsername = await accountManager.GetUserByUserNameAsync(user.UserName);
+                            if (existingUsername != null && existingUsername.IsActive)
+                            {
+                                //username exists
+                                result.Message = "Failed to save! Username already exists.";
+                                return result;
+                            }
+
+                            var existingUser = await accountManager.GetUserByEmailAsync(appUser.Email);
+                            if (existingUser != null && existingUser.IsActive)
+                            {
+                                appUser = existingUser;
+                            }
+
+                            if (appUser.Id == 0)
+                            {
+                                var createUserResult = await accountManager.CreateUserAsync(appUser, new List<string>(), newPassword);
+                                if (!createUserResult.Item1)
+                                {
+                                    result.Message = $"Failed to save user. Errors: {string.Join(Environment.NewLine, createUserResult.Item2)}";
+                                    return result;
+                                }
+                            }
+
                             if (student.Account == null)
                             {
                                 student.Account = new StudentAccount();
                             }
 
                             student.Account.UserId = appUser.Id;
+                            student.Account.StudentId = student.Id;
+                            await _appContext.StudentAccounts.AddAsync(student.Account);
+                        }
 
-                            if (!string.IsNullOrEmpty(newPassword))
+                    }
+
+                    var cardsToDelete = this._appContext.StudentCards.Where(x => x.StudentId == f.Id &&
+                                        (studentCards == null || !studentCards.Any(a => a.Id == x.Id)));
+
+                    this._appContext.StudentCards.RemoveRange(cardsToDelete);
+
+                    if (studentCards != null)
+                    {
+                        studentCards.ForEach(e =>
+                        {
+                            var sc = this._appContext.StudentCards.FirstOrDefault(x => x.Id == e.Id);
+                            if (sc != null)
                             {
-                                if (!string.IsNullOrWhiteSpace(newPassword))
-                                {
-                                    if (!string.IsNullOrWhiteSpace(currentPassword))
-                                        updateUserResult = await accountManager.UpdatePasswordAsync(appUser, currentPassword, newPassword);
-                                    else
-                                        updateUserResult = await accountManager.ResetPasswordAsync(appUser, newPassword);
-                                }
-
+                                sc.CardId = e.CardId;
+                                sc.Remarks = e.Remarks;
+                                sc.Status = e.Status;
+                                sc.IsActive = true;
+                                this._appContext.StudentCards.Update(sc);
                             }
-                        }
-
-                        if (!updateUserResult.Item1)
-                        {
-                            result.Message = "Failed to save! " + updateUserResult.Item2;
-                            return result;
-                        }
-
-                        student.Account.User = appUser;
-
-                        _appContext.UserCardIds.Where(e => e.UserId == appUser.Id).ToList().ForEach(e =>
-                        {
-                            e.IsActive = false;
-                            _appContext.UserCardIds.Update(e);
+                            else
+                            {
+                                this._appContext.StudentCards.Add(e);
+                            }
                         });
+                    }
 
-                        //add/update cards here
-                        foreach (var c in cards)
+                    var restrictionsToDelete = this._appContext.StudentRestrictions.Where(x => x.StudentId == f.Id &&
+                                        (restrictions == null || !restrictions.Any(a => a.RestrictionId == x.RestrictionId)));
+
+                    this._appContext.StudentRestrictions.RemoveRange(restrictionsToDelete);
+
+                    if (restrictions != null)
+                    {
+                        restrictions.ForEach(e =>
                         {
-                            UserCardId card;
-                            if(c.Id > 0)
+                            var sr = this._appContext.StudentRestrictions.FirstOrDefault(x => x.StudentId == e.StudentId && x.RestrictionId == e.RestrictionId);
+                            if (sr != null)
                             {
-                                card = await _appContext.UserCardIds.SingleOrDefaultAsync(e => e.Id == c.Id);
+                                sr.IsActive = true;
+                                this._appContext.StudentRestrictions.Update(sr);
                             }
                             else
                             {
-                                card = await _appContext.UserCardIds.SingleOrDefaultAsync(e => e.UserId == c.UserId && e.CardId.Equals(c.CardId, StringComparison.CurrentCultureIgnoreCase));
+                                this._appContext.StudentRestrictions.Add(e);
                             }
+                        });
+                    }
 
-                            if (card == null || card.Id == 0)
+                    var interestGroupsToDelete = this._appContext.StudentInterestGroups.Where(x => x.StudentId == f.Id &&
+                                        (interestGroups == null || !interestGroups.Any(a => a.InterestGroupId == x.InterestGroupId)));
+
+                    this._appContext.StudentInterestGroups.RemoveRange(interestGroupsToDelete);
+
+                    if (interestGroups != null)
+                    {
+                        interestGroups.ForEach(e =>
+                        {
+                            var sr = this._appContext.StudentInterestGroups.FirstOrDefault(x => x.StudentId == e.StudentId && x.InterestGroupId == e.InterestGroupId);
+                            if (sr != null)
                             {
-                                c.IsActive = true;
-                                await _appContext.UserCardIds.AddAsync(c);
+                                sr.IsActive = true;
+                                this._appContext.StudentInterestGroups.Update(sr);
                             }
                             else
                             {
-                                int oldId = card.Id;
-
-                                card.CopyFrom(c);
-                                card.Id = oldId;
-                                card.IsActive = true;
-                                _appContext.UserCardIds.Update(card);
+                                this._appContext.StudentInterestGroups.Add(e);
                             }
+                        });
+                    }
+
+                    if (student.Users != null)
+                    {
+                        var stus = new List<StudentManageAccount>();
+                        foreach (var ug in student.Users)
+                        {
+                            var uw = await _appContext.StudentManageAccounts.FirstOrDefaultAsync(e => e.Id == ug.Id);
+                            if (uw == null) uw = ug;
+                            else uw.IsActive = ug.IsActive;
+
+                            stus.Add(uw);
                         }
+                        student.Users = stus;
+                    }
+
+                    //if (user.UserOutlets != null)
+                    //{
+                    //    var stus = new List<UserOutlet>();
+                    //    foreach (var ug in user.UserOutlets)
+                    //    {
+                    //        if (ug.Id == 0 && ug.IsActive == false) continue;
+
+                    //        var uw = await _appContext.UserOutlets.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.Id == ug.Id);
+                    //        if (uw == null) uw = ug;
+                    //        else uw.IsActive = ug.IsActive;
+
+
+                    //        stus.Add(uw);
+                    //    }
+                    //    user.UserOutlets = stus;
+                    //}
+
+                    f.CopyFrom(student);
+
+                    Update(f);
+                    if (await _appContext.SaveChangesAsync() > 0)
+                    {
+                        result.Message = "Successfully saved!";
+                        result.IsSuccess = true;
+                        result.Data = f;
+
+                        scope.Complete();
                     }
                     else
                     {
-                        appUser = user;
-                        appUser.IsEnabled = true;
-                        appUser.EmailConfirmed = true;
-                        appUser.UserCardIds = cards;
-                        appUser.IsActive = true;
-                        if (!appUser.InstitutionId.HasValue)
-                        {
-                            appUser.InstitutionId = (await accountManager.GetCurrentInstitution())?.Id;
-                        }
-                        var existingUsername = await accountManager.GetUserByUserNameAsync(user.UserName);
-                        if (existingUsername != null && existingUsername.IsActive)
-                        {
-                            //username exists
-                            result.Message = "Failed to save! Username already exists.";
-                            return result;
-                        }
-
-                        var existingUser = await accountManager.GetUserByEmailAsync(appUser.Email);
-                        if (existingUser != null && existingUser.IsActive)
-                        {
-                            appUser = existingUser;
-                        }
-
-                        if(appUser.Id == 0)
-                        {
-                            var createUserResult = await accountManager.CreateUserAsync(appUser, new List<string>(), newPassword);
-                            if (!createUserResult.Item1)
-                            {
-                                result.Message = $"Failed to save user. Errors: {string.Join(Environment.NewLine, createUserResult.Item2)}";
-                                return result;
-                            }
-                        }
-
-                        if (student.Account == null)
-                        {
-                            student.Account = new StudentAccount();
-                        }
-
-                        student.Account.UserId = appUser.Id;
-                        student.Account.StudentId = student.Id;
-                        await _appContext.StudentAccounts.AddAsync(student.Account);
+                        result.Message = "Failed to save!";
+                        result.IsSuccess = false;
                     }
 
                 }
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError($"Error saving changes: {ex.Message}", ex);
+                _logger.LogError($"Error saving changes: {ex.StackTrace}", ex);
 
-                var cardsToDelete = this._appContext.StudentCards.Where(x => x.StudentId == f.Id &&
-                                    (studentCards == null || !studentCards.Any(a => a.Id == x.Id)));
+                result.Message = "Failed to save due to a database update error!";
+                result.IsSuccess = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving changes: {ex.Message}", ex);
+                _logger.LogError($"Error saving changes: {ex.StackTrace}", ex);
 
-                this._appContext.StudentCards.RemoveRange(cardsToDelete);
-
-                if (studentCards != null)
-                {
-                    studentCards.ForEach(e =>
-                    {
-                        var sc = this._appContext.StudentCards.FirstOrDefault(x => x.Id == e.Id);
-                        if (sc != null)
-                        {
-                            sc.CardId = e.CardId;
-                            sc.Remarks = e.Remarks;
-                            sc.Status = e.Status;
-                            sc.IsActive = true;
-                            this._appContext.StudentCards.Update(sc);
-                        }
-                        else
-                        {
-                            this._appContext.StudentCards.Add(e);
-                        }
-                    });
-                }
-
-                var restrictionsToDelete = this._appContext.StudentRestrictions.Where(x => x.StudentId == f.Id &&
-                                    (restrictions == null || !restrictions.Any(a => a.RestrictionId == x.RestrictionId)));
-
-                this._appContext.StudentRestrictions.RemoveRange(restrictionsToDelete);
-
-                if (restrictions != null)
-                {
-                    restrictions.ForEach(e =>
-                    {
-                        var sr = this._appContext.StudentRestrictions.FirstOrDefault(x => x.StudentId == e.StudentId && x.RestrictionId == e.RestrictionId);
-                        if (sr != null)
-                        {
-                            sr.IsActive = true;
-                            this._appContext.StudentRestrictions.Update(sr);
-                        }
-                        else
-                        {
-                            this._appContext.StudentRestrictions.Add(e);
-                        }
-                    });
-                }
-
-                var interestGroupsToDelete = this._appContext.StudentInterestGroups.Where(x => x.StudentId == f.Id &&
-                                    (interestGroups == null || !interestGroups.Any(a => a.InterestGroupId == x.InterestGroupId)));
-
-                this._appContext.StudentInterestGroups.RemoveRange(interestGroupsToDelete);
-
-                if (interestGroups != null)
-                {
-                    interestGroups.ForEach(e =>
-                    {
-                        var sr = this._appContext.StudentInterestGroups.FirstOrDefault(x => x.StudentId == e.StudentId && x.InterestGroupId == e.InterestGroupId);
-                        if (sr != null)
-                        {
-                            sr.IsActive = true;
-                            this._appContext.StudentInterestGroups.Update(sr);
-                        }
-                        else
-                        {
-                            this._appContext.StudentInterestGroups.Add(e);
-                        }
-                    });
-                }
-
-                if (student.Users != null)
-                {
-                    var stus = new List<StudentManageAccount>();
-                    foreach (var ug in student.Users)
-                    {                   
-                        var uw = await _appContext.StudentManageAccounts.FirstOrDefaultAsync(e => e.Id == ug.Id);
-                        if (uw == null) uw = ug;
-                        else uw.IsActive = ug.IsActive;
-
-                        stus.Add(uw);
-                    }
-                    student.Users = stus;
-                }
-
-                //if (user.UserOutlets != null)
-                //{
-                //    var stus = new List<UserOutlet>();
-                //    foreach (var ug in user.UserOutlets)
-                //    {
-                //        if (ug.Id == 0 && ug.IsActive == false) continue;
-
-                //        var uw = await _appContext.UserOutlets.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.Id == ug.Id);
-                //        if (uw == null) uw = ug;
-                //        else uw.IsActive = ug.IsActive;
-
-
-                //        stus.Add(uw);
-                //    }
-                //    user.UserOutlets = stus;
-                //}
-
-                f.CopyFrom(student);
-
-                Update(f);
-                if (await _appContext.SaveChangesAsync() > 0)
-                {
-                    result.Message = "Successfully saved!";
-                    result.IsSuccess = true;
-                    result.Data = f;
-
-                    scope.Complete();
-                }
-                else
-                {
-                    result.Message = "Failed to save!";
-                    result.IsSuccess = false;
-                }
-
+                result.Message = "Failed to save due to an unexpected error!";
+                result.IsSuccess = false;
             }
 
             return result;
@@ -771,7 +800,7 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        public async Task<BaseOperationResponse> ImportStudentCardAsync(IAccountManager accountManager, List<StudentCardImportDTO> rows)
+        public async Task<BaseOperationResponse> ImportStudentCardAsyncDeprecated(IAccountManager accountManager, List<StudentCardImportDTO> rows)
         {
             var result = new BaseOperationResponse();
             try
@@ -784,67 +813,81 @@ namespace DAL.Repositories.MealOrder
                     {
                         List<int> studentIds = new List<int>();
 
+                        var allClasses = _appContext.Classes.Where(e => e.IsActive).ToList();
+                        var classesToImport = rows.Select(e => e.Class).ToList();
+                        // check if one of the classes is missing
+                        var classExist = allClasses.Any(e => classesToImport.Any(c => e.Name.Equals(c, StringComparison.InvariantCultureIgnoreCase)));
+                        if (!classExist)
+                        {
+                            throw new Exception(string.Format("Class not found. Please check the imported file."));
+                        }
+
+                        var allBatches = _appContext.ClassBatches.Where(e => e.IsActive).ToList();
+                        var batchesToImport = rows.Select(e => e.Batch).ToList();
+                        // check if one of the batches is missing
+                        var batchExist = allBatches.Any(e => batchesToImport.Any(c => e.Year == c));
+                        if (!batchExist)
+                        {
+                            throw new Exception(string.Format("Batch not found. Please check the imported file."));
+                        }
+
+                        var allClassLevels = _appContext.ClassLevels.Where(e => e.IsActive).ToList();
+
+                        var allStudents = _appContext.Students.Where(e => e.IsActive && e.OutletId == rows.First().OutletId).ToList();
+                        var allStudentCards = _appContext.StudentCards.Where(e => e.IsActive).ToList();
+                        var allUsers = _appContext.Users.Where(e => e.IsActive);
+                        var allAsociatedEmails = rows.Where(e => !string.IsNullOrEmpty(e.AssociatedEmail)).Select(e => e.AssociatedEmail);
+                        var allParentAccounts = allUsers.Where(e => allAsociatedEmails.Any(x => e.Email.Equals(x, StringComparison.InvariantCultureIgnoreCase))).ToList();
+
                         foreach (var row in rows)
                         {
-                            var sClass = await _appContext.Classes.FirstOrDefaultAsync(e => e.IsActive && e.Name.Equals(row.Class, StringComparison.InvariantCultureIgnoreCase));
+                            var sClass = allClasses.FirstOrDefault(e => e.Name.Equals(row.Class, StringComparison.InvariantCultureIgnoreCase));
                             if (sClass == null)
                             {
                                 throw new Exception(string.Format("Class not found. Please check the imported file."));
                             }
 
-                            var classLevel = await _appContext.ClassLevels.FirstOrDefaultAsync(e => e.IsActive && e.Id == sClass.ClassLevelId);
+                            var classLevel = allClassLevels.FirstOrDefault(e => e.Id == sClass.ClassLevelId);
 
                             //class level not provided, create one from class name
                             if (classLevel == null)
                             {
-                                classLevel = new ClassLevel { Name = row.Class, Year = DateTime.Now.Year };
+                                classLevel = new ClassLevel { Name = row.Class, Year = DateTime.Now.Year, OutletId = row.OutletId };
                                 _appContext.ClassLevels.Add(classLevel);
-                                await _appContext.SaveChangesAsync();
+                                //await _appContext.SaveChangesAsync();
                             }
 
-                            var batch = await _appContext.ClassBatches.FirstOrDefaultAsync(e => e.IsActive && e.Year == row.Batch);
+                            var batch = allBatches.FirstOrDefault(e => e.Year == row.Batch);
 
                             //batch not provided, create one from class name
                             if (batch == null)
                             {
                                 batch = new ClassBatch { Name = row.Batch.ToString(), Year = row.Batch };
                                 _appContext.ClassBatches.Add(batch);
-                                await _appContext.SaveChangesAsync();
+                                //await _appContext.SaveChangesAsync();
                             }
 
-                            var students = _appContext.Students.Where(e => e.IsActive && e.OutletId == row.OutletId &&
-                                                e.Name.Equals(row.Name, StringComparison.InvariantCultureIgnoreCase));
+                            var students = allStudents.Where(e => e.Name.Equals(row.Name, StringComparison.InvariantCultureIgnoreCase));
 
-                            var parentAccount = await _appContext.Users.FirstOrDefaultAsync(e => e.IsActive &&
-                                                e.Email.Equals(row.AssociatedEmail, StringComparison.InvariantCultureIgnoreCase));
+                            var associatedEmails = !string.IsNullOrEmpty(row.AssociatedEmail) ? row.AssociatedEmail.Split(',').Select(e => e.Trim()).ToList() : new List<string>();
+                            var parentAccounts = allParentAccounts.Where(e => associatedEmails.Any(x => e.Email.Equals(x, StringComparison.InvariantCultureIgnoreCase)));
 
                             var studentNameIds = students.Select(e => e.Id).ToList();
-                            Student student = parentAccount?.Students?.FirstOrDefault(e => studentNameIds.Contains(e.StudentId))?.Student;
+                            Student student = parentAccounts?.SelectMany(f => f.Students)?.FirstOrDefault(e => studentNameIds.Contains(e.StudentId))?.Student;
 
                             if (student == null)
                             {
                                 // existing student with their own email
-                                student = await students.FirstOrDefaultAsync(e => !string.IsNullOrEmpty(e.Email) && e.Email.Equals(row.Email, StringComparison.InvariantCultureIgnoreCase));
+                                student = students.FirstOrDefault(e => !string.IsNullOrEmpty(e.Email) && e.Email.Equals(row.Email, StringComparison.InvariantCultureIgnoreCase));
                             }
 
                             if (student == null)
                             {
-                                if (students.Any(e => !string.IsNullOrEmpty(e.Email) && e.Email.Equals(row.AssociatedEmail, StringComparison.InvariantCultureIgnoreCase)))
+                                if (students.Any(e => !string.IsNullOrEmpty(e.Email) && associatedEmails.Any(x => e.Email.Equals(x, StringComparison.InvariantCultureIgnoreCase))))
                                 {
                                     // student is existing and is using parent's email
-                                    student = await students.FirstOrDefaultAsync(e => !string.IsNullOrEmpty(e.Email) && e.Email.Equals(row.AssociatedEmail, StringComparison.InvariantCultureIgnoreCase));
+                                    student = students.FirstOrDefault(e => !string.IsNullOrEmpty(e.Email) && associatedEmails.Any(x => e.Email.Equals(x, StringComparison.InvariantCultureIgnoreCase)));
                                 }
-
-                                //if(student == null)
-                                //{
-                                //    // student email is not tied to the student. It's maybe using the parents
-                                //    // check associate email (parent)
-                                //    var parentAccount = await _appContext.Users.FirstOrDefaultAsync(e => e.IsActive && e.Email.Equals(row.AssociatedEmail, StringComparison.InvariantCultureIgnoreCase));
-                                //    if (students.Any(e => !string.IsNullOrEmpty(e.Ass) && e.Email.Equals(row.Email, StringComparison.InvariantCultureIgnoreCase)))
-                                //    {
-                                //        student = await students.FirstOrDefaultAsync(e => !string.IsNullOrEmpty(e.Email) && e.Email.Equals(row.Email, StringComparison.InvariantCultureIgnoreCase));
-                                //    }
-                                //}
                             }
 
                             string studentEmail = string.IsNullOrEmpty(row.Email) ? await GenerateStudentEmail(sClass.Name, row.Name, row.OutletId) : row.Email;
@@ -854,7 +897,7 @@ namespace DAL.Repositories.MealOrder
                             {
                                 if (!string.IsNullOrEmpty(studentEmail) && new EmailAddressAttribute().IsValid(studentEmail))
                                 {
-                                    student = await _appContext.Students.FirstOrDefaultAsync(e => e.OutletId == row.OutletId && e.IsActive && e.Email == studentEmail);
+                                    student = allStudents.FirstOrDefault(e => e.OutletId == row.OutletId && e.IsActive && e.Email == studentEmail);
                                 }
                             }
 
@@ -866,16 +909,17 @@ namespace DAL.Repositories.MealOrder
                                 student.ClassId = sClass.Id;
                                 student.Email = student.Email ?? studentEmail;
 
-                                var studentCards = _appContext.StudentCards.Where(e => e.IsActive && e.StudentId == student.Id);
+                                var studentCards = allStudentCards.Where(e => e.IsActive && e.StudentId == student.Id);
                                 //disable existing cards
                                 var cardToDelete = studentCards.Where(e => !e.CardId.Equals(row.CardId, StringComparison.InvariantCultureIgnoreCase));
-                                await cardToDelete.ForEachAsync(e =>
+
+                                foreach (var e in cardToDelete)
                                 {
                                     e.IsActive = false;
                                     _appContext.StudentCards.Update(e);
-                                });
+                                }
 
-                                var cardToInsert = await studentCards.FirstOrDefaultAsync(e => e.CardId.Equals(row.CardId, StringComparison.InvariantCultureIgnoreCase));
+                                var cardToInsert = allStudentCards.FirstOrDefault(e => e.CardId.Equals(row.CardId, StringComparison.InvariantCultureIgnoreCase));
                                 if (cardToInsert == null)
                                 {
                                     _appContext.StudentCards.Add(new StudentCard
@@ -896,13 +940,13 @@ namespace DAL.Repositories.MealOrder
                                 Update(student);
 
 
-                                await _appContext.SaveChangesAsync();
-                                studentIds.Add(student.Id);
+                                //await _appContext.SaveChangesAsync();
+                                //studentIds.Add(student.Id);
                             }
                             else
                             {
                                 //no student record and no account yet
-                                var studentCards = _appContext.StudentCards.Where(e => e.IsActive && e.StudentId == student.Id);
+                                var studentCards = allStudentCards.Where(e => e.StudentId == student.Id);
 
                                 student = new Student
                                 {
@@ -916,35 +960,39 @@ namespace DAL.Repositories.MealOrder
                                 };
 
                                 // parent email exists
-                                if (parentAccount != null)
+                                if (parentAccounts != null)
                                 {
-                                    student.Users.Add(new StudentManageAccount { UserId = parentAccount.Id });
+                                    foreach (var parentAccount in parentAccounts)
+                                        student.Users.Add(new StudentManageAccount { UserId = parentAccount.Id });
                                 }
                                 else
                                 {
                                     // create account
-                                    if (!string.IsNullOrEmpty(row.AssociatedEmail))
+                                    if (associatedEmails != null && associatedEmails.Any())
                                     {
-                                        //create account
-                                        var user = await accountManager.GetUserByEmailAsync(row.AssociatedEmail);
-                                        if (user == null)
+                                        foreach (var associatedEmail in associatedEmails)
                                         {
-                                            user = new ApplicationUser();
-                                            user.IsEnabled = true;
-                                            user.EmailConfirmed = true;
-                                            user.UserName = row.AssociatedEmail.Substring(0, row.AssociatedEmail.IndexOf('@'));
-                                            user.Email = row.AssociatedEmail;
-                                            user.IsActive = true;
-                                            string newPassword = PasswordHelper.GenerateRandomPassword();
-                                            var createUserResult = await accountManager.CreateUserAsync(user, new List<string>(), newPassword);
-                                            if (createUserResult.Item1)
+                                            //create account
+                                            var user = await accountManager.GetUserByEmailAsync(associatedEmail);
+                                            if (user == null)
+                                            {
+                                                user = new ApplicationUser();
+                                                user.IsEnabled = true;
+                                                user.EmailConfirmed = true;
+                                                user.UserName = associatedEmail.Substring(0, associatedEmail.IndexOf('@'));
+                                                user.Email = associatedEmail;
+                                                user.IsActive = true;
+                                                string newPassword = PasswordHelper.GenerateRandomPassword();
+                                                var createUserResult = await accountManager.CreateUserWithPasswordAsync(user, new List<string>(), newPassword);
+                                                if (createUserResult.Item1)
+                                                {
+                                                    student.Users.Add(new StudentManageAccount { UserId = user.Id });
+                                                }
+                                            }
+                                            else
                                             {
                                                 student.Users.Add(new StudentManageAccount { UserId = user.Id });
                                             }
-                                        }
-                                        else
-                                        {
-                                            student.Users.Add(new StudentManageAccount { UserId = user.Id });
                                         }
                                     }
                                 }
@@ -957,11 +1005,12 @@ namespace DAL.Repositories.MealOrder
                                 });
 
                                 var stud = await AddAsync(student);
-                                await _appContext.SaveChangesAsync();
-                                studentIds.Add(stud.Id);
+                                //await _appContext.SaveChangesAsync();
+                                //studentIds.Add(stud.Id);
                             }
                         }
 
+                        await _appContext.SaveChangesAsync();
                         //disable removed students
                         //var studentsToDisable = _appContext.Students.Where(e => e.OutletId == rows.First().OutletId && studentIds.All(f => f != e.Id));
 
@@ -971,6 +1020,75 @@ namespace DAL.Repositories.MealOrder
                         //    Update(stud);
                         //    await _appContext.SaveChangesAsync();
                         //}
+
+                        scope.Complete();
+                        result.IsSuccess = true;
+                        result.Message = "File Imported!";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = ex.Message;
+            }
+
+
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> ImportStudentCardAsync(IAccountManager accountManager, List<StudentCardImportDTO> rows)
+        {
+            var result = new BaseOperationResponse();
+            try
+            {
+                if (rows.Count > 0)
+                {
+                    using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                            new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted, Timeout = new System.TimeSpan(24, 0, 0) },
+                            TransactionScopeAsyncFlowOption.Enabled))
+                    {
+                        var hashedPassword = _passwordHasher.HashPassword(null, "We1come@YISS");
+
+                        if (rows.Count > 0)
+                        {
+                            DataTable dataTable = new DataTable();
+                            dataTable.Columns.Add("OutletId", typeof(int));
+                            dataTable.Columns.Add("BatchName", typeof(string));
+                            dataTable.Columns.Add("ClassName", typeof(string));
+                            dataTable.Columns.Add("IssueDate", typeof(DateTime));
+                            dataTable.Columns.Add("CardId", typeof(string));
+                            dataTable.Columns.Add("CardNumber", typeof(string));
+                            dataTable.Columns.Add("Name", typeof(string));
+                            dataTable.Columns.Add("Email", typeof(string));
+                            dataTable.Columns.Add("AssociatedEmail", typeof(string));
+                            dataTable.Columns.Add("InstitutionId", typeof(int));
+                            dataTable.Columns.Add("AltEmail", typeof(string));
+                            dataTable.Columns.Add("CreatedBy", typeof(int));
+                            dataTable.Columns.Add("PasswordHashed", typeof(string));
+                            dataTable.Columns.Add("SecurityStamp", typeof(string));
+                            dataTable.Columns.Add("ConcurrencyStamp", typeof(string));
+
+
+                            foreach (var row in rows)
+                            {
+                                dataTable.Rows.Add(row.OutletId, row.Batch.ToString(), row.Class, row.IssueDate, row.CardId, row.CardNumber, row.Name, row.Email, row.AssociatedEmail, _currentInstitutionId ?? _appContext.CurrentInstitutionId,
+                                    string.IsNullOrEmpty(row.Email) ? await GenerateStudentEmail(row.Class, row.Name, row.OutletId) : row.Email, _currentUserId ?? _appContext.CurrentUserId,
+                                    hashedPassword, Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+                            }
+
+
+                            await _appContext.Database.ExecuteSqlCommandAsync(
+                                "EXEC dbo.ImportStudentData @StudentData",
+                                new SqlParameter("@StudentData", SqlDbType.Structured)
+                                {
+                                    TypeName = "dbo.tvpStudents",
+                                    Value = dataTable
+                                }
+                            );
+                        }
+
 
                         scope.Complete();
                         result.IsSuccess = true;

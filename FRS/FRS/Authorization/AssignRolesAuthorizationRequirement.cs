@@ -22,9 +22,12 @@ namespace FRS.Authorization
             {
                 context.Succeed(requirement);
             }
-            else if (context.User.HasClaim(CustomClaimTypes.Permission, ApplicationPermissionsTrees.SSAssignRoleMenu))
+            else if (context.User.HasClaim(CustomClaimTypes.Permission, ApplicationPermissionsTrees.SSAssignRoleMenu) ||
+                    context.User.HasClaim(CustomClaimTypes.Permission, ApplicationPermissionsTrees.SSRoleMenu) ||
+                    context.User.HasClaim(CustomClaimTypes.Permission, ApplicationPermissionsTrees.SSManageRoleMenu))
             {
-                if (context.User.HasClaim(CustomClaimTypes.Permission, ApplicationPermissionsTrees.SSRoleMenu)) // If user has ViewRoles permission, then he can assign any roles
+                if (context.User.HasClaim(CustomClaimTypes.Permission, ApplicationPermissionsTrees.SSAssignRoleMenu) ||
+                    context.User.HasClaim(CustomClaimTypes.Permission, ApplicationPermissionsTrees.SSManageRoleMenu)) // If user has ViewRoles permission, then he can assign any roles
                     context.Succeed(requirement);
 
                 else if (GetIsUserInAllAddedRoles(context.User, newAndCurrentRoles.Item1, newAndCurrentRoles.Item2)) // Else user can only assign roles they're part of

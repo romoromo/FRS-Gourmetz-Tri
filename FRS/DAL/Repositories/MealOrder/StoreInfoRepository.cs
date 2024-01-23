@@ -92,6 +92,19 @@ namespace DAL.Repositories.MealOrder
             }
             else
             {
+                if(!string.IsNullOrEmpty(data.StoreType) && data.StoreType.Equals("Kitchen", StringComparison.OrdinalIgnoreCase))
+                {
+                    // check outlet cut off
+                    var days = _appContext.CatererOutlets.Where(e => e.CatererInfoId == data.CatererInfoId).Select(e => e.Outlet.DaysToFreezeOrdering).ToList();
+                    int.TryParse(data.CalendarDays, out int cd);
+                    if (days.Any(e => e < cd))
+                    {
+                        result.Message = "";
+                        result.IsSuccess = false;
+                        return result;
+                    }
+                }
+
                 f.CopyFrom(data);
 
                 Update(f);

@@ -4,7 +4,7 @@ import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { CatererInfo } from 'src/app/models/meal-order/caterer-info.model';
+import { CatererInfoSimple } from 'src/app/models/meal-order/caterer-info.model';
 import { MealService } from 'src/app/services/meal-order/meal.service';
 import { Filter } from 'src/app/models/sieve-filter.model';
 import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
@@ -23,7 +23,7 @@ export class CatererInfoEditorComponent {
   private isSaving: boolean;
   private showValidationErrors: boolean = true;
   private editingCatererInfoCode: string;
-  private catererInfoEdit: CatererInfo = new CatererInfo();
+  private catererInfoEdit: CatererInfoSimple = new CatererInfoSimple();
   private allPermissions: Permission[] = [];
   private selectedValues: { [key: string]: boolean; } = {};
   public formResetToggle = true;
@@ -72,7 +72,7 @@ export class CatererInfoEditorComponent {
   }
 
 
-  private saveSuccessHelper(catererInfo?: CatererInfo) {
+  private saveSuccessHelper(catererInfo?: CatererInfoSimple) {
     if (catererInfo)
       Object.assign(this.catererInfoEdit, catererInfo);
 
@@ -86,7 +86,7 @@ export class CatererInfoEditorComponent {
       this.alertService.showMessage("Success", `Changes to caterer \"${this.catererInfoEdit.name}\" was saved successfully`, MessageSeverity.success);
 
 
-    this.catererInfoEdit = new CatererInfo();
+    this.catererInfoEdit = new CatererInfoSimple();
     this.resetForm();
 
 
@@ -112,7 +112,7 @@ export class CatererInfoEditorComponent {
 
 
   private cancel() {
-    this.catererInfoEdit = new CatererInfo();
+    this.catererInfoEdit = new CatererInfoSimple();
 
     this.showValidationErrors = false;
     this.resetForm();
@@ -146,19 +146,19 @@ export class CatererInfoEditorComponent {
 
     this.editingCatererInfoCode = null;
     this.selectedValues = {};
-    this.catererInfoEdit = new CatererInfo();
+    this.catererInfoEdit = new CatererInfoSimple();
 
     return this.catererInfoEdit;
   }
 
-  editCatererInfo(catererInfo: CatererInfo) {
+  editCatererInfo(catererInfo: CatererInfoSimple) {
     if (catererInfo) {
       this.isNewCatererInfo = false;
       this.showValidationErrors = true;
 
       this.editingCatererInfoCode = catererInfo.name;
       this.selectedValues = {};
-      this.catererInfoEdit = new CatererInfo();
+      this.catererInfoEdit = new CatererInfoSimple();
       Object.assign(this.catererInfoEdit, catererInfo);
 
       return this.catererInfoEdit;

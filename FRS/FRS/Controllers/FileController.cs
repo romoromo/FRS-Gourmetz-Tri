@@ -97,9 +97,9 @@ namespace FRS.Controllers
                     var folderName = DateTime.Now.ToString("yyyyMMddHHmm");
                     folderToZip = Path.Combine(_configuration["AppSettings:MOS_BaseResourcesFolder"], "Sync", "ToZip", fname, folderName);
 
-                    if (!System.IO.File.Exists(folderToZip))
+                    if (!Directory.Exists(folderToZip))
                     {
-                        System.IO.File.Create(folderToZip);
+                        Directory.CreateDirectory(folderToZip);
                     }
 
                     Utilities.TraverseCopyDirectory(source, from ?? DateTime.Now.Date, folderToZip);

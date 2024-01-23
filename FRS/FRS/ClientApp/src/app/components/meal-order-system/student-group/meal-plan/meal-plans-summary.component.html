@@ -23,7 +23,7 @@
     </mat-form-field>
     <mat-form-field class="col-md-3 col-sm-6 col-xs-12">
       <mat-label>Session</mat-label>
-      <mat-select id="mealSession" name="mealSession" [(ngModel)]="mealSessionId" #mealSession="ngModel" required>
+      <mat-select id="mealSession" name="mealSession" [(ngModel)]="mealSessionId" #mealSession="ngModel" required [disabled]="isLoadingMealSessions">
         <mat-option *ngFor="let mealSessionDetail of mealSessions" [value]="mealSessionDetail.mealSessionId">
           {{mealSessionDetail.mealSessionName}}
         </mat-option>
@@ -45,9 +45,12 @@
     <!--<button *ngIf="canManageMealPlans" type="button" mat-stroked-button color="warning" [disabled]="isSaving && isClear" (click)="save(true)" style="margin-left:15px;">
       <i *ngIf="!isSaving && isClear" class='fa'></i><i *ngIf="isSaving && isClear" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving && isClear ? 'Processing orders' : 'Delete orders'}}
     </button>-->
-    <button *ngIf="canManageMealPlans" type="button" mat-stroked-button (click)="onChangeStore()" style="margin-left:15px;">
-      <i class='fa fa-refresh'></i> Reload Summary
+    <button *ngIf="canManageMealPlans" type="button" mat-stroked-button (click)="onShowSummary()" [disabled]="isShowSummary" style="margin-left:15px;">
+      <i *ngIf="!isShowSummary" class='fa fa-refresh'></i><i *ngIf="isShowSummary" class='fa fa-circle-o-notch fa-spin'></i> {{isShowSummary ? 'Loading summary' : 'Show Summary'}}
     </button>
+    <!--<button *ngIf="canManageMealPlans" type="button" mat-stroked-button (click)="onChangeStore()" style="margin-left:15px;">
+      <i class='fa fa-refresh'></i> Reload Summary
+    </button>-->
   </div>
   <br />
   <div class="label label-info" *ngIf="storeId && storeId > 0 && (!columns || columns.length <= 1)">No dish has been assigned to this meal plan yet. Click on the Generate Meal Plan to assign one.</div>

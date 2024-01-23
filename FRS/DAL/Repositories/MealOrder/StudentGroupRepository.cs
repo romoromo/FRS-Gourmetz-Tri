@@ -222,6 +222,14 @@ public async Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<St
 
                         if (group.Type.Equals(StudentMealType.MEAL_PLAN, StringComparison.InvariantCultureIgnoreCase))
                         {
+                            var paymentType = _appContext.PaymentTypes.FirstOrDefault(x => x.Name == "Meal Plan");
+
+                            if (paymentType == null)
+                            {
+                                result.Message = "Payment type 'Meal Plan' not found. Please create the payment type first.";
+                                return result;
+                            }
+
                             // create orders using meal plans
                             var mealPlans = await _appContext.StudentGroupMealPlans.Where(x => x.StudentGroupId == group.Id && x.IsActive).ToListAsync();
                             foreach (var mealPlan in mealPlans)
@@ -270,7 +278,8 @@ public async Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<St
                                     subtotal = (decimal)order.TotalAmount,
                                     total = (decimal)order.TotalAmount,
                                     InvoiceNumber = invoiceNumber,
-                                    Status = "SUCCESS"
+                                    Status = "SUCCESS",
+                                    PaymentTypeId = paymentType.Id
                                 };
 
                                 order.Payment = payment;

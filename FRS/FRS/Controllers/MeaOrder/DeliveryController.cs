@@ -44,6 +44,18 @@ namespace FRS.Controllers
 
         #region CatererInfos
 
+        [ApiKeyAuthorize]
+        [HttpGet("catererinfos/simple/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllCatererInfosPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetCatererInfosSimple(BaseFilter filter)
+        {
+            var results = await this._service.GetCatererInfosSimpleAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<CatererInfoSimpleDTO>>(results));
+        }
+
         #region Sieved
         [ApiKeyAuthorize]
         [HttpGet("catererinfos/sieve/list")]
@@ -63,7 +75,7 @@ namespace FRS.Controllers
         //[Authorize(Authorization.Policies.ManageAllCatererInfosPolicy)]
         [ProducesResponseType(201, Type = typeof(CatererInfoDTO))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateCatererInfo([FromBody] CatererInfoDTO dto)
+        public async Task<IActionResult> CreateCatererInfo([FromBody] CatererInfoSimpleDTO dto)
         {
             if (ModelState.IsValid)
             {
@@ -108,7 +120,7 @@ namespace FRS.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateCatererInfo(string id, [FromBody] CatererInfoDTO model)
+        public async Task<IActionResult> UpdateCatererInfo(string id, [FromBody] CatererInfoSimpleDTO model)
         {
             if (ModelState.IsValid)
             {
@@ -152,6 +164,21 @@ namespace FRS.Controllers
 
         #region Sieved
         [ApiKeyAuthorize]
+        [HttpGet("outlets/simple/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllOutletsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetOutletsSimple(BaseFilter filter)
+        {
+            var results = await this._service.GetOutletsSimpleAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<OutletSimpleDTO>>(results));
+        }
+
+        #endregion
+
+        #region Sieved
+        [ApiKeyAuthorize]
         [HttpGet("outlets/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllOutletsPolicy)]
         //[AllowAnonymous]
@@ -180,11 +207,26 @@ namespace FRS.Controllers
             return Ok(dto);
         }
 
+        [HttpGet("outlets/simple/get/id/{id}")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllStudentsPolicy)]
+        [ProducesResponseType(200, Type = typeof(OutletSimpleDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetOutletByIdSimple(int id)
+        {
+            var dto = await this._service.GetOutletByIdSimpleAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            return Ok(dto);
+        }
+
         [HttpPost("outlets")]
         //[Authorize(Authorization.Policies.ManageAllOutletsPolicy)]
         [ProducesResponseType(201, Type = typeof(OutletDTO))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateOutlet([FromBody] OutletDTO dto)
+        public async Task<IActionResult> CreateOutlet([FromBody] OutletSimpleDTO dto)
         {
             if (ModelState.IsValid)
             {
@@ -229,7 +271,7 @@ namespace FRS.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateOutlet(string id, [FromBody] OutletDTO model)
+        public async Task<IActionResult> UpdateOutlet(string id, [FromBody] OutletSimpleDTO model)
         {
             if (ModelState.IsValid)
             {

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230918194351_added_new_sp")]
-    partial class added_new_sp
+    [Migration("20240118061511_changes_to_mealplan")]
+    partial class changes_to_mealplan
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -6218,6 +6218,8 @@ namespace FRS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AmendReason");
+
                     b.Property<string>("BentoCode");
 
                     b.Property<string>("CancelRequestStatus");
@@ -6588,6 +6590,39 @@ namespace FRS.Migrations
                     b.ToTable("TransactionFeeDetails");
                 });
 
+            modelBuilder.Entity("DAL.Models.MealOrder.UserCaterer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CatererId");
+
+                    b.Property<int?>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<int?>("UpdatedBy");
+
+                    b.Property<DateTime>("UpdatedDate");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CatererId");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserCaterers");
+                });
+
             modelBuilder.Entity("DAL.Models.MealOrder.UserOrderAlert", b =>
                 {
                     b.Property<int>("Id")
@@ -6623,6 +6658,39 @@ namespace FRS.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserOrderAlerts");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.UserOutlet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<int>("OutletId");
+
+                    b.Property<int?>("UpdatedBy");
+
+                    b.Property<DateTime>("UpdatedDate");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("OutletId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserOutlets");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Voucher", b =>
@@ -8378,22 +8446,6 @@ namespace FRS.Migrations
                     b.Property<string>("GroupId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ActionName");
-
-                    b.Property<int>("AuditLogId");
-
-                    b.Property<DateTime>("EventDateTime");
-
-                    b.Property<string>("LogType");
-
-                    b.Property<string>("NewVal");
-
-                    b.Property<string>("OldVal");
-
-                    b.Property<string>("PropertyName");
-
-                    b.Property<string>("RecordId");
-
                     b.Property<string>("Remarks");
 
                     b.Property<int>("Total");
@@ -8468,6 +8520,8 @@ namespace FRS.Migrations
                     b.Property<string>("ReturnTime");
 
                     b.Property<string>("Status");
+
+                    b.Property<string>("StudentGroupName");
 
                     b.Property<int>("StudentId");
 
@@ -12393,6 +12447,27 @@ namespace FRS.Migrations
                         .HasForeignKey("UpdatedBy");
                 });
 
+            modelBuilder.Entity("DAL.Models.MealOrder.UserCaterer", b =>
+                {
+                    b.HasOne("DAL.Models.MealOrder.CatererInfo", "Caterer")
+                        .WithMany("UserCaterers")
+                        .HasForeignKey("CatererId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+
+                    b.HasOne("DAL.Models.ApplicationUser", "User")
+                        .WithMany("UserCaterers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("DAL.Models.MealOrder.UserOrderAlert", b =>
                 {
                     b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
@@ -12405,6 +12480,27 @@ namespace FRS.Migrations
 
                     b.HasOne("DAL.Models.ApplicationUser", "User")
                         .WithMany("UserOrderAlerts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.UserOutlet", b =>
+                {
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
+                        .WithMany("UserOutlets")
+                        .HasForeignKey("OutletId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+
+                    b.HasOne("DAL.Models.ApplicationUser", "User")
+                        .WithMany("UserOutlets")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

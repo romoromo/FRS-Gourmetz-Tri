@@ -9,7 +9,7 @@ import { CommonEndpoint } from '../common-endpoint.service';
 import { ConfigurationService } from '../configuration.service';
 import { Filter, PagedResult } from 'src/app/models/sieve-filter.model';
 import { Staff } from 'src/app/models/meal-order/staff.model';
-import { CatererInfo } from '../../models/meal-order/caterer-info.model';
+import { CatererInfo, CatererInfoSimple } from '../../models/meal-order/caterer-info.model';
 import { BentoBoxType } from '../../models/meal-order/bento-box-type.model';
 import { BentoAsset } from '../../models/meal-order/bento-asset.model';
 import { CartonType } from '../../models/meal-order/carton-type.model';
@@ -18,7 +18,7 @@ import { TrackingStatus } from '../../models/meal-order/tracking-status.model';
 import { DeliveryOrder } from '../../models/meal-order/delivery-order.model';
 import { DeliveryOrderNew } from '../../models/meal-order/delivery-order-new.model';
 import { StoreInventory } from '../../models/meal-order/store-inventory.model';
-import { Outlet, OutletProfile, OutletTerm } from 'src/app/models/meal-order/outlet.model';
+import { Outlet, OutletProfile, OutletTerm, OutletSimple } from 'src/app/models/meal-order/outlet.model';
 import { StoreInfo } from '../../models/meal-order/store-info.model';
 import { Driver } from 'src/app/models/meal-order/driver.model';
 import { Route } from 'src/app/models/meal-order/route.model';
@@ -89,19 +89,23 @@ export class DeliveryService {
     return this.commonEndpoint.getById<any>(this.catererInfoUrl + '/get', catererInfoId);
   }
 
+  getCatererInfosSimpleByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.catererInfoUrl + '/simple/sieve/list', filter);
+  }
+
   getCatererInfosByFilter(filter: Filter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.catererInfoUrl + '/sieve/list', filter);
   }
 
-  updateCatererInfo(catererInfo: CatererInfo) {
+  updateCatererInfo(catererInfo: CatererInfoSimple) {
     if (catererInfo.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.catererInfoUrl, catererInfo, catererInfo.id);
     }
   }
 
 
-  newCatererInfo(catererInfo: CatererInfo) {
-    return this.commonEndpoint.getNewEndpoint<CatererInfo>(this.catererInfoUrl, catererInfo);
+  newCatererInfo(catererInfo: CatererInfoSimple) {
+    return this.commonEndpoint.getNewEndpoint<CatererInfoSimple>(this.catererInfoUrl, catererInfo);
   }
 
 
@@ -143,11 +147,19 @@ export class DeliveryService {
     return this.commonEndpoint.getById<any>(this.outletUrl + '/get', outletId);
   }
 
+  getOutletByIdSimple(outletId: string) {
+    return this.commonEndpoint.getById<any>(this.outletUrl + '/simple/get', outletId);
+  }
+
+  getOutletsSimpleByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.outletUrl + '/simple/sieve/list', filter);
+  }
+
   getOutletsByFilter(filter: Filter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.outletUrl + '/sieve/list', filter);
   }
 
-  updateOutlet(outlet: Outlet) {
+  updateOutlet(outlet: OutletSimple) {
     if (outlet.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.outletUrl, outlet, outlet.id);
     }
@@ -160,8 +172,8 @@ export class DeliveryService {
   }
 
 
-  newOutlet(outlet: Outlet) {
-    return this.commonEndpoint.getNewEndpoint<Outlet>(this.outletUrl, outlet);
+  newOutlet(outlet: OutletSimple) {
+    return this.commonEndpoint.getNewEndpoint<OutletSimple>(this.outletUrl, outlet);
   }
 
 

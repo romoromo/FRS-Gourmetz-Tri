@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using DAL.Models.StoredProcedures;
 using System.Data.SqlClient;
 using static DAL.Core.Constants;
+using NPOI.SS.Formula.Functions;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -55,6 +56,7 @@ namespace DAL.Repositories.MealOrder
             var sortBy = new SqlParameter("@SortDirection", System.Data.SqlDbType.Bit);
             var reportType = new SqlParameter("@ReportType", System.Data.SqlDbType.Int);
             var studentGroupId = new SqlParameter("@StudentGroupId", System.Data.SqlDbType.Int);
+            var orderType = new SqlParameter("@OrderType", System.Data.SqlDbType.VarChar);
 
             from.Value = filter.ReportDateFrom;
             to.Value = filter.ReportDateTo;
@@ -65,14 +67,15 @@ namespace DAL.Repositories.MealOrder
             keywords.Value = (object)filter.Keyword ?? DBNull.Value;
             reportType.Value = (object)filter.ReportType ?? 1;
             studentGroupId.Value = (object)filter.StudentGroupId ?? DBNull.Value;
+            orderType.Value = (object)filter.OrderType ?? DBNull.Value;
 
             bool isDesc = filter.Sorts.Contains("-");
             sortByCol.Value = isDesc ? filter.Sorts.Substring(1) : filter.Sorts;
             sortBy.Value = isDesc;
 
             var orders = await _appContext.spSalesOrderReport
-                            .FromSql($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupId",
-                                    from, to, status, isFas, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupId).ToListAsync();
+                            .FromSql($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupId, @OrderType",
+                                    from, to, status, isFas, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupId, orderType).ToListAsync();
 
             return orders;
         }
@@ -816,19 +819,19 @@ namespace DAL.Repositories.MealOrder
 
                     var fasStudents = outlet.Students.Where(e => e.OutletId == outletId && e.IsActive && e.IsFAS).ToList();
                     var studentIds = fasStudents.Select(e => e.Id).ToList();
-                    bool hasOrder = _appContext.TokenOrders.Any(e =>
-                                                studentIds.Contains(e.ProfileId.GetValueOrDefault()) &&
-                                                e.IsActive && e.Status != "cancelled" &&
-                                                e.DeliveryDate.Date >= deliveryDate.Date &&
-                                                e.DeliveryDate.Date <= deliveryDateTo.Date &&
-                                                e.StoreId == storeId &&
-                                                e.Session.MealSessionId == mealSessionId);
+                    //bool hasOrder = _appContext.TokenOrders.Any(e =>
+                    //                            studentIds.Contains(e.ProfileId.GetValueOrDefault()) &&
+                    //                            e.IsActive && e.Status != "cancelled" &&
+                    //                            e.DeliveryDate.Date >= deliveryDate.Date &&
+                    //                            e.DeliveryDate.Date <= deliveryDateTo.Date &&
+                    //                            e.StoreId == storeId &&
+                    //                            e.Session.MealSessionId == mealSessionId);
 
-                    if(hasOrder)
-                    {
-                        result.Message = "Please cancel previous orders for the selected date range before assigning new orders.";
-                        return result;
-                    }
+                    //if(hasOrder)
+                    //{
+                    //    result.Message = "Please cancel previous orders for the selected date range before assigning new orders.";
+                    //    return result;
+                    //}
 
                     while (deliveryDate.Date <= deliveryDateTo.Date)
                     {
@@ -873,6 +876,10 @@ namespace DAL.Repositories.MealOrder
                                         }
 
                                         SoftDelete(existingOrder);
+                                    }
+                                    else
+                                    {
+                                        continue;
                                     }
 
                                 }
@@ -1031,57 +1038,203 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        public async Task<List<spGetFasTokenOrderSummary>> GetFasTokenOrders(int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, IEnumerable<int> mealSessionIds)
+        {
+            var from = new SqlParameter("@deliveryDate", System.Data.SqlDbType.Date);
+            var to = new SqlParameter("@deliveryDateTo", System.Data.SqlDbType.Date);
+            var pOutletId = new SqlParameter("@outletId", System.Data.SqlDbType.Int);
+            var pStoreId = new SqlParameter("@storeId", System.Data.SqlDbType.Int);
+            var pMealSessionIds = new SqlParameter("@mealSessionIds", System.Data.SqlDbType.VarChar);
+
+            from.Value = deliveryDate;
+            to.Value = deliveryDateTo;
+            pOutletId.Value = outletId;
+            pStoreId.Value = storeId;
+            pMealSessionIds.Value = string.Join(",", mealSessionIds);
+
+            var orders = await _appContext.spGetFasTokenOrderSummary
+                            .FromSql($"exec spGetFasTokenOrderSummary @outletId, @storeId, @deliveryDate, @deliveryDateTo, @mealSessionIds",
+                                    from, to, pOutletId, pStoreId, pMealSessionIds).ToListAsync();
+
+            return orders;
+        }
+
         public async Task<FasTokenOrderSummaryDTO> GetFasTokenOrderSummaryAsync(int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails)
         {
-            var outlet = await _appContext.Outlets.FindAsync(outletId);
-            var fasStudents = outlet.Students.Where(e => e.OutletId == outletId && e.IsActive && e.IsFAS).ToList();
-
-            var fasOrders = _appContext.TokenOrders.Where(t => t.StoreId == storeId && t.IsFAS && t.Status != "cancelled" &&
-                                           (t.DeliveryDate.Date >= deliveryDate.Date && t.DeliveryDate.Date <= deliveryDateTo.Date)
-                                           && t.IsActive && fasStudents.Any(f => f.Id == t.ProfileId)).ToList();
-
-            var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
-            var tokenOrderSelectedDishes = _appContext.TokenOrderDishes.Where(e => e.IsActive && fasOrders.Any(f => f.Id == e.TokenOrdered.OrderId)).ToList();
-
             var mealSessionIds = mealSessionDetails.Select(e => e.MealSessionId).ToList();
             var mealSessions = _appContext.MealSessions.Where(e => mealSessionIds.Any(f => f == e.Id)).Select(e => e.Name).ToList();
-            var summary = new FasTokenOrderSummaryDTO { Total = new FasTokenOrderRowDTO { Cells = new List<string>() } };
+            var orders = await GetFasTokenOrders(outletId, storeId, deliveryDate, deliveryDateTo, mealSessionIds);
+            var grpOrders = orders.GroupBy(e => new { e.DeliveryDate });
+            //var colspan = grpOrders.Select(e => e.FirstOrDefault().DishTypeName).Count();
+            var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
+            var colspan = dishTypes.Count();
+            string dateFormat = "dd/MM/yy";
 
-            summary.Cols.Add("Session");
-            foreach (var dishType in dishTypes)
+            var summary = new FasTokenOrderSummaryDTO { Total = new FasTokenOrderRowDTO { Cells = new List<FasTokenOrderCellDTO>() } };
+
+            // build header
+            var row = new FasTokenOrderRowDTO();
+            row.Cells.Add(new FasTokenOrderCellDTO { Val = "Session", Colspan = 1, Rowspan = 2 });
+            var currentDate = deliveryDate.Date;
+            while (currentDate <= deliveryDateTo.Date)
             {
-                summary.Cols.Add(dishType.Name);
+                row.Cells.Add(new FasTokenOrderCellDTO { Val = string.Format("{0}", currentDate.ToString(dateFormat)), Colspan = colspan, Rowspan = 1 });
+                currentDate = currentDate.Date.AddDays(1);
             }
 
-            
-            foreach (var mealSession in mealSessions)
+            summary.Headers.Add(row);
+
+            row = new FasTokenOrderRowDTO();
+            currentDate = deliveryDate.Date;
+            while (currentDate <= deliveryDateTo.Date)
             {
-                var row = new FasTokenOrderRowDTO();
-                row.Cells.Add(string.Format("{0}" , mealSession));
-                
+                // build new header
                 foreach (var dishType in dishTypes)
                 {
-                    //var tokens = fasOrders.Where(e => e.MealSessionDetailId == mealSessionDetail.Id).SelectMany(e => e.Tokens);
-                    var totalByDishType = tokenOrderSelectedDishes.Where(e => e.TokenOrdered.Order.Session.MealSession.Name == mealSession &&
-                                                            e.Dish.DishTypeId == dishType.Id).Sum(f => (int) f.Qty);
-                    
-                    row.Cells.Add(totalByDishType.ToString());
+                    row.Cells.Add(new FasTokenOrderCellDTO { Val = dishType.Name, Colspan = 1, Rowspan = 1 });
+                }
+
+                currentDate = currentDate.Date.AddDays(1);
+            }
+
+            summary.Headers.Add(row);
+
+            // build rows
+            foreach (var mealSession in mealSessions)
+            {
+                row = new FasTokenOrderRowDTO();
+                row.Cells.Add(new FasTokenOrderCellDTO { Val = mealSession, Colspan = 1, Rowspan = 1 });
+
+                currentDate = deliveryDate.Date;
+                while (currentDate <= deliveryDateTo.Date)
+                {
+                    foreach (var dishType in dishTypes)
+                    {
+                        var qty = orders.FirstOrDefault(e => e.DeliveryDate.Date == currentDate.Date &&
+                                                        e.Session.Equals(mealSession, StringComparison.OrdinalIgnoreCase) &&
+                                                        e.DishTypeName.Equals(dishType.Name, StringComparison.OrdinalIgnoreCase))?.Quantity ?? 0;
+
+                        row.Cells.Add(new FasTokenOrderCellDTO { Val = qty.ToString(), Colspan = 1, Rowspan = 1 });
+                    }
+
+                    currentDate = currentDate.Date.AddDays(1);
                 }
 
                 summary.Rows.Add(row);
             }
 
-            summary.Total.Cells.Add("Total Quantity");
-            if(summary.Rows.Any() && summary.Rows.First().Cells.Any())
+            row = new FasTokenOrderRowDTO();
+            //currentDate = deliveryDate.Date;
+            //while (currentDate <= deliveryDateTo.Date)
+            //{
+            //    // build new header
+            //    foreach (var dishType in dishTypes)
+            //    {
+            //        row.Cells.Add(new FasTokenOrderCellDTO { Val = dishType.Name, Colspan = 1, Rowspan = 1 });
+            //    }
+
+            //    currentDate = currentDate.Date.AddDays(1);
+            //}
+
+            summary.Total = row;
+
+            summary.Total.Cells.Add(new FasTokenOrderCellDTO { Val = "Total", Colspan = 1, Rowspan = 1 });
+            if (summary.Rows.Any() && summary.Rows.First().Cells.Any())
             {
                 for (int i = 1; i < summary.Rows.First().Cells.Count; i++)
                 {
-                    var totalByCol = summary.Rows.Select(e => int.Parse(e.Cells[i])).Sum();
-                    summary.Total.Cells.Add(totalByCol.ToString());
+                    var totalByCol = summary.Rows.Select(e => int.Parse(e.Cells[i].Val)).Sum();
+                    summary.Total.Cells.Add(new FasTokenOrderCellDTO { Val = totalByCol.ToString(), Colspan = 1, Rowspan = 1 });
                 }
             }
 
+
             return summary;
+
+            //summary.Cols.Add(toCol);
+
+            //foreach (var mealSession in mealSessions)
+            //{
+            //    var row = new FasTokenOrderRowDTO();
+            //    row.Cells.Add(string.Format("{0}", mealSession));
+
+            //    foreach (var dishType in dishTypes)
+            //    {
+            //        var totalByDishType = tokenOrderSelectedDishes.Where(e => e.TokenOrdered.Order.Session.MealSession.Name == mealSession &&
+            //                                                e.Dish.DishTypeId == dishType.Id && e.TokenOrdered.Order.DeliveryDate.Date == deliveryDate.Date).Sum(f => (int)f.Qty);
+
+            //        row.Cells.Add(totalByDishType.ToString());
+            //    }
+
+            //    summary.Rows.Add(row);
+            //}
+
+            //deliveryDate.Date.AddDays(1);
+            //var outlet = await _appContext.Outlets.FindAsync(outletId);
+            //var fasStudents = outlet.Students.Where(e => e.OutletId == outletId && e.IsActive && e.IsFAS).ToList();
+
+            //var fasOrders = _appContext.TokenOrders.Where(t => t.StoreId == storeId && t.IsFAS && t.Status != "cancelled" &&
+            //                               (t.DeliveryDate.Date >= deliveryDate.Date && t.DeliveryDate.Date <= deliveryDateTo.Date)
+            //                               && t.IsActive && fasStudents.Any(f => f.Id == t.ProfileId)).ToList();
+
+            //var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
+            //var tokenOrderSelectedDishes = _appContext.TokenOrderDishes.Where(e => e.IsActive && fasOrders.Any(f => f.Id == e.TokenOrdered.OrderId)).ToList();
+
+            //TimeSpan difference = deliveryDateTo.Date - deliveryDate.Date;
+
+            //// Get the total number of days
+            //int numberOfDays = difference.Days;
+            //var summary = new FasTokenOrderSummaryDTO { Total = new FasTokenOrderRowDTO { Cells = new List<string>() } };
+            //summary.Cols.Add(new FasTokenOrderColDTO { Header = "Session", Rowspan = 2, Colspan = 1 });
+
+            //while (deliveryDate.Date <= deliveryDateTo.Date)
+            //{
+            //    var toCol = new FasTokenOrderColDTO
+            //    {
+            //        Header = deliveryDate.Date.ToShortDateString(),
+            //        Rowspan = 1,
+            //        Colspan = numberOfDays,
+            //        Subheaders = new List<string>()
+            //    };
+
+            //    foreach (var dishType in dishTypes)
+            //    {
+            //        toCol.Subheaders.Add(dishType.Name);
+            //    }
+
+            //    summary.Cols.Add(toCol);
+
+            //    foreach (var mealSession in mealSessions)
+            //    {
+            //        var row = new FasTokenOrderRowDTO();
+            //        row.Cells.Add(string.Format("{0}", mealSession));
+
+            //        foreach (var dishType in dishTypes)
+            //        {
+            //            var totalByDishType = tokenOrderSelectedDishes.Where(e => e.TokenOrdered.Order.Session.MealSession.Name == mealSession &&
+            //                                                    e.Dish.DishTypeId == dishType.Id && e.TokenOrdered.Order.DeliveryDate.Date == deliveryDate.Date).Sum(f => (int)f.Qty);
+
+            //            row.Cells.Add(totalByDishType.ToString());
+            //        }
+
+            //        summary.Rows.Add(row);
+            //    }
+
+            //    deliveryDate.Date.AddDays(1);
+
+            //}
+
+            //summary.Total.Cells.Add("Total Quantity");
+            //if (summary.Rows.Any() && summary.Rows.First().Cells.Any())
+            //{
+            //    for (int i = 1; i < summary.Rows.First().Cells.Count; i++)
+            //    {
+            //        var totalByCol = summary.Rows.Select(e => int.Parse(e.Cells[i])).Sum();
+            //        summary.Total.Cells.Add(totalByCol.ToString());
+            //    }
+            //}
+
+            //return summary;
         }
 
         #region Meal Plan
@@ -1482,6 +1635,14 @@ namespace DAL.Repositories.MealOrder
                         return result;
                     }
 
+                    var paymentType = _appContext.PaymentTypes.FirstOrDefault(e => e.Name == "Adhoc");
+
+                    if (paymentType == null)
+                    {
+                        result.Message = "Payment type 'Adhoc' not found. Please create the payment type first.";
+                        return result;
+                    }
+
                     //bool hasOrder = _appContext.TokenOrders.Any(e =>
                     //                            //studentIds.Contains(e.ProfileId.GetValueOrDefault()) &&
                     //                            e.IsActive && e.Status != "cancelled" &&
@@ -1499,7 +1660,7 @@ namespace DAL.Repositories.MealOrder
                     //}
 
                     var sessionDetail = _appContext.MealSessionDetails.FirstOrDefault(e => e.IsActive && e.MealSessionId == mealSessionId);
-
+                    var hasExistingOrders = false;
                     // select dishes first
                     while (deliveryDate.Date <= deliveryDateTo.Date)
                     {
@@ -1544,6 +1705,14 @@ namespace DAL.Repositories.MealOrder
 
                                         SoftDelete(existingOrder);
                                         _skip = false;
+                                    }
+                                    else
+                                    {
+                                        hasExistingOrders = true;
+                                        existingOrder.Status = "cancelled";
+                                        existingOrder.CancelledById = createdBy;
+                                        existingOrder.CancelledOn = DateTime.Now;
+                                        existingOrder.CancellationReason = "Cancelled by the system. Adhoc order has been made.";
                                     }
 
                                 }
@@ -1674,7 +1843,8 @@ namespace DAL.Repositories.MealOrder
                                     total = (decimal)order.TotalAmount,
                                     UserId = createdBy,
                                     InvoiceNumber = invoiceNumber,
-                                    Status = "SUCCESS"
+                                    Status = "SUCCESS",
+                                    PaymentTypeId = paymentType.Id
                                 };
 
                                 order.Payment = payment;
@@ -1687,7 +1857,7 @@ namespace DAL.Repositories.MealOrder
 
                     await _appContext.SaveChangesAsync();
 
-                    result.Message = "Successfully processed!";
+                    result.Message = hasExistingOrders ? "Successfully processed! Existing orders were found and were cancelled automatically." : "Successfully processed!";
                     result.IsSuccess = true;
                     scope.Complete();
                 }

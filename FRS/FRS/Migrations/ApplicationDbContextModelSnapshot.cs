@@ -8519,6 +8519,8 @@ namespace FRS.Migrations
 
                     b.Property<string>("Status");
 
+                    b.Property<string>("StudentGroupName");
+
                     b.Property<int>("StudentId");
 
                     b.Property<string>("StudentName");

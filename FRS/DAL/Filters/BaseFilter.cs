@@ -61,6 +61,7 @@ namespace DAL.Filters
         public DateTime ReportDateFrom { get; set; }
         public DateTime ReportDateTo { get; set; }
         public string Status { get; set; }
+        public string OrderType { get; set; }
         public bool? IsFas { get; set; }
         public string Keyword { get; set; }
         public int ReportType { get; set; }

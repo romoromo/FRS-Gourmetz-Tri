@@ -353,6 +353,8 @@ namespace BAL.Mapping
 
             CreateMap<CatererInfo, CatererInfoDTO>();
             CreateMap<CatererInfoDTO, CatererInfo>();
+            CreateMap<CatererInfo, CatererInfoSimpleDTO>();
+            CreateMap<CatererInfoSimpleDTO, CatererInfo>();
 
             CreateMap<OutletProfile, OutletProfileDTO>();
             CreateMap<OutletProfileDTO, OutletProfile>();
@@ -360,6 +362,9 @@ namespace BAL.Mapping
             CreateMap<Outlet, OutletDTO>();
                 //.ForMember(e => e.OutletProfileName, map => map.MapFrom(e => e.OutletProfile.Label));
             CreateMap<OutletDTO, Outlet>();
+
+            CreateMap<Outlet, OutletSimpleDTO>();
+            CreateMap<OutletSimpleDTO, Outlet>();
 
             CreateMap<OutletMenuDish, OutletMenuDishDTO>();
             CreateMap<OutletMenuDishDTO, OutletMenuDish>();
@@ -769,6 +774,7 @@ namespace BAL.Mapping
 
             CreateMap<CancelOrderRequestDTO, CancelOrderRequest>();
             CreateMap<CreateCancelOrderRequestDTO, CancelOrderRequestDTO>();
+            CreateMap<CancelOrderRequestDTO, CancelOrderRequestDTO>(); // This is intentional
 
             CreateMap<NotificationSettingDTO, NotificationSetting>();
             CreateMap<NotificationSetting, NotificationSettingDTO>()

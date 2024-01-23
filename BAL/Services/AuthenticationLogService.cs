@@ -143,18 +143,24 @@ namespace BAL.Services
         public async Task<BaseOperationResponse> CreateAsync(AuthenticationLogDTO logDTO)
         {
             var result = new BaseOperationResponse();
-            var log = Mapper.Map<AuthenticationLog>(logDTO);
+            try
+            {
+                var log = Mapper.Map<AuthenticationLog>(logDTO);
 
-            var f = await _appContext.AuthenticationLogs.AddAsync(log);
-            if (await _appContext.SaveChangesAsync() > 0)
-            {
-                result.Message = "Successfully saved!";
-                result.IsSuccess = true;
+                var f = await _appContext.AuthenticationLogs.AddAsync(log);
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                }
+                else
+                {
+                    result.Message = "Failed to save Authentication Log!";
+                    result.IsSuccess = false;
+                }
             }
-            else
+            catch (Exception)
             {
-                result.Message = "Failed to save Authentication Log!";
-                result.IsSuccess = false;
             }
 
             return result;

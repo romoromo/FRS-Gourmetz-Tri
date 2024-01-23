@@ -170,6 +170,10 @@ export class StudentsManagementComponent implements OnInit {
 
   onSearchChanged(value: string) {
     this.keyword = value;
+    //this.loadData(null);
+  }
+
+  onSearch() {
     this.loadData(null);
   }
 
@@ -382,7 +386,7 @@ export class StudentsManagementComponent implements OnInit {
 
   downloadTemplate() {
     let path = '/Resources/Templates/YISS Student or Staff Import Template.xlsx';
-    window.open(getBaseUrl() + '/Download/FileByPath?filePath=/' + encodeURIComponent(path), '_blank');
+    window.open(getBaseUrl() + '/gateway/Download/FileByPath?filePath=/' + encodeURIComponent(path), '_blank');
   }
 
   downloadTemplateWithStudent() {

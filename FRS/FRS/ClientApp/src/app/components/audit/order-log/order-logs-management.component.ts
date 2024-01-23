@@ -15,6 +15,7 @@ import { SearchBoxComponent } from '../../controls/search-box.component';
 import { saveAs } from 'file-saver';
 import * as moment from 'moment';
 import { TokenOrder } from 'src/app/models/meal-order/token-order.model';
+import { StudentService } from 'src/app/services/meal-order/student.service';
 
 
 @Component({
@@ -25,6 +26,7 @@ import { TokenOrder } from 'src/app/models/meal-order/token-order.model';
 export class OrderLogsManagementComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
   statuses = ['All', 'pending', 'paid', 'cancelled', 'deleted'];
+  ordertypes = ['All', 'Adhoc', 'Meal Plan'];
   columns: any[] = [];
   rows: TokenOrder[] = [];
   rowsCache: TokenOrder[] = [];
@@ -34,9 +36,11 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
   pagedResult: PagedResult;
   keyword: string = '';
   status: string = 'paid';
+  ordertype: string = 'All';
   isFAS: boolean = false;
   start = new Date();
   end = new Date();
+  groups: any[] = [];
 
   tstart = new Date();
   tend = new Date();
@@ -58,7 +62,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
   @ViewChild('orderLogTable') table: any;
 
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
-    private orderLogService: AuditService) {
+    private orderLogService: AuditService, private studentService: StudentService) {
   }
 
   ngOnDestroy(): void {
@@ -96,7 +100,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
       { prop: 'totalAmount', name: 'Total Amount' },
       { prop: 'status', name: 'Status' },
       //{ prop: 'remarks', name: 'Remarks' },
-      { prop: 'paymentTypeName', name: 'Payment Type' },
+      { prop: 'paymentMethod', name: 'Payment Type' },
       { prop: 'paymentNumber', name: 'Order No.' },
       { prop: 'fomoId', name: 'Fomo ID' },
       { prop: 'invoiceNumber', name: 'Invoice No.' },
@@ -113,6 +117,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.getStudentGroups();
     this.initializeFilter();
     this.initializePagedResult();
     this.initializeTableDefinition();
@@ -133,7 +138,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(profileName|processedBy|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(status)==' + (this.status== 'All' ? '' : this.status) + ',(AuditOrderLogDateRange)==' + this.start.toDateString() + '|' + this.end.toDateString();
+    this.filter.filters = '(profileName|processedBy|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(status)==' + (this.status == 'All' ? '' : this.status) + ',(orderType)==' + (this.ordertype == 'All' ? '' : this.ordertype) + ',(AuditOrderLogDateRange)==' + this.start.toDateString() + '|' + this.end.toDateString();
 
     if (this.isFAS) {
       this.filter.filters += ',(isFas)==true';
@@ -142,6 +147,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.reportDateFrom = this.start.toDateString();
     this.filter.reportDateTo = this.end.toDateString();
     this.filter.status = (this.status == 'All' ? '' : this.status);
+    this.filter.orderType = (this.ordertype == 'All' ? '' : this.ordertype);
     this.filter.keyword = this.keyword;
     if (this.isFAS) this.filter.isFas = true;
 
@@ -213,6 +219,21 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.searchbox.clear();
   }
 
+  getStudentGroups() {
+    let filter = new Filter();
+    filter.filters = '(IsActive)==true';
+    this.subscription.add(this.studentService.getStudentGroupsSimpleByFilter(filter)
+      .subscribe(results => {
+        this.groups = results.pagedData;
+        console.log("groups: ", this.groups);
+      },
+        error => {
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving student groups.\r\n"`,
+            MessageSeverity.error);
+        }));
+  }
+
   downloadResults() {
     const fileName = moment().format('DDMMYYYY_hhmmss') + '_Orders.xlsx';
     this.filter.page = null;
@@ -220,6 +241,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.reportDateFrom = this.start.toDateString();
     this.filter.reportDateTo = this.end.toDateString();
     this.filter.status = (this.status == 'All' ? '' : this.status);
+    this.filter.orderType = (this.ordertype == 'All' ? '' : this.ordertype);
     this.filter.keyword = this.keyword;
     if (this.isFAS) this.filter.isFas = true;
     this.orderLogService.downloadOrderLogsReport(this.filter).subscribe(
@@ -241,6 +263,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.reportDateFrom = this.start.toDateString();
     this.filter.reportDateTo = this.end.toDateString();
     this.filter.status = (this.status == 'All' ? '' : this.status);
+    this.filter.orderType = (this.ordertype == 'All' ? '' : this.ordertype);
     this.filter.keyword = this.keyword;
     if (this.isFAS) this.filter.isFas = true;
     this.orderLogService.downloadFlattenOrderLogsReport(this.filter).subscribe(

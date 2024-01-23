@@ -356,9 +356,9 @@ namespace BAL.Services.MealOrder
                         cell.SetCellValue(dt.Email);
                         cell.CellStyle = contentStyle;
 
-                        var associatedUser = dt.Users.FirstOrDefault(e => e.IsActive);
+                        var associatedUsers = dt.Users.Where(e => e.IsActive);
                         cell = row.CreateCell(i++);
-                        cell.SetCellValue(associatedUser != null ? associatedUser.User.Email : string.Empty);
+                        cell.SetCellValue(associatedUsers != null ? string.Join(",", associatedUsers.Select(e => e.User.Email).Distinct()) : string.Empty);
                         cell.CellStyle = contentStyle;
                     });
 
