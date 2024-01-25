@@ -832,7 +832,7 @@ namespace DAL.Repositories.MealOrder
                     //    result.Message = "Please cancel previous orders for the selected date range before assigning new orders.";
                     //    return result;
                     //}
-
+                    var hasExistingOrders = false;
                     while (deliveryDate.Date <= deliveryDateTo.Date)
                     {
                         var sessionDetail = _appContext.MealSessionDetails.FirstOrDefault(e => e.IsActive && e.MealSessionId == mealSessionId);
@@ -857,7 +857,7 @@ namespace DAL.Repositories.MealOrder
                         {
                             var existingOrders = _appContext.TokenOrders.Where(e =>
                                                     e.ProfileId == student.Id && 
-                                                    e.IsActive && e.Status != "cancelled" &&
+                                                    e.IsActive && e.Status != "cancelled" && e.Status != "deleted" &&
                                                     e.DeliveryDate.Date == deliveryDate &&
                                                     e.StoreId == storeId &&
                                                     e.Session.MealSessionId == mealSessionId);
@@ -879,7 +879,11 @@ namespace DAL.Repositories.MealOrder
                                     }
                                     else
                                     {
-                                        continue;
+                                        hasExistingOrders = true;
+                                        existingOrder.Status = "cancelled";
+                                        existingOrder.CancelledById = createdBy;
+                                        existingOrder.CancelledOn = DateTime.Now;
+                                        existingOrder.CancellationReason = "Cancelled by the system. FAS order been made.";
                                     }
 
                                 }
@@ -1023,7 +1027,7 @@ namespace DAL.Repositories.MealOrder
 
                     await _appContext.SaveChangesAsync();
 
-                    result.Message = "Successfully processed!";
+                    result.Message = hasExistingOrders ? "Successfully processed! Existing orders were found and were cancelled automatically." : "Successfully processed!";
                     result.IsSuccess = true;
                     scope.Complete();
                 }
@@ -1685,7 +1689,7 @@ namespace DAL.Repositories.MealOrder
                             var student = detail.Student;
                             var existingOrders = _appContext.TokenOrders.Where(e =>
                                                     e.ProfileId == student.Id &&
-                                                    e.IsActive && e.Status != "cancelled" &&
+                                                    e.IsActive && e.Status != "cancelled" && e.Status != "deleted" &&
                                                     e.DeliveryDate.Date == deliveryDate &&
                                                     e.StoreId == storeId &&
                                                     e.Session.MealSessionId == mealSessionId);

@@ -80,6 +80,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.pagedResult = new PagedResult();
     this.pagedResult.totalCount = 0;
     this.pagedResult.pagedData = [];
+    this.filter.page = 1;
     this.pagedResult.filter = this.filter;
   }
 
