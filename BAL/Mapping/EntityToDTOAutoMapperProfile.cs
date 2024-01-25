@@ -357,7 +357,8 @@ namespace BAL.Mapping
             CreateMap<DishTypeDTO, DishType>();
 
             CreateMap<MealPlanOrder, MealPlanOrderDTO>()
-                .ForMember(e => e.StudentGroupCode, map => map.MapFrom(f => f.StudentGroup.Code));
+                .ForMember(e => e.StudentGroupCode, map => map.MapFrom(f => f.StudentGroup.Code))
+            .ForMember(e => e.StudentGroupName, map => map.MapFrom(f => f.StudentGroup.Name));
             CreateMap<MealPlanOrderDTO, MealPlanOrder>();
 
             CreateMap<Cuisine, CuisineDTO>();
