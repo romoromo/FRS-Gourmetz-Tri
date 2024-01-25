@@ -429,14 +429,14 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<List<TokenOrder>> GetUnupdatedTokenOrdersAsync()
         {
-            IQueryable<TokenOrder> query = _appContext.TokenOrders.Where(t => t.Status != "paid" && t.Status != "cancelled" && t.Payment != null && t.Payment.Status == "SUCCESS");
+            IQueryable<TokenOrder> query = _appContext.TokenOrders.Where(t => t.Status != "paid" && t.Status != "cancelled" && t.Status != "deleted" && t.Payment != null && t.Payment.Status == "SUCCESS");
 
             return query.ToList();
         }
 
         public async Task<List<MealPlanOrder>> GetUnupdatedMealPlanOrdersAsync()
         {
-            IQueryable<MealPlanOrder> query = _appContext.MealPlanOrders.Where(t => t.Status != "paid" && t.Status != "cancelled" && t.Payment != null && t.Payment.Status == "SUCCESS");
+            IQueryable<MealPlanOrder> query = _appContext.MealPlanOrders.Where(t => t.Status != "paid" && t.Status != "cancelled" && t.Status != "deleted" && t.Payment != null && t.Payment.Status == "SUCCESS");
 
             return query.ToList();
         }

@@ -61,6 +61,12 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<PagedEntity<TokenOrderOrderingPortalDTO>> GetTokenOrdersOrderingPortalAsync(BaseFilter filter)
+        {
+            var result = Mapper.Map<PagedEntity<TokenOrderOrderingPortalDTO>>(await this._uow.TokenOrders.GetTokenOrdersAsync(filter));
+            return result;
+        }
+
         public async Task<PagedEntity<TokenOrderDTO>> GetTokenOrdersForCancellationAsync(OrderCancellationFilter filter)
         {
             var result = Mapper.Map<PagedEntity<TokenOrderDTO>>(await this._uow.TokenOrders.GetCancellationOrdersAsync(filter));

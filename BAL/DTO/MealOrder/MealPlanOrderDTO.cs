@@ -29,5 +29,6 @@ namespace BAL.DTO.MealOrder
 
         public int? PaymentId { get; set; }
         public string StudentGroupCode { get; set; }
+        public string StudentGroupName { get; set; }
     }
 }

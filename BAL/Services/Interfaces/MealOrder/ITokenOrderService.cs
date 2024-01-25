@@ -19,6 +19,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> DeleteTokenOrderAsync(int id);
         Task<TokenOrderDTO> GetTokenOrderByIdAsync(int id);
         Task<PagedEntity<TokenOrderDTO>> GetTokenOrdersAsync(BaseFilter filter);
+        Task<PagedEntity<TokenOrderOrderingPortalDTO>> GetTokenOrdersOrderingPortalAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateTokenOrderAsync(TokenOrderDTO dto);
         Task<List<TokenOrderDTO>> GetUnupdatedTokenOrdersAsync();
         Task<List<MealPlanOrderDTO>> GetUnupdatedMealPlanOrdersAsync();
