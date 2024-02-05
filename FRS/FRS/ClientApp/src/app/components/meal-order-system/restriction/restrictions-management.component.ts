@@ -187,7 +187,7 @@ export class RestrictionsManagementComponent implements OnInit {
   }
 
   get canManageRestrictions() {
-    return true; //this.accountService.userHasPermission(Permission.manageRestrictionsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtRestrictionsPermission)
   }
 
 }

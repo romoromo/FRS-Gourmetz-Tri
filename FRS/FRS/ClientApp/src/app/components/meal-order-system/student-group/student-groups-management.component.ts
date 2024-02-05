@@ -233,7 +233,7 @@ export class StudentGroupsManagementComponent implements OnInit {
   }
 
   get canManageStudents() {
-    return true;
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentGroupsPermission)
   }
 
 }

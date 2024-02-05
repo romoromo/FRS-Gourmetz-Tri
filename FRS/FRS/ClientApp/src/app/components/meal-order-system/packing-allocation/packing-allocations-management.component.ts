@@ -239,8 +239,8 @@ export class PackingAllocationssManagementComponent implements OnInit {
         });
   }
 
-  get canManageStudents() {
-    return true;
+  get canManagePackingAllocations() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtPackingAllocationsPermission)
   }
 
 }

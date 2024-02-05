@@ -167,7 +167,7 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
   }
 
   get canManageCancelOrderRequests() {
-    return true; //this.accountService.userHasPermission(Permission.manageMOSOrderMgtCancelOrderRequestsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCancelRequestsPermission)
   }
 
 }

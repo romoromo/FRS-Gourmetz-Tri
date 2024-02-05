@@ -167,6 +167,6 @@ export class PaymentTypeEditorComponent {
 
 
   get canManagePaymentTypes() {
-    return true; //this.accountService.userHasPermission(Permission.managePaymentTypesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtPaymentTypesPermission)
   }
 }

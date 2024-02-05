@@ -189,6 +189,6 @@ export class ClassEditorComponent implements OnInit, OnDestroy {
   }
 
   get canManageClasses() {
-    return true; //this.accountService.userHasPermission(Permission.manageClassesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassesPermission)
   }
 }

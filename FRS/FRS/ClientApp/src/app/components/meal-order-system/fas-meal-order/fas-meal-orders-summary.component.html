@@ -45,7 +45,7 @@
     <!--<button *ngIf="canManageFasMealOrders" type="button" mat-stroked-button color="warning" [disabled]="isSaving && isClear" (click)="save(true)" style="margin-left:15px;">
       <i *ngIf="!isSaving && isClear" class='fa'></i><i *ngIf="isSaving && isClear" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving && isClear ? 'Processing orders' : 'Delete orders'}}
     </button>-->
-    <button *ngIf="canManageFasMealOrders" type="button" mat-stroked-button (click)="onShowSummary()" [disabled]="isShowSummary" style="margin-left:15px;">
+    <button type="button" mat-stroked-button (click)="onShowSummary()" [disabled]="isShowSummary" style="margin-left:15px;">
       <i *ngIf="!isShowSummary" class='fa fa-refresh'></i><i *ngIf="isShowSummary" class='fa fa-circle-o-notch fa-spin'></i> {{isShowSummary ? 'Loading summary' : 'Show Summary'}}
     </button>
   </div>

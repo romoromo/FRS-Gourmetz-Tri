@@ -183,7 +183,7 @@ export class ClassesManagementComponent implements OnInit {
   }
 
   get canManageClasses() {
-    return true; //this.accountService.userHasPermission(Permission.manageClassesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassesPermission)
   }
 
 }

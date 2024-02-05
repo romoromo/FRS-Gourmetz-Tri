@@ -177,6 +177,6 @@ export class ClassLevelEditorComponent {
   }
 
   get canManageClassLevels() {
-    return true; //this.accountService.userHasPermission(Permission.manageClassLevelsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassLevelsPermission)
   }
 }

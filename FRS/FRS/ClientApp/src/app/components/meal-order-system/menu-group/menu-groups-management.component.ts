@@ -214,7 +214,7 @@ export class MenuGroupsManagementComponent implements OnInit {
   }
 
   get canManageMenuGroups() {
-    return true;
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtMenusPermission)
   }
 
 }

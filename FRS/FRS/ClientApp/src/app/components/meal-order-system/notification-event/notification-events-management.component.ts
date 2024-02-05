@@ -191,7 +191,7 @@ export class NotificationEventsManagementComponent implements OnInit {
   }
 
   get canManageNotificationEvents() {
-    return true;//this.accountService.userHasPermission(Permission.manageMOSOrderMgtNotificationEventsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtNotificationEventsPermission)
   }
 
 }

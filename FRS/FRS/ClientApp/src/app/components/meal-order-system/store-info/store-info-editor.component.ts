@@ -189,6 +189,6 @@ export class StoreInfoEditorComponent {
 
 
   get canManageStoreInfos() {
-    return true; //this.accountService.userHasPermission(Permission.manageStoreInfosPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtStoreInfoPermission)
   }
 }

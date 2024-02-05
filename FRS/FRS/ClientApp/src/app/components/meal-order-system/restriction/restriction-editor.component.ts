@@ -189,6 +189,6 @@ export class RestrictionEditorComponent implements OnInit, OnDestroy {
   }
 
   get canManageRestrictions() {
-    return true; //this.accountService.userHasPermission(Permission.manageRestrictionPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtRestrictionsPermission)
   }
 }

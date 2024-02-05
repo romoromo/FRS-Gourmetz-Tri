@@ -501,18 +501,18 @@
                   ]
                 },
                 {
-                  "name": "Dish Types",
+                  "name": "Dishes",
                   "value": "mosmgt.settingmgt.caterers.dishes",
                   "description": "",
                   "children": [
                     {
-                      "name": "View Dish Types",
+                      "name": "View Dishes",
                       "value": "mosmgt.settingmgt.caterers.dishes.view",
                       "description": "Permission to view Dishes",
                       "children": []
                     },
                     {
-                      "name": "Manage Dish Types",
+                      "name": "Manage Dishes",
                       "value": "mosmgt.settingmgt.caterers.dishes.manage",
                       "description": "Permission to add, edit and delete Dishes",
                       "children": []

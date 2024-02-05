@@ -164,6 +164,6 @@ export class ContactUsSubjectEditorComponent {
 
 
   get canManageContactUsSubjects() {
-    return true; //this.accountService.userHasPermission(Permission.manageMOSOrderMgtContactUsSubjectsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtContactUsSubjectsPermission)
   }
 }

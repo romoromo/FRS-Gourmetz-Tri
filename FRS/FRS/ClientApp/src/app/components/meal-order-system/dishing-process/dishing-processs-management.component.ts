@@ -282,4 +282,8 @@ export class DishingProcesssManagementComponent implements OnInit {
             MessageSeverity.error);
         })
   }
+
+  get canManageDishing() {
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtDishingProcessPermission)
+  }
 }

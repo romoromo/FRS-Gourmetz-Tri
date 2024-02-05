@@ -167,6 +167,6 @@ export class EmailTemplateEditorComponent {
 
 
   get canManageEmailTemplates() {
-    return true; //this.accountService.userHasPermission(Permission.manageMOSOrderMgtEmailTemplatesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtEmailTemplatesPermission)
   }
 }

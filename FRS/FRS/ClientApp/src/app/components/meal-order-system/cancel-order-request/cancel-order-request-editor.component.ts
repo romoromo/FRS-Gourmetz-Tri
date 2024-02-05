@@ -155,6 +155,6 @@ export class CancelOrderRequestEditorComponent {
   }
 
   get canManageCancelOrderRequests() {
-    return true; //this.accountService.userHasPermission(Permission.manageMOSOrderMgtCancelOrderRequestsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCancelRequestsPermission)
   }
 }

@@ -48,7 +48,7 @@
     <div class="col-xs-12 col-sm-12 col-md-3" style="padding-bottom:10px;">
       <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
       <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>
-      <button type="button" class="btn btn-sm btn-warning" (click)="cancelOrder();" style="margin-left:10px">Cancel Order</button>
+      <button *ngIf="canManageOrderCancellations" type="button" class="btn btn-sm btn-warning" (click)="cancelOrder();" style="margin-left:10px">Cancel Order</button>
     </div>
   </div>
 

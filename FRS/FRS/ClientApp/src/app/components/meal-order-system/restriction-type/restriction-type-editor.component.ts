@@ -160,6 +160,6 @@ export class RestrictionTypeEditorComponent {
   }
 
   get canManageRestrictionTypes() {
-    return true; //this.accountService.userHasPermission(Permission.manageRestrictionTypesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtRestrictionTypesPermission)
   }
 }

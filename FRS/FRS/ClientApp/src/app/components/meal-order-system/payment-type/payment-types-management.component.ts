@@ -107,7 +107,7 @@ export class PaymentTypesManagementComponent implements OnInit {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(IsActive)==true,(Name)@=' + this.keyword;
+    this.filter.filters = '(IsSystem)==false,(IsActive)==true,(Name)@=' + this.keyword;
     
     this.paymentService.getPaymentTypesByFilter(this.filter)
       .subscribe(results => {

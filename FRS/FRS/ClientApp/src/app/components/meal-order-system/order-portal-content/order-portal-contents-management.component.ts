@@ -193,7 +193,7 @@ export class OrderPortalContentsManagementComponent implements OnInit {
   }
 
   get canManageOrderPortalContents() {
-    return true; //this.accountService.userHasPermission(Permission.manageMOSOrderMgtOrderPortalContentsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtPortalContentsPermission)
   }
 
 }

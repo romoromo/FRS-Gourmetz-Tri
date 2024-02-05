@@ -817,6 +817,14 @@ namespace DAL.Repositories.MealOrder
                         return result;
                     }
 
+                    var paymentType = _appContext.PaymentTypes.FirstOrDefault(e => e.Name == "FAS" && e.IsActive && e.IsSystem);
+
+                    if (paymentType == null)
+                    {
+                        result.Message = "Payment type 'FAS' not found. Please create the payment type first.";
+                        return result;
+                    }
+
                     var fasStudents = outlet.Students.Where(e => e.OutletId == outletId && e.IsActive && e.IsFAS).ToList();
                     var studentIds = fasStudents.Select(e => e.Id).ToList();
                     //bool hasOrder = _appContext.TokenOrders.Any(e =>
@@ -864,31 +872,44 @@ namespace DAL.Repositories.MealOrder
 
                             if (clear || (existingOrders != null && existingOrders.Any()))
                             {
-                                foreach (var existingOrder in existingOrders)
+                                var existingOrder = existingOrders?.FirstOrDefault();
+
+                                if (existingOrder != null)
                                 {
-                                    if (existingOrder.IsFAS)
-                                    {
-                                        //remove token orders made
-                                        existingOrder.Status = "deleted";
-                                        if (existingOrder.Payment != null)
-                                        {
-                                            existingOrder.Payment.IsActive = false;
-                                        }
-
-                                        SoftDelete(existingOrder);
-                                    }
-                                    else
-                                    {
-                                        hasExistingOrders = true;
-                                        existingOrder.Status = "cancelled";
-                                        existingOrder.CancelledById = createdBy;
-                                        existingOrder.CancelledOn = DateTime.Now;
-                                        existingOrder.CancellationReason = "Cancelled by the system. FAS order been made.";
-                                    }
-
+                                    // do not remove anything. Instead, generate a dummy cancelled order.
+                                    var isManualOrder = existingOrders.Any(e => !e.IsFAS);
+                                    string message = isManualOrder ?
+                                                    "Cancelled by the system. Order already exists." :
+                                                    "Cancelled by the system. FAS order has been made.";
+                                    await CreateGeneratedCancelledOrder(existingOrder, student.Email, invoiceNumber, paymentType.Id, message, createdBy);
+                                    continue;
                                 }
 
-                                if(clear) continue;
+                                //foreach (var existingOrder in existingOrders)
+                                //{
+                                //    if (existingOrder.IsFAS)
+                                //    {
+                                //        //remove token orders made
+                                //        existingOrder.Status = "deleted";
+                                //        if (existingOrder.Payment != null)
+                                //        {
+                                //            existingOrder.Payment.IsActive = false;
+                                //        }
+
+                                //        SoftDelete(existingOrder);
+                                //    }
+                                //    else
+                                //    {
+                                //        hasExistingOrders = true;
+                                //        existingOrder.Status = "cancelled";
+                                //        existingOrder.CancelledById = createdBy;
+                                //        existingOrder.CancelledOn = DateTime.Now;
+                                //        existingOrder.CancellationReason = "Cancelled by the system. FAS order been made.";
+                                //    }
+
+                                //}
+
+                                //if(clear) continue;
                             }
 
                             bool hasSelectedDish = false;
@@ -1013,7 +1034,8 @@ namespace DAL.Repositories.MealOrder
                                     total = (decimal)order.TotalAmount,
                                     UserId = createdBy,
                                     InvoiceNumber = invoiceNumber,
-                                    Status = "SUCCESS"
+                                    Status = "SUCCESS",
+                                    PaymentTypeId = paymentType.Id
                                 };
 
                                 order.Payment = payment;
@@ -1451,6 +1473,13 @@ namespace DAL.Repositories.MealOrder
                                          e.DishId == f.DishId && e.MealSessionDetailId == f.MealSessionDetailId));
 
                     await _appContext.StudentGroupMealPlans.AddRangeAsync(newMps);
+                    var paymentType = _appContext.PaymentTypes.FirstOrDefault(e => e.Name == "Meal Plan" && e.IsActive && e.IsSystem);
+
+                    if (paymentType == null)
+                    {
+                        result.Message = "Payment type 'Meal Plan' not found. Please create the payment type first.";
+                        return result;
+                    }
 
                     foreach (var mealPlan in mealPlans.OrderBy(e => e.DeliveryDate))
                     {
@@ -1466,24 +1495,37 @@ namespace DAL.Repositories.MealOrder
                             bool _skip = true;
                             if (skip || (existingOrders != null && existingOrders.Any()))
                             {
-                                foreach (var existingOrder in existingOrders)
+                                var existingOrder = existingOrders?.FirstOrDefault();
+
+                                if (existingOrder != null)
                                 {
-                                    if (existingOrder.IsMealPlan)
-                                    {
-                                        //remove token orders made
-                                        existingOrder.Status = "deleted";
-                                        if (existingOrder.Payment != null)
-                                        {
-                                            existingOrder.Payment.IsActive = false;
-                                        }
-
-                                        SoftDelete(existingOrder);
-                                        _skip = false;
-                                    }
-
+                                    // do not remove anything. Instead, generate a dummy cancelled order.
+                                    var isManualOrder = existingOrders.Any(e => !e.IsMealPlan);
+                                    string message = isManualOrder ?
+                                                    "Cancelled by the system. Order already exists." :
+                                                    "Cancelled by the system. Meal Plan order has been made.";
+                                    await CreateGeneratedCancelledOrder(existingOrder, student.Email, invoiceNumber, paymentType.Id, message, createdBy);
+                                    continue;
                                 }
 
-                                if (_skip) continue;
+                                //foreach (var existingOrder in existingOrders)
+                                //{
+                                //    if (existingOrder.IsMealPlan)
+                                //    {
+                                //        //remove token orders made
+                                //        existingOrder.Status = "deleted";
+                                //        if (existingOrder.Payment != null)
+                                //        {
+                                //            existingOrder.Payment.IsActive = false;
+                                //        }
+
+                                //        SoftDelete(existingOrder);
+                                //        _skip = false;
+                                //    }
+
+                                //}
+
+                                //if (_skip) continue;
                             }
 
                             var order = new TokenOrder
@@ -1526,7 +1568,8 @@ namespace DAL.Repositories.MealOrder
                                 total = (decimal)order.TotalAmount,
                                 UserId = createdBy,
                                 InvoiceNumber = invoiceNumber,
-                                Status = "SUCCESS"
+                                Status = "SUCCESS",
+                                PaymentTypeId = paymentType.Id
                             };
 
                             order.Payment = payment;
@@ -1639,7 +1682,7 @@ namespace DAL.Repositories.MealOrder
                         return result;
                     }
 
-                    var paymentType = _appContext.PaymentTypes.FirstOrDefault(e => e.Name == "Adhoc");
+                    var paymentType = _appContext.PaymentTypes.FirstOrDefault(e => e.Name == "Adhoc" && e.IsActive && e.IsSystem);
 
                     if (paymentType == null)
                     {
@@ -1693,35 +1736,48 @@ namespace DAL.Repositories.MealOrder
                                                     e.DeliveryDate.Date == deliveryDate &&
                                                     e.StoreId == storeId &&
                                                     e.Session.MealSessionId == mealSessionId);
-                            bool _skip = true;
+                            //bool _skip = false;
                             if (skip || (existingOrders != null && existingOrders.Any()))
                             {
-                                foreach (var existingOrder in existingOrders)
+                                var existingOrder = existingOrders?.FirstOrDefault();
+
+                                if (existingOrder != null)
                                 {
-                                    if (existingOrder.IsStudentGroupOrder)
-                                    {
-                                        //remove token orders made
-                                        existingOrder.Status = "deleted";
-                                        if (existingOrder.Payment != null)
-                                        {
-                                            existingOrder.Payment.IsActive = false;
-                                        }
-
-                                        SoftDelete(existingOrder);
-                                        _skip = false;
-                                    }
-                                    else
-                                    {
-                                        hasExistingOrders = true;
-                                        existingOrder.Status = "cancelled";
-                                        existingOrder.CancelledById = createdBy;
-                                        existingOrder.CancelledOn = DateTime.Now;
-                                        existingOrder.CancellationReason = "Cancelled by the system. Adhoc order has been made.";
-                                    }
-
+                                    // do not remove anything. Instead, generate a dummy cancelled order.
+                                    var isManualOrder = existingOrders.Any(e => !e.IsStudentGroupOrder);
+                                    string message = isManualOrder ?
+                                                    "Cancelled by the system. Order already exists." :
+                                                    "Cancelled by the system. Adhoc order has been made.";
+                                    await CreateGeneratedCancelledOrder(existingOrder, student.Email, invoiceNumber, paymentType.Id, message, createdBy);
+                                    continue;
                                 }
 
-                                if (_skip) continue;
+                                //foreach (var existingOrder in existingOrders)
+                                //{
+                                    //if (existingOrder.IsStudentGroupOrder)
+                                    //{
+                                    //    //remove token orders made
+                                    //    existingOrder.Status = "deleted";
+                                    //    if (existingOrder.Payment != null)
+                                    //    {
+                                    //        existingOrder.Payment.IsActive = false;
+                                    //    }
+
+                                    //    SoftDelete(existingOrder);
+                                    //    _skip = false;
+                                    //}
+                                    //else
+                                    //{
+                                    //    hasExistingOrders = true;
+                                    //    existingOrder.Status = "cancelled";
+                                    //    existingOrder.CancelledById = createdBy;
+                                    //    existingOrder.CancelledOn = DateTime.Now;
+                                    //    existingOrder.CancellationReason = "Cancelled by the system. Adhoc order has been made.";
+                                    //}
+
+                                //}
+
+                                //if (_skip) continue;
                             }
 
                             bool hasSelectedDish = false;
@@ -1934,6 +1990,53 @@ namespace DAL.Repositories.MealOrder
             return summary;
         }
         #endregion
+
+        private async Task<bool> CreateGeneratedCancelledOrder(TokenOrder order, string studentEmail, string invoiceNumber, int paymentTypeId, string message, int? userId)
+        {
+            var orderCopy = new TokenOrder
+            {
+                DeliveryDate = order.DeliveryDate,
+                TransactionTime = DateTime.Now,
+                MealSessionDetailId = order.MealSessionDetailId,
+                ProfileId = order.ProfileId,
+                Status = "cancelled",
+                StoreId = order.StoreId,
+                CreatedBy = userId,
+                IsStudentGroupOrder = true,
+                StudentGroupId = order.StudentGroupId,
+                CancelledById = userId,
+                CancelledOn = DateTime.Now,
+                CancellationReason = message,
+                TotalAmount = order.TotalAmount,
+                TotalPayment = order.TotalPayment,
+                Tokens = order.Tokens?.Select(e => new TokenOrdered
+                {
+                    TokenId = e.TokenId,
+                    Qty = 1,
+                    TokenDesc = e.TokenDesc,
+                    SelectedDishes = e.SelectedDishes?.Select(x => new TokenOrderDish
+                    {
+                        DishId = x.DishId,
+                        Qty = 1
+                    }).ToList()
+                }).ToList(),
+                Payment = new Payment
+                {
+                    StudentId = order.ProfileId,
+                    email = studentEmail,
+                    subtotal = (decimal)order.TotalAmount,
+                    total = (decimal)order.TotalAmount,
+                    UserId = userId,
+                    InvoiceNumber = invoiceNumber,
+                    Status = "SUCCESS",
+                    PaymentTypeId = paymentTypeId
+                }
+            };
+
+            await _appContext.TokenOrders.AddAsync(orderCopy);
+
+            return true;
+        }
 
         //public async Task<BaseOperationResponse> ImportStudentAsync(IAccountManager accountManager, List<StudentImportDTO> rows)
         //{

@@ -42,47 +42,47 @@
         <div style="padding-left:25px;min-height:300px">
           <!--<h4>{{row.name}} Details</h4>-->
           <mat-tab-group dynamicHeight>
-            <mat-tab label="Meal Plan Grouping" *ngIf="canManageTerms">
+            <mat-tab label="Meal Plan Grouping" *ngIf="canViewTerms">
               <div class="container-fluid" style="padding-top:20px">
                 <outlet-terms-management [isHideHeader]="true" [outletId]="row.id"></outlet-terms-management>
               </div>
             </mat-tab>
-            <mat-tab label="Class Batches" *ngIf="canManageClassBatches">
+            <mat-tab label="Class Batches" *ngIf="canViewClassBatches">
               <div class="container-fluid" style="padding-top:20px">
                 <class-batches-management [isHideHeader]="true" [outletId]="row.id"></class-batches-management>
               </div>
             </mat-tab>
-            <mat-tab label="Class Levels" *ngIf="canManageClassLevels">
+            <mat-tab label="Class Levels" *ngIf="canViewClassLevels">
               <div class="container-fluid" style="padding-top:20px">
                 <class-levels-management [isHideHeader]="true" [outletId]="row.id"></class-levels-management>
               </div>
             </mat-tab>
-            <mat-tab label="Classes" *ngIf="canManageClasses">
+            <mat-tab label="Classes" *ngIf="canViewClasses">
               <div class="container-fluid" style="padding-top:20px">
                 <classes-management [isHideHeader]="true" [outletId]="row.id"></classes-management>
               </div>
             </mat-tab>
-            <mat-tab label="Students" *ngIf="canManageStudents">
+            <mat-tab label="Students" *ngIf="canViewStudents">
               <div class="container-fluid" style="padding-top:20px">
                 <students-management [isHideHeader]="true" [outletId]="row.id"></students-management>
               </div>
             </mat-tab>
-            <mat-tab label="FAS Meal Ordering" *ngIf="canManageFas">
+            <mat-tab label="FAS Meal Ordering" *ngIf="canViewFas">
               <div class="container-fluid" style="padding-top:20px">
                 <fas-meal-order-summary [isHideHeader]="true" [outletId]="row.id"></fas-meal-order-summary>
               </div>
             </mat-tab>
-            <mat-tab label="Student Groups" *ngIf="canManageStudentGroups">
+            <mat-tab label="Student Groups" *ngIf="canViewStudentGroups">
               <div class="container-fluid" style="padding-top:20px">
                 <student-groups-management [isHideHeader]="true" [outletId]="row.id"></student-groups-management>
               </div>
             </mat-tab>
-            <mat-tab label="Menu Groups" *ngIf="canManageMenus">
+            <mat-tab label="Menu Groups" *ngIf="canViewMenus">
               <div class="container-fluid" style="padding-top:20px">
                 <menu-groups-management [isHideHeader]="true" [outletId]="row.id"></menu-groups-management>
               </div>
             </mat-tab>
-            <mat-tab label="Order Cancellation" *ngIf="canManageCancellations">
+            <mat-tab label="Order Cancellation" *ngIf="canViewCancellations">
               <div class="container-fluid" style="padding-top:20px">
                 <order-cancellations-management [isHideHeader]="true" [outletId]="row.id"></order-cancellations-management>
               </div>
@@ -102,22 +102,22 @@
       <interest-groups-management [isHideHeader]="true" [outletId]="row.id"></interest-groups-management>
     </div>
   </mat-tab>-->
-            <mat-tab label="Order Portal Content" *ngIf="canManagePortalContents">
+            <mat-tab label="Order Portal Content" *ngIf="canViewPortalContents">
               <div class="container-fluid" style="padding-top:20px">
                 <order-portal-content-management [isHideHeader]="true" [outletId]="row.id"></order-portal-content-management>
               </div>
             </mat-tab>
-            <mat-tab label="Email Templates" *ngIf="canManageEmailTemplates">
+            <mat-tab label="Email Templates" *ngIf="canViewEmailTemplates">
               <div class="container-fluid" style="padding-top:20px">
                 <email-templates-management [isHideHeader]="true" [outletId]="row.id"></email-templates-management>
               </div>
             </mat-tab>
-            <mat-tab label="Meal Allocations" *ngIf="canManageMealAllocations">
+            <mat-tab label="Meal Allocations" *ngIf="canViewMealAllocations">
               <div class="container-fluid" style="padding-top:20px">
                 <meal-allocations-management [isHideHeader]="true" [outletId]="row.id"></meal-allocations-management>
               </div>
             </mat-tab>
-            <mat-tab label="Packing Allocations" *ngIf="canManagePackingAllocations">
+            <mat-tab label="Packing Allocations" *ngIf="canViewPackingAllocations">
               <div class="container-fluid" style="padding-top:20px">
                 <packing-allocations-management [isHideHeader]="true" [outletId]="row.id"></packing-allocations-management>
               </div>

@@ -175,6 +175,6 @@ export class OutletTermEditorComponent {
   }
 
   get canManageOutletTerms() {
-    return true; //this.accountService.userHasPermission(Permission.manageOutletTermsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtTermsPermission)
   }
 }

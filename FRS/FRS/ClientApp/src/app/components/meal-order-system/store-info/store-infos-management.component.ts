@@ -188,7 +188,7 @@ export class StoreInfosManagementComponent implements OnInit {
   }
 
   get canManageStoreInfos() {
-    return true; //this.accountService.userHasPermission(Permission.manageStoreInfosPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtStoreInfoPermission)
   }
 
   receiveDO(row) {

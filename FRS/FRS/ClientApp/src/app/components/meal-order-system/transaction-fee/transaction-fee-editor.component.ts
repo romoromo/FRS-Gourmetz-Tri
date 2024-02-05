@@ -181,6 +181,6 @@ export class TransactionFeeEditorComponent {
 
 
   get canManageTransactionFees() {
-    return true; //this.accountService.userHasPermission(Permission.manageTransactionFeesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtTransactionFeesPermission)
   }
 }

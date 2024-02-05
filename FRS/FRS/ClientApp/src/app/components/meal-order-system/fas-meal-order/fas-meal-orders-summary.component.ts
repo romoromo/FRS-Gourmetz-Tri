@@ -371,7 +371,7 @@ export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
   }
 
   get canManageFasMealOrders() {
-    return true; //this.accountService.userHasPermission(Permission.manageClassBatchesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtFasPermission)
   }
 
 }

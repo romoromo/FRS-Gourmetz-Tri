@@ -327,7 +327,7 @@ export class MealPlanSummaryComponent implements OnInit, OnDestroy {
   }
 
   get canManageMealPlans() {
-    return true; //this.accountService.userHasPermission(Permission.manageClassBatchesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentGroupsPermission)
   }
 
 

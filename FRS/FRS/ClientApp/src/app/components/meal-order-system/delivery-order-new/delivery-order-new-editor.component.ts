@@ -378,6 +378,6 @@ export class DeliveryOrderNewEditorComponent {
 
 
   get canManageDeliveryOrders() {
-    return true; //this.accountService.userHasPermission(Permission.manageDeliveryOrdersPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtDeliveryOrdersPermission)
   }
 }

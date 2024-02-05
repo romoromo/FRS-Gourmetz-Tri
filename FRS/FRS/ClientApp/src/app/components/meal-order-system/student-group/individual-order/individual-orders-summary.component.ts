@@ -290,7 +290,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
   }
 
   get canManageStudentGroupOrders() {
-    return true; //this.accountService.userHasPermission(Permission.manageClassBatchesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentGroupsPermission)
   }
 
 

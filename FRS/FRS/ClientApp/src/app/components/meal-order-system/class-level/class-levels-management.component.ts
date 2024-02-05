@@ -183,7 +183,7 @@ export class ClassLevelsManagementComponent implements OnInit {
   }
 
   get canManageClassLevels() {
-    return true; //this.accountService.userHasPermission(Permission.manageClassLevelsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassLevelsPermission)
   }
 
 }

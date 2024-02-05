@@ -397,55 +397,55 @@ export class OutletsManagementComponent implements OnInit {
     return this.accountService.userHasPermission(Permission.manageMOSOutletMgtMealSummaryPermission)
   }
 
-  get canManageTerms() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtTermsPermission)
+  get canViewTerms() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtTermsPermission)
   }
 
-  get canManageClassBatches() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassBatchesPermission)
+  get canViewClassBatches() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtClassBatchesPermission)
   }
 
-  get canManageClassLevels() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassLevelsPermission)
+  get canViewClassLevels() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtClassLevelsPermission)
   }
 
-  get canManageClasses() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassesPermission)
+  get canViewClasses() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtClassesPermission)
   }
 
-  get canManageStudents() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentsPermission)
+  get canViewStudents() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtStudentsPermission)
   }
 
-  get canManageFas() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtFasPermission)
+  get canViewFas() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtFasPermission)
   }
 
-  get canManageStudentGroups() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentGroupsPermission)
+  get canViewStudentGroups() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtStudentGroupsPermission)
   }
 
-  get canManageMenus() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtMenusPermission)
+  get canViewMenus() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtMenusPermission)
   }
 
-  get canManageCancellations() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtCancellationsPermission)
+  get canViewCancellations() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtCancellationsPermission)
   }
 
-  get canManagePortalContents() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtPortalContentsPermission)
+  get canViewPortalContents() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtPortalContentsPermission)
   }
 
-  get canManageEmailTemplates() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtEmailTemplatesPermission)
+  get canViewEmailTemplates() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtEmailTemplatesPermission)
   }
 
-  get canManageMealAllocations() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtMealAllocationsPermission)
+  get canViewMealAllocations() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtMealAllocationsPermission)
   }
 
-  get canManagePackingAllocations() {
-    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtPackingAllocationsPermission)
+  get canViewPackingAllocations() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtPackingAllocationsPermission)
   }
 }

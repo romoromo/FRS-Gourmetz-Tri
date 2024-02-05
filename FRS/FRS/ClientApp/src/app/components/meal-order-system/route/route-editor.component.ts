@@ -239,6 +239,6 @@ export class RouteEditorComponent {
   }
 
   get canManageRoutes() {
-    return true; //this.accountService.userHasPermission(Permission.manageMealTypesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtRoutesPermission)
   }
 }

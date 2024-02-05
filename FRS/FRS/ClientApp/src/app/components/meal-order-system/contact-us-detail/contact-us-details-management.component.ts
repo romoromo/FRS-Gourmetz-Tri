@@ -192,7 +192,7 @@ export class ContactUsDetailsManagementComponent implements OnInit {
   }
 
   get canManageContactUsDetails() {
-    return true;//this.accountService.userHasPermission(Permission.manageMOSOrderMgtContactUsDetailsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtContactUsQuestionsPermission)
   }
 
 }

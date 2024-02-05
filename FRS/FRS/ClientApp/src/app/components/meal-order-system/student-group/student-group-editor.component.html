@@ -109,7 +109,7 @@
         </div>
         <div class="col-xs-12" style="min-height:300px">
           <input matInput type="text" [hidden]="true" />
-          <button type="button" mat-button (click)="addStudentSel()" style="margin-top:20px">
+          <button type="button" mat-button (click)="addStudentSel()" style="margin-top:20px" *ngIf="canManageStudents">
             <mat-icon>
               add
             </mat-icon> Add Student

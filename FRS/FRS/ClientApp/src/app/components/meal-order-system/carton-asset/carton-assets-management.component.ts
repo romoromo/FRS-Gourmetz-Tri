@@ -186,7 +186,7 @@ export class CartonAssetsManagementComponent implements OnInit {
   }
 
   get canManageCartonAssets() {
-    return true; //this.accountService.userHasPermission(Permission.manageCartonAssetsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCartonAssetsPermission)
   }
 
   printCCLabel(row: CartonAsset) {

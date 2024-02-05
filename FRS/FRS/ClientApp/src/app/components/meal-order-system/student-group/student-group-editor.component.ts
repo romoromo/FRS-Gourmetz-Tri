@@ -487,6 +487,6 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   }
 
   get canManageStudents() {
-    return true; //this.accountService.userHasPermission(Permission.manageStudentsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentGroupsPermission)
   }
 }

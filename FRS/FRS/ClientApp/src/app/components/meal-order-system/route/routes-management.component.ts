@@ -189,7 +189,7 @@ export class RoutesManagementComponent implements OnInit {
   }
 
   get canManageRoutes() {
-    return true; //this.accountService.userHasPermission(Permission.manageMealTypesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtRoutesPermission)
   }
 
 }

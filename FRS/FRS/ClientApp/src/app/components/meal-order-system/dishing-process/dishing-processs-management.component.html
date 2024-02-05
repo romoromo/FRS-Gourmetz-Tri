@@ -36,15 +36,15 @@
       </div>
     </div>
     <div class="col-sm-2">
-      <button class="btn btn-primary" style="height: 52px;" (click)="addBento()">Add</button> <br />
-      <section class="example-section">
+      <button *ngIf="canManageDishing" class="btn btn-primary" style="height: 52px;" (click)="addBento()">Add</button> <br />
+      <section class="example-section" *ngIf="canManageDishing">
         <mat-checkbox [(ngModel)]="autoAdd" class="example-margin">Auto add when bento inputted</mat-checkbox>
       </section>
     </div>
   </div>
 
   <div class="container" style="margin-bottom: 10px;">
-    <button class="btn btn-success" (click)="submit()" style="float: right;">Submit List</button>
+    <button *ngIf="canManageDishing" class="btn btn-success" (click)="submit()" style="float: right;">Submit List</button>
   </div>
 
   <ngx-datatable class="material colored-header"
@@ -63,7 +63,7 @@
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <span *ngIf="row.isSuccess" style="color: green">Success</span>
-    <button *ngIf="!row.isSuccess" class="btn btn-danger" (click)="removeBento(row)">Remove</button> <br />
+    <button *ngIf="canManageDishing && !row.isSuccess" class="btn btn-danger" (click)="removeBento(row)">Remove</button> <br />
     <span *ngIf="row.message" style="color: red">{{row.message}}</span>
   </ng-template>
 </div>

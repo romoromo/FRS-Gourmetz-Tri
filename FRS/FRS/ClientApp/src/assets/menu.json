@@ -113,16 +113,6 @@
           "logoClass": "",
           "permissions": [ "mosmgt.mealmgt.order.delivery.packingprocess" ],
           "childMenus": []
-        },
-        {
-          "label": "Delivery",
-          "active": true,
-          "link": "",
-          "showLabel": true,
-          "showLogo": true,
-          "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery" ],
-          "childMenus": []
         }
       ]
     },

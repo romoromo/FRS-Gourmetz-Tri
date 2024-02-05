@@ -2336,6 +2336,10 @@ namespace DAL.Filters
             mapper.Property<PaymentType>(p => p.Name)
                 .CanFilter()
                 .CanSort();
+
+            mapper.Property<PaymentType>(p => p.IsSystem)
+                .CanFilter()
+                .CanSort();
         }
 
         private void PaymentMapping(ref SievePropertyMapper mapper)

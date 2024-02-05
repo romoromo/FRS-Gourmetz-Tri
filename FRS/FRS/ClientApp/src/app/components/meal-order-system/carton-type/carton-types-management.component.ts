@@ -184,7 +184,7 @@ export class CartonTypesManagementComponent implements OnInit {
   }
 
   get canManageCartonTypes() {
-    return true; //this.accountService.userHasPermission(Permission.manageCartonTypesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCartonTypesPermission)
   }
 
 }

@@ -280,4 +280,8 @@ export class PackingProcesssManagementComponent implements OnInit {
   //          MessageSeverity.error);
   //      })
   //}
+
+  get canManagePacking() {
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtPackingProcessPermission)
+  }
 }

@@ -189,7 +189,7 @@ export class BentoAssetsManagementComponent implements OnInit {
   }
 
   get canManageBentoAssets() {
-    return true; //this.accountService.userHasPermission(Permission.manageBentoAssetsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtBentoAssetsPermission)
   }
 
   newMultipleBentoAsset(): void {
@@ -223,7 +223,7 @@ export class NewMultipleBentoAsset {
 
   constructor(private alertService: AlertService,
     public dialogRef: MatDialogRef<any>,
-    @Inject(MAT_DIALOG_DATA) public data: any, public deliveryService: DeliveryService) {
+    @Inject(MAT_DIALOG_DATA) public data: any, public deliveryService: DeliveryService, private accountService: AccountService) {
 
     this.getBentoBoxTypes();
   }

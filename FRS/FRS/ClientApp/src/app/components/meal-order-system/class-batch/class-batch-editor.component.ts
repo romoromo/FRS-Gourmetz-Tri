@@ -160,6 +160,6 @@ export class ClassBatchEditorComponent {
   }
 
   get canManageClassBatches() {
-    return true; //this.accountService.userHasPermission(Permission.manageClassBatchesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassBatchesPermission)
   }
 }

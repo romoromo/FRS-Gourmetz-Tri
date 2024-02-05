@@ -181,6 +181,6 @@ export class ContactUsDetailEditorComponent {
 
 
   get canManageContactUsDetails() {
-    return true; //this.accountService.userHasPermission(Permission.manageContactUsDetailsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtContactUsQuestionsPermission)
   }
 }

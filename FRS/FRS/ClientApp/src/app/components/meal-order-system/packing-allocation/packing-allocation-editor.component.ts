@@ -506,6 +506,4 @@ export class PackingAllocationEditorComponent implements OnInit {
       }
     );
   }
-
-
 }

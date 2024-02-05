@@ -249,8 +249,8 @@ export class MealAllocationssManagementComponent implements OnInit {
         });
   }
 
-  get canManageStudents() {
-    return true;
+  get canManageMealAllocations() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtMealAllocationsPermission)
   }
 
 }

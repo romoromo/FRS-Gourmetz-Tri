@@ -272,8 +272,8 @@ export class OrderCancellationsManagementComponent implements OnInit, OnDestroy 
     
   }
 
-  get canManageAuthLogs() {
-    return true;// this.accountService.userHasPermission(Permission.viewAuthLogsPermission)
+  get canManageOrderCancellations() {
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtCancellationsPermission)
   }
 
 }

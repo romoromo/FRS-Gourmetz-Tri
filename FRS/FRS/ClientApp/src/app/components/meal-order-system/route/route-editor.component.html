@@ -27,7 +27,7 @@
           </mat-select>
         </mat-form-field>
         <div class="col-md-4">
-          <button type="button" mat-button (click)="addNode()">
+          <button *ngIf="!canManageRoutes" type="button" mat-button (click)="addNode()">
             Add Node
           </button>
         </div>

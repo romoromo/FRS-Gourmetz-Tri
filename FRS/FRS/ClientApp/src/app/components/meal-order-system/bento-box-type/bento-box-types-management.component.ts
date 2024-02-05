@@ -184,7 +184,7 @@ export class BentoBoxTypesManagementComponent implements OnInit {
   }
 
   get canManageBentoBoxTypes() {
-    return true; //this.accountService.userHasPermission(Permission.manageBentoBoxTypesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtBentoBoxTypesPermission)
   }
 
 }

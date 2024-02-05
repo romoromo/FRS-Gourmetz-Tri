@@ -373,6 +373,6 @@ export class MenuGroupEditorComponent implements OnInit, OnDestroy{
   //}
 
   get canManageMenuGroups() {
-    return true; //this.accountService.userHasPermission(Permission.manageMenusPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOutletMgtMenusPermission)
   }
 }

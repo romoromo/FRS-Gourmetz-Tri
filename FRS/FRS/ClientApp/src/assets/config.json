@@ -1,4 +1,6 @@
 {
   "baseUrl": "",
-  "domainUrl": ""
+  "domainUrl": "http://smv360.com",
+  "enableMFA": false,
+  "enableMFAValidation": true
 }

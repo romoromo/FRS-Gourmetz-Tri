@@ -98,7 +98,7 @@
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <a *ngIf="canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="editCatererInfo(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
     <a *ngIf="canViewCatererInfos && !canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="editCatererInfo(row)"><i class="fa fa-eye" aria-hidden="true"></i> View </a>
-    <a *ngIf="canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="toggleExpandRow(row)">Details</a>
+    <a *ngIf="canViewCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="toggleExpandRow(row)">Details</a>
     <!--<a *ngIf="canManageCatererInfos" class="btn btn-link btn-xs" href="javascript:;" (click)="openCalendar(row)"><i class="fa" aria-hidden="true"></i> Calendar</a>-->
     <a *ngIf="canViewDishCalendar" class="btn btn-link btn-xs" href="javascript:;" (click)="openDishCalendar(row)"><i class="fa" aria-hidden="true"></i> Dish Calendar</a>
     <a *ngIf="canManageCatererOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="approveOutlet(row)"><i aria-hidden="true"></i> Outlets</a>

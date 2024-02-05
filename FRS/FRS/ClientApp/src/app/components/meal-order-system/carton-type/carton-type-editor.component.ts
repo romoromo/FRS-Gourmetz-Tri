@@ -189,6 +189,6 @@ export class CartonTypeEditorComponent {
 
 
   get canManageCartonTypes() {
-    return true; //this.accountService.userHasPermission(Permission.manageCartonTypesPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCartonTypesPermission)
   }
 }

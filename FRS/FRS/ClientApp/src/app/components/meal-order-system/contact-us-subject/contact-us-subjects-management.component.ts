@@ -189,7 +189,7 @@ export class ContactUsSubjectsManagementComponent implements OnInit {
   }
 
   get canManageContactUsSubjects() {
-    return true; //this.accountService.userHasPermission(Permission.manageMOSOrderMgtContactUsSubjectsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtContactUsSubjectsPermission)
   }
 
 }

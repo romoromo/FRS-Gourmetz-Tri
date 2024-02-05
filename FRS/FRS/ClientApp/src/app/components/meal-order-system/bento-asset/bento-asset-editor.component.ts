@@ -239,6 +239,6 @@ export class BentoAssetEditorComponent {
 
 
   get canManageBentoAssets() {
-    return true; //this.accountService.userHasPermission(Permission.manageBentoAssetsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtBentoAssetsPermission)
   }
 }

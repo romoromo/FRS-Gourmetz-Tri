@@ -164,6 +164,6 @@ export class NotificationEventEditorComponent {
 
 
   get canManageNotificationEvents() {
-    return true;//this.accountService.userHasPermission(Permission.manageMOSOrderMgtNotificationEventsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtNotificationEventsPermission)
   }
 }

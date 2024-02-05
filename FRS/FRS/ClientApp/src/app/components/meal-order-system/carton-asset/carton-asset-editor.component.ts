@@ -224,6 +224,6 @@ export class CartonAssetEditorComponent {
 
 
   get canManageCartonAssets() {
-    return true; //this.accountService.userHasPermission(Permission.manageCartonAssetsPermission)
+    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCartonAssetsPermission)
   }
 }
