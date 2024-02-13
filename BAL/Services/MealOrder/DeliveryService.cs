@@ -219,6 +219,71 @@ namespace BAL.Services.MealOrder
         #endregion
 
 
+        #region Bento count
+        public async Task<PagedEntity<BentoUsageCountDTO>> GetBentoUsage(BaseFilter filter)
+        {
+            var insideFilter = new BaseFilter();
+            var results = await GetDeliveryOrderNewsAsync(insideFilter);
+            var usages = new List<BentoUsageCountDTO>();
+            foreach (var dOrder in results.PagedData)
+            {
+                foreach(var doDetail in dOrder.DeliveryDetails)
+                {
+                    foreach(var doBento in doDetail.DeliveryBentos)
+                    {
+                        if (doBento.BentoAssetId == null) continue;
+                        var bentoIndex = usages.FindIndex(x => x.BentoId == doBento.BentoAssetId);
+                        if(bentoIndex < 0)
+                        {
+                            var bentoUse = new BentoUsageCountDTO();
+                            bentoUse.BentoId = doBento.BentoAssetId;
+                            bentoUse.BentoCode = doBento.BentoAssetCode;
+                            bentoUse.UsageCount = 1;
+                            usages.Add(bentoUse);
+
+                        } else
+                        {
+                            usages[bentoIndex].UsageCount += 1;
+                        }
+                    }
+                }
+            }
+
+            if(filter.Sorts == "usageCount")
+            {
+                usages = usages.OrderBy(o => o.UsageCount).ToList();
+            }
+            else if(filter.Sorts == "-usageCount")
+            {
+                usages = usages.OrderByDescending(o => o.UsageCount).ToList();
+            }
+
+            int startPage = ((filter.Page ?? 1) - 1) * (filter.PageSize ?? 10);
+            int endPage = ((filter.Page ?? 1) * (filter.PageSize ?? 10)) - 1;
+            if (endPage >= usages.Count())
+            {
+                endPage = (usages.Count()) % (filter.PageSize ?? 10);
+            } else
+            {
+                endPage = (filter.PageSize ?? 10);
+            }
+
+            var pagedUsage = usages.GetRange(startPage, endPage);
+
+            int total = usages.Count();
+            var result = new PagedEntity<BentoUsageCountDTO>();
+            result.Filter = filter;
+            result.PagedData = pagedUsage;
+            result.CurrentPage = filter.Page ?? 1;
+            result.PageSize = filter.PageSize ?? 10;
+            result.PageCount = total / result.PageSize;
+            result.TotalCount = total;
+
+            return result;
+        }
+
+        #endregion
+
         #region StoreInventory
 
         public async Task<PagedEntity<StoreInventoryDTO>> GetStoreInventoriesAsync(BaseFilter filter)

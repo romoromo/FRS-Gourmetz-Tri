@@ -407,6 +407,16 @@
           "logoClass": "",
           "permissions": [ "mosmgt.outletmgt.reports.ordercollection.view" ],
           "childMenus": []
+        },
+        {
+          "label": "Bento Usage Report",
+          "active": true,
+          "link": "/bentousages",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [],
+          "childMenus": []
         }
       ]
     }

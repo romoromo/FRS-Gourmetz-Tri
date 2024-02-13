@@ -270,6 +270,10 @@ export class DeliveryService {
     return this.commonEndpoint.getSieve<PagedResult>(this.deliveryOrderNewUrl + '/sieve/list', filter);
   }
 
+  getBentoUsageByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.deliveryBaseurl + '/bentousages/sieve/list', filter);
+  }
+
   updateDeliveryOrderNew(deliveryOrder: DeliveryOrderNew) {
     if (deliveryOrder.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.deliveryOrderNewUrl, deliveryOrder, deliveryOrder.id);

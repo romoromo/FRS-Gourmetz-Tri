@@ -757,6 +757,20 @@ namespace FRS.Controllers
 
         #endregion
 
+        #region Sieved BentoUsage
+        [HttpGet("bentousages/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllDeliveryOrdersPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetBentoUsages(BaseFilter filter)
+        {
+            var results = await this._service.GetBentoUsage(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<BentoUsageCountDTO>>(results));
+        }
+
+        #endregion
+
         [HttpPost("deliveryordernews")]
         //[Authorize(Authorization.Policies.ManageAllDeliveryOrdersPolicy)]
         [ProducesResponseType(201, Type = typeof(DeliveryOrderNewDTO))]

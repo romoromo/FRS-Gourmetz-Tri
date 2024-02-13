@@ -57,6 +57,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> DeleteDeliveryOrderNewAsync(int id);
         Task<DeliveryOrderNewDTO> GetDeliveryOrderNewByIdAsync(int id);
         Task<PagedEntity<DeliveryOrderNewDTO>> GetDeliveryOrderNewsAsync(BaseFilter filter);
+        Task<PagedEntity<BentoUsageCountDTO>> GetBentoUsage(BaseFilter filter);
         Task<BaseOperationResponse> UpdateDeliveryOrderNewAsync(DeliveryOrderNewDTO dto);
         Task<BaseOperationResponse> LoadDeliveryOrderNewAsync(DeliveryOrderNewDTO dto);
 

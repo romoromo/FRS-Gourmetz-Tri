@@ -372,6 +372,7 @@ import { BentoBoxTypesManagementComponent } from './components/meal-order-system
 import { DeliveryService } from './services/meal-order/delivery.service';
 import { BentoAssetEditorComponent } from './components/meal-order-system/bento-asset/bento-asset-editor.component';
 import { BentoAssetsManagementComponent, NewMultipleBentoAsset } from './components/meal-order-system/bento-asset/bento-assets-management.component';
+import { BentoUsageManagementComponent } from './components/meal-order-system/bento-usage/bento-usage-management.component';
 import { CartonTypeEditorComponent } from './components/meal-order-system/carton-type/carton-type-editor.component';
 import { CartonTypesManagementComponent } from './components/meal-order-system/carton-type/carton-types-management.component';
 import { CartonAssetEditorComponent } from './components/meal-order-system/carton-asset/carton-asset-editor.component';
@@ -671,7 +672,7 @@ export const configFactory = (configService: ConfigurationService) => {
     CatererInfoEditorComponent, CatererInfosManagementComponent,
     OutletEditorComponent, OutletsManagementComponent, OutletProfileEditorComponent, OutletProfilesManagementComponent,
     BentoAssetEditorComponent, BentoAssetsManagementComponent, DishingProcesssManagementComponent, PackingProcesssManagementComponent, DoProcesssManagementComponent,
-    CartonAssetEditorComponent, CartonAssetsManagementComponent,
+    CartonAssetEditorComponent, CartonAssetsManagementComponent, BentoUsageManagementComponent,
     BentoBoxTypeEditorComponent, BentoBoxTypesManagementComponent,
     CartonTypeEditorComponent, CartonTypesManagementComponent,
     DeliveryOrderEditorComponent, DeliveryOrdersManagementComponent,
@@ -868,7 +869,7 @@ export const configFactory = (configService: ConfigurationService) => {
     DeviceTypeEditorComponent,
     ChannelInfoEditorComponent,
     ClassBatchEditorComponent, ClassLevelEditorComponent, ClassEditorComponent, StudentEditorComponent, StaffTypeEditorComponent, StaffEditorComponent,
-    RestrictionTypeEditorComponent, RestrictionEditorComponent, StudentGroupEditorComponent, StudentSelectorComponent,
+    RestrictionTypeEditorComponent, RestrictionEditorComponent, StudentGroupEditorComponent, StudentSelectorComponent, BentoUsageManagementComponent,
     MealTypeEditorComponent, DishTypeEditorComponent, CatererInfoEditorComponent, BentoBoxTypeEditorComponent, CartonTypeEditorComponent, DeliveryOrderEditorComponent, DeliveryOrderNewEditorComponent, TrackingStatusEditorComponent, StoreInfoEditorComponent, BentoAssetEditorComponent, CartonAssetEditorComponent, MealPeriodEditorComponent,
     DishEditorComponent, DishSelectorComponent, MenuEditorComponent, MenuCycleEditorComponent, TokenOrderEditorComponent, TokenOrdersManagementComponent, TokenOrderBulkEditorComponent, TokenOrdersBulkManagementComponent, MealAllocationssManagementComponent, PrintAllocationComponent,
     OutletEditorComponent, OutletProfileEditorComponent, CatererSelectorComponent, DOSelectorComponent, ReceiveDOComponent, InventorySelectorComponent, InventoryDetailComponent, CatererApprovalComponent, StoreSelectorComponent, DriverEditorComponent, RouteEditorComponent, StoreSelectorDetailsComponent,

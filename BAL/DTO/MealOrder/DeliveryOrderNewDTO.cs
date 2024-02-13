@@ -80,4 +80,13 @@ namespace BAL.DTO.MealOrder
         public int issQty { get; set; }
         public string bentoList { get; set; }
     }
+
+    public class BentoUsageCountDTO
+    {
+        public int Id { get; set; }
+        public int? BentoId { get; set; }
+        public string BentoCode { get; set; }
+        public int UsageCount { get; set; }
+        public BentoAssetDTO Bento { get; set; }
+    }
 }

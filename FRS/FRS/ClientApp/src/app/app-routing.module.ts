@@ -100,6 +100,7 @@ import { MenuCyclesManagementComponent } from './components/meal-order-system/me
 import { CatererInfosManagementComponent } from './components/meal-order-system/caterer-info/caterer-infos-management.component';
 import { BentoBoxTypesManagementComponent } from './components/meal-order-system/bento-box-type/bento-box-types-management.component';
 import { BentoAssetsManagementComponent } from './components/meal-order-system/bento-asset/bento-assets-management.component';
+import { BentoUsageManagementComponent } from './components/meal-order-system/bento-usage/bento-usage-management.component';
 import { CartonTypesManagementComponent } from './components/meal-order-system/carton-type/carton-types-management.component';
 import { CartonAssetsManagementComponent } from './components/meal-order-system/carton-asset/carton-assets-management.component';
 import { TrackingStatussManagementComponent } from './components/meal-order-system/tracking-status/tracking-statuss-management.component';
@@ -269,6 +270,7 @@ const routes: Routes = [
       { path: "trackingstatus", component: TrackingStatussManagementComponent, canActivate: [AuthGuard], data: { title: "Tracking Status" } },
       { path: "storeinfo", component: StoreInfosManagementComponent, canActivate: [AuthGuard], data: { title: "Store" } },
       { path: "bentoassets", component: BentoAssetsManagementComponent, canActivate: [AuthGuard], data: { title: "Bento Assets" } },
+      { path: "bentousages", component: BentoUsageManagementComponent, canActivate: [AuthGuard], data: { title: "Bento Usages" } },
       { path: "dishingprocess", component: DishingProcesssManagementComponent, canActivate: [AuthGuard], data: { title: "Dishing Process" } },
       { path: "packingprocess", component: PackingProcesssManagementComponent, canActivate: [AuthGuard], data: { title: "Packing Process" } },
       { path: "doprocess", component: DoProcesssManagementComponent, canActivate: [AuthGuard], data: { title: "Carton To DO" } },
