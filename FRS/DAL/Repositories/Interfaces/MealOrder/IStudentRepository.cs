@@ -29,5 +29,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<List<Student>> GetStudentsWithAbandonedCart1(int hoursLeft);
         Task<List<Student>> GetStudentsWithAbandonedCart2(int daysBeforeCutOff);
         Task<List<StudentOrderModel>> GetStudentsWithOrdersNotCollected(int daysPassed);
+        Task<BaseOperationResponse> AddStudentLinksByUserAsync(int userId, int studentId);
     }
 }

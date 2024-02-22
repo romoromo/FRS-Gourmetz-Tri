@@ -41,6 +41,7 @@ export class Dish {
   public totalFat: number;
   public totalCarb: number;
   public catererId: string;
+  public productionDescription: string;
   public dishPeriods: DishPeriod[];
   public subDishes: DishDetail[];
   public restrictions: DishRestriction[];

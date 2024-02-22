@@ -9,7 +9,7 @@ import { ConfigurationService } from './configuration.service';
 import { DBkeys } from './db-Keys';
 import { JwtHelper } from './jwt-helper';
 import { Utilities } from './utilities';
-import { LoginResponse, IdToken, Login2FAResponse } from '../models/login-response.model';
+import { LoginResponse, IdToken, Login2FAResponse, Resend2FAResponse } from '../models/login-response.model';
 import { FRSHubConnections, User } from '../models/user.model';
 import { Permission, PermissionNames, PermissionValues } from '../models/permission.model';
 import { ResetPassword } from '../models/user-login.model';
@@ -130,18 +130,23 @@ export class AuthService {
   }
 
 
-  login(userName: string, password: string, institutionCode: string, rememberMe?: boolean, isAD?: boolean) {
+  login(userName: string, password: string, institutionCode: string, rememberMe?: boolean, isAD?: boolean, isValidateMfa?: boolean) {
 
     if (this.isLoggedIn)
       this.logout();
 
     return this.endpointFactory.getLoginEndpoint<LoginResponse>(userName, password, institutionCode, 'false', isAD).pipe(
-      map(response => this.processLoginResponse(response, rememberMe)));
+      map(response => this.processLoginResponse(response, rememberMe, isValidateMfa)));
   }
 
   login2FA(userId: string, code: string) {
     return this.endpointFactory.getLogin2FAEndpoint<Login2FAResponse>(userId, code).pipe(
       map(response => this.processLogin2FAResponse(response)));
+  }
+
+  getResendCode2FA(userId: string) {
+    return this.endpointFactory.getResendCode2FAEndpoint<Resend2FAResponse>(userId).pipe(
+      map(response => this.processResend2FAResponse(response)));
   }
 
   loginExternal(userName: string) {
@@ -180,7 +185,15 @@ export class AuthService {
     return user;
   }
 
-  private processLoginResponse(response: LoginResponse, rememberMe: boolean) {
+  private processResend2FAResponse(response: Resend2FAResponse) {
+
+    if (!response.sent)
+      throw new Error(`An error has occurred. Unable to resend code.`);
+
+    return true;
+  }
+
+  private processLoginResponse(response: LoginResponse, rememberMe: boolean, isValidateMfa?: boolean) {
 
     let accessToken = response.access_token;
 
@@ -220,7 +233,7 @@ export class AuthService {
     user.last2FAValidatedTime = null;
     this.saveUserDetails(user, permissions, accessToken, idToken, refreshToken, accessTokenExpiry, rememberMe);
 
-    this.reevaluateLoginStatus(user);
+    this.reevaluateLoginStatus(user, isValidateMfa);
 
     return user;
   }
@@ -271,13 +284,13 @@ export class AuthService {
   }
 
 
-  private reevaluateLoginStatus(currentUser?: User) {
+  private reevaluateLoginStatus(currentUser?: User, isValidateMfa?: boolean) {
     let d = new Date();
-    d.setMinutes(d.getMinutes() - 5); //5 minutes ago
+    d.setMinutes(d.getMinutes() - 1); //5 minutes ago
 
     let user = currentUser || this.localStorage.getDataObject<User>(DBkeys.CURRENT_USER);
     let isLoggedIn = false;
-    if (this.isEnableMFA) {
+    if (this.isEnableMFA && isValidateMfa) {
       isLoggedIn = user != null && user.last2FAValidatedTime && (new Date(user.last2FAValidatedTime) > d);
     }
     else {

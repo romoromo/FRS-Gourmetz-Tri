@@ -55,6 +55,13 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<BaseOperationResponse> AddStudentLinksByUserAsync(int userId, int studentId)
+        {
+            var result = await this._uow.Students.AddStudentLinksByUserAsync(userId, studentId);
+            return result;
+        }
+
+        
         public async Task<List<StudentDTO>> GetStudentsWithNoOrder(DateTime from, DateTime to)
         {
             var result = Mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsWithNoOrder(from, to));

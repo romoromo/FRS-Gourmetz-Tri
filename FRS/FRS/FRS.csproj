@@ -172,6 +172,8 @@
     <None Remove="Helpers\Templates\CancellationRequestRejected.template" />
     <None Remove="Helpers\Templates\ConfirmEmail.template" />
     <None Remove="Helpers\Templates\ForgotPassword.template" />
+    <None Remove="Helpers\Templates\LinkStudentInviteForExistingUser.template" />
+    <None Remove="Helpers\Templates\LinkStudentInviteForNewUser.template" />
     <None Remove="Helpers\Templates\MissedCollection.template" />
     <None Remove="Helpers\Templates\NoOrderNextWeek.template" />
     <None Remove="Helpers\Templates\ParticipantEmail.template" />
@@ -186,6 +188,7 @@
   <ItemGroup>
     <Content Remove="acl.json" />
     <Content Remove="acl_nuh.json" />
+    <Content Remove="Pages\Shared\_Layout.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -195,6 +198,7 @@
     <None Include="acl.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+    <None Include="Pages\Shared\_Layout.cshtml" />
   </ItemGroup>
 
   <!--<Target Name="CreateResourcesFolder" AfterTargets="AfterPublish" Condition=" '!Exists('$(PublishUrl)Resources') ">
@@ -262,4 +266,12 @@
       </ResolvedFileToPublish>
     </ItemGroup>
   </Target>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Shared\_Layout.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Shared\_Layout.cshtml" />
+  </ItemGroup>
 </Project>

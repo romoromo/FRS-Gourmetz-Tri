@@ -22,3 +22,9 @@ export enum SalesOrderReportType {
   CancellationReport = 2,
   CollectionReport = 3
 }
+
+export enum PaymentTypes {
+  Adhoc = "Adhoc",
+  Fas = "FAS",
+  MealPlan = "Meal Plan"
+}

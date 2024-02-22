@@ -79,6 +79,36 @@ namespace FRS.Helpers
             return emailMessage;
         }
 
+        public static string GetLinkStudentAccountForExistingUserEmail(string email, string name, string callbackUrl, string img = "")
+        {
+            //if (testEmailTemplate == null)
+            testEmailTemplate = ReadPhysicalFile("Helpers/Templates/LinkStudentInviteForExistingUser.template");
+
+
+            string emailMessage = testEmailTemplate
+                .Replace("{email}", email)
+                .Replace("{student_name}", name)
+                .Replace("{callbackUrl}", callbackUrl)
+                .Replace("{img_onboarding}", img);
+
+            return emailMessage;
+        }
+
+        public static string GetLinkStudentAccountForNewUserEmail(string email, string name, string callbackUrl, string img = "")
+        {
+            //if (testEmailTemplate == null)
+            testEmailTemplate = ReadPhysicalFile("Helpers/Templates/LinkStudentInviteForNewUser.template");
+
+
+            string emailMessage = testEmailTemplate
+                .Replace("{email}", email)
+                .Replace("{student_name}", name)
+                .Replace("{callbackUrl}", callbackUrl)
+                .Replace("{img_onboarding}", img);
+
+            return emailMessage;
+        }
+
         public static string GetTestEmail(string recepientName, DateTime testDate)
         {
             if (testEmailTemplate == null)

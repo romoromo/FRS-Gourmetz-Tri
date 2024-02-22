@@ -36,15 +36,13 @@ namespace DAL.Core
         public override async Task<ApplicationUser> FindByNameAsync(string userName)
         {
             var institution = await GetCurrentInstitution();
+            ApplicationUser user = null;
             if (institution != null)
             {
-                return await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == institution.Id && e.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
-            }
-            else
-            {
-                return await base.Users.FirstOrDefaultAsync(e => e.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
+                user = await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == institution.Id && e.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
             }
 
+            return user ?? await base.Users.FirstOrDefaultAsync(e => e.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public override async Task<ApplicationUser> FindByEmailAsync(string email)
@@ -52,14 +50,13 @@ namespace DAL.Core
             //TODO: add institution here; temporarily removed checking of institution
             //return await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == _unitOfWork.CurrentInstitutionId && e.Email == email);
             var institution = await GetCurrentInstitution();
+            ApplicationUser user = null;
             if (institution != null)
             {
-                return await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == institution.Id && e.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+                user = await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == institution.Id && e.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
             }
-            else
-            {
-                return await base.Users.FirstOrDefaultAsync(e => e.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
-            }
+
+            return user ?? await base.Users.FirstOrDefaultAsync(e => e.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public override async Task<IdentityResult> CreateAsync(ApplicationUser user)

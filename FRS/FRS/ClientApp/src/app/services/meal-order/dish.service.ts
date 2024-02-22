@@ -131,6 +131,10 @@ export class DishService {
     return this.commonEndpoint.get<any>(`${this.dishCycleUrl}/getScheduleSetDetails/${id}/${day}?outletId=${outletId}`);
   }
 
+  getDishCyclesByStudent(id, orderDate, sessionId) {
+    return this.commonEndpoint.get<any>(`${this.dishCycleUrl}/student/${id}?orderDate=${orderDate}&mealSessionId=${sessionId}`);
+  }
+
   createOutletDishCyclePeriodMenus(model: OutletDishViewMenu) {
     return this.commonEndpoint.getNewEndpoint<any>(`${this.dishCycleUrl}/outlets/scheduleperiods`, model);
   }

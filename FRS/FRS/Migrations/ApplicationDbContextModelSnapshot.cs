@@ -3282,6 +3282,8 @@ namespace FRS.Migrations
 
                     b.Property<string>("Label");
 
+                    b.Property<string>("ProductionDescription");
+
                     b.Property<int?>("ProductionPictureId");
 
                     b.Property<float>("Protein");

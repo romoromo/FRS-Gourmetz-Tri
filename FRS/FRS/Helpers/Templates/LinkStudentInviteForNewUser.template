@@ -1,0 +1,18 @@
+﻿<div>
+  <img src="{img_onboarding}"></img>
+</div>
+<p>Dear user {email},</p>
+<p>You have been invited to link this email to {student_name}'s account in Tappee.</p>
+<p>Please click the following link to accept the invite. You will be redirected to complete the account registration for Tappee</p>
+<p>
+  <a href='{callbackUrl}'>Link Email</a>
+</p>
+<p>If you can't open the link in your mailbox, please copy the following address to the address bar of your web browser to open it</p>
+<p>{callbackUrl}</p>
+<br/>
+<p>This email is sent automatically by the system, please do not reply directly.</p>
+<p>Thanks and welcome to Tappee.</p>
+
+<p>Tappee</p>
+<p>Powered by SATS</p>
+

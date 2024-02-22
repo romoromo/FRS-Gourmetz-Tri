@@ -339,27 +339,17 @@
       "permissions": [ "mosmgt.reportmgt.view" ],
       "childMenus": [
         {
-          "label": "Order Portal Login Logs",
+          "label": "Bento Usage",
           "active": true,
-          "link": "/externalapploginlogs",
+          "link": "/bentousages",
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "mosmgt.reportmgt.portallogin.view" ],
+          "permissions": [],
           "childMenus": []
         },
         {
-          "label": "Order Report",
-          "active": true,
-          "link": "/orderlogs",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "mosmgt.reportmgt.order.view" ],
-          "childMenus": []
-        },
-        {
-          "label": "Order Cancellation Report",
+          "label": "Order Cancellation",
           "active": true,
           "link": "/ordercancellationreport",
           "showLabel": true,
@@ -369,37 +359,7 @@
           "childMenus": []
         },
         {
-          "label": "User Account Report",
-          "active": true,
-          "link": "/useraccountreport",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "mosmgt.reportmgt.useraccount.view" ],
-          "childMenus": []
-        },
-        {
-          "label": "Role Report",
-          "active": true,
-          "link": "/rolereport",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "mosmgt.reportmgt.role.view" ],
-          "childMenus": []
-        },
-        {
-          "label": "User Activity Report",
-          "active": true,
-          "link": "/useractivityreport",
-          "showLabel": true,
-          "showLogo": false,
-          "logoClass": "",
-          "permissions": [ "mosmgt.reportmgt.useractivity.view" ],
-          "childMenus": []
-        },
-        {
-          "label": "Order Collection Report",
+          "label": "Order Collection",
           "active": true,
           "link": "/ordercollectionreport",
           "showLabel": true,
@@ -409,13 +369,63 @@
           "childMenus": []
         },
         {
-          "label": "Bento Usage Report",
+          "label": "Payment",
           "active": true,
-          "link": "/bentousages",
+          "link": "/orderpaymentsreport",
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
           "permissions": [],
+          "childMenus": []
+        },
+        {
+          "label": "Order Portal Login",
+          "active": true,
+          "link": "/externalapploginlogs",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.reportmgt.portallogin.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "Role",
+          "active": true,
+          "link": "/rolereport",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.reportmgt.role.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "Sales Order",
+          "active": true,
+          "link": "/orderlogs",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.reportmgt.order.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "User Account",
+          "active": true,
+          "link": "/useraccountreport",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.reportmgt.useraccount.view" ],
+          "childMenus": []
+        },
+        {
+          "label": "User Activity",
+          "active": true,
+          "link": "/useractivityreport",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.reportmgt.useractivity.view" ],
           "childMenus": []
         }
       ]

@@ -83,7 +83,7 @@ namespace DAL.Repositories.MealOrder
             {
                 result.Message = "Successfully saved!";
                 result.IsSuccess = true;
-                result.Data = f;
+                //result.Data = f;
             }
             else
             {

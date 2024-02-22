@@ -27,7 +27,7 @@
 
         <mat-form-field class="col-xs-12 col-md-6" appearance="none">
           <mat-label>Session</mat-label>
-          <mat-select required placeholder="Session" name="session" [(ngModel)]="order.mealSessionDetailId" #session="ngModel">
+          <mat-select required placeholder="Session" name="session" [(ngModel)]="order.mealSessionDetailId" #session="ngModel" (selectionChange)="onChangeSession($event)">
             <mat-option *ngFor="let session of sessions" [value]="session.id">{{session.mealSessionName}}</mat-option>
           </mat-select>
         </mat-form-field>

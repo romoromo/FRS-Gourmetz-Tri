@@ -52,6 +52,22 @@ namespace DAL.Repositories.MealOrder
             return await query.ToListAsync();
         }
 
+        public async Task<List<DishCycle>> GetOutletDishCyclesAsync(int studentId, DateTime date, int sessionId)
+        {
+            var student = await _appContext.Students.FirstOrDefaultAsync(e => e.Id == studentId);
+            var session = await _appContext.MealSessionDetails.FirstOrDefaultAsync(e => e.Id == sessionId);
+
+            var menuGroupDishCycleIds = _appContext.MenuGroups.Where(e => e.IsActive && e.IsPublished &&
+                                            date.Date <= e.EndDate.Date &&
+                                            e.Classes.Any(f => f.ClassId == student.ClassId))
+                                            .SelectMany(e => e.MenuGroupDishCycles)
+                                            .Select(e => e.DishCycleId).ToList();
+
+            IQueryable<DishCycle> query = _appContext.DishCycles.Where(e => e.IsActive && e.DishCyclePeriods.Any(x => x.IsActive && x.MealPeriodId == session.MealSession.MealPeriodId && menuGroupDishCycleIds.Any(f => f == e.Id)));
+
+            return await query.ToListAsync();
+        }
+
         public async Task<List<DishCyclePeriod>> GetOutletDishCyclePeriodsAsync(int dishCyleId)
         {
             return await _appContext.DishCyclePeriods.Where(e => e.DishCycleId == dishCyleId).ToListAsync();

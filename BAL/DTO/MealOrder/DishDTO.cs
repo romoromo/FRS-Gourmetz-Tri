@@ -64,6 +64,7 @@ namespace BAL.DTO.MealOrder
         public string UpdatedByName { get; set; }
         public DateTime UpdatedDate { get; set; }
 
+        public string ProductionDescription { get; set; }
         public List<DishPeriodDTO> DishPeriods { get; set; }
         public List<DishRestrictionDTO> Restrictions { get; set; }
         public List<DishDetailDTO> SubDishes { get; set; }

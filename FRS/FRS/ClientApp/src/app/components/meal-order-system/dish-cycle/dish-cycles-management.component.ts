@@ -152,7 +152,11 @@ export class DishCyclesManagementComponent implements OnInit {
 
   onSearchChanged(value: string) {
     this.keyword = value;
-    this.clearFilterAndPagedResult();
+    //this.clearFilterAndPagedResult();
+    //this.loadData(null);
+  }
+
+  onSearch() {
     this.loadData(null);
   }
 

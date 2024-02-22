@@ -5,7 +5,7 @@
   <div class="row control-box">
     <div class="col-sm-8">
       <div class="form-group search-box">
-        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
+        <search-box (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()" placeholder="{{'common.Search' | translate}}"></search-box>
       </div>
     </div>
     <div class="col-sm-4">

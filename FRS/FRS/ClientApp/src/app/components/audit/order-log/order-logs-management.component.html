@@ -35,14 +35,26 @@
     </div>
     <div class="col-xs-6 col-sm-4 col-md-2">
       <mat-form-field>
-        <mat-select name="studentGroupId" [(ngModel)]="filter.studentGroupId" placeholder="Student Group">
+        <mat-select name="studentGroupId" [formControl]="studentGroupIds" multiple placeholder="Student Groups" [(ngModel)]="filter.studentGroupIds">
+          <!--<mat-option value="">
+            All
+          </mat-option>-->
+          <mat-option *ngFor="let t of groups | orderBy: 'name'" [value]="t.id">{{t.name}}</mat-option>
+        </mat-select>
+
+        <!--<mat-select name="studentGroupId" [(ngModel)]="filter.studentGroupIds" placeholder="Student Groups">
           <mat-option value="">
             All
           </mat-option>
           <mat-option *ngFor="let t of groups" [value]="t.id">
-            {{t.name}}
+            <mat-checkbox [checked]="isSelected(t.id)">
+              {{ t.name }}
+            </mat-checkbox>
           </mat-option>
-        </mat-select>
+          <mat-option *ngFor="let t of groups" [value]="t.id">
+      {{t.name}}
+    </mat-option>
+        </mat-select>-->
       </mat-form-field>
     </div>
     <div class="col-xs-6 col-sm-4 col-md-2">
@@ -67,6 +79,17 @@
     </div>
   </div>
 
+  <div>
+    <span>Show </span>
+    <select (change)="onLimitChange($event.target.value)">
+      <option *ngFor="let option of pageLimitOptions"
+              [value]="option.value"
+              [selected]="option.value == currentPageLimit">
+        {{ option.value }} per page
+      </option>
+    </select>
+  </div>
+  
   <div class="table-responsive">
     <ngx-datatable class="material colored-header" #orderLogTable
                    [loadingIndicator]="loadingIndicator"

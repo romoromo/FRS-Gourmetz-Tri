@@ -69,7 +69,8 @@ export class SalesOrderReportFilter extends Filter {
   public isFas?: boolean;
   public keyword: string;
   public reportType: number;
-  public studentGroupId?: number;
+  public studentGroupIds?: number[];
+  public collectionStatuses?: string[];
 }
 
 export class RoleReportFilter extends Filter {

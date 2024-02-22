@@ -252,6 +252,13 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<List<DishCycleDTO>> GetOutletDishCyclesAsync(int studentId, DateTime date, int sessionId)
+        {
+            var cycles = await this._uow.DishCycles.GetOutletDishCyclesAsync(studentId, date, sessionId);
+            var result = Mapper.Map<List<DishCycleDTO>>(cycles);
+            return result;
+        }
+
         public async Task<List<DishCyclePeriodDTO>> GetOutletDishCyclePeriodsAsync(int dishCyleId)
         {
             var result = Mapper.Map<List<DishCyclePeriodDTO>>(await this._uow.DishCycles.GetOutletDishCyclePeriodsAsync(dishCyleId));

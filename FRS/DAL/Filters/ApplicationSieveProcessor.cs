@@ -1793,6 +1793,11 @@ namespace DAL.Filters
                .CanFilter()
                .CanSort()
                .HasName("cuisineName");
+
+            mapper.Property<Dish>(p => p.ProductionDescription)
+                .CanFilter()
+                .CanSort();
+
             //mapper.Property<Dish>(p => p.ParentDishId)
             //    .CanFilter()
             //    .CanSort();

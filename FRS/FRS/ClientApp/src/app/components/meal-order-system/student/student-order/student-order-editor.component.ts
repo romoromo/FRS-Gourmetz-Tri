@@ -14,6 +14,7 @@ import { Utilities } from "src/app/services/utilities";
 import { OrderService } from "src/app/services/meal-order/order.service";
 import { DeliveryService } from "src/app/services/meal-order/delivery.service";
 import { Filter } from "src/app/models/sieve-filter.model";
+import { DishService } from "../../../../services/meal-order/dish.service";
 
 @Component({
   selector: 'student-order-editor',
@@ -33,6 +34,7 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   private allDishCycles: any[] = [];
   private combined: any = [];
   private returnDishCycles: any = [];
+  private availableDishCycles: any = [];
   
   private selectedDish: any;
   selectedDate: Date;
@@ -44,13 +46,14 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
 
   constructor(private alertService: AlertService,
     private fileService: FileService, public dialogRef: MatDialogRef<StudentOrderEditorComponent>, public dialog: MatDialog,
-    private deliveryService: DeliveryService, private orderService: OrderService, public menuService: MenuService,
+    private deliveryService: DeliveryService, private orderService: OrderService, public menuService: MenuService, public dishService: DishService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     this.order = data.order;
     this.selectedDate = this.minDate;
     this.order.deliveryDate = moment(this.minDate).format('YYYY-MM-DD');
     this.getStoreInfos();
-    this.getDishCycles();
+    //this.getAllDishCycles();
+    this.getAllDishCyclesByDate();
     this.getSessions();
   }
 
@@ -71,8 +74,24 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   }
 
 
-
   onDateSelected(event: MatDatepickerInputEvent<Date>) {
+    // Handle the date selection here
+    const selectedDate = event.value;
+
+    // Check if the selected date is valid
+    if (selectedDate) {
+      // Set the model to the selected date
+      this.selectedDate = selectedDate;
+      this.order.deliveryDate = moment(selectedDate).format('YYYY-MM-DD');
+      this.getSessions();
+
+    } else {
+      // Clear the model if the date is not valid
+      this.selectedDate = null;
+    }
+  }
+
+  onDateSelected2(event: MatDatepickerInputEvent<Date>) {
     // Handle the date selection here
     const selectedDate = event.value;
 
@@ -97,6 +116,17 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   updateCombined() {
     let allset: any = [];
 
+    for (let dc of this.availableDishCycles) {
+      allset = [...allset, ...(dc.sets != null ? dc.sets : [])];
+    }
+
+    this.combined = this.sortSets([...new Set(allset)]);
+    console.log(this.combined);
+  }
+
+  updateCombined2() {
+    let allset: any = [];
+
     for (let dc of this.allDishCycles) {
       allset = [...allset, ...(dc.newSets != null ? dc.newSets : [])];
     }
@@ -106,6 +136,36 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   }
 
   updateMenu(date, dishCycle) {
+    if (!date) return;
+
+    let day =
+      (Math.abs(this.dateDiffInDays(date, new Date(dishCycle.startDate))) + 1) % dishCycle.numOfDays;
+
+    let dishCycleSchedule = dishCycle.schedules ? dishCycle.schedules.find((s) => s.day === day) : [];
+
+    for (let set of dishCycle.sets) {
+      let detail = dishCycleSchedule && dishCycleSchedule.details ? dishCycleSchedule.details.find(
+        (d) =>
+          d.cycleTypeId === set.cycleTypeId &&
+          d.cycleSeq === set.cycleTypeSequence &&
+          d.seq === set.sequence &&
+          d.menus.length > 0
+      ) : [];
+
+      set.displayMenus = detail && detail.menus ? detail.menus : [];
+
+      set.dishCyclePeriods = dishCycle.dishCyclePeriods;
+      set.startDate = dishCycle.startDate;
+      set.endDate = dishCycle.endDate;
+      set.mgStartDate = dishCycle.mgStartDate;
+      set.mgEndDate = dishCycle.mgEndDate;
+      //set.star
+    }
+
+    dishCycle.newSets = this.sortSets(dishCycle.sets);
+  }
+
+  updateMenu2(date, dishCycle) {
     if (!date) return;
 
     let day =
@@ -137,7 +197,50 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
 
   getDishesByCycle(dishCycle, cycleTypeId, cycleSeq, seq, clearMenu: boolean = true) {
     if (!dishCycle.schedules) dishCycle.schedules = [];
+    //cycleSeq = (cycleSeq ? cycleSeq : 1);
+    let cycles;
+    if (cycleTypeId) cycles = this.availableDishCycles.filter((e) => e.id == cycleTypeId);
+    else cycles = [dishCycle];
 
+    if (cycles && cycles.length > 0) {
+      let schedules = cycles[0].schedules;
+      if (schedules && schedules.length > 0 && cycleSeq <= cycles[0].numOfSets) {
+        if (!dishCycle.schedules) dishCycle.schedules = [];
+        dishCycle.schedules.forEach((dcSched) => {
+          let mod = dcSched.day % cycles[0].numOfDays;
+          let day = mod == 0 ? cycles[0].numOfDays : mod;
+          let sScheds = schedules.filter((e) => e.day == day);
+
+          if (sScheds && sScheds.length > 0) {
+            //set menus for that day/s
+            if (!dcSched.details) dcSched.details = [];
+
+            let sDetsSequence = cycleSeq;
+            if (!cycleTypeId && !cycleSeq) sDetsSequence = seq;
+            if (!sDetsSequence) sDetsSequence = 1;
+
+            let sDets = sScheds[0].details.filter((e) => e.sequence == sDetsSequence);
+            let dets = dcSched.details.filter((e) => e.sequence == (seq ? seq : 1));
+
+            if (dets && dets.length > 0) {
+              if (sDets && sDets.length > 0 && seq <= dcSched.details.length) {
+                dets[0].displayMenus = sDets[0].menus;
+                dets[0].cycleTypeId = cycleTypeId;
+                dets[0].cycleSeq = cycleSeq;
+                dets[0].seq = seq;
+              } else {
+                dets[0].displayMenus = [];
+              }
+            }
+          }
+        });
+      }
+    }
+  }
+
+  getDishesByCycle2(dishCycle, cycleTypeId, cycleSeq, seq, clearMenu: boolean = true) {
+    if (!dishCycle.schedules) dishCycle.schedules = [];
+    //cycleSeq = (cycleSeq ? cycleSeq : 1);
     let cycles;
     if (cycleTypeId) cycles = this.returnDishCycles.filter((e) => e.id == cycleTypeId);
     else cycles = [dishCycle];
@@ -154,7 +257,12 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
           if (sScheds && sScheds.length > 0) {
             //set menus for that day/s
             if (!dcSched.details) dcSched.details = [];
-            let sDets = sScheds[0].details.filter((e) => e.sequence == (cycleSeq ? cycleSeq : 1));
+
+            let sDetsSequence = cycleSeq;
+            if (!cycleTypeId && !cycleSeq) sDetsSequence = seq;
+            if (!sDetsSequence) sDetsSequence = 1;
+
+            let sDets = sScheds[0].details.filter((e) => e.sequence == sDetsSequence);
             let dets = dcSched.details.filter((e) => e.sequence == (seq ? seq : 1));
 
             if (dets && dets.length > 0) {
@@ -194,6 +302,28 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   }
 
   getAlaCarteCols(val, set, dishCycle) {
+    let col = [];
+    let cycles = this.availableDishCycles.filter((e) => e.id == val);
+
+    if (!val) cycles = [dishCycle];
+
+    if (cycles && cycles.length > 0) {
+      let numOfSets = cycles[0].numOfSets;
+      let arr: any[] = [];
+      for (var i = 1; i <= numOfSets; i++) {
+        let set = cycles[0].sets[i - 1];
+
+        arr.push({ label: set.label, sequence: i });
+      }
+      set.cycleSequences = arr;
+
+      let sequence = set.cycleSequences.find((c) => c.sequence === (set.cycleTypeSequence ? set.cycleTypeSequence : 1));
+
+      set.sequenceLabel = sequence.label ? sequence.label : "";
+    }
+  }
+
+  getAlaCarteCols2(val, set, dishCycle) {
     let col = [];
     let cycles = this.returnDishCycles.filter((e) => e.id == val);
 
@@ -301,6 +431,17 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
     const mp = this.sessions.find((m) => this.order.mealSessionDetailId === m.id);
     const mpId = mp ? mp.mealPeriodId : null;
     return set.dishCyclePeriods.find((d) => d.mealPeriodId === mpId) &&
+      set.displayMenus[0]; // &&
+      //this.formatDate(set.startDate) <= this.order.deliveryDate &&
+      //this.formatDate(set.endDate) >= this.order.deliveryDate &&
+      //this.formatDate(set.mgStartDate) <= this.order.deliveryDate &&
+      //this.formatDate(set.mgEndDate) >= this.order.deliveryDate;
+  }
+
+  isValidSet2(set) {
+    const mp = this.sessions.find((m) => this.order.mealSessionDetailId === m.id);
+    const mpId = mp ? mp.mealPeriodId : null;
+    return set.dishCyclePeriods.find((d) => d.mealPeriodId === mpId) &&
       set.displayMenus[0] &&
       this.formatDate(set.startDate) <= this.order.deliveryDate &&
       this.formatDate(set.endDate) >= this.order.deliveryDate &&
@@ -327,8 +468,11 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   }
 
   getSessions() {
-    this.menuService.getStudentSessionsByFilter(this.order.profileId, this.order.deliveryDate)
+    this.sessions = [];
+    this.combined = [];
+    this.subscription.add(this.menuService.getStudentSessionsByFilter(this.order.profileId, this.order.deliveryDate)
       .subscribe(results => {
+        this.order.mealSessionDetailId = '';
         this.sessions = results;
         console.log("sessions: ", this.sessions)
       },
@@ -337,16 +481,95 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
           //  MessageSeverity.error);
-        })
+        }))
   }
 
+  // new implementations
+  onChangeSession() {
+    this.getAllDishCyclesByDate();
+  }
+
+  getAllDishCyclesByDate() {
+    if (!this.order.mealSessionDetailId || !this.order.deliveryDate) return;
+
+    try {
+      this.alertService.startLoadingMessage("Loading meals...");
+      this.subscription.add(this.dishService.getDishCyclesByStudent(this.order.profileId, this.order.deliveryDate, this.order.mealSessionDetailId)
+        .subscribe(results => {
+          this.availableDishCycles = results;
+          this.blockedDates = [];
+          this.outletBlockedDates = [];
+
+          //this.getActiveDishCycles();
+          console.log('availableDishCycles', this.availableDishCycles);
+          for (let dc of this.availableDishCycles) {
+            this.updateDishCycleSet(dc);
+
+            let set = new Set(); 
+            for (let date of dc.blockedDates) {
+              set.add(date.effectiveDate);
+            }
+            this.blockedDates = [...new Set([...this.blockedDates, ...set])].sort();
+          }
+
+          //this.updateCombined();
+          let filteredBlockedDates = this.blockedDates.filter(e => {
+            let delDate = new Date(this.order.deliveryDate);
+            let d = new Date(e);
+            d.setHours(0, 0, 0, 0);
+            delDate.setHours(0, 0, 0, 0);
+            return d.getTime() === delDate.getTime();
+          });
+
+          if (!filteredBlockedDates || filteredBlockedDates.length == 0)
+            this.updateDate(this.order.deliveryDate, true);
+
+          this.alertService.stopLoadingMessage();
+        },
+          error => {
+            this.alertService.stopLoadingMessage();
+          }))
+    } catch (ex) {
+      console.log(ex);
+      this.alertService.stopLoadingMessage();
+    }
+  }
+
+
+  // end new implementations
   getMenuGroupActiveDishCycles(studentId) {
     return this.menuService.getMenuGroupActiveDishCycles(studentId);
   }
 
-  getDishCycles() {
+  getAllDishCycles() {
     try {
       this.alertService.startLoadingMessage("Loading meals...");
+      let filter = new Filter();
+      let f = this.order.outletId ? '(InOutletId)==' + this.order.outletId + ',' : '';
+      filter.filters = f + '(IsActive)==true';
+      
+
+      this.subscription.add(this.dishService.getDishCyclesByFilter(filter)
+        .subscribe(results => {
+          this.returnDishCycles = results.pagedData;
+
+          //this.getActiveDishCycles();
+          console.log('returnDishCycles', this.returnDishCycles);
+
+          this.alertService.stopLoadingMessage();
+        },
+          error => {
+            this.alertService.stopLoadingMessage();
+          }))
+    } catch (ex) {
+      console.log(ex);
+      this.alertService.stopLoadingMessage();
+    }
+  }
+
+  getActiveDishCycles() {
+    try {
+      //this.alertService.startLoadingMessage("Loading meals...");
       this.subscription.add(this.getMenuGroupActiveDishCycles(this.order.profileId)
         .subscribe(results => {
           let menuGroups = results;
@@ -386,7 +609,8 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
             //updateIfStaff();
           }
 
-          this.updateDate(new Date(), true);
+          //this.updateDate(this.order.deliveryDate, true);
+          this.updateCombined();
 
           //console.log('STUDENT', student);
           console.log('dishStudentCycleswithmenu', this.allDishCycles);
@@ -420,6 +644,19 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   }
 
   updateDate(date, noRefreshOrder) {
+    console.log('update date', date);
+    if (typeof date.getMonth !== 'function') date = new Date(date);
+
+    for (let dc of this.availableDishCycles) {
+      this.updateMenu(date, dc);
+    }
+
+    if (noRefreshOrder) this.selectedDish = null;
+
+    this.updateCombined();
+  }
+
+  updateDate2(date, noRefreshOrder) {
     console.log('update date', date);
     if (typeof date.getMonth !== 'function') date = new Date(date);
 

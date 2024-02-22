@@ -28,6 +28,10 @@ using System.DirectoryServices.AccountManagement;
 using FRS.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using FRS.Pages;
+using BAL.Services.Interfaces.MealOrder;
+using DAL.Models.MealOrder;
+using DAL.Core.Helpers;
+using DAL.Core.Interfaces;
 
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -47,6 +51,8 @@ namespace FRS.Controllers
         private readonly IEmailSender _emailSender;
         private readonly EmailController _emailController;
         private readonly IAuditLogService _auditLogService;
+        private readonly IStudentService _studentService;
+        private readonly IAccountManager _accountManager;
 
         public AuthorizationController(
             IOptions<IdentityOptions> identityOptions,
@@ -58,7 +64,9 @@ namespace FRS.Controllers
             IConfiguration configuration,
             IEmailSender emailSender,
             EmailController emailController,
-            IAuditLogService auditLogService)
+            IAuditLogService auditLogService,
+            IStudentService studentService,
+            IAccountManager accountManager)
         {
             _identityOptions = identityOptions;
             _signInManager = signInManager;
@@ -70,6 +78,8 @@ namespace FRS.Controllers
             _emailSender = emailSender;
             _emailController = emailController;
             _auditLogService = auditLogService;
+            _studentService = studentService;
+            _accountManager = accountManager;
         }
 
         [HttpPost("~/updatefirstlogin")]
@@ -426,6 +436,32 @@ namespace FRS.Controllers
             }
         }
 
+        [HttpPost("~/login/multi-fa/resend")]
+        [Produces("application/json")]
+        public async Task<IActionResult> Resend2FACode(string userId)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                    throw new Exception("User not found.");
+
+                Random generator = new Random();
+                string code = generator.Next(0, 1000000).ToString("D6");
+
+                user.ConfirmationCode = code;
+                await _userManager.UpdateAsync(user);
+
+                var response = await _emailSender.SendEmailAsync("Web Admin Portal", "smv.notification@gmail.com", user.FullName, user.Email, "Web Admin Portal Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+
+                return Ok(new { sent = response.success, errorMsg = response.errorMsg });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [AllowAnonymous]
         public async Task<ActionResult> MultiFactorLogin(int userId)
         {
@@ -582,6 +618,68 @@ namespace FRS.Controllers
         public IActionResult ResetPasswordConfirmation()
         {
             return View();
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> StudentLinkAccount(int studentId, int? userId, string email)
+        {
+            if (!userId.HasValue && string.IsNullOrEmpty(email))
+                return View("Error");
+
+            if (userId.HasValue)
+            {
+                var resp = await _studentService.AddStudentLinksByUserAsync(userId.Value, studentId);
+                if (resp.IsSuccess)
+                {
+                    //existing tappee user
+                    var url = _configuration["AppSettings:TAPPEE_URL"];
+                    ViewBag.TappeeUrl = url ?? "/";
+                    return View("StudentLinkAccountConfirmation");
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = resp.Message;
+                    return View("Error");
+                }
+            }
+            else
+            {
+                var model = new StudentLinkAccountModel { Email = email, StudentId = studentId };
+                return View("StudentLinkAccount", model);
+            }
+
+            
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> StudentLinkAccount(StudentLinkAccountModel model)
+        {
+            if (!ModelState.IsValid)
+                return View("StudentLinkAccount", model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                ViewBag.ErrorMessage = "Email already exist.";
+                return View("Error");
+            }
+
+            user = new ApplicationUser();
+            user.IsEnabled = true;
+            user.EmailConfirmed = true;
+            user.UserName = model.Email;
+            user.Email = model.Email;
+            user.IsActive = true;
+            var createUserResult = await _accountManager.CreateUserWithPasswordAsync(user, new List<string>(), model.Password);
+
+            if (createUserResult.Item1)
+            {
+                return RedirectToAction(nameof(StudentLinkAccount), new { studentId = model.StudentId, userId = user.Id, email = model.Email });
+            }
+
+            ViewBag.ErrorMessage = "An error occurred during account creation. Please contact the system administrator.";
+            return View("Error");
         }
 
         public IActionResult SignInWithGoogle(string institutionCode)

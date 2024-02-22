@@ -18,7 +18,7 @@ import { AppTranslationService } from 'src/app/services/app-translation.service'
 import { AccountService } from 'src/app/services/account.service';
 import { StudentGroup } from 'src/app/models/meal-order/student-group.model';
 import { takeUntil, switchMap } from 'rxjs/operators';
-
+import { PaymentTypes } from 'src/app/models/enums';
 @Component({
   selector: 'individual-order-summary',
   templateUrl: './individual-orders-summary.component.html',
@@ -27,6 +27,7 @@ import { takeUntil, switchMap } from 'rxjs/operators';
 export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
   private cancelPreviousRequests = new Subject<void>();
+  paymentTypes: any[] = [PaymentTypes.Adhoc, PaymentTypes.Fas];
   columns: any[] = [];
   rows: ClassBatch[] = [];
   rowsCache: ClassBatch[] = [];
@@ -49,6 +50,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
   dishTypeId: string;
   mealSessionDetailId: string;
   mealSessionId: string;
+  paymentType: string = PaymentTypes.Adhoc;
   isClear: boolean;
   title: string;
   group: StudentGroup;
@@ -168,7 +170,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
   getStudentGroupOrderSummary(d: Date, dTo: Date) {
     if (this.outletId && this.storeId) {
       this.isShowSummary = true;
-      this.menuService.getStudentGroupOrderSummary(this.group.id, this.outletId, this.storeId, d.toDateString(), dTo.toDateString(), this.mealSessionId)
+      this.menuService.getStudentGroupOrderSummary(this.group.id, this.outletId, this.storeId, d.toDateString(), dTo.toDateString(), this.mealSessionId, this.paymentType)
         .subscribe(results => {
           this.isShowSummary = false;
           this.columns = [];
@@ -265,7 +267,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
     this.isSaving = true;
     this.isClear = clear;
     //this.alertService.startLoadingMessage("Processing orders...");
-    this.menuService.bulkStudentGroupOrder(this.group.id, this.outletId, this.storeId, this.delvdate.toDateString(), this.delvdateTo.toDateString(), this.dishTypeId, this.mealSessionId, this.accountService.currentUser.id, clear)
+    this.menuService.bulkStudentGroupOrder(this.group.id, this.outletId, this.storeId, this.delvdate.toDateString(), this.delvdateTo.toDateString(), this.dishTypeId, this.mealSessionId, this.accountService.currentUser.id, clear, this.paymentType)
       .subscribe(response => {
         if (response.isSuccess) {
           this.alertService.showMessage("Success", `Dishes are assigned to the group.`, MessageSeverity.success);

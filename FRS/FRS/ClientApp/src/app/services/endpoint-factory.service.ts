@@ -14,6 +14,7 @@ export class EndpointFactory {
 
   private readonly _loginUrl: string = "/connect/token";
   private readonly _login2FAUrl: string = "/login/multi-fa";
+  private readonly _resend2FAUrl: string = "/login/multi-fa/resend";
   private readonly _forgotPasswordUrl: string = "/api/account/forgotpassword";
   private readonly _resetPasswordUrl: string = "/api/account/resetpassword";
 
@@ -21,7 +22,8 @@ export class EndpointFactory {
   private get forgotPasswordUrl() { return this.configurations.baseUrl + this._forgotPasswordUrl; }
   private get resetPasswordUrl() { return this.configurations.baseUrl + this._resetPasswordUrl; }
   private get login2FAUrl() { return this.configurations.baseUrl + this._login2FAUrl; }
-
+  private get resend2FAUrl() { return this.configurations.baseUrl + this._resend2FAUrl; }
+  
   private taskPauser: Subject<any>;
   private isRefreshingLogin: boolean;
 
@@ -87,6 +89,19 @@ export class EndpointFactory {
 
     return this.http.post<T>(this.login2FAUrl, requestBody, { headers: header });
   }
+
+  getResendCode2FAEndpoint<T>(userId: string): Observable<T> {
+
+    let header = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
+
+    let params = new HttpParams()
+      .append('userId', userId);
+
+    let requestBody = params.toString();
+
+    return this.http.post<T>(this.resend2FAUrl, requestBody, { headers: header });
+  }
+
   getRefreshLoginEndpoint<T>(): Observable<T> {
 
     let header = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' });

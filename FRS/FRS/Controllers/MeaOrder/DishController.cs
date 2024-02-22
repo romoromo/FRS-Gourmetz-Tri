@@ -475,6 +475,14 @@ namespace FRS.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpGet("dishcycles/student/{id}")]
+        [ProducesResponseType(200, Type = typeof(List<DishCycleDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetDishCyclesByStudentId(int id, DateTime orderDate, int mealSessionId)
+        {
+            var results = await this._service.GetOutletDishCyclesAsync(id, orderDate, mealSessionId);
+            return Ok(results);
+        }
         #endregion
 
         #region Dish Cycle Calendars

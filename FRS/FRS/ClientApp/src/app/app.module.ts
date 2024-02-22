@@ -489,6 +489,8 @@ import { StudentOrderDetailComponent } from './components/meal-order-system/stud
 import { DefaultPipe } from './pipes/default-string-val.pipe';
 import { StudentOrderEditorComponent } from './components/meal-order-system/student/student-order/student-order-editor.component';
 import { OrderCollectionLogsManagementComponent } from './components/meal-order-system/student-group/order-log/order-logs-management.component';
+import { OrderByPipe } from './pipes/order-by.pipe';
+import { PaymentsReportManagementComponent } from './components/reports/payment/payments-management.component';
  
  
 
@@ -581,6 +583,7 @@ export const configFactory = (configService: ConfigurationService) => {
     BootstrapDatepickerDirective,
     SignageComponentTypeDirective,
     GroupByPipe,
+    OrderByPipe,
     DateTimeOnlyPipe, DateOnlyPipe,
     FacilitiesManagementComponent, FacilityEditorComponent,
     FacilityTypesManagementComponent, FacilityTypeEditorComponent,
@@ -717,7 +720,8 @@ export const configFactory = (configService: ConfigurationService) => {
     StudentOrderManagementComponent, StatusDropdownComponent, StudentOrderDetailComponent,
     StudentEditorComponent, StudentOrderEditorComponent,
     DefaultPipe,
-    OrderCollectionLogsManagementComponent
+    OrderCollectionLogsManagementComponent,
+    PaymentsReportManagementComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },
@@ -895,7 +899,8 @@ export const configFactory = (configService: ConfigurationService) => {
     OutletTermsManagementComponent, OutletTermEditorComponent,
     StudentOrderManagementComponent, StatusDropdownComponent, StudentOrderDetailComponent,
     StudentEditorComponent, StudentOrderEditorComponent,
-    OrderCollectionLogsManagementComponent
+    OrderCollectionLogsManagementComponent,
+    PaymentsReportManagementComponent
   ],
 })
 export class AppModule {

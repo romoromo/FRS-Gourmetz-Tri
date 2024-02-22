@@ -16,6 +16,8 @@ import { saveAs } from 'file-saver';
 import * as moment from 'moment';
 import { TokenOrder } from 'src/app/models/meal-order/token-order.model';
 import { StudentService } from 'src/app/services/meal-order/student.service';
+import { PaymentTypes } from '../../../models/enums';
+import { FormControl } from '@angular/forms';
 
 
 @Component({
@@ -25,8 +27,8 @@ import { StudentService } from 'src/app/services/meal-order/student.service';
 })
 export class OrderLogsManagementComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
-  statuses = ['All', 'pending', 'paid', 'cancelled', 'deleted'];
-  ordertypes = ['All', 'Adhoc', 'Meal Plan'];
+  statuses = ['All', 'pending', 'paid', 'cancelled'];
+  ordertypes = ['All', PaymentTypes.Adhoc, PaymentTypes.Fas, PaymentTypes.MealPlan];
   columns: any[] = [];
   rows: TokenOrder[] = [];
   rowsCache: TokenOrder[] = [];
@@ -44,6 +46,16 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
 
   tstart = new Date();
   tend = new Date();
+  studentGroupIds = new FormControl();
+
+  public currentPageLimit: number = 10;
+  public pageLimitOptions = [
+    { value: 5 },
+    { value: 10 },
+    { value: 25 },
+    { value: 50 },
+    { value: 100 },
+  ];
 
   @ViewChild('searchbox') searchbox: SearchBoxComponent;
 
@@ -74,6 +86,11 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.sorts = '-invoiceNumber';
     this.filter.filters = '';
     this.filter.page = 1;
+    this.filter.studentGroupIds = [];
+    this.filter.collectionStatuses = [];
+    this.isFAS = false;
+    this.status = 'paid';
+    this.ordertype = '';
   }
 
   initializePagedResult() {
@@ -117,6 +134,21 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.table.offset = 0;
   }
 
+  public onLimitChange(limit: any): void {
+    this.changePageLimit(limit);
+    this.table.limit = this.currentPageLimit;
+    this.table.recalculate();
+    setTimeout(() => {
+      if (this.table.bodyComponent.temp.length <= 0) {
+        this.table.offset = Math.floor((this.table.rowCount - 1) / this.table.limit);
+      }
+    });
+  }
+
+  private changePageLimit(limit: any): void {
+    this.currentPageLimit = parseInt(limit, 10);
+  }
+
   ngOnInit() {
     this.getStudentGroups();
     this.initializeFilter();
@@ -129,7 +161,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
     this.loadingIndicator = true;
-    this.filter.pageSize = 10;
+    this.filter.pageSize = this.currentPageLimit;
 
     if (ev) {
       this.filter.page = ev.offset + 1;
@@ -199,6 +231,10 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     //this.loadData();
 
     //this.loadData();
+  }
+
+  isSelected(id: any): boolean {
+    return this.filter.studentGroupIds.includes(id);
   }
 
   onSearchChanged(value: string) {

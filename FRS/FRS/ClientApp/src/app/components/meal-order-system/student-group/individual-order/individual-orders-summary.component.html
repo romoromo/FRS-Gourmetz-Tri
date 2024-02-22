@@ -37,6 +37,14 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-form-field class="col-md-3 col-sm-6 col-xs-12">
+      <mat-label>Type</mat-label>
+      <mat-select id="paymentType" name="paymentType" [(ngModel)]="paymentType" paymentType="ngModel" required>
+        <mat-option *ngFor="let paymentType of paymentTypes" [value]="paymentType">
+          {{paymentType}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
   <div class="row control-box" style="padding-left:20px">
     <button *ngIf="canManageStudentGroupOrders" type="button" mat-stroked-button color="primary" [disabled]="isSaving" (click)="save()">

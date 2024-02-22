@@ -138,6 +138,7 @@ export type PermissionValues =
 
   "mosmgt.outletmgt.reports.view" |
   "mosmgt.outletmgt.reports.ordercollection.view" |
+  "mosmgt.outletmgt.reports.orderpayment.view" |
   "mosmgt.outletmgt.mealsummary.manage" |
 
   "mosmgt.outletmgt.students.import.view" |
@@ -345,6 +346,7 @@ export class Permission {
   //Reports
   public static readonly viewMOSOutletMgtReportsPermission: PermissionValues = "mosmgt.outletmgt.reports.view";
   public static readonly viewMOSOutletMgtReportsOrderCollectionPermission: PermissionValues = "mosmgt.outletmgt.reports.ordercollection.view";
+  public static readonly viewMOSOutletMgtReportsOrderPaymentPermission: PermissionValues = "mosmgt.outletmgt.reports.orderpayment.view";
 
   //Meal Summary
   public static readonly manageMOSOutletMgtMealSummaryPermission: PermissionValues = "mosmgt.outletmgt.mealsummary.manage";

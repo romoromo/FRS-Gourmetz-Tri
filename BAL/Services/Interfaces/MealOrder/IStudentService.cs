@@ -59,5 +59,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<string> GenerateCode(int id);
         Task<List<GroupedTermStudentGroupDTO>> GetStudentMealPlanAsync(DateTime? orderDate);
         Task<byte[]> GenerateStudentReportForImportXls(BaseFilter filter);
+
+        Task<BaseOperationResponse> AddStudentLinksByUserAsync(int userId, int studentId);
     }
 }

@@ -26,6 +26,7 @@ using System.Configuration;
 using BAL.Services.Interfaces;
 using BAL.DTO;
 using DAL.Core.Helpers;
+using BAL.Services.Interfaces.MealOrder;
 
 namespace FRS.Controllers
 {
@@ -45,11 +46,12 @@ namespace FRS.Controllers
         private IHubContext<UserHub> _userHub;
         private IWalletService _walletService;
         private IRewardService _rewardService;
+        private readonly IStudentService _studentService;
 
         public AccountController(IAccountManager accountManager, IAuthorizationService authorizationService, IUnitOfWork unitOfWork,
             ApplicationUserManager userManager, IEmailSender emailSender, IConfiguration configuration,
             SignInManager<ApplicationUser> signInManager, IWalletService walletService, IRewardService rewardService,
-            IHubContext<UserHub> userHub)
+            IHubContext<UserHub> userHub, IStudentService studentService)
         {
             _accountManager = accountManager;
             _authorizationService = authorizationService;
@@ -61,6 +63,7 @@ namespace FRS.Controllers
             _userHub = userHub;
             _walletService = walletService;
             _rewardService = rewardService;
+            _studentService = studentService;
         }
 
         #region Sieved
@@ -1179,6 +1182,59 @@ namespace FRS.Controllers
                 }
 
                 result.Message = "Please check the link sent to your email to reset your password";
+                result.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = "An error occurred: " + ex.Message;
+            }
+
+            return Ok(result);
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet("users/{id}/student-link-invite")]
+        [AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        public async Task<IActionResult> UserStudentLinkInvite(int id, string email)
+        {
+            var result = new BaseOperationResponse();
+            try
+            {
+                var dto = await this._studentService.GetStudentByIdAsync(id);
+                if (dto == null)
+                {
+                    throw new Exception("Student Id not found.");
+                }
+
+                string baseUrl = _configuration["AppSettings:ONBOARDING_BASE_URL"];
+                var imgUrl = _configuration["AppSettings:ORDER_PORTAL_ONBOARDING_IMG_URL"];
+
+
+                var user = await _userManager.FindByNameAsync(email) ?? await _userManager.FindByEmailAsync(email);
+                if (user != null && user.IsActive)
+                {
+                    // check if email is a student
+                    var student = _studentService.GetStudentsByUserAsync(user.Id);
+                    if(student != null)
+                    {
+                        throw new Exception("Cannot link one student account to another.");
+                    }
+
+                    var callbackUrl = Url.Action("StudentLinkAccount", "Authorization", new { studentId = id, userId = user.Id }, protocol: HttpContext.Request.Scheme, host: baseUrl);
+                    await _emailSender.SendEmailAsync(user.FullName, user.Email, "Tappee Invite to link Student Account",
+                        EmailTemplates.GetLinkStudentAccountForExistingUserEmail(user.Email, dto.Name, callbackUrl, imgUrl));
+                }
+                else
+                {
+                    // a new user
+                    var callbackUrl = Url.Action("StudentLinkAccount", "Authorization", new { studentId = id, email = email }, protocol: HttpContext.Request.Scheme, host: baseUrl);
+                    await _emailSender.SendEmailAsync(email, email, "Tappee Invite to link Student Account",
+                        EmailTemplates.GetLinkStudentAccountForNewUserEmail(email, dto.Name, callbackUrl, imgUrl));
+                }
+
+                result.Message = "Email invite has been sent!";
                 result.IsSuccess = true;
             }
             catch (Exception ex)

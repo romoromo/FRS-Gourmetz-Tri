@@ -25,7 +25,7 @@ import { OrderService } from 'src/app/services/meal-order/order.service';
 })
 export class OrderCancellationsManagementComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
-  statuses = ['All', 'pending', 'paid', 'cancelled', 'deleted'];
+  statuses = ['All', 'pending', 'paid', 'cancelled'];
   columns: any[] = [];
   rows: TokenOrder[] = [];
   rowsCache: TokenOrder[] = [];

@@ -363,6 +363,11 @@ export class MenuService {
     return this.commonEndpoint.getDeleteEndpoint<MenuGroup>(this.menuGroupUrl, <string>menuGroupOrMenuGroupId);
   }
 
+  getMenuGroupDishCyclesByOutletId(outletId: string) {
+
+    return this.commonEndpoint.get<any>(`${this.menuGroupUrl}/dishcycles/sieve/list?sorts=label&filters=(IsActive)==true,(InOutletId)==${outletId}`);
+  }
+
   getMenuGroupActiveDishCycles(studentId: string) {
 
     return this.commonEndpoint.get<any>(this.menuGroupUrl + '/activedishcycles?studentId=' + studentId);
@@ -377,11 +382,11 @@ export class MenuService {
   }
 
   // individual order
-  bulkStudentGroupOrder(studentGroupId: string, outletId: string, storeId: string, deliveryDate: string, deliveryDateTo: string, dishTypeId: string, mealSessionId: string, createdBy: string, isClearOrder: boolean) {
-    return this.commonEndpoint.get<any>(`${this.tokenOrderUrl}/studentgroup/order?studentGroupId=${studentGroupId}&outletId=${outletId}&storeId=${storeId}&deliveryDate=${deliveryDate}&deliveryDateTo=${deliveryDateTo}&dishTypeId=${dishTypeId}&mealSessionId=${mealSessionId}&createdBy=${createdBy}&clear=${isClearOrder}`);
+  bulkStudentGroupOrder(studentGroupId: string, outletId: string, storeId: string, deliveryDate: string, deliveryDateTo: string, dishTypeId: string, mealSessionId: string, createdBy: string, isClearOrder: boolean, type: string) {
+    return this.commonEndpoint.get<any>(`${this.tokenOrderUrl}/studentgroup/order?studentGroupId=${studentGroupId}&outletId=${outletId}&storeId=${storeId}&deliveryDate=${deliveryDate}&deliveryDateTo=${deliveryDateTo}&dishTypeId=${dishTypeId}&mealSessionId=${mealSessionId}&createdBy=${createdBy}&clear=${isClearOrder}&type=${type}`);
   }
 
-  getStudentGroupOrderSummary(studentGroupId: string, outletId: string, storeId: string, deliveryDate: string, deliveryDateTo: string, mealSessionId: string) {
-    return this.commonEndpoint.get<any>(`${this.tokenOrderUrl}/studentgroup/ordersummary?studentGroupId=${studentGroupId}&outletId=${outletId}&storeId=${storeId}&deliveryDate=${deliveryDate}&deliveryDateTo=${deliveryDateTo}&mealSessionId=${mealSessionId}`);
+  getStudentGroupOrderSummary(studentGroupId: string, outletId: string, storeId: string, deliveryDate: string, deliveryDateTo: string, mealSessionId: string, type: string) {
+    return this.commonEndpoint.get<any>(`${this.tokenOrderUrl}/studentgroup/ordersummary?studentGroupId=${studentGroupId}&outletId=${outletId}&storeId=${storeId}&deliveryDate=${deliveryDate}&deliveryDateTo=${deliveryDateTo}&mealSessionId=${mealSessionId}&type=${type}`);
   }
 }

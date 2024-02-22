@@ -83,6 +83,7 @@ export class DishesManagementComponent implements OnInit {
     this.columns = [
       { prop: 'code', name: 'Code' },
       { prop: 'label', name: 'Label' },
+      { prop: 'productionDescription', name: 'Production Description' },
       { prop: 'dishTypeName', name: 'Type' },
       { prop: 'cuisineName', name: 'Cuisine' },
       { prop: 'bentoBoxTypeCode', name: 'Bento Box' },

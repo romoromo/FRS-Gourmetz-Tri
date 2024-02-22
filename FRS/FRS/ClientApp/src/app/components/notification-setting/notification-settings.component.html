@@ -9,7 +9,7 @@
   </div>
 </div>
 <div class="form-horizontal" *ngFor="let setting of notificationSettings">
-  <h4>{{(setting.type == 'NO_ORDER' ? 'Students With No Orders' : setting.type == 'ABANDONED_CART_1' ? 'Abandoned Cart 4 Hours Abandoned' : 'Abandoned Cart 4 Days Before Cut-Off')}}</h4>
+  <h4>{{(setting.type == 'NO_ORDER' ? 'Students With No Orders' : setting.type == 'ABANDONED_CART_1' ? 'Abandoned Cart Reminder 1 - 4 Hours After Leaving Cart' : 'Abandoned Cart Reminder 2 - 4 Days Before Cut-Off')}}</h4>
 
 
   <div class="form-group row">

@@ -371,7 +371,7 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close(true);
   }
 
   resetForm(replace = false) {

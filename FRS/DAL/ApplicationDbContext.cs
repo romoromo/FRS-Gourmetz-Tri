@@ -766,7 +766,7 @@ namespace DAL
                     }
 
                     entity.UpdatedDate = now;
-                    if (!entity.UpdatedBy.HasValue)
+                    if (!entity.UpdatedBy.HasValue || entity.UpdatedBy.Value != CurrentUserId)
                     {
                         if (CurrentUserId > 0) entity.UpdatedBy = CurrentUserId;
                         else

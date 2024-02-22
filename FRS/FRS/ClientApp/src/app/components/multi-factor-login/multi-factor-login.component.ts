@@ -21,6 +21,7 @@ export class MultiFactorLoginComponent implements OnInit, OnDestroy {
 
   userLogin = new UserLogin2FA();
   isLoading = false;
+  isResending = false;
   formResetToggle = true;
   modalClosedCallback: () => void;
   loginStatusSubscription: any;
@@ -110,6 +111,37 @@ export class MultiFactorLoginComponent implements OnInit, OnDestroy {
         });
   }
 
+  resend() {
+    this.alertService.resetStickyMessage();
+    this.alertService.resetToastMessage();
+    this.isResending = true;
+    this.alertService.startLoadingMessage("", "Resending confirmation code...");
+
+    this.authService.getResendCode2FA(this.authService.currentUser.id)
+      .subscribe(
+        user => {
+          setTimeout(() => {
+            this.alertService.stopLoadingMessage();
+            this.isResending = false;
+            this.alertService.showMessage("Resend", "Code is sent.", MessageSeverity.success);
+          }, 500);
+        },
+        error => {
+
+          this.alertService.stopLoadingMessage();
+
+          if (Utilities.checkNoNetwork(error)) {
+            this.alertService.showStickyMessage(Utilities.noNetworkMessageCaption, Utilities.noNetworkMessageDetail, MessageSeverity.error);
+          }
+          else {
+            this.alertService.showStickyMessage("Unable to resend code", "An error occured while sending, please try again later.\nError: " + Utilities.getResponseBody(error), MessageSeverity.error);
+          }
+
+          setTimeout(() => {
+            this.isResending = false;
+          }, 500);
+        });
+  }
 
   reset() {
     this.formResetToggle = false;

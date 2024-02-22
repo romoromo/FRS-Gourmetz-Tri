@@ -140,7 +140,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.alertService.startLoadingMessage("", "Attempting login...");
 
-    this.authService.login(this.userLogin.email, this.userLogin.password, this.userLogin.institutionCode, this.userLogin.rememberMe, this.userLogin.isAD)
+    this.authService.login(this.userLogin.email, this.userLogin.password, this.userLogin.institutionCode, this.userLogin.rememberMe, this.userLogin.isAD, this.authService.isEnableMFA)
       .subscribe(
         user => {
           // redirect to 2FA page

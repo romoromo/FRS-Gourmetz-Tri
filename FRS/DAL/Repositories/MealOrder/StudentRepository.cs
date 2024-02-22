@@ -90,6 +90,48 @@ namespace DAL.Repositories.MealOrder
             return students;
         }
 
+        public async Task<BaseOperationResponse> AddStudentLinksByUserAsync(int userId, int studentId)
+        {
+            var result = new BaseOperationResponse();
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                            new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+                            TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var user = _appContext.Users.FirstOrDefault(u => u.Id == userId && u.IsActive);
+
+                if (user != null)
+                {
+                    var student = _appContext.Students.FirstOrDefault(u => u.Id == studentId && u.IsActive);
+
+                    if (student == null)
+                    {
+                        result.Message = "Failed to save! Student does not exist.";
+                        return result;
+                    }
+
+                    if (user.Students == null || !user.Students.Any(e => e.StudentId == studentId))
+                    {
+                        await _appContext.StudentManageAccounts.AddAsync(new StudentManageAccount { StudentId = studentId, UserId = user.Id });
+                        await _appContext.SaveChangesAsync();
+
+                        result.Message = "Successfully saved!";
+                        result.IsSuccess = true;
+                        scope.Complete();
+                    }
+                    else
+                    {
+                        result.Message = "Failed to save! Email already linked to this student.";
+                    }
+                }
+                else
+                {
+                    result.Message = "Failed to save! User does not exist.";
+                }
+            }
+
+            return result;
+        }
+
         public async Task<List<Student>> GetStudentsWithNoOrder(DateTime from, DateTime to)
         {
             var now = DateTime.Now;

@@ -25,7 +25,7 @@ import { StudentService } from 'src/app/services/meal-order/student.service';
 })
 export class BentoUsageManagementComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
-  statuses = ['All', 'pending', 'paid', 'cancelled', 'deleted'];
+  statuses = ['All', 'pending', 'paid', 'cancelled'];
   ordertypes = ['All', 'Adhoc', 'Meal Plan'];
   columns: any[] = [];
   rows: TokenOrder[] = [];

@@ -25,3 +25,7 @@ export interface IdToken {
 export interface Login2FAResponse {
   validated: boolean;
 }
+
+export interface Resend2FAResponse {
+  sent: boolean;
+}

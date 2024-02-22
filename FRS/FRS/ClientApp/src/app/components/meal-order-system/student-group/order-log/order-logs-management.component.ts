@@ -17,6 +17,7 @@ import { Utilities } from 'src/app/services/utilities';
 import { Permission } from 'src/app/models/permission.model';
 import { SalesOrderReportType } from 'src/app/models/enums';
 import { StudentService } from 'src/app/services/meal-order/student.service';
+import { FormControl } from '@angular/forms';
 
 
 @Component({
@@ -26,7 +27,8 @@ import { StudentService } from 'src/app/services/meal-order/student.service';
 })
 export class OrderCollectionLogsManagementComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
-  statuses = ['All', 'pending', 'paid', 'cancelled', 'deleted'];
+  statuses = ['All', 'pending', 'paid', 'cancelled'];
+  collectionstatuses = ['Collected', 'Not Collected'];
   columns: any[] = [];
   rows: TokenOrder[] = [];
   rowsCache: TokenOrder[] = [];
@@ -43,6 +45,18 @@ export class OrderCollectionLogsManagementComponent implements OnInit, OnDestroy
 
   tstart = new Date();
   tend = new Date();
+
+  studentGroupIds = new FormControl();
+  collectionStatuses = new FormControl();
+
+  public currentPageLimit: number = 10;
+  public pageLimitOptions = [
+    { value: 5 },
+    { value: 10 },
+    { value: 25 },
+    { value: 50 },
+    { value: 100 },
+  ];
 
   @ViewChild('searchbox') searchbox: SearchBoxComponent;
 
@@ -73,6 +87,8 @@ export class OrderCollectionLogsManagementComponent implements OnInit, OnDestroy
     this.filter.sorts = '-invoiceNumber';
     this.filter.filters = '';
     this.filter.page = 1;
+    this.filter.studentGroupIds = [];
+    this.filter.collectionStatuses = [];
   }
 
   initializePagedResult() {
@@ -124,6 +140,21 @@ export class OrderCollectionLogsManagementComponent implements OnInit, OnDestroy
     this.table.offset = 0;
   }
 
+  public onLimitChange(limit: any): void {
+    this.changePageLimit(limit);
+    this.table.limit = this.currentPageLimit;
+    this.table.recalculate();
+    setTimeout(() => {
+      if (this.table.bodyComponent.temp.length <= 0) {
+        this.table.offset = Math.floor((this.table.rowCount - 1) / this.table.limit);
+      }
+    });
+  }
+
+  private changePageLimit(limit: any): void {
+    this.currentPageLimit = parseInt(limit, 10);
+  }
+
   ngOnInit() {
 
     this.getStudentGroups();
@@ -137,7 +168,7 @@ export class OrderCollectionLogsManagementComponent implements OnInit, OnDestroy
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
     this.loadingIndicator = true;
-    this.filter.pageSize = 10;
+    this.filter.pageSize = this.currentPageLimit;
 
     if (ev) {
       this.filter.page = ev.offset + 1;

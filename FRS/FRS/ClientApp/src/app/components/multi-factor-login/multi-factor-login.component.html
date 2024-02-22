@@ -14,7 +14,7 @@
                     <div class="form-group has-feedback">
                       <label class="control-label col-md-4" for="login-code">Code:</label>
                       <div class="col-md-8" [ngClass]="{'has-success': f.submitted && code.valid, 'has-error' : f.submitted && !code.valid}">
-                        <input type="text" id="login-code" name="code" placeholder="Two-Factor Authentication" autocomplete="off" class="form-control" [(ngModel)]="userLogin.code" #code="ngModel" required />
+                        <input type="text" id="login-code" name="code" placeholder="Enter Code" autocomplete="off" class="form-control" [(ngModel)]="userLogin.code" #code="ngModel" required />
                         <span *ngIf="f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': code.valid, 'glyphicon-remove' : !code.valid}" aria-hidden="true"></span>
                         <span class="errorMessage" *ngIf="f.submitted && !code.valid">
                           Please enter the code
@@ -24,6 +24,7 @@
                     <div class="form-group">
                       <div class="col-md-offset-4 col-md-8">
                         <button type="submit" class="btn btn-primary" [disabled]="isLoading"><i *ngIf="isLoading" class='fa fa-circle-o-notch fa-spin'></i> {{isLoading ? ("Confirming...")  : "Confirm" }}</button>
+                        <button type="button" class="btn btn-primary" [disabled]="isResending" style="margin-left: 10px" (click)="resend()"><i *ngIf="isResending" class='fa fa-circle-o-notch fa-spin'></i> {{isResending ? ("Resending...")  : "Resend" }}</button>
                       </div>
                     </div>
                     <br />

@@ -1245,6 +1245,19 @@
                   "children": []
                 }
               ]
+            },
+            {
+              "name": "Order Payment Report",
+              "value": "mosmgt.outletmgt.reports.orderpayment",
+              "description": "",
+              "children": [
+                {
+                  "name": "Order Payment Report",
+                  "value": "mosmgt.outletmgt.reports.orderpayment.view",
+                  "description": "Permission to view Order Payment Report",
+                  "children": []
+                }
+              ]
             }
           ]
         }

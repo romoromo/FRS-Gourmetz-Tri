@@ -50,6 +50,7 @@ namespace DAL.Models.MealOrder
         public virtual BentoBoxType BentoBoxType { get; set; }
 
         public string SapCode { get; set; }
+        public string ProductionDescription { get; set; }
 
         public int? StoreInfoId { get; set; }
         [ForeignKey("StoreInfoId")]

@@ -65,7 +65,8 @@ namespace DAL.Filters
         public bool? IsFas { get; set; }
         public string Keyword { get; set; }
         public int ReportType { get; set; }
-        public int? StudentGroupId { get; set; }
+        public List<int> StudentGroupIds { get; set; }
+        public List<string> CollectionStatuses { get; set; }
     }
 
     //public class OrderCollectionReportFilter : BaseFilter

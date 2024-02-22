@@ -6,11 +6,13 @@ using AutoMapper;
 using BAL.DTO;
 using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
+using BAL.Services.MealOrder;
 using DAL;
 using DAL.Core;
 using DAL.Core.Interfaces;
 using DAL.Filters;
 using DAL.Models;
+using DAL.Models.MealOrder;
 using FRS.Attributes;
 using FRS.Helpers;
 using FRS.Hubs;
@@ -37,9 +39,10 @@ namespace FRS.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IStudentService _studentService;
         private readonly IConfiguration _configuration;
+        private readonly IMenuService _menuService;
 
         public NotificationController(ILogger<NotificationController> logger, INotificationService notificationService, IAccountManager accountManager, IHubContext<UserHub> userHub,
-            IEmailSender emailSender, IConfiguration configuration, IStudentService studentService)
+            IEmailSender emailSender, IConfiguration configuration, IStudentService studentService, IMenuService menuService)
         {
             _logger = logger;
             _notificationService = notificationService;
@@ -48,6 +51,7 @@ namespace FRS.Controllers
             _emailSender = emailSender;
             _studentService = studentService;
             _configuration = configuration;
+            _menuService = menuService;
         }
 
         #region Notifications
@@ -285,6 +289,11 @@ namespace FRS.Controllers
                     string title = "Forgot to order meals for next week?";
                     foreach (var student in studentsWithNoOrderNextWeek)
                     {
+                        // check if there is an active dish cycle.
+                        var activeDishCycleForStudent = await this._menuService.GetActiveMenuGroupDishCyclesAsync(student.Id);
+
+                        if (activeDishCycleForStudent == null && !activeDishCycleForStudent.Any()) continue;
+
                         template = EmailTemplates.GetNoOrderNextWeek(template, student.Name, from.ToShortDateString(), to.ToShortDateString(), today.Date.ToShortDateString());
 
                         //send email
@@ -377,6 +386,11 @@ namespace FRS.Controllers
                 var students = studentsWithAbandonedCart1.Where(e => !string.IsNullOrEmpty(e.Email));
                 foreach (var student in students)
                 {
+                    // check if there is an active dish cycle.
+                    var activeDishCycleForStudent = await this._menuService.GetActiveMenuGroupDishCyclesAsync(student.Id);
+
+                    if (activeDishCycleForStudent == null && !activeDishCycleForStudent.Any()) continue;
+
                     //send email
                     // enableNotificationEmail = _configuration["AppSettings:NOTIFICATION_EMAIL_ENABLED"];
                     if (setting1 != null && setting1.IsEmailEnabled && !string.IsNullOrEmpty(student.Email) && student.isNotifAbandonCart)
@@ -465,6 +479,11 @@ namespace FRS.Controllers
                                                         .Where(e => !string.IsNullOrEmpty(e.Email));
                 foreach (var student2 in students)
                 {
+                    // check if there is an active dish cycle.
+                    var activeDishCycleForStudent = await this._menuService.GetActiveMenuGroupDishCyclesAsync(student2.Id);
+
+                    if (activeDishCycleForStudent == null && !activeDishCycleForStudent.Any()) continue;
+
                     //send email
                     //string enableNotificationEmail = _configuration["AppSettings:NOTIFICATION_EMAIL_ENABLED"];
                     if (setting2 != null && setting2.IsEmailEnabled && !string.IsNullOrEmpty(student2.Email) && student2.isNotifAbandonCart)
@@ -534,6 +553,11 @@ namespace FRS.Controllers
 
                 foreach (var student in students)
                 {
+                    // check if there is an active dish cycle.
+                    var activeDishCycleForStudent = await this._menuService.GetActiveMenuGroupDishCyclesAsync(student.Student.Id);
+
+                    if (activeDishCycleForStudent == null && !activeDishCycleForStudent.Any()) continue;
+
                     if (setting != null && student.TokenOrders.Any())
                     {
                         string title = "Forgot to collect order meals";

@@ -538,7 +538,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetActiveMenuGroupDishCyclesAsync(int studentId)
         {
             var results = await this._service.GetActiveMenuGroupDishCyclesAsync(studentId);
-            return Ok(Mapper.Map<List<MenuGroupDTO>>(results));
+            return Ok(results);
         }
 
         [HttpGet("menugroups/dishesbydate")]

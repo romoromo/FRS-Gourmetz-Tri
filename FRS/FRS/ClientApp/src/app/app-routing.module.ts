@@ -153,6 +153,7 @@ import { OrderPortalContent } from './models/meal-order/order-portal-content.mod
 import { UserActivityLogsManagementComponent } from './components/audit/user-activity-log/user-activity-logs-management.component';
 import { OutletTermsManagementComponent } from './components/meal-order-system/outlet/outlet-term/outlet-terms-management.component';
 import { OrderCollectionLogsManagementComponent } from './components/meal-order-system/student-group/order-log/order-logs-management.component';
+import { PaymentsReportManagementComponent } from './components/reports/payment/payments-management.component';
 
  
 
@@ -316,6 +317,7 @@ const routes: Routes = [
       { path: "notificationsettings", component: NotificationSettingComponent, canActivate: [AuthGuard], data: { title: "Notification Setting" } },
       { path: "useractivityreport", component: UserActivityLogsManagementComponent, canActivate: [AuthGuard], data: { title: "User Activity Report" } },
       { path: "ordercollectionreport", component: OrderCollectionLogsManagementComponent, canActivate: [AuthGuard], data: { title: "Order Collection Report" } },
+      { path: "orderpaymentsreport", component: PaymentsReportManagementComponent, canActivate: [AuthGuard], data: { title: "Order Payments Report" } },
       { path: "outletterms", component: OutletTermsManagementComponent, canActivate: [AuthGuard], data: { title: "Terms" } },
       //{ path: "orderportalcontents", component: OrderPortalContentComponent, canActivate: [AuthGuard], data: { title: "Order Portal Content" } },
 

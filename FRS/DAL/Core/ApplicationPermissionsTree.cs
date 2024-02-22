@@ -733,7 +733,12 @@ namespace DAL.Core
 
         #region Order Collection Report
         public static ApplicationPermissionsTree MOSreportMgtOrderCollectionReportMenu = new ApplicationPermissionsTree(id++, "Order Collection Report", "mosmgt.outletmgt.reports.ordercollection", "", ViewMOSreportMgtMenu);
-        public static ApplicationPermissionsTree ViewMOSreportMgtOrderCollectionReportMenu = new ApplicationPermissionsTree(id++, "View Order Collection Report", "mosmgt.outletmgt.reports.ordercollection.view", "Permission to view User Activity Report", MOSreportMgtOrderCollectionReportMenu);
+        public static ApplicationPermissionsTree ViewMOSreportMgtOrderCollectionReportMenu = new ApplicationPermissionsTree(id++, "View Order Collection Report", "mosmgt.outletmgt.reports.ordercollection.view", "Permission to view Order Collection Report", MOSreportMgtOrderCollectionReportMenu);
+        #endregion
+
+        #region Order Payment Report
+        public static ApplicationPermissionsTree MOSreportMgtOrderPaymentReportMenu = new ApplicationPermissionsTree(id++, "Order Payment Report", "mosmgt.outletmgt.reports.orderpayment", "", ViewMOSreportMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSreportMgtOrderPaymentReportMenu = new ApplicationPermissionsTree(id++, "View Order Payment Report", "mosmgt.outletmgt.reports.orderpayment.view", "Permission to view Order Payment Report", MOSreportMgtOrderPaymentReportMenu);
         #endregion
 
         #endregion
@@ -1200,7 +1205,10 @@ namespace DAL.Core
                 ViewMOSreportMgtUserActivityReportMenu,
 
                 MOSreportMgtOrderCollectionReportMenu,
-                ViewMOSreportMgtOrderCollectionReportMenu
+                ViewMOSreportMgtOrderCollectionReportMenu,
+
+                MOSreportMgtOrderPaymentReportMenu,
+                ViewMOSreportMgtOrderPaymentReportMenu
             };
         }
 

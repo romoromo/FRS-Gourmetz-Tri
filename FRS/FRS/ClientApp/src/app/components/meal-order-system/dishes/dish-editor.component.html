@@ -83,9 +83,15 @@
             <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Is Enabled</label>
           </mat-checkbox>
         </div>
-
+        <div class="clearfix"></div>
         <div class="col-md-6 col-xs-12">
-          <mat-label><h5>Extra Notes</h5></mat-label>
+          <mat-label><h5>Production Description</h5></mat-label>
+          <mat-form-field appearance="outline" style="width: 100%">
+            <textarea matInput autocomplete="off" rows="5" [disabled]="!canManageDishes" type="text" id="productionDescription" name="productionDescription" placeholder="" [(ngModel)]="dishEdit.productionDescription" productionDescription="ngModel"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6 col-xs-12">
+          <mat-label><h5>Menu Description</h5></mat-label>
           <mat-form-field appearance="outline" style="width: 100%">
             <!--<angular-editor [(ngModel)]="dishEdit.extraNotes" [config]="config"></angular-editor>-->
             <!--<input type="text" matInput [hidden]="true"/>

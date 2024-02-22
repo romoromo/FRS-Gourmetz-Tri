@@ -33,7 +33,8 @@ export class StudentOrderManagementComponent implements OnInit, AfterViewInit, O
     { name: 'Pending', val: 'pending' },
     { name: 'Paid', val: 'paid' },
     { name: 'Cancelled', val: 'cancelled' },
-    { name: 'Deleted', val: 'deleted' }];
+    //{ name: 'Deleted', val: 'deleted' }
+  ];
 
   editing = {};
   beforeEditingRow = {};

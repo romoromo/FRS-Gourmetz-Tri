@@ -36,6 +36,34 @@ namespace FRS.Controllers
             _tokenOrderService = tokenOrderService;
         }
 
+        [HttpGet("orders/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetOrderLogs(SalesOrderReportFilter filter)
+        {
+            var logs = await _tokenOrderService.GetSalesOrdersAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
+        }
+
+        [HttpPost("orders/payment")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GeneratePaymentReport(SalesOrderReportFilter filter)
+        {
+            var xls = await _tokenOrderService.GeneratePaymentReport(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_PaymentReport.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
+
         [HttpGet("orders/cancellation")]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
