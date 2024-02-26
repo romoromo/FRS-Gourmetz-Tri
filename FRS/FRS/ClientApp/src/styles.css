@@ -4,7 +4,7 @@
 @import 'app/assets/styles/vertical-tabs.css';
 @import 'app/assets/styles/ngx-datatable.css';
 @import 'app/assets/styles/themes.css';
-
+@import 'app/assets/styles/quill.snow.css';
 
 .mat-form-field-label {
   color: black !important;

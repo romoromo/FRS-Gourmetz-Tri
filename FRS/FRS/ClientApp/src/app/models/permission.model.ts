@@ -149,7 +149,12 @@ export type PermissionValues =
   "mosmgt.outletmgt.students.manage.order" |
   "mosmgt.outletmgt.students.manage.voucher" |
   "mosmgt.outletmgt.students.manage.notification" |
-  "mosmgt.outletmgt.students.manage.calendar" 
+  "mosmgt.outletmgt.students.manage.calendar" |
+
+  "mosmgt.settingmgt.faq.subject.view" |
+  "mosmgt.settingmgt.faq.subject.manage" |
+  "mosmgt.settingmgt.faq.detail.view" |
+  "mosmgt.settingmgt.faq.detail.manage" 
 ;
 
 export class Permission {
@@ -417,6 +422,14 @@ export class Permission {
   public static readonly manageMOSOutletMgtPackingAllocationsPermission: PermissionValues = "mosmgt.outletmgt.packingallocations.manage";
 
   public static readonly viewEmailQueuesPermission: PermissionValues = "systemsetting.emailqueue.view";
+
+  // FAQ
+  public static readonly viewMOSOrderMgtFaqSubjectsPermission: PermissionValues = "mosmgt.settingmgt.faq.subject.view";
+  public static readonly manageMOSOrderMgtFaqSubjectsPermission: PermissionValues = "mosmgt.settingmgt.faq.subject.manage";
+
+  public static readonly viewMOSOrderMgtFaqDetailsPermission: PermissionValues = "mosmgt.settingmgt.faq.detail.view";
+  public static readonly manageMOSOrderMgtFaqDetailsPermission: PermissionValues = "mosmgt.settingmgt.faq.detail.manage";
+
   constructor(name?: PermissionNames, value?: PermissionValues, groupName?: string, description?: string) {
     this.name = name;
     this.value = value;

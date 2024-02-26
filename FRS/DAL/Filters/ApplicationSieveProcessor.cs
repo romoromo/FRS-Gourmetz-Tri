@@ -115,6 +115,8 @@ namespace DAL.Filters
             CancelOrderRequestMapping(ref mapper);
             ExternalAppLoginLogMapping(ref mapper);
             MenuGroupMapping(ref mapper);
+            FaqSubjectMapping(ref mapper);
+            FaqDetailMapping(ref mapper);
             return mapper;
         }
 
@@ -2615,5 +2617,56 @@ namespace DAL.Filters
                 .CanSort();
         }
 
+        private void FaqSubjectMapping(ref SievePropertyMapper mapper)
+        {
+            mapper.Property<FaqSubject>(p => p.Id)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<FaqSubject>(p => p.Name)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<FaqSubject>(p => p.Description)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<FaqSubject>(p => p.InstitutionId)
+                .CanFilter()
+                .CanSort();
+        }
+
+        private void FaqDetailMapping(ref SievePropertyMapper mapper)
+        {
+            mapper.Property<FaqDetail>(p => p.Id)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<FaqDetail>(p => p.Label)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<FaqDetail>(p => p.Description)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<FaqDetail>(p => p.InstitutionId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<FaqDetail>(p => p.FaqSubjectId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<FaqDetail>(p => p.FaqSubject.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("contactUsSubjectName");
+
+            mapper.Property<FaqDetail>(p => p.FaqSubject.Description)
+               .CanFilter()
+               .CanSort()
+               .HasName("contactUsSubjectDescription");
+        }
     }
 }

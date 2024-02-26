@@ -260,7 +260,9 @@ namespace DAL
         public DbSet<StudentGroupSession> StudentGroupSessions { get; set; }
         public DbSet<UserOutlet> UserOutlets { get; set; }
         public DbSet<UserCaterer> UserCaterers { get; set; }
-
+        public DbSet<StudentAccountLinkRequest> StudentAccountLinkRequests { get; set; }
+        public DbSet<FaqSubject> FaqSubjects { get; set; }
+        public DbSet<FaqDetail> FaqDetails { get; set; }
         #region Stored Procedures
 
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
@@ -608,6 +610,9 @@ namespace DAL
             builder.Entity<StudentGroupSession>().TrackAllProperties();
             builder.Entity<UserOutlet>().TrackAllProperties();
             builder.Entity<UserCaterer>().TrackAllProperties();
+            builder.Entity<StudentAccountLinkRequest>().TrackAllProperties();
+            builder.Entity<FaqSubject>().TrackAllProperties();
+            builder.Entity<FaqDetail>().TrackAllProperties();
 
             #endregion
 

@@ -631,6 +631,8 @@ namespace FRS.Controllers
                 var resp = await _studentService.AddStudentLinksByUserAsync(userId.Value, studentId);
                 if (resp.IsSuccess)
                 {
+                    await _studentService.UpdateStudentAccountLinkRequestAsync(studentId, email);
+
                     //existing tappee user
                     var url = _configuration["AppSettings:TAPPEE_URL"];
                     ViewBag.TappeeUrl = url ?? "/";
@@ -677,9 +679,15 @@ namespace FRS.Controllers
             {
                 return RedirectToAction(nameof(StudentLinkAccount), new { studentId = model.StudentId, userId = user.Id, email = model.Email });
             }
-
-            ViewBag.ErrorMessage = "An error occurred during account creation. Please contact the system administrator.";
-            return View("Error");
+            else
+            {
+                foreach(var error in createUserResult.Item2)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+                
+                return View("StudentLinkAccount", model);
+            }
         }
 
         public IActionResult SignInWithGoogle(string institutionCode)

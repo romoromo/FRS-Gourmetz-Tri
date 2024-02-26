@@ -19,6 +19,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> DeleteAsync(int studentId);
         Task<BaseOperationResponse> CreateAccountAsync(List<int> id, bool generateRandomPassword, IAccountManager accountManager, string defaultPassword);
         Task<Student> GetByIdAsync(int id);
+        Task<Student> GetStudentByEmailAsync(string email);
         Task<BaseOperationResponse> ImportStudentAsync(IAccountManager accountManager, List<StudentImportDTO> dto);
         Task<PagedEntity<Student>> GetStudentsAsync(BaseFilter filter, bool noAccount = false);
         Task<List<Student>> GetStudentsByUserAsync(int userId);
@@ -30,5 +31,8 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<List<Student>> GetStudentsWithAbandonedCart2(int daysBeforeCutOff);
         Task<List<StudentOrderModel>> GetStudentsWithOrdersNotCollected(int daysPassed);
         Task<BaseOperationResponse> AddStudentLinksByUserAsync(int userId, int studentId);
+        Task<BaseOperationResponse> AddStudentAccountLinkRequestAsync(int studentId, string email, bool emailSent);
+        Task<BaseOperationResponse> UpdateStudentAccountLinkRequestAsync(int studentId, string email);
+        Task<BaseOperationResponse> UpdateStudentEmail(int id, string email);
     }
 }

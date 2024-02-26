@@ -57,7 +57,8 @@ export class DishesManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.loadData(null);
+      if(!result)
+        this.loadData(null);
     });
   }
 

@@ -28,6 +28,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { ChartsModule } from 'ng2-charts';
 import { TreeModule } from 'ng2-tree';
+import { NgxSummernoteModule } from 'ngx-summernote';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppErrorHandler } from './app-error.handler';
@@ -491,6 +492,11 @@ import { StudentOrderEditorComponent } from './components/meal-order-system/stud
 import { OrderCollectionLogsManagementComponent } from './components/meal-order-system/student-group/order-log/order-logs-management.component';
 import { OrderByPipe } from './pipes/order-by.pipe';
 import { PaymentsReportManagementComponent } from './components/reports/payment/payments-management.component';
+import { FaqSubjectsManagementComponent } from './components/meal-order-system/faq-subject/faq-subjects-management.component';
+import { FaqSubjectEditorComponent } from './components/meal-order-system/faq-subject/faq-subject-editor.component';
+import { FaqDetailsManagementComponent } from './components/meal-order-system/faq-detail/faq-details-management.component';
+import { FaqDetailEditorComponent } from './components/meal-order-system/faq-detail/faq-detail-editor.component';
+import { FaqService } from './services/meal-order/faq.service';
  
  
 
@@ -544,7 +550,12 @@ export const configFactory = (configService: ConfigurationService) => {
     NgxMatSelectSearchModule,
     CirclonTreeModule,
     //PdfViewerModule,
-    QRCodeModule
+    QRCodeModule,
+    NgxSummernoteModule
+    //QuillModule.forRoot()
+    //QuillModule.forRoot({
+    //  suppressGlobalRegisterWarning: true
+    //})
     //NgSelectModule, FormsModule
     //MOSClassModule, MOSStudentModule
   ],
@@ -721,7 +732,10 @@ export const configFactory = (configService: ConfigurationService) => {
     StudentEditorComponent, StudentOrderEditorComponent,
     DefaultPipe,
     OrderCollectionLogsManagementComponent,
-    PaymentsReportManagementComponent
+    PaymentsReportManagementComponent,
+
+    FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
+    FaqDetailsManagementComponent, FaqDetailEditorComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },
@@ -811,7 +825,8 @@ export const configFactory = (configService: ConfigurationService) => {
     MealService, DishService, MenuService, PaymentService, EmailService,
     OrderService,
     ReportService,
-    OrderPortalService
+    OrderPortalService,
+    FaqService
   ],
   bootstrap: [RootAppComponent],
   exports: [CalendarComponent, CalendarHeaderComponent, BookingComponent, CalendarLandingPageComponent, MenuPanelComponent, SubMenuPanelComponent],
@@ -900,7 +915,9 @@ export const configFactory = (configService: ConfigurationService) => {
     StudentOrderManagementComponent, StatusDropdownComponent, StudentOrderDetailComponent,
     StudentEditorComponent, StudentOrderEditorComponent,
     OrderCollectionLogsManagementComponent,
-    PaymentsReportManagementComponent
+    PaymentsReportManagementComponent,
+    FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
+    FaqDetailsManagementComponent, FaqDetailEditorComponent
   ],
 })
 export class AppModule {

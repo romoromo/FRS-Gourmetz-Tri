@@ -179,9 +179,9 @@ export class BentoBoxTypeEditorComponent {
   }
 
   getCatererInfos() {
-    let filter = new Filter();
+    let filter = new Filter(-1, -1);
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getCatererInfosByFilter(filter)
+    this.deliveryService.getCatererInfosSimpleByFilter(filter)
       .subscribe(results => {
         this.catererInfos = results.pagedData;
       },

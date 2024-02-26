@@ -160,7 +160,8 @@ namespace BAL.Mapping
                 .ForMember(e => e.StudentCards, map => map.MapFrom(e => e.StudentCards.Where(f => f.IsActive).ToList()))
                 .ForMember(e => e.Restrictions, map => map.MapFrom(e => e.Restrictions.Where(f => f.IsActive).ToList()))
                 .ForMember(e => e.InterestGroups, map => map.MapFrom(e => e.InterestGroups.Where(f => f.IsActive).ToList()))
-                .ForMember(e => e.Vouchers, map => map.MapFrom(e => e.Vouchers.Where(f => f.IsActive).ToList()));
+                .ForMember(e => e.Vouchers, map => map.MapFrom(e => e.Vouchers.Where(f => f.IsActive).ToList()))
+                .ForMember(e => e.AccountLinkRequests, map => map.MapFrom(e => e.AccountLinkRequests.Where(f => f.IsActive && f.Status == "Pending").ToList()));
 
             CreateMap<StudentManageAccount, StudentManageAccountDTO>()
                 .ForMember(d => d.Name, map => map.MapFrom(s => s.Student != null ? s.Student.Name : string.Empty))
@@ -175,6 +176,9 @@ namespace BAL.Mapping
             CreateMap<StudentRestriction, StudentRestrictionDTO>()
                 .ForMember(d => d.RestrictionCode, map => map.MapFrom(s => s.Restriction != null ? s.Restriction.Code : string.Empty))
                 .ForMember(d => d.RestrictionTypeCode, map => map.MapFrom(s => s.Restriction != null && s.Restriction.RestrictionType != null ? s.Restriction.RestrictionType.Code : string.Empty));
+
+
+            CreateMap<StudentAccountLinkRequest, StudentAccountLinkRequestDTO>();
 
             CreateMap<StudentRestrictionDTO, StudentRestriction>();
 
@@ -769,6 +773,15 @@ namespace BAL.Mapping
             CreateMap<ContactUsDetail, ContactUsDetailDTO>()
                 .ForMember(e => e.ContactUsSubjectName, map => map.MapFrom(f => f.ContactUsSubject.Name))
                 .ForMember(e => e.ContactUsSubjectDescription, map => map.MapFrom(f => f.ContactUsSubject.Description));
+
+            CreateMap<FaqSubject, FaqSubjectDTO>()
+                .ForMember(e => e.Details, map => map.MapFrom(f => f.FaqDetails.Where(e => e.IsActive)));
+            CreateMap<FaqSubjectDTO, FaqSubject>();
+
+            CreateMap<FaqDetailDTO, FaqDetail>();
+            CreateMap<FaqDetail, FaqDetailDTO>()
+                .ForMember(e => e.FaqSubjectName, map => map.MapFrom(f => f.FaqSubject.Name))
+                .ForMember(e => e.FaqSubjectDescription, map => map.MapFrom(f => f.FaqSubject.Description));
 
             CreateMap<EmailTemplate, EmailTemplateDTO>();
             CreateMap<EmailTemplateDTO, EmailTemplate>();

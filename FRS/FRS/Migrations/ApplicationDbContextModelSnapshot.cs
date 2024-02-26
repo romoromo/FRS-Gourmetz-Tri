@@ -3919,6 +3919,76 @@ namespace FRS.Migrations
                     b.ToTable("ExternalAppLoginLogs");
                 });
 
+            modelBuilder.Entity("DAL.Models.MealOrder.FaqDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("FaqSubjectId");
+
+                    b.Property<int?>("InstitutionId");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<string>("Label");
+
+                    b.Property<int?>("UpdatedBy");
+
+                    b.Property<DateTime>("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("FaqSubjectId");
+
+                    b.HasIndex("InstitutionId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.ToTable("FaqDetails");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.FaqSubject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int?>("InstitutionId");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int?>("UpdatedBy");
+
+                    b.Property<DateTime>("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("InstitutionId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.ToTable("FaqSubjects");
+                });
+
             modelBuilder.Entity("DAL.Models.MealOrder.InterestGroup", b =>
                 {
                     b.Property<int>("Id")
@@ -5736,6 +5806,41 @@ namespace FRS.Migrations
                         .IsUnique();
 
                     b.ToTable("StudentAccounts");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.StudentAccountLinkRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<string>("Email");
+
+                    b.Property<bool>("EmailSent");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<string>("Status");
+
+                    b.Property<int>("StudentId");
+
+                    b.Property<int?>("UpdatedBy");
+
+                    b.Property<DateTime>("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.ToTable("StudentAccountLinkRequests");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentCard", b =>
@@ -11070,6 +11175,41 @@ namespace FRS.Migrations
                         .HasForeignKey("UpdatedBy");
                 });
 
+            modelBuilder.Entity("DAL.Models.MealOrder.FaqDetail", b =>
+                {
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.MealOrder.FaqSubject", "FaqSubject")
+                        .WithMany("FaqDetails")
+                        .HasForeignKey("FaqSubjectId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DAL.Models.Institution", "Institution")
+                        .WithMany()
+                        .HasForeignKey("InstitutionId");
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.FaqSubject", b =>
+                {
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.Institution", "Institution")
+                        .WithMany()
+                        .HasForeignKey("InstitutionId");
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+                });
+
             modelBuilder.Entity("DAL.Models.MealOrder.InterestGroup", b =>
                 {
                     b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
@@ -12040,6 +12180,22 @@ namespace FRS.Migrations
                         .WithOne("Account")
                         .HasForeignKey("DAL.Models.MealOrder.StudentAccount", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.StudentAccountLinkRequest", b =>
+                {
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.MealOrder.Student", "Student")
+                        .WithMany("AccountLinkRequests")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentCard", b =>

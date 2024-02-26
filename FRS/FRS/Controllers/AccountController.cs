@@ -468,6 +468,81 @@ namespace FRS.Controllers
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpPut("changeemail/{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> ChangeEmail(int id, [FromBody] UserEditEmailViewModel user)
+        {
+            try
+            {
+                ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
+
+                bool isValid = true;
+
+
+                if (!string.IsNullOrWhiteSpace(user.Email))
+                {
+                    await _accountManager.UpdateEmailAsync(appUser, user.Email);
+                }
+                else
+                {
+                    return BadRequest(new { Error = "Invalid", ErrorDescription = "Need to provide email." });
+                }
+
+                return Ok(new { Error = "", ErrorDescription = "" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpPut("students/changeemail/{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> ChangeStudentEmail(int id, [FromBody] StudentEditEmailViewModel student)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(student.NewEmail))
+                {
+                    throw new Exception("Invalid email.");
+                }
+
+                var dto = await this._studentService.GetStudentByEmailAsync(student.CurrentEmail);
+                if (dto == null)
+                {
+                    throw new Exception("Student not found.");
+                }
+
+                if (id != dto.Id)
+                {
+                    throw new Exception("Update not allowed.");
+                }
+
+                await this._studentService.UpdateStudentEmail(dto.Id, student.NewEmail);
+
+                if (dto.UserId.HasValue)
+                {
+                    ApplicationUser appUser = await _accountManager.GetUserByIdAsync(dto.UserId.Value);
+
+                    await _accountManager.UpdateEmailAsync(appUser, student.NewEmail);
+                }
+
+                return Ok(new { Error = "", ErrorDescription = "" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("resetpassword/{email}")]
         [AllowAnonymous]
         [ProducesResponseType(204)]
@@ -1210,7 +1285,7 @@ namespace FRS.Controllers
 
                 string baseUrl = _configuration["AppSettings:ONBOARDING_BASE_URL"];
                 var imgUrl = _configuration["AppSettings:ORDER_PORTAL_ONBOARDING_IMG_URL"];
-
+                bool emailSent = false;
 
                 var user = await _userManager.FindByNameAsync(email) ?? await _userManager.FindByEmailAsync(email);
                 if (user != null && user.IsActive)
@@ -1223,16 +1298,20 @@ namespace FRS.Controllers
                     }
 
                     var callbackUrl = Url.Action("StudentLinkAccount", "Authorization", new { studentId = id, userId = user.Id }, protocol: HttpContext.Request.Scheme, host: baseUrl);
-                    await _emailSender.SendEmailAsync(user.FullName, user.Email, "Tappee Invite to link Student Account",
+                    var resp = await _emailSender.SendEmailAsync(user.FullName, user.Email, "Tappee Invite to link Student Account",
                         EmailTemplates.GetLinkStudentAccountForExistingUserEmail(user.Email, dto.Name, callbackUrl, imgUrl));
+                    emailSent = resp.success;
                 }
                 else
                 {
                     // a new user
                     var callbackUrl = Url.Action("StudentLinkAccount", "Authorization", new { studentId = id, email = email }, protocol: HttpContext.Request.Scheme, host: baseUrl);
-                    await _emailSender.SendEmailAsync(email, email, "Tappee Invite to link Student Account",
+                    var resp = await _emailSender.SendEmailAsync(email, email, "Tappee Invite to link Student Account",
                         EmailTemplates.GetLinkStudentAccountForNewUserEmail(email, dto.Name, callbackUrl, imgUrl));
+                    emailSent = resp.success;
                 }
+
+                await _studentService.AddStudentAccountLinkRequestAsync(id, email, emailSent);
 
                 result.Message = "Email invite has been sent!";
                 result.IsSuccess = true;

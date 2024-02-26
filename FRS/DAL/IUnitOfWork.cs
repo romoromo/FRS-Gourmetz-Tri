@@ -126,7 +126,8 @@ namespace DAL
         IOrderPortalContentRepository OrderPortalContents { get; }
         int? CurrentUserId { get; set; }
         int? CurrentInstitutionId { get; }
-
+        IFaqSubjectRepository FaqSubjects { get; }
+        IFaqDetailRepository FaqDetails { get; }
 
         #region For token order payment processing
         ITokenPaymentRepository SubmittedPayments { get; }

@@ -34,6 +34,7 @@
               "./node_modules/angular-tree-component/dist/angular-tree-component.css",
               "./node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.carousel.min.css",
               "./node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.theme.default.min.css",
+              "./node_modules/summernote/dist/summernote.css",
               "src/styles.css"
             ],
             "scripts": [
@@ -43,6 +44,8 @@
               "node_modules/bootstrap-toggle/js/bootstrap-toggle.js",
               "node_modules/bootstrap-select/dist/js/bootstrap-select.js",
               "node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js",
+              //"node_modules/summernote/dist/summernote.min.js",
+              //"https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote-lite.min.js"
               //"src/app/assets/scripts/jquery.signalR-2.3.0.min.js"
             ]
           },

@@ -326,6 +326,26 @@
           "logoClass": "",
           "permissions": [ "systemsetting.role" ],
           "childMenus": []
+        },
+        {
+          "label": "FAQ Subjects",
+          "active": true,
+          "link": "/faqsubjects",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [ "mosmgt.settingmgt.faq.subject" ],
+          "childMenus": []
+        },
+        {
+          "label": "FAQ Details",
+          "active": true,
+          "link": "/faqdetails",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [ "mosmgt.settingmgt.faq.detail" ],
+          "childMenus": []
         }
       ]
     },

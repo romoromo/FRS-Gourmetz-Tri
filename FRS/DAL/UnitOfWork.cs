@@ -144,6 +144,8 @@ namespace DAL
         private INotificationSettingRepository _notificationSetting;
         private IOrderPortalContentRepository _orderPortalContents;
         private OutletTermRepository _outletTerms;
+        private FaqSubjectRepository _faqSubjects;
+        private FaqDetailRepository _faqDetails;
 
         public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory)
         {
@@ -1391,6 +1393,28 @@ namespace DAL
                     _menuGroups = new MenuGroupRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
 
                 return _menuGroups;
+            }
+        }
+
+        public IFaqSubjectRepository FaqSubjects
+        {
+            get
+            {
+                if (_faqSubjects == null)
+                    _faqSubjects = new FaqSubjectRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+
+                return _faqSubjects;
+            }
+        }
+
+        public IFaqDetailRepository FaqDetails
+        {
+            get
+            {
+                if (_faqDetails == null)
+                    _faqDetails = new FaqDetailRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+
+                return _faqDetails;
             }
         }
         #endregion

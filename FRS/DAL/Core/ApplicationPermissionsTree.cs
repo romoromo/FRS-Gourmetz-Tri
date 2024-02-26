@@ -697,6 +697,18 @@ namespace DAL.Core
         public static ApplicationPermissionsTree ManageMOSOrderMgtCancelRequestsPermission = new ApplicationPermissionsTree(id++, "Manage Cancel Requests", "mosmgt.settingmgt.orders.cancelrequest.manage", "Permission to add, edit and delete Cancel Requests", MOSOrderMgtCancelRequestsMenu);
         #endregion
 
+        #region Faq Subjects
+        public static ApplicationPermissionsTree MOSOrderMgtFaqSubjectsMenu = new ApplicationPermissionsTree(id++, "Faq Subjects", "mosmgt.settingmgt.faq.subject", "", ViewMOSSettingMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSOrderMgtFaqSubjectsMenu = new ApplicationPermissionsTree(id++, "View Faq Subjects", "mosmgt.settingmgt.faq.subject.view", "Permission to view Faq Subjects", MOSOrderMgtFaqSubjectsMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtFaqSubjectsMenu = new ApplicationPermissionsTree(id++, "Manage Faq Subjects", "mosmgt.settingmgt.faq.subject.manage", "Permission to view Faq Subjects", MOSOrderMgtFaqSubjectsMenu);
+        #endregion
+
+        #region Faq Details
+        public static ApplicationPermissionsTree MOSOrderMgtFaqDetailsMenu = new ApplicationPermissionsTree(id++, "Faq Details", "mosmgt.settingmgt.faq.detail", "", ViewMOSSettingMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSOrderMgtFaqDetailsMenu = new ApplicationPermissionsTree(id++, "View Faq Details", "mosmgt.settingmgt.faq.detail.view", "Permission to view Faq Details", MOSOrderMgtFaqDetailsMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtFaqDetailsMenu = new ApplicationPermissionsTree(id++, "Manage Faq Details", "mosmgt.settingmgt.faq.detail.manage", "Permission to view Faq DetailsPayment Type", MOSOrderMgtFaqDetailsMenu);
+        #endregion
+
         #endregion
 
         #region Reports Management
@@ -1208,7 +1220,15 @@ namespace DAL.Core
                 ViewMOSreportMgtOrderCollectionReportMenu,
 
                 MOSreportMgtOrderPaymentReportMenu,
-                ViewMOSreportMgtOrderPaymentReportMenu
+                ViewMOSreportMgtOrderPaymentReportMenu,
+
+                MOSOrderMgtFaqSubjectsMenu,
+                ViewMOSOrderMgtFaqSubjectsMenu,
+                ManageMOSOrderMgtFaqSubjectsMenu,
+
+                MOSOrderMgtFaqDetailsMenu,
+                ViewMOSOrderMgtFaqDetailsMenu,
+                ManageMOSOrderMgtFaqDetailsMenu
             };
         }
 

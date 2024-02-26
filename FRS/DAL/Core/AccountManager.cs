@@ -614,6 +614,17 @@ namespace DAL.Core
             return Tuple.Create(true, new string[] { });
         }
 
+        public async Task<Tuple<bool, string[]>> UpdateEmailAsync(ApplicationUser user, string email)
+        {
+            if (await _userManager.IsUsedEmail(user.Id, email))
+            {
+                return Tuple.Create(false, new string[] { "Email is not available. " });
+            }
+
+            await _userManager.UpdateEmailAsync(user, email);
+            return Tuple.Create(true, new string[] { });
+        }
+
         public async Task<PagedEntity<UserReportDTO>> GetUserReportAsync(BaseFilter filter)
         {
             IQueryable<ApplicationUser> query = _appContext.Users;

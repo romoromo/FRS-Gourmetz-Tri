@@ -19,4 +19,15 @@ namespace FRS.ViewModels
         public string Provider { get; set; }
         public string Key { get; set; }
     }
+
+    public class UserEditEmailViewModel
+    {
+        public string Email { get; set; }
+    }
+
+    public class StudentEditEmailViewModel
+    {
+        public string NewEmail { get; set; }
+        public string CurrentEmail { get; set; }
+    }
 }

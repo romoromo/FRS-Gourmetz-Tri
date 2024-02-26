@@ -61,7 +61,18 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        
+        public async Task<BaseOperationResponse> AddStudentAccountLinkRequestAsync(int studentId, string email, bool emailSent)
+        {
+            var result = await this._uow.Students.AddStudentAccountLinkRequestAsync(studentId, email, emailSent);
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateStudentAccountLinkRequestAsync(int studentId, string email)
+        {
+            var result = await this._uow.Students.UpdateStudentAccountLinkRequestAsync(studentId, email);
+            return result;
+        }
+
         public async Task<List<StudentDTO>> GetStudentsWithNoOrder(DateTime from, DateTime to)
         {
             var result = Mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsWithNoOrder(from, to));
@@ -91,6 +102,16 @@ namespace BAL.Services.MealOrder
             return Mapper.Map<StudentDTO>(await this._uow.Students.GetByIdAsync(id));
         }
 
+        public async Task<StudentDTO> GetStudentByEmailAsync(string email)
+        {
+            return Mapper.Map<StudentDTO>(await this._uow.Students.GetStudentByEmailAsync(email));
+        }
+
+        public async Task<BaseOperationResponse> UpdateStudentEmail(int id, string email)
+        {
+            return await this._uow.Students.UpdateStudentEmail(id, email);
+        }
+        
         public async Task<BaseOperationResponse> CreateStudentAsync(StudentDTO dto)
         {
             var result = new BaseOperationResponse();

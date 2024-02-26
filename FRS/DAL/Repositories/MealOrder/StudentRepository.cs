@@ -132,6 +132,73 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        public async Task<BaseOperationResponse> AddStudentAccountLinkRequestAsync(int studentId, string email, bool emailSent)
+        {
+            var result = new BaseOperationResponse();
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                            new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+                            TransactionScopeAsyncFlowOption.Enabled))
+            {
+                try
+                {
+                    var student = _appContext.Students.FirstOrDefault(u => u.Id == studentId && u.IsActive);
+
+                    if (student == null)
+                    {
+                        result.Message = "Failed to save! Student does not exist.";
+                        return result;
+                    }
+
+                    await _appContext.StudentAccountLinkRequests.AddAsync(new StudentAccountLinkRequest { StudentId = studentId, Email = email, EmailSent = emailSent, Status = "Pending" });
+                    await _appContext.SaveChangesAsync();
+
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    scope.Complete();
+                }
+                catch (Exception)
+                {
+                    result.Message = "Failed to save account request.";
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateStudentAccountLinkRequestAsync(int studentId, string email)
+        {
+            var result = new BaseOperationResponse();
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                            new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+                            TransactionScopeAsyncFlowOption.Enabled))
+            {
+                try
+                {
+                    var request = _appContext.StudentAccountLinkRequests.FirstOrDefault(u => u.StudentId == studentId && u.IsActive && u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+
+                    if (request == null)
+                    {
+                        result.Message = "Failed to save! Request does not exist.";
+                        return result;
+                    }
+
+                    request.Status = "Accepted";
+                    _appContext.StudentAccountLinkRequests.Update(request);
+                    await _appContext.SaveChangesAsync();
+
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    scope.Complete();
+                }
+                catch (Exception)
+                {
+                    result.Message = "Failed to save account request.";
+                }
+            }
+
+            return result;
+        }
+
         public async Task<List<Student>> GetStudentsWithNoOrder(DateTime from, DateTime to)
         {
             var now = DateTime.Now;
@@ -229,6 +296,11 @@ namespace DAL.Repositories.MealOrder
         public async Task<Student> GetByIdAsync(int id)
         {
             return await GetAsync(id);
+        }
+
+        public async Task<Student> GetStudentByEmailAsync(string email)
+        {
+            return await GetFirstOrDefaultAsync(e => e.IsActive && e.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task<List<Student>> GetByInterestGroupIdAsync(int id)
@@ -657,6 +729,36 @@ namespace DAL.Repositories.MealOrder
             else
             {
                 result.Message = "Failed to delete!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateStudentEmail(int id, string email)
+        {
+            var result = new BaseOperationResponse();
+            var student = await GetFirstOrDefaultAsync(r => r.Id == id);
+
+            if(student != null)
+            {
+                student.Email = email;
+                Update(student);
+
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+                    result.IsSuccess = false;
+                }
+            }
+            else
+            {
+                result.Message = "Student not found.";
                 result.IsSuccess = false;
             }
 

@@ -498,6 +498,7 @@ namespace FRS
             services.AddScoped<IChannelInfoService, ChannelInfoService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IManagementService, ManagementService>();
 
             services.Configure<FormOptions>(o =>  // currently all set to max, configure it to your needs!
             {
@@ -702,6 +703,7 @@ namespace FRS
             app.UseStaticFiles(new StaticFileOptions()
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+                //FileProvider = new PhysicalFileProvider(Path.Combine(@"\\4-SMVNB-12\test", @"Resources")),
                 RequestPath = new PathString("/Resources")
             });
             app.UseSpaStaticFiles();

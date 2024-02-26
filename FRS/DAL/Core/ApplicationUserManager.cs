@@ -129,5 +129,16 @@ namespace DAL.Core
 
             return false;
         }
+
+        public async Task<bool> IsUsedEmail(int userID, string email)
+        {
+            return await base.Users.AnyAsync(e => e.Id != userID && e.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public Task UpdateEmailAsync(ApplicationUser appuser, string email)
+        {
+            appuser.Email = email;
+            return UpdateAsync(appuser);
+        }
     }
 }

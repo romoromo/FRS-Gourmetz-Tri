@@ -154,6 +154,8 @@ import { UserActivityLogsManagementComponent } from './components/audit/user-act
 import { OutletTermsManagementComponent } from './components/meal-order-system/outlet/outlet-term/outlet-terms-management.component';
 import { OrderCollectionLogsManagementComponent } from './components/meal-order-system/student-group/order-log/order-logs-management.component';
 import { PaymentsReportManagementComponent } from './components/reports/payment/payments-management.component';
+import { FaqSubjectsManagementComponent } from './components/meal-order-system/faq-subject/faq-subjects-management.component';
+import { FaqDetailsManagementComponent } from './components/meal-order-system/faq-detail/faq-details-management.component';
 
  
 
@@ -319,6 +321,8 @@ const routes: Routes = [
       { path: "ordercollectionreport", component: OrderCollectionLogsManagementComponent, canActivate: [AuthGuard], data: { title: "Order Collection Report" } },
       { path: "orderpaymentsreport", component: PaymentsReportManagementComponent, canActivate: [AuthGuard], data: { title: "Order Payments Report" } },
       { path: "outletterms", component: OutletTermsManagementComponent, canActivate: [AuthGuard], data: { title: "Terms" } },
+      { path: "faqsubjects", component: FaqSubjectsManagementComponent, canActivate: [AuthGuard], data: { title: "FAQ Subjects" } },
+      { path: "faqdetails", component: FaqDetailsManagementComponent, canActivate: [AuthGuard], data: { title: "FAQ Details" } },
       //{ path: "orderportalcontents", component: OrderPortalContentComponent, canActivate: [AuthGuard], data: { title: "Order Portal Content" } },
 
       //{ path: "display/:mac", redirectTo: "/display/:mac" },

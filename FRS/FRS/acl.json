@@ -1147,6 +1147,32 @@
                   "children": []
                 }
               ]
+            },
+            {
+              "name": "FAQ Subjects",
+              "value": "mosmgt.settingmgt.faq.subject",
+              "description": "",
+              "children": [
+                {
+                  "name": "Manage FAQ Subjects",
+                  "value": "mosmgt.settingmgt.faq.subject.manage",
+                  "description": "Permission to add, edit and delete FAQ subjects",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "FAQ Details",
+              "value": "mosmgt.settingmgt.faq.detail",
+              "description": "",
+              "children": [
+                {
+                  "name": "Manage FAQ Details",
+                  "value": "mosmgt.settingmgt.faq.detail.manage",
+                  "description": "Permission to add, edit and delete FAQ details",
+                  "children": []
+                }
+              ]
             }
           ]
         },

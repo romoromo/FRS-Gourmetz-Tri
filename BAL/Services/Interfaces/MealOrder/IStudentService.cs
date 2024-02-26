@@ -15,6 +15,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateStudentAsync(StudentDTO dto);
         Task<BaseOperationResponse> DeleteStudentAsync(int id);
         Task<StudentDTO> GetStudentByIdAsync(int id);
+        Task<StudentDTO> GetStudentByEmailAsync(string email);
         Task<PagedEntity<StudentDTO>> GetStudentsAsync(BaseFilter filter, bool noAccount = false);
         Task<List<StudentDTO>> GetStudentsByUserAsync(int userId);
         Task<BaseOperationResponse> UpdateStudentAsync(StudentDTO dto);
@@ -61,5 +62,8 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<byte[]> GenerateStudentReportForImportXls(BaseFilter filter);
 
         Task<BaseOperationResponse> AddStudentLinksByUserAsync(int userId, int studentId);
+        Task<BaseOperationResponse> AddStudentAccountLinkRequestAsync(int studentId, string email, bool emailSent);
+        Task<BaseOperationResponse> UpdateStudentAccountLinkRequestAsync(int studentId, string email);
+        Task<BaseOperationResponse> UpdateStudentEmail(int id, string email);
     }
 }

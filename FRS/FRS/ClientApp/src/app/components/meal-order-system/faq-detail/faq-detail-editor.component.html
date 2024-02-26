@@ -1,0 +1,46 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="faqDetailEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!faqDetailName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <mat-label>Subject</mat-label>
+          <mat-select [disabled]="!canManageFaqDetails" id="faqSubject" name="faqSubject" [(ngModel)]="faqDetailEdit.faqSubjectId" #faqSubject="ngModel" required>
+            <mat-option *ngFor="let faqSubject of faqSubjects" [value]="faqSubject.id">
+              {{faqSubject.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">Subject is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageFaqDetails" type="text" id="faqDetailLabel" name="faqDetailLabel" placeholder="Title" [(ngModel)]="faqDetailEdit.label" #faqDetailLabel="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+        <textarea matInput [disabled]="!canManageFaqDetails" type="text" autocomplete="off" name="faqDetailDescription" id="faqDetailDescription" placeholder="Content" [(ngModel)]="faqDetailEdit.description" #faqDetailDescription="ngModel" required minlength="1" rows="10"></textarea>
+        </mat-form-field>
+
+        <!--<div [formGroup]="fg">
+          <div formControlName="html" [ngxSummernote]="config" (blur)="onBlur()"  [(ngModel)]="faqDetailEdit.description">
+          </div>
+        </div>-->
+        <!--<div class="col-md-12" [ngxSummernote]="config" [(ngModel)]="faqDetailEdit.description" (change)="onContentChange($event)"></div>-->
+        <!--<div class="col-md-12" id="summernote"></div>-->
+        <!--mat-form-field class="col-md-12">-->
+        <!--<quill-editor [(ngModel)]="faqDetailEdit.description" required minLength="1" sanitize="true" theme="snow" [options]="editorOptions"></quill-editor>-->
+        <!--<textarea matInput [disabled]="!canManageFaqDetails" type="text" autocomplete="off" name="faqDetailDescription" id="faqDetailDescription" placeholder="Content" [(ngModel)]="faqDetailEdit.description" #faqDetailDescription="ngModel" required minlength="1" rows="10"></textarea>-->
+        <!--</mat-form-field>-->
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button *ngIf="!canManageFaqDetails" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="canManageFaqDetails" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="canManageFaqDetails" type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>

@@ -76,6 +76,7 @@ namespace BAL.DTO.MealOrder
         public List<StudentInterestGroupDTO> InterestGroups { get; set; }
         public List<StudentVoucherDTO> Vouchers { get; set; }
         public List<StudentManageAccountDTO> Users { get; set; }
+        public List<StudentAccountLinkRequestDTO> AccountLinkRequests { get; set; }
     }
 
     public class StudentManageAccountDTO
@@ -136,5 +137,12 @@ namespace BAL.DTO.MealOrder
     public class UserCardIdDTO: CardDTO
     {
         public int? UserId { get; set; }
+    }
+
+    public class StudentAccountLinkRequestDTO
+    {
+        public string Email { get; set; }
+        public string Status { get; set; }
+        public bool EmailSent { get; set; }
     }
 }
