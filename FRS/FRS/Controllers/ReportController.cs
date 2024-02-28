@@ -91,5 +91,33 @@ namespace FRS.Controllers
                 fileDownloadName: reportName
             );
         }
+
+        [HttpGet("vouchers/ulisation")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetVoucherUtilisations(VoucherUtilisationReportFilter filter)
+        {
+            var vouchers = await _tokenOrderService.GetVoucherUtilisationsAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<VoucherUtilisation>>(vouchers));
+        }
+
+        [HttpPost("vouchers/ulisation/export")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateVoucherUtilisationsXls(VoucherUtilisationReportFilter filter)
+        {
+            var xls = await _tokenOrderService.GenerateVoucherUtilisationReport(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_VoucherUtilisation.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
     }
 }

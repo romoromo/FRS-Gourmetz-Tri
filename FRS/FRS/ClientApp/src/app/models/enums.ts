@@ -28,3 +28,10 @@ export enum PaymentTypes {
   Fas = "FAS",
   MealPlan = "Meal Plan"
 }
+
+export enum VoucherUsageStatus {
+  Expired = "Expired",
+  NotUsed = "Not Used",
+  Used = "Used"
+  
+}

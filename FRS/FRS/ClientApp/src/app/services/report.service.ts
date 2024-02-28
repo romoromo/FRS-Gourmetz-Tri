@@ -5,7 +5,7 @@ import { Observable, Subject, forkJoin } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
 import { CommonEndpoint } from './common-endpoint.service';
 import { AuthService } from './auth.service';
-import { Filter, PagedResult, SalesOrderReportFilter } from '../models/sieve-filter.model';
+import { Filter, PagedResult, SalesOrderReportFilter, VoucherUtilisationReportFilter } from '../models/sieve-filter.model';
 import { ConfigurationService } from './configuration.service';
 import { AuditLog } from '../models/audit-log';
 
@@ -31,5 +31,13 @@ export class ReportService {
 
   downloadFlattenCancelledOrdersReport(filter: Filter) {
     return this.commonEndpoint.getFile<any>(this.reportUrl + '/exportorders/flatten', filter);
+  }
+
+  getVoucherUtilisationsByFilter(filter: VoucherUtilisationReportFilter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.reportUrl + '/vouchers/ulisation', filter);
+  }
+
+  downloadVoucherUtilisationssReport(filter: VoucherUtilisationReportFilter) {
+    return this.commonEndpoint.getFile<any>(this.reportUrl + '/vouchers/ulisation/export', filter);
   }
 }

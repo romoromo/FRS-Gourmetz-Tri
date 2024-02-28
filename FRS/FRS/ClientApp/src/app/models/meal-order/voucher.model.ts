@@ -33,3 +33,25 @@ export class VoucherMealPeriod {
   public mealPeriodId: string;
   public mealPeriodName: string;
 }
+
+export class VoucherUtilisation {
+
+  constructor(id?: string, name?: string) {
+  }
+
+  public id: string;
+  public total: string;
+  public voucherName: string;
+  public voucherCode: string;
+  public voucherAmount: number;
+  public discountType: string;
+  public validityStartDate: Date;
+  public validityEndDate: Date;
+  public studentName: string;
+  public className: string;
+  public utilisedDate?: Date;
+  public invoiceNumber: string;
+  public discount: number;
+  public voucherStatus: string;
+
+}

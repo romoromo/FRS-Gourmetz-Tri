@@ -753,6 +753,11 @@ namespace DAL.Core
         public static ApplicationPermissionsTree ViewMOSreportMgtOrderPaymentReportMenu = new ApplicationPermissionsTree(id++, "View Order Payment Report", "mosmgt.outletmgt.reports.orderpayment.view", "Permission to view Order Payment Report", MOSreportMgtOrderPaymentReportMenu);
         #endregion
 
+        #region Voucher Utilisation Report
+        public static ApplicationPermissionsTree MOSreportMgtVoucherUtilisationReportMenu = new ApplicationPermissionsTree(id++, "Voucher Utilisation Report", "mosmgt.outletmgt.reports.voucherutilisation", "", ViewMOSreportMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSreportMgtVoucherUtilisationReportMenu = new ApplicationPermissionsTree(id++, "View Voucher Utilisation Report", "mosmgt.outletmgt.reports.voucherutilisation.view", "Permission to view Voucher Utilisation Report", MOSreportMgtVoucherUtilisationReportMenu);
+        #endregion
+
         #endregion
 
         #endregion
@@ -1221,6 +1226,9 @@ namespace DAL.Core
 
                 MOSreportMgtOrderPaymentReportMenu,
                 ViewMOSreportMgtOrderPaymentReportMenu,
+
+                MOSreportMgtVoucherUtilisationReportMenu,
+                ViewMOSreportMgtVoucherUtilisationReportMenu,
 
                 MOSOrderMgtFaqSubjectsMenu,
                 ViewMOSOrderMgtFaqSubjectsMenu,

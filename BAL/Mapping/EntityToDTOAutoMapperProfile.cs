@@ -845,6 +845,8 @@ namespace BAL.Mapping
 
             CreateMap<spGetUserActivityLogHeader, UserActivityLogDTO>();
             CreateMap<spGetUserActivityLogDetail, UserActivityLogDetailDTO>();
+            CreateMap<spVoucherUtilisationReport, VoucherUtilisation>()
+                .ForMember(dest => dest.UtilisedDate, opt => opt.MapFrom(src => src.UtilisedDate.Date == DateTime.MinValue.Date ? (DateTime?) null : src.UtilisedDate));
         }
     }
 }

@@ -268,6 +268,7 @@ namespace DAL
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
         public DbSet<spGetUserActivityLogHeader> spGetUserActivityLog { get; set; }
         public DbSet<spGetFasTokenOrderSummary> spGetFasTokenOrderSummary { get; set; }
+        public DbSet<spVoucherUtilisationReport> spVoucherUtilisationReport { get; set; }
         #endregion
 
         public ApplicationDbContext(DbContextOptions options) : base(options)

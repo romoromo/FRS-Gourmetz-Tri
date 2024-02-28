@@ -517,21 +517,29 @@ namespace FRS.Controllers
                 var dto = await this._studentService.GetStudentByEmailAsync(student.CurrentEmail);
                 if (dto == null)
                 {
-                    throw new Exception("Student not found.");
+                    var studentAccount = await _accountManager.GetUserByEmailAsync(student.CurrentEmail);
+                    if(studentAccount == null)
+                        throw new Exception("Student not found.");
+                    else
+                    {
+                        await _accountManager.UpdateEmailAsync(studentAccount, student.NewEmail);
+                    }
                 }
-
-                if (id != dto.Id)
+                else
                 {
-                    throw new Exception("Update not allowed.");
-                }
+                    if (id != dto.Id)
+                    {
+                        throw new Exception("Update not allowed.");
+                    }
 
-                await this._studentService.UpdateStudentEmail(dto.Id, student.NewEmail);
+                    await this._studentService.UpdateStudentEmail(dto.Id, student.NewEmail);
 
-                if (dto.UserId.HasValue)
-                {
-                    ApplicationUser appUser = await _accountManager.GetUserByIdAsync(dto.UserId.Value);
+                    if (dto.UserId.HasValue)
+                    {
+                        ApplicationUser appUser = await _accountManager.GetUserByIdAsync(dto.UserId.Value);
 
-                    await _accountManager.UpdateEmailAsync(appUser, student.NewEmail);
+                        await _accountManager.UpdateEmailAsync(appUser, student.NewEmail);
+                    }
                 }
 
                 return Ok(new { Error = "", ErrorDescription = "" });

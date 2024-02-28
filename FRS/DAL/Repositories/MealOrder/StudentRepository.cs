@@ -300,7 +300,7 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<Student> GetStudentByEmailAsync(string email)
         {
-            return await GetFirstOrDefaultAsync(e => e.IsActive && e.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            return await GetFirstOrDefaultAsync(e => e.IsActive && email.Equals(e.Email, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task<List<Student>> GetByInterestGroupIdAsync(int id)

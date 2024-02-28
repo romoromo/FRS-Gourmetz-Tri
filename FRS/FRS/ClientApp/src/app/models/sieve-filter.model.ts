@@ -73,6 +73,13 @@ export class SalesOrderReportFilter extends Filter {
   public collectionStatuses?: string[];
 }
 
+export class VoucherUtilisationReportFilter extends Filter {
+  public reportDateFrom: string;
+  public reportDateTo: string;
+  public status: string;
+  public keyword: string;
+}
+
 export class RoleReportFilter extends Filter {
   public permissions: string[];
 }

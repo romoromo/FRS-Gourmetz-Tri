@@ -447,6 +447,16 @@
           "logoClass": "",
           "permissions": [ "mosmgt.reportmgt.useractivity.view" ],
           "childMenus": []
+        },
+        {
+          "label": "Voucher Utilisation",
+          "active": true,
+          "link": "/voucherutilisationreport",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.outletmgt.reports.voucherutilisation.view" ],
+          "childMenus": []
         }
       ]
     }

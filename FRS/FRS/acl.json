@@ -1284,6 +1284,19 @@
                   "children": []
                 }
               ]
+            },
+            {
+              "name": "Voucher Utilisation Report",
+              "value": "mosmgt.outletmgt.reports.voucherutilisation",
+              "description": "",
+              "children": [
+                {
+                  "name": "Voucher Utilisation Report",
+                  "value": "mosmgt.outletmgt.reports.voucherutilisation.view",
+                  "description": "Permission to view Voucher Utilisation Report",
+                  "children": []
+                }
+              ]
             }
           ]
         }

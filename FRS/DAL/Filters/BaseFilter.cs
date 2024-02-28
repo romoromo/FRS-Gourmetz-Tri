@@ -69,6 +69,14 @@ namespace DAL.Filters
         public List<string> CollectionStatuses { get; set; }
     }
 
+    public class VoucherUtilisationReportFilter : BaseFilter
+    {
+        public DateTime ReportDateFrom { get; set; }
+        public DateTime ReportDateTo { get; set; }
+        public string Status { get; set; }
+        public string Keyword { get; set; }
+    }
+
     //public class OrderCollectionReportFilter : BaseFilter
     //{
     //    public DateTime ReportDateFrom { get; set; }

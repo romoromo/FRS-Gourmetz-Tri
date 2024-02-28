@@ -156,6 +156,7 @@ import { OrderCollectionLogsManagementComponent } from './components/meal-order-
 import { PaymentsReportManagementComponent } from './components/reports/payment/payments-management.component';
 import { FaqSubjectsManagementComponent } from './components/meal-order-system/faq-subject/faq-subjects-management.component';
 import { FaqDetailsManagementComponent } from './components/meal-order-system/faq-detail/faq-details-management.component';
+import { VoucherUtilisationsReportManagementComponent } from './components/reports/voucher-utilisation/voucher-utilisations-management.component';
 
  
 
@@ -320,6 +321,7 @@ const routes: Routes = [
       { path: "useractivityreport", component: UserActivityLogsManagementComponent, canActivate: [AuthGuard], data: { title: "User Activity Report" } },
       { path: "ordercollectionreport", component: OrderCollectionLogsManagementComponent, canActivate: [AuthGuard], data: { title: "Order Collection Report" } },
       { path: "orderpaymentsreport", component: PaymentsReportManagementComponent, canActivate: [AuthGuard], data: { title: "Order Payments Report" } },
+      { path: "voucherutilisationreport", component: VoucherUtilisationsReportManagementComponent, canActivate: [AuthGuard], data: { title: "Voucher Utilisation Report" } },
       { path: "outletterms", component: OutletTermsManagementComponent, canActivate: [AuthGuard], data: { title: "Terms" } },
       { path: "faqsubjects", component: FaqSubjectsManagementComponent, canActivate: [AuthGuard], data: { title: "FAQ Subjects" } },
       { path: "faqdetails", component: FaqDetailsManagementComponent, canActivate: [AuthGuard], data: { title: "FAQ Details" } },

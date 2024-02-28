@@ -82,6 +82,35 @@ namespace DAL.Repositories.MealOrder
             return orders;
         }
 
+        public async Task<List<spVoucherUtilisationReport>> GetVoucherUtilisations(VoucherUtilisationReportFilter filter)
+        {
+            var from = new SqlParameter("@ReportDateFrom", System.Data.SqlDbType.Date);
+            var to = new SqlParameter("@ReportDateTo", System.Data.SqlDbType.Date);
+            var status = new SqlParameter("@Status", System.Data.SqlDbType.VarChar);
+            var page = new SqlParameter("@Page", System.Data.SqlDbType.Int);
+            var pageSize = new SqlParameter("@PageSize", System.Data.SqlDbType.Int);
+            var keywords = new SqlParameter("@Keywords", System.Data.SqlDbType.VarChar);
+            var sortByCol = new SqlParameter("@SortBy", System.Data.SqlDbType.VarChar);
+            var sortBy = new SqlParameter("@SortDirection", System.Data.SqlDbType.Bit);
+
+            from.Value = filter.ReportDateFrom;
+            to.Value = filter.ReportDateTo;
+            status.Value = (object)filter.Status ?? DBNull.Value;
+            page.Value = (object)filter.Page ?? 1;
+            pageSize.Value = (object)filter.PageSize ?? int.MaxValue;
+            keywords.Value = (object)filter.Keyword ?? DBNull.Value;
+
+            bool isDesc = filter.Sorts.Contains("-");
+            sortByCol.Value = isDesc ? filter.Sorts.Substring(1) : filter.Sorts;
+            sortBy.Value = isDesc;
+
+            var orders = await _appContext.spVoucherUtilisationReport
+                            .FromSql($"exec spVoucherUtilisationReport @ReportDateFrom, @ReportDateTo, @Status, @Page, @PageSize, @Keywords, @SortBy, @SortDirection",
+                                    from, to, status, page, pageSize, keywords, sortByCol, sortBy).ToListAsync();
+
+            return orders;
+        }
+
         //public async Task<List<spSalesOrderReport>> GetOrderCollection(OrderCollectionReportFilter filter)
         //{
         //    var from = new SqlParameter("@ReportDateFrom", System.Data.SqlDbType.Date);

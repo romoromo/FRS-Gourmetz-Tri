@@ -497,6 +497,7 @@ import { FaqSubjectEditorComponent } from './components/meal-order-system/faq-su
 import { FaqDetailsManagementComponent } from './components/meal-order-system/faq-detail/faq-details-management.component';
 import { FaqDetailEditorComponent } from './components/meal-order-system/faq-detail/faq-detail-editor.component';
 import { FaqService } from './services/meal-order/faq.service';
+import { VoucherUtilisationsReportManagementComponent } from './components/reports/voucher-utilisation/voucher-utilisations-management.component';
  
  
 
@@ -735,7 +736,8 @@ export const configFactory = (configService: ConfigurationService) => {
     PaymentsReportManagementComponent,
 
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
-    FaqDetailsManagementComponent, FaqDetailEditorComponent
+    FaqDetailsManagementComponent, FaqDetailEditorComponent,
+    VoucherUtilisationsReportManagementComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },
@@ -917,7 +919,8 @@ export const configFactory = (configService: ConfigurationService) => {
     OrderCollectionLogsManagementComponent,
     PaymentsReportManagementComponent,
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
-    FaqDetailsManagementComponent, FaqDetailEditorComponent
+    FaqDetailsManagementComponent, FaqDetailEditorComponent,
+    VoucherUtilisationsReportManagementComponent
   ],
 })
 export class AppModule {
