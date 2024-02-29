@@ -365,7 +365,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.reportmgt.bentousage.view" ],
           "childMenus": []
         },
         {
@@ -395,7 +395,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [],
+          "permissions": [ "mosmgt.outletmgt.reports.orderpayment.view" ],
           "childMenus": []
         },
         {

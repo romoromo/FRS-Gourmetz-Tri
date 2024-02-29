@@ -140,8 +140,8 @@
     <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteOutlet(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
     <a *ngIf="canViewOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="toggleExpandRow(row)">Details</a>
     <a *ngIf="canManageOutletStores" class="btn btn-link btn-xs" href="javascript:;" (click)="openOutletStore(row)"><i class="fa" aria-hidden="true"></i> Stores</a>
-    <a *ngIf="canViewOutletReports" class="btn btn-link btn-xs" href="javascript:;" (click)="openOrderReport(row)"><i class="fa" aria-hidden="true"></i> Order Report</a>
-    <a *ngIf="canViewOutletReports" class="btn btn-link btn-xs" href="javascript:;" (click)="openDeliveryOrderReport(row)"><i class="fa" aria-hidden="true"></i>Delivery Report</a>
+    <a *ngIf="canViewOutletSalesOrderDetailReports" class="btn btn-link btn-xs" href="javascript:;" (click)="openOrderReport(row)"><i class="fa" aria-hidden="true"></i> Order Report</a>
+    <a *ngIf="canViewOutletDeliveryReports" class="btn btn-link btn-xs" href="javascript:;" (click)="openDeliveryOrderReport(row)"><i class="fa" aria-hidden="true"></i>Delivery Report</a>
     <a *ngIf="canManageOutletMealSummary" class="btn btn-link btn-xs" href="javascript:;" (click)="openMealSummaryReport(row)"><i class="fa" aria-hidden="true"></i>Meal Summary</a>
     <!--<a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openPrintLabel(row)"><i class="fa" aria-hidden="true"></i> Print Label</a>-->
     <!--<a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openMealSession(row)"><i class="fa" aria-hidden="true"></i> Sessions</a>-->

@@ -723,6 +723,16 @@ namespace DAL.Core
         public static ApplicationPermissionsTree ViewMOSreportMgtOrderReportMenu = new ApplicationPermissionsTree(id++, "View Order Report", "mosmgt.reportmgt.order.view", "Permission to view Order Report", MOSreportMgtOrderReportMenu);
         #endregion
 
+        #region Delivery Order Report
+        public static ApplicationPermissionsTree MOSreportMgtOrderDeliveryReportMenu = new ApplicationPermissionsTree(id++, "Order Delivery Report", "mosmgt.outletmgt.reports.delivery", "", ViewMOSreportMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSreportMgtOrderDeliveryReportMenu = new ApplicationPermissionsTree(id++, "View Order Delivery Report", "mosmgt.outletmgt.reports.delivery.view", "Permission to view Order Delivery Report", MOSreportMgtOrderDeliveryReportMenu);
+        #endregion
+
+        #region Sales Order Detail Report
+        public static ApplicationPermissionsTree MOSreportMgtOrderSalesOrderDetailReportMenu = new ApplicationPermissionsTree(id++, "Sales Order Detail Report", "mosmgt.outletmgt.reports.salesorderdetail", "", ViewMOSreportMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSreportMgtOrderSalesOrderDetailReportMenu = new ApplicationPermissionsTree(id++, "View Sales Order Detail Report", "mosmgt.outletmgt.reports.salesorderdetail.view", "Permission to view Sales Order Detail Report", MOSreportMgtOrderSalesOrderDetailReportMenu);
+        #endregion
+
         #region Order Cancellation Report
         public static ApplicationPermissionsTree MOSreportMgtOrderCancellationReportMenu = new ApplicationPermissionsTree(id++, "Order Cancellation Report", "mosmgt.reportmgt.ordercancellation", "", ViewMOSreportMgtMenu);
         public static ApplicationPermissionsTree ViewMOSreportMgtOrderCancellationReportMenu = new ApplicationPermissionsTree(id++, "View Order Cancellation Report", "mosmgt.reportmgt.ordercancellation.view", "Permission to view Order Cancellation Report", MOSreportMgtOrderCancellationReportMenu);
@@ -751,6 +761,11 @@ namespace DAL.Core
         #region Order Payment Report
         public static ApplicationPermissionsTree MOSreportMgtOrderPaymentReportMenu = new ApplicationPermissionsTree(id++, "Order Payment Report", "mosmgt.outletmgt.reports.orderpayment", "", ViewMOSreportMgtMenu);
         public static ApplicationPermissionsTree ViewMOSreportMgtOrderPaymentReportMenu = new ApplicationPermissionsTree(id++, "View Order Payment Report", "mosmgt.outletmgt.reports.orderpayment.view", "Permission to view Order Payment Report", MOSreportMgtOrderPaymentReportMenu);
+        #endregion
+
+        #region Bento Usage Report
+        public static ApplicationPermissionsTree MOSreportMgtBentoUsageReportMenu = new ApplicationPermissionsTree(id++, "Bento Usage Report", "mosmgt.reportmgt.bentousage", "", ViewMOSreportMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSreportMgtBentoUsageReportMenu = new ApplicationPermissionsTree(id++, "View Bento Usage Report", "mosmgt.reportmgt.bentousage.view", "Permission to view Bento Usage Report", MOSreportMgtBentoUsageReportMenu);
         #endregion
 
         #region Voucher Utilisation Report
@@ -1209,6 +1224,12 @@ namespace DAL.Core
                 MOSreportMgtOrderReportMenu,
                 ViewMOSreportMgtOrderReportMenu,
 
+                MOSreportMgtOrderDeliveryReportMenu,
+                ViewMOSreportMgtOrderDeliveryReportMenu,
+
+                MOSreportMgtOrderSalesOrderDetailReportMenu,
+                ViewMOSreportMgtOrderSalesOrderDetailReportMenu,
+
                 MOSreportMgtOrderCancellationReportMenu,
                 ViewMOSreportMgtOrderCancellationReportMenu,
 
@@ -1226,6 +1247,9 @@ namespace DAL.Core
 
                 MOSreportMgtOrderPaymentReportMenu,
                 ViewMOSreportMgtOrderPaymentReportMenu,
+
+                MOSreportMgtBentoUsageReportMenu,
+                ViewMOSreportMgtBentoUsageReportMenu,
 
                 MOSreportMgtVoucherUtilisationReportMenu,
                 ViewMOSreportMgtVoucherUtilisationReportMenu,

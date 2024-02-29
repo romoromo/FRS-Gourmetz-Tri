@@ -635,15 +635,21 @@
               "description": "",
               "children": [
                 {
-                  "name": "View Outlet Reports",
-                  "value": "mosmgt.outletmgt.reports.view",
-                  "description": "Permission to view Outlet Order and Delivery Reports",
+                  "name": "View Order Delivery Report",
+                  "value": "mosmgt.outletmgt.reports.delivery.view",
+                  "description": "Permission to view Delivery Reports",
                   "children": []
                 },
                 {
-                  "name": "Manage Outlet Meal Summary",
+                  "name": "View Sales Order Detail Report",
+                  "value": "mosmgt.outletmgt.reports.salesorderdetail.view",
+                  "description": "Permission to view Sales Order Detail Reports",
+                  "children": []
+                },
+                {
+                  "name": "View Meal Summary",
                   "value": "mosmgt.outletmgt.mealsummary.manage",
-                  "description": "Permission to view Meal Summary Report",
+                  "description": "Permission to view Meal Summary",
                   "children": []
                 }
               ]
@@ -1190,6 +1196,19 @@
                   "name": "View Portal Login Report",
                   "value": "mosmgt.reportmgt.portallogin.view",
                   "description": "Permission to view Order Portal Login Report",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "name": "Bento Usage Report",
+              "value": "mosmgt.reportmgt.bentousage",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Bento Usage Report",
+                  "value": "mosmgt.reportmgt.bentousage.view",
+                  "description": "Permission to view Bento Usage Report",
                   "children": []
                 }
               ]

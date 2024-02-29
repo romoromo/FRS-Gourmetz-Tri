@@ -389,8 +389,12 @@ export class OutletsManagementComponent implements OnInit {
     return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStoresPermission)
   }
 
-  get canViewOutletReports() {
-    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtReportsPermission)
+  get canViewOutletDeliveryReports() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtReportsDeliveryPermission)
+  }
+
+  get canViewOutletSalesOrderDetailReports() {
+    return this.accountService.userHasPermission(Permission.viewMOSOutletMgtReportsSalesOrderDetailPermission)
   }
 
   get canManageOutletMealSummary() {
