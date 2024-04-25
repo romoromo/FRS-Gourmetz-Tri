@@ -12,8 +12,9 @@ namespace BAL.Services.Interfaces.MealOrder
     {
         Task<BaseOperationResponse> CreateCatererInfoAsync(CatererInfoSimpleDTO dto);
         Task<BaseOperationResponse> DeleteCatererInfoAsync(int id);
-        Task<CatererInfoSimpleDTO> GetCatererInfoByIdAsync(int id);
+        Task<CatererInfoDTO> GetCatererInfoByIdAsync(int id);
         Task<PagedEntity<CatererInfoDTO>> GetCatererInfosAsync(BaseFilter filter);
+        Task<CatererInfoSimpleDTO> GetCatererInfoSimpleByIdAsync(int id);
         Task<PagedEntity<CatererInfoSimpleDTO>> GetCatererInfosSimpleAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateCatererInfoAsync(CatererInfoSimpleDTO dto);
         Task<BaseOperationResponse> RequestOutlet(int catererId, int outletId, string status, bool isRsp, int? outletProfileId);

@@ -26,19 +26,32 @@ export class StoreSelectorComponent implements OnInit {
   constructor(private http: HttpClient, private alertService: AlertService, private deliveryService: DeliveryService, public dialog: MatDialog,
     public dialogRef: MatDialogRef<StoreSelectorComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-    if (typeof (data.outlet) != typeof (undefined)) {
-      this.editOutlet = data.outlet;
-      if (data.catererOutlets) {
+    //if (typeof (data.outlet) != typeof (undefined)) {
+    //  this.editOutlet = data.outlet;
+    //  if (data.catererOutlets) {
+    //    this.editOutlet.catererOutlets = [];
+    //  }
+    //  this.selectedCaterers = data.outlet.catererOutlets;
+    //  console.log("selected caterers: ", this.selectedCaterers)
+    //}
+    this.getOutletById(data.outlet.id);
+  }
+
+  getOutletById(id) {
+    this.deliveryService.getOutletById(id).subscribe(results => {
+      this.editOutlet = results;
+      if (!this.editOutlet.catererOutlets) {
         this.editOutlet.catererOutlets = [];
       }
-      this.selectedCaterers = data.outlet.catererOutlets;
-      console.log("selected caterers: ", this.selectedCaterers)
-    }
+      this.selectedCaterers = this.editOutlet.catererOutlets;
+      console.log("selected caterers: ", this.selectedCaterers);
+      this.loadData();
+    }, error => { this.alertService.stopLoadingMessage(); });
   }
 
   ngOnInit() {
 
-    this.loadData();
+    
   }
 
   loadData() {

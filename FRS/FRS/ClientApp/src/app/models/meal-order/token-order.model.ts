@@ -31,6 +31,11 @@ export class TokenOrder {
   public bentoCode: string;
   public collectionTime?: Date;
   public returnTime?: Date;
+  public voucherCode: string;
+  public fomoId: string;
+  public paymentNumber: string;
+  public invoiceNumber: string;
+  public mealSessionDetailName: string;
 }
 
 export class TokenOrdered {
@@ -152,4 +157,18 @@ export class NewOrderToken {
   public tokenDesc: string;
   public qty: number;
   public dishId: string;
+}
+
+export class AmendOrder extends NewOrder {
+  public voucherCode: string;
+  public fomoId: string;
+  public paymentNumber: string;
+  public invoiceNumber: string;
+  public paymentTypeName: string;
+  public tokenOrderId: string;
+  public mealSessionDetailName: string;
+  public dishId: string;
+  public updatedBy?: string;
+  public reason: string;
+  public status: string;
 }

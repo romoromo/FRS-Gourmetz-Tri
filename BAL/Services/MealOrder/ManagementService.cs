@@ -56,6 +56,13 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<BaseOperationResponse> OrderFaqSubjectAsync(int id, bool isAsc)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.FaqSubjects.OrderAsync(id, isAsc);
+            return result;
+        }
+
         #endregion
 
         #region Faq Detail
@@ -88,6 +95,12 @@ namespace BAL.Services.MealOrder
         {
             var result = new BaseOperationResponse();
             result = await this._uow.FaqDetails.DeleteAsync(id);
+            return result;
+        }
+        public async Task<BaseOperationResponse> OrderFaqDetailAsync(int id, bool isAsc)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.FaqDetails.OrderAsync(id, isAsc);
             return result;
         }
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BAL.DTO.MealOrder
 {
-    public class DishCycleDTO
+    public class DishCycleSimpleDTO
     {
         public int Id { get; set; }
 
@@ -32,7 +32,10 @@ namespace BAL.DTO.MealOrder
         public int? CatererId { get; set; }
 
         public int? MealTypeId { get; set; }
+    }
 
+    public class DishCycleDTO: DishCycleSimpleDTO
+    {
         public DishTypeDTO DishType { get; set; }
 
         public List<DishCycleScheduleDTO> Schedules { get; set; }
@@ -44,7 +47,6 @@ namespace BAL.DTO.MealOrder
         public List<OutletDishBlockedDateDTO> OutletDishBlockedDates { get; set; }
         public List<DishCyclePeriodDTO> DishCyclePeriods { get; set; }
     }
-
     public class DishCycleScheduleSetDTO
     {
         public int Id { get; set; }

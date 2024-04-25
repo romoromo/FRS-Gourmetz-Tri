@@ -14,6 +14,7 @@ export class CatererInfoSimple {
   public address: string;
   public institutionId: string;
   public status: string;
+  public createdBy: string;
 }
 
 export class CatererInfo extends CatererInfoSimple {

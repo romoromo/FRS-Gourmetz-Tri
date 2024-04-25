@@ -93,8 +93,6 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetTokenOrdersOrderingPortal(RequestFilter filter)
         {
-            if (filter.isrequest) await _orderController.QueryAndUpdatePaymentStatus(filter.studentId);
-
             PagedEntity<TokenOrderOrderingPortalDTO> results = await this._service.GetTokenOrdersOrderingPortalAsync(filter);
             return Ok(results);
         }
@@ -1485,7 +1483,7 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> AmendOrder([FromBody] AmendOrderViewModel model)
         {
-            var result = await _service.AmendOrder(model.Id, model.Status, model.InvoiceNumber, model.FomoId, model.UpdatedById, model.Reason);
+            var result = await _service.AmendOrder(model.Id, model.Status, model.InvoiceNumber, model.FomoId, model.UpdatedById, model.Reason, model.DishId);
             return Ok(result);
         }
 

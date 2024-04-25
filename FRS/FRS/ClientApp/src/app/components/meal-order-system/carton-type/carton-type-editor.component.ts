@@ -1,4 +1,4 @@
-import { Component, ViewChild, Inject } from '@angular/core';
+import { Component, ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
 
 import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
@@ -11,6 +11,7 @@ import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
 import { StaffService } from '../../../services/meal-order/staff.service';
 import { DeliveryService } from '../../../services/meal-order/delivery.service';
 import { CatererInfo } from '../../../models/meal-order/caterer-info.model';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -18,7 +19,8 @@ import { CatererInfo } from '../../../models/meal-order/caterer-info.model';
   templateUrl: './carton-type-editor.component.html',
   styleUrls: ['./carton-type-editor.component.css']
 })
-export class CartonTypeEditorComponent {
+export class CartonTypeEditorComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
 
   private isNewCartonType = false;
   private isSaving: boolean;
@@ -53,6 +55,14 @@ export class CartonTypeEditorComponent {
     this.getCatererInfos();
   }
 
+  ngOnInit() {
+    this.alertService.resetStickyMessage();
+  }
+
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   private showErrorAlert(caption: string, message: string) {
     this.alertService.showMessage(caption, message, MessageSeverity.error);
@@ -126,7 +136,7 @@ export class CartonTypeEditorComponent {
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close({ isCancel: true });
   }
 
   resetForm(replace = false) {
@@ -175,7 +185,7 @@ export class CartonTypeEditorComponent {
   getCatererInfos() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getCatererInfosByFilter(filter)
+    this.subscription.add(this.deliveryService.getCatererInfosByFilter(filter)
       .subscribe(results => {
         this.catererInfos = results.pagedData;
       },
@@ -183,7 +193,7 @@ export class CartonTypeEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving caterers.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
 

@@ -1,4 +1,5 @@
-import { Component, ViewChild, Inject } from '@angular/core';
+import { Component, ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
@@ -13,8 +14,8 @@ import { RestrictionService } from 'src/app/services/meal-order/restriction.serv
   templateUrl: './restriction-type-editor.component.html',
   styleUrls: ['./restriction-type-editor.component.css']
 })
-export class RestrictionTypeEditorComponent {
-
+export class RestrictionTypeEditorComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
   private isNewRestrictionType = false;
   private isSaving: boolean;
   private showValidationErrors: boolean = true;
@@ -44,6 +45,13 @@ export class RestrictionTypeEditorComponent {
     }
   }
 
+  ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   private showErrorAlert(caption: string, message: string) {
     this.alertService.showMessage(caption, message, MessageSeverity.error);
@@ -113,7 +121,7 @@ export class RestrictionTypeEditorComponent {
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close({ isCancel: true });
   }
 
   resetForm(replace = false) {

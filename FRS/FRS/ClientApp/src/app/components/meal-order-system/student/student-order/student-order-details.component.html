@@ -30,8 +30,8 @@
 
         <mat-form-field class="col-xs-12 col-md-6" appearance="none">
           <mat-label>Session</mat-label>
-          <input matInput placeholder="Session" [disabled]="true" style="display:none" [value]="order.mealSessionName">
-          <span>{{order.mealSessionName | default: '-'}}</span>
+          <input matInput placeholder="Session" [disabled]="true" style="display:none" [value]="order.mealSessionDetailName">
+          <span>{{order.mealSessionDetailName | default: '-'}}</span>
         </mat-form-field>
         <mat-form-field class="col-xs-12 col-md-6" appearance="none">
           <mat-label>Meal Description</mat-label>
@@ -70,7 +70,7 @@
         <mat-form-field class="col-xs-12 col-md-6" appearance="none">
           <mat-label>Total</mat-label>
           <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.totalAmount">
-          <span>{{order.totalAmount | default: '-' }}</span>
+          <span>${{order.totalAmount | default: '-' }}</span>
         </mat-form-field>
       </div>
 

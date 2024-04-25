@@ -47,6 +47,7 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
   public restrictions = [];
   public restrictionTypes = [];
   public interestGroups = [];
+  public outletId: string;
 
   public searchForm: FormControl = new FormControl();
   studentId: any;
@@ -64,14 +65,14 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
     private userService: UserService, private restrictionService: RestrictionService, private deliveryService: DeliveryService,
     public dialogRef: MatDialogRef<StudentEditorComponent>, public dialog: MatDialog, 
     @Inject(MAT_DIALOG_DATA) public data: any) {
-    if (typeof (data.student) != typeof (undefined) && data.student.id) {
-      this.editStudent(data.student);
-    } else {
-      this.newStudent();
-    }
 
-    this.getOutlets();
+    this.outletId = data.outletId;
+    this.editStudent(data.student);
+
+    //this.getOutlets();
     //this.getClassLevels();
+    this.getClassLevels(false, this.studentEdit.outletId);
+
     this.getClassBatches();
     //this.getUserTypes();
     this.getRestrictions();
@@ -158,7 +159,8 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
 
   getClassBatches() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
+    let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
+    filter.filters = f + '(IsActive)==true';
     this.subscription.add(this.classService.getClassBatchesByFilter(filter)
       .subscribe(results => {
         this.batches = results.pagedData;
@@ -398,12 +400,14 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
     this.studentEdit = new Student();
     this.studentEdit.gender = 'Male';
     this.studentEdit.isFAS = false;
+    this.studentEdit.outletId = this.outletId;
     if (!this.studentEdit.studentCards) this.studentEdit.studentCards = [];
+    console.log('editStudent', this.studentEdit);
     return this.studentEdit;
   }
 
   editStudent(student: Student) {
-    if (student) {
+    if (student && student.id) {
       this.isNewStudent = false;
       this.showValidationErrors = true;
 
@@ -413,6 +417,9 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
       Object.assign(this.studentEdit, student);
       this.isAddAccount = this.studentEdit.userId && parseInt(this.studentEdit.userId) > 0;
       if (!this.studentEdit.studentCards) this.studentEdit.studentCards = [];
+      if (!this.studentEdit.outletId) this.studentEdit.outletId = this.outletId;
+
+      console.log('editStudent', this.studentEdit);
       return this.studentEdit;
     }
     else {

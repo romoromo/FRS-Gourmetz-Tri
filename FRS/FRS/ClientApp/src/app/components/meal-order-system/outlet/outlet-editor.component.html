@@ -22,7 +22,7 @@
           <input matInput autocomplete="off" [disabled]="!canManageOutlets" type="text" id="outletAddress" name="outletAddress" placeholder="Address" [(ngModel)]="outletEdit.address" #outletAddress="ngModel" required />
         </mat-form-field>
         <mat-form-field class="col-md-12">
-          <input matInput autocomplete="off" [disabled]="!canManageOutlets" type="number" id="daysToFreezeOrdering" name="daysToFreezeOrdering" placeholder="No. of days before ordering is freezed" [(ngModel)]="outletEdit.daysToFreezeOrdering" #amount="ngModel"  />
+          <input matInput autocomplete="off" [disabled]="!canManageOutlets" type="number" id="daysToFreezeOrdering" name="daysToFreezeOrdering" placeholder="No. of days before ordering is freezed" [(ngModel)]="outletEdit.daysToFreezeOrdering" #amount="ngModel" required />
         </mat-form-field>
       </div>
 

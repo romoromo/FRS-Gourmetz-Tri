@@ -19,19 +19,21 @@ export class CatererApprovalComponent implements OnInit {
   editCaterer: Outlet;
   selectedOutlets: CatererOutlet[];
   private outletProfiles: OutletProfile[] = [];
-
+  id: string;
   constructor(private http: HttpClient, private alertService: AlertService, private deliveryService: DeliveryService,
     public dialogRef: MatDialogRef<CatererApprovalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
 
     this.getOutletProfiles();
-    if (typeof (data.caterer) != typeof (undefined)) {
-      this.editCaterer = data.caterer;
-      if (!data.caterer.catererOutlets) {
-        this.editCaterer.catererOutlets = [];
-      }
-      this.selectedOutlets = this.editCaterer.catererOutlets;
-    }
+    this.id = data.caterer.id;
+    //if (typeof (data.caterer) != typeof (undefined)) {
+    //  this.editCaterer = data.caterer;
+    //  if (!data.caterer.catererOutlets) {
+    //    this.editCaterer.catererOutlets = [];
+    //  }
+    //  this.selectedOutlets = this.editCaterer.catererOutlets;
+    //}
+    this.getCatererById();
   }
 
   ngOnInit() {
@@ -58,6 +60,24 @@ export class CatererApprovalComponent implements OnInit {
 
   private cancel() {
     this.dialogRef.close({ isCancel: true });
+  }
+
+  getCatererById() {
+    let filter = new Filter();
+    filter.filters = '(IsActive)==true';
+
+    this.deliveryService.getCatererInfoById(this.id)
+      .subscribe(results => {
+        if (results) {
+          this.editCaterer = results;
+          this.selectedOutlets = this.editCaterer.catererOutlets;
+        }
+      },
+        error => {
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving caterers.\r\n"`,
+            MessageSeverity.error);
+        })
   }
 
   getOutletProfiles() {

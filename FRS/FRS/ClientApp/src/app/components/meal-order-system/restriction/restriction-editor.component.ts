@@ -142,7 +142,7 @@ export class RestrictionEditorComponent implements OnInit, OnDestroy {
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close({ isCancel: true });
   }
 
   resetForm(replace = false) {

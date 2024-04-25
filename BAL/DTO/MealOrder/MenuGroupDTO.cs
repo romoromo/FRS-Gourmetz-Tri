@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BAL.DTO.MealOrder
 {
-    public class MenuGroupDTO
+    public class MenuGroupSimpleDTO
     {
         public int Id { get; set; }
         public int OutletId { get; set; }
@@ -13,7 +13,12 @@ namespace BAL.DTO.MealOrder
         public string Name { get; set; }
         public string OutletName { get; set; }
         public bool IsPublished { get; set; }
+        public List<int> DishCycleIds { get; set; }
+        public List<int> ClassIds { get; set; }
+    }
 
+    public class MenuGroupDTO: MenuGroupSimpleDTO
+    {
         public List<MenuGroupDishCycleDTO> MenuGroupDishCycles { get; set; }
         public List<MenuGroupClassDTO> Classes { get; set; }
     }

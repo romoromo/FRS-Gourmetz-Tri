@@ -64,6 +64,7 @@ export class CatererInfoEditorComponent {
     
 
     if (this.isNewCatererInfo) {
+      this.catererInfoEdit.createdBy = this.accountService.currentUser.id;
       this.deliveryService.newCatererInfo(this.catererInfoEdit).subscribe(catererInfo => this.saveSuccessHelper(catererInfo), error => this.saveFailedHelper(error));
     }
     else {

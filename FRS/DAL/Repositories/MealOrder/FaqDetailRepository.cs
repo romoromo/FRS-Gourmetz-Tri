@@ -10,6 +10,7 @@ using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
 using DAL.Models.MealOrder;
+using Castle.Core;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -52,6 +53,12 @@ namespace DAL.Repositories.MealOrder
         public async Task<BaseOperationResponse> CreateAsync(FaqDetail faqDetail)
         {
             var result = new BaseOperationResponse();
+
+            var detail = (await FindAsync(e => e.FaqSubjectId == faqDetail.FaqSubjectId && e.IsActive)).OrderByDescending(e => e.Order).FirstOrDefault();
+            int order = detail == null ? 1 : detail.Order + 1;
+
+            faqDetail.Order = order;
+
             var f = await AddAsync(faqDetail);
             if (await _appContext.SaveChangesAsync() > 0)
             {
@@ -88,6 +95,61 @@ namespace DAL.Repositories.MealOrder
                 result.IsSuccess = false;
             }
 
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> OrderAsync(int id, bool isAsc)
+        {
+            var result = new BaseOperationResponse();
+            var faqDetail = await GetSingleOrDefaultAsync(r => r.Id == id);
+
+            if (faqDetail != null)
+            {
+                // get the others
+                var details = (await FindAsync(e => e.FaqSubjectId == faqDetail.FaqSubjectId && e.IsActive)).OrderBy(e => e.Order).ToList();
+                int index = details.FindIndex(e => e.Id == id);
+
+                if(index < 1 && isAsc)
+                {
+                    result.Message = "Not allowed";
+                    return result;
+                }
+
+                if (index >= details.Count - 1 && !isAsc)
+                {
+                    result.Message = "Not allowed";
+                    return result;
+                }
+
+                int currentOrder = faqDetail.Order;
+                FaqDetail recordToSwap = null;
+
+                if (isAsc)
+                {
+                    recordToSwap = details.OrderByDescending(e => e.Order).FirstOrDefault(r => r.Order < faqDetail.Order);
+                    faqDetail.Order = recordToSwap.Order;
+                    recordToSwap.Order = currentOrder;
+                }
+                else
+                {
+                    recordToSwap = details.OrderBy(e => e.Order).FirstOrDefault(r => r.Order > faqDetail.Order);
+                    faqDetail.Order = recordToSwap.Order;
+                    recordToSwap.Order = currentOrder;
+                }
+
+                await UpdateAsync(recordToSwap);
+                await UpdateAsync(faqDetail);
+
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    return result;
+                }
+            }
+
+            result.IsSuccess = false;
+            result.Message = "Record not found.";
             return result;
         }
 

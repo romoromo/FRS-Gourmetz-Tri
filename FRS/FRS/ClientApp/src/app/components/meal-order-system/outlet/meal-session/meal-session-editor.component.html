@@ -31,7 +31,7 @@
                   <tr *ngFor="let detail of mealSession.details; let i = index">
                     <td>
                       <mat-form-field class="col-md-12">
-                        <input matInput [disabled]="!canManageMealSessions" type="text" id="detail-name-{{a}}{{x}}{{i}}" name="detail-name-{{a}}{{x}}{{i}}" autocomplete="off" [(ngModel)]="detail.name" minlength="1" maxlength="200" required />
+                        <input matInput [disabled]="!canManageMealSessions" type="text" id="detail-name-{{a}}{{x}}{{i}}" name="detail-name-{{a}}{{x}}{{i}}" autocomplete="off" [(ngModel)]="detail.name" minlength="1" maxlength="200" required placeholder="Enter label" />
 
                       </mat-form-field>
                       <div class="col-xs-12">

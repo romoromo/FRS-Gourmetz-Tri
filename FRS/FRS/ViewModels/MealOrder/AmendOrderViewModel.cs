@@ -14,5 +14,6 @@ namespace FRS.ViewModels.MealOrder
         public string FomoId { get; set; }
         public int? UpdatedById { get; set; }
         public string Reason { get; set; }
+        public int DishId { get; set; }
     }
 }

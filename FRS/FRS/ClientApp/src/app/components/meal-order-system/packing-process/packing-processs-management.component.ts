@@ -1,4 +1,6 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, TemplateRef, ViewChild, Input, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { SearchBoxComponent } from '../../controls/search-box.component';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -21,7 +23,8 @@ import { Dish } from '../../../models/meal-order/dish.model';
   templateUrl: './packing-processs-management.component.html',
   styleUrls: ['./packing-processs-management.component.css']
 })
-export class PackingProcesssManagementComponent implements OnInit {
+export class PackingProcesssManagementComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
   columns: any[] = [];
   rows: any[] = [];
   map: any = {};
@@ -44,6 +47,10 @@ export class PackingProcesssManagementComponent implements OnInit {
 
   @ViewChild('actionsTemplate')
   actionsTemplate: TemplateRef<any>;
+
+  @ViewChild('searchbox') searchbox: SearchBoxComponent;
+
+  @ViewChild('packingProcessTable') table: any;
 
   header: string;
 
@@ -107,6 +114,10 @@ export class PackingProcesssManagementComponent implements OnInit {
     this.initializeTableDefinition();
   }
 
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   onSearchChanged(value: string) {
     this.keyword = value;
@@ -242,7 +253,7 @@ export class PackingProcesssManagementComponent implements OnInit {
   getCartonAssets() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getCartonAssetsByFilter(filter)
+    this.subscription.add(this.deliveryService.getCartonAssetsByFilter(filter)
       .subscribe(results => {
         this.cartonAssets = results.pagedData;
       },
@@ -250,13 +261,13 @@ export class PackingProcesssManagementComponent implements OnInit {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving carton assets.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getBentoAssets() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getBentoAssetsByFilter(filter)
+    this.subscription.add(this.deliveryService.getBentoAssetsByFilter(filter)
       .subscribe(results => {
         this.bentoAssets = results.pagedData;
       },
@@ -264,7 +275,7 @@ export class PackingProcesssManagementComponent implements OnInit {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving bento assets.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   //getDishs() {

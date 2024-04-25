@@ -16,5 +16,6 @@ namespace DAL.Repositories.Interfaces
         Task<FaqSubject> GetByIdAsync(int id);
         Task<BaseOperationResponse> UpdateAsync(FaqSubject faqSubject);
         Task<PagedEntity<FaqSubject>> GetFaqSubjectsAsync(BaseFilter filter);
+        Task<BaseOperationResponse> OrderAsync(int id, bool isAsc);
     }
 }

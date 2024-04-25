@@ -138,8 +138,9 @@ export class OutletsManagementComponent implements OnInit {
     this.columns = [
       { prop: 'name', name: 'Name' },
       { prop: 'address', name: 'Address' },
+      { prop: 'daysToFreezeOrdering', name: 'Cut-off in Days' },
       //{ prop: 'outletProfileName', name: 'Outlet Profile Name' },
-      { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
+      { name: '', width: 350, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
   }
 
@@ -247,7 +248,7 @@ export class OutletsManagementComponent implements OnInit {
 
     const dialogRef = this.dialog.open(CatererSelectorComponent, {
       data: { header: "Caterers", outlet: row},
-      width: '700px',
+      width: '100vw',
       disableClose: true
     });
 

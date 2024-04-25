@@ -176,7 +176,8 @@
       </ngx-datatable-column>-->
       <ngx-datatable-column name="Action" width="150" [frozenRight]="true">
         <ng-template let-row="row" ngx-datatable-cell-template>
-          <a *ngIf="!editing[row.id]" class="btn btn-sm btn-info" href="javascript:;" (click)="startEditing(row)">Amend</a>
+          <!--<a *ngIf="!editing[row.id]" class="btn btn-sm btn-info" href="javascript:;" (click)="startEditing(row)">Amend</a>-->
+          <a *ngIf="!editing[row.id] && !isSkipAmend(row)" class="btn btn-sm btn-sm btn-warning" href="javascript:;" (click)="changeOrder(row)">Amend</a>
           <a *ngIf="editing[row.id]" class="btn btn-sm btn-info" href="javascript:;" (click)="saveRow(row)">Save</a>
           <a *ngIf="editing[row.id]" class="btn btn-sm btn-warning" href="javascript:;" (click)="cancelEditing(row)">Cancel</a>
           <a *ngIf="!editing[row.id]" style="margin-left:3px;" class="btn btn-sm btn-info" href="javascript:;" (click)="viewOrder(row)">View</a>
@@ -205,7 +206,8 @@
   </ng-template>
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
-    <a *ngIf="!editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="startEditing(row)">Amend</a>
+    <!--<a *ngIf="!editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="startEditing(row)">Amend</a>-->
+    <a *ngIf="!editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="changeOrder(row)">Amend</a>
     <a *ngIf="!editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="saveRow(row)">Save</a>
     <a *ngIf="editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="cancelEditing(row)">Cancel</a>
     <a *ngIf="!editing[row.id]" class="btn btn-link btn-xs" href="javascript:;" (click)="startEditing(row)">View</a>

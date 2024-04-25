@@ -1,12 +1,15 @@
-<h1 mat-dialog-title>New Order</h1>
+<h1 mat-dialog-title>{{data.header}}</h1>
 <div>
   <form class="form-horizontal" name="studentEditorForm" #f="ngForm" novalidate
         (ngSubmit)="f.form.valid ? saveOrder() : ''">
     <div mat-dialog-content>
       <div class="row">
+        <div class="col-sm-12" *ngIf="order.tokenOrderId">
+          <h4>Order #{{order.tokenOrderId}}</h4>
+        </div>
         <!--<div class="col-sm-12">
-          <h4>Order Information</h4>
-        </div>-->
+    <h4>Order Information</h4>
+  </div>-->
         <mat-form-field class="col-xs-12 col-md-6" appearance="none">
           <mat-label>Transaction Date/Time</mat-label>
           <input matInput placeholder="Transaction Date/Time" [disabled]="true" style="display:none" [value]="order.transactionTime">
@@ -18,59 +21,86 @@
           <span>{{order.processedBy | default: '-'}}</span>
         </mat-form-field>
 
-        <mat-form-field class="clearfix col-xs-12 col-md-6">
+
+        <mat-form-field class="clearfix col-xs-12 col-md-6" *ngIf="!order.tokenOrderId">
           <mat-label>Delivery Date</mat-label>
-          <input matInput [matDatepicker]="deliveryDate" (dateChange)="onDateSelected($event)" placeholder="Delivery Date"  [min]="minDate"  [value]="order.deliveryDate">
+          <input matInput [matDatepicker]="deliveryDate" (dateChange)="onDateSelected($event)" placeholder="Delivery Date" [min]="minDate" [value]="order.deliveryDate">
           <mat-datepicker-toggle matSuffix [for]="deliveryDate"></mat-datepicker-toggle>
           <mat-datepicker #deliveryDate></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none" *ngIf="!order.tokenOrderId">
           <mat-label>Session</mat-label>
           <mat-select required placeholder="Session" name="session" [(ngModel)]="order.mealSessionDetailId" #session="ngModel" (selectionChange)="onChangeSession($event)">
             <mat-option *ngFor="let session of sessions" [value]="session.id">{{session.mealSessionName}}</mat-option>
           </mat-select>
         </mat-form-field>
+
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none" *ngIf="order.tokenOrderId">
+          <mat-label>Delivery Date</mat-label>
+          <input matInput placeholder="Delivery Date" [disabled]="true" style="display:none" [value]="order.deliveryDate">
+          <span>{{order.deliveryDate | dateOnly }}</span>
+        </mat-form-field>
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none" *ngIf="order.tokenOrderId">
+          <mat-label>Session</mat-label>
+          <input matInput placeholder="Session" [disabled]="true" style="display:none" [value]="order.mealSessionDetailName">
+          <span>{{order.mealSessionDetailName}}</span>
+        </mat-form-field>
+
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none" *ngIf="order.tokenOrderId">
+          <mat-label>Status</mat-label>
+          <mat-select required placeholder="" name="orderStatus" [(ngModel)]="order.status" #orderStatus="ngModel">
+            <mat-option value="pending">Pending</mat-option>
+            <mat-option value="paid">Paid</mat-option>
+            <mat-option value="cancelled">Cancelled</mat-option>
+
+          </mat-select>
+        </mat-form-field>
+
+        <!--<mat-status-dropdown [selectedStatus]="order.status" [classVal]="'col-xs-12 col-md-6'" [isShow]="order.tokenOrderId" [label]="Status" [name]="status" [placeholder]="Status"
+                       (statusChanged)="onStatusChange(order, $event)"></mat-status-dropdown>-->
+
+        <mat-form-field class="col-xs-12 col-md-6" *ngIf="order.tokenOrderId">
+          <!--<input matInput placeholder="Amend Reason" [(ngModel)]="order.reason" name="reason">-->
+          <mat-label>Amend Reason</mat-label>
+          <textarea matInput placeholder="" [(ngModel)]="order.reason" name="reason" rows="5" required></textarea>
+        </mat-form-field>
         <!--<mat-form-field class="col-xs-12 col-md-6" appearance="none">
-          <mat-label>Meal Description</mat-label>
-          <input matInput placeholder="Meal Description" [disabled]="true" style="display:none" [value]="order.mealDescription">
-          <span>{{order.mealDescription | default: '-' }}</span>
-        </mat-form-field>-->
-        <!--<hr class="clearfix" />
-        <div class="col-sm-12">
+    <mat-label>Meal Description</mat-label>
+    <input matInput placeholder="Meal Description" [disabled]="true" style="display:none" [value]="order.mealDescription">
+    <span>{{order.mealDescription | default: '-' }}</span>
+  </mat-form-field>-->
+        <hr class="clearfix" />
+        <div class="col-sm-12" *ngIf="order.tokenOrderId">
           <h4>Payment Information</h4>
         </div>
-        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none" *ngIf="order.tokenOrderId">
           <mat-label>Payment Method</mat-label>
           <input matInput placeholder="Payment Method" [disabled]="true" style="display:none" [value]="order.paymentTypeName">
           <span>{{order.paymentTypeName | default: '-' }}</span>
         </mat-form-field>
-        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+        <mat-form-field class="col-xs-12 col-md-6" *ngIf="order.tokenOrderId">
           <mat-label>Invoice No.</mat-label>
-          <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.invoiceNumber">
-          <span>{{order.invoiceNumber | default: '-' }}</span>
+          <input matInput placeholder="Invoice No." [(ngModel)]="order.invoiceNumber" name="invoiceNumber">
         </mat-form-field>
-        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
-          <mat-label>Order No.</mat-label>
-          <input matInput placeholder="Order No." [disabled]="true" style="display:none" [value]="order.paymentNumber">
-          <span>{{order.paymentNumber | default: '-' }}</span>
+        <div class="clearfix"></div>
+        <mat-form-field class="col-xs-12 col-md-6" *ngIf="order.tokenOrderId">
+          <input matInput placeholder="Order No." [(ngModel)]="order.paymentNumber" name="paymentNumber">
         </mat-form-field>
-        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
-          <mat-label>FOMO No.</mat-label>
-          <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.fomoId">
-          <span>{{order.fomoId | default: '-' }}</span>
+        <mat-form-field class="col-xs-12 col-md-6" *ngIf="order.tokenOrderId">
+          <input matInput placeholder="FOMO No." [(ngModel)]="order.fomoId" name="fomoId">
         </mat-form-field>
-        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none" *ngIf="order.tokenOrderId">
           <mat-label>Voucher</mat-label>
           <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.voucherCode">
           <span>{{order.voucherCode | default: '-' }}</span>
         </mat-form-field>
-        <mat-form-field class="col-xs-12 col-md-6" appearance="none">
+        <mat-form-field class="col-xs-12 col-md-6" appearance="none" *ngIf="order.tokenOrderId">
           <mat-label>Total</mat-label>
           <input matInput placeholder="" [disabled]="true" style="display:none" [value]="order.totalAmount">
           <span>{{order.totalAmount | default: '-' }}</span>
-        </mat-form-field>-->
-        <hr class="clearfix"/>
+        </mat-form-field>
+        <hr class="clearfix" />
         <div class="col-sm-12">
           <h4>Meals</h4>
         </div>
@@ -86,7 +116,7 @@
                 </div>
               </div>
               <div *ngFor="let dish of set.displayMenus" style="margin-bottom:10px">
-                <div class="flex gap-2" style="display:flex">
+                <div class="flex gap-2" style="display:flex" *ngIf="!order.tokenOrderId || (order.tokenOrderId && set.price <= order.totalAmount)">
                   <div style="background-color: gray;height:75px;width:75px;min-width:75px;border-radius:1rem">
                     <div *ngIf="dish.filePath">
                       <img alt="" [src]="getFileImage(dish.filePath)"
@@ -102,13 +132,13 @@
                   </div>
                   <div class="flex flex-col justify-start gap-2" style="display: flex;align-items: center;justify-content: center">
                     <span class="label-text font-bold font-sm text-sm " style="color:black;padding-right:20px">
-                      {{dec2(set.price)}}
+                      ${{dec2(set.price)}}
                     </span>
-                    <div *ngIf="!order.totalPayment || order.totalPayment == 0">
+                    <div *ngIf="!order.totalAmount || order.totalAmount == 0 || order.tokenOrderId > 0">
                       <input type="radio" name="rbDishes"
                              class="checkbox checkbox-primary"
                              style="align-self: center;"
-                             [checked]="selectedDish && selectedDish.dishId == dish.dishId && set.id == dish.setId"
+                             [checked]="selectedDish && selectedDish.dishId == dish.dishId"
                              (click)="selectDish(dish, set)" />
                     </div>
                   </div>

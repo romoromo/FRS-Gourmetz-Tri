@@ -39,7 +39,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, string type, bool skip = true);
         Task<StudentGroupTokenOrderSummaryDTO> GetStudentGroupOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails, string type);
         Task<PagedEntity<TokenOrder>> GetStudentOrdersAsync(StudentOrderFilter filter);
-        Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason);
+        Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason, int dishId);
         Task<BaseOperationResponse> CreatePrepaidOrderAsync(PrepaidOrderDTO order);
         //Task<List<spSalesOrderReport>> GetOrderCollection(SalesOrderReportFilter filter);
         Task<List<spVoucherUtilisationReport>> GetVoucherUtilisations(VoucherUtilisationReportFilter filter);

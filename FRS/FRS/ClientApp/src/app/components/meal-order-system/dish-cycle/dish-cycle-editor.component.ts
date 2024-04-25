@@ -1,4 +1,4 @@
-import { Component, ViewChild, Inject, ViewEncapsulation, LOCALE_ID } from '@angular/core';
+import { Component, ViewChild, Inject, ViewEncapsulation, LOCALE_ID, OnInit, OnDestroy } from '@angular/core';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
@@ -7,6 +7,8 @@ import { DateAdapter, MatDatepickerInputEvent, MAT_DATE_FORMATS, MAT_DATE_LOCALE
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Filter } from 'src/app/models/sieve-filter.model';
 import * as moment from 'moment';
+import { Subscription, Subject } from 'rxjs';
+import { takeUntil, switchMap } from 'rxjs/operators';
 import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
 import { MealService } from 'src/app/services/meal-order/meal.service';
 import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
@@ -43,8 +45,9 @@ export const CUSTOM_DATE_FORMAT = {
     { provide: DateAdapter, useClass: MomentUtcDateAdapter },
   ]
 })
-export class DishCycleEditorComponent {
-
+export class DishCycleEditorComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
+  private cancelPreviousRequests = new Subject<void>();
   private isNewDishCycle = false;
   private isSaving: boolean;
   private showValidationErrors: boolean = true;
@@ -64,7 +67,7 @@ export class DishCycleEditorComponent {
   public searchForm: FormControl = new FormControl();
   start = new Date();
   end = new Date();
-
+  isLoadingDishCycles = false;
   private sets = [];
 
   public changesSavedCallback: () => void;
@@ -83,20 +86,52 @@ export class DishCycleEditorComponent {
     if (typeof (data.dishCycle) != typeof (undefined)) {
       this.catererId = data.catererId;
       if (data.dishCycle.id) {
-        this.editDishCycle(data.dishCycle);
-        this.generateScheduleDetails();
+        this.getDishCycleById(data.dishCycle.id);
+        //this.editDishCycle(data.dishCycle);
+        //this.generateScheduleDetails();
       } else {
         this.newDishCycle();
       }
     }
     this.getDishTypes();
     //this.getPeriods();
-    this.getDishCyles();
-    this.getMealTypes();
+    console.log(this.dishCycleEdit);
+    //if (this.dishCycleEdit.outletProfileId) {
+    //  this.getDishCyles();
+    //  this.getMealTypes();
+    //} else {
+    //  this.initiliaseSet();
+    //}
+    //this.getDishCyles();
+    //this.getMealTypes();
     this.getOutletProfiles();
+    
     //this.getMealPeriods();
   }
 
+  ngOnInit() {
+  }
+
+  ngOnDestroy(): void {
+    this.cancelPreviousRequests.next();
+    this.subscription.unsubscribe();
+  }
+
+  getDishCycleById(id) {
+    this.dishService.getDishCycleById(id)
+      .subscribe(results => {
+        this.editDishCycle(results);
+        this.generateScheduleDetails();
+        this.alertService.stopLoadingMessage();
+      },
+        error => {
+          this.alertService.stopLoadingMessage();
+
+          console.log(error);
+          //this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
+          //  MessageSeverity.error);
+        });
+  }
   onChangeDate(type: string, event: MatDatepickerInputEvent<Date>) {
     if (type == 'start') {
       this.start = new Date(event.value);
@@ -194,10 +229,10 @@ export class DishCycleEditorComponent {
 
     console.log(this.dishCycleEdit.schedules);
     if (this.isNewDishCycle) {
-      this.dishService.newDishCycle(this.dishCycleEdit).subscribe(dishCycle => this.saveSuccessHelper(this.dishCycleEdit), error => this.saveFailedHelper(error));
+      this.subscription.add(this.dishService.newDishCycle(this.dishCycleEdit).subscribe(dishCycle => this.saveSuccessHelper(this.dishCycleEdit), error => this.saveFailedHelper(error)));
     }
     else {
-      this.dishService.updateDishCycle(this.dishCycleEdit).subscribe(response => this.saveSuccessHelper(), error => this.saveFailedHelper(error));
+      this.subscription.add(this.dishService.updateDishCycle(this.dishCycleEdit).subscribe(response => this.saveSuccessHelper(), error => this.saveFailedHelper(error)));
     }
   }
 
@@ -252,7 +287,7 @@ export class DishCycleEditorComponent {
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close(true);
   }
 
   resetForm(replace = false) {
@@ -296,6 +331,16 @@ export class DishCycleEditorComponent {
       Object.assign(this.dishCycleEdit, dishCycle);
       this.start = this.dishCycleEdit.startDate;
       this.end = this.dishCycleEdit.endDate;
+
+      if (this.dishCycleEdit.outletProfileId) {
+        this.getDishCyles();
+        this.getMealTypes();
+        this.getPeriods(true);
+      } else {
+        this.initiliaseSet();
+      }
+
+      //this.getOutletProfiles();
       return this.dishCycleEdit;
     }
     else {
@@ -307,8 +352,9 @@ export class DishCycleEditorComponent {
 
   getDishTypes() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
-    this.dishService.getDishTypesByFilter(filter)
+    let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
+    filter.filters = f + '(IsActive)==true';
+    this.subscription.add(this.dishService.getDishTypesByFilter(filter)
       .subscribe(results => {
         this.dishTypes = results.pagedData;
         this.getDishes();
@@ -317,7 +363,7 @@ export class DishCycleEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
           //  MessageSeverity.error);
-        });
+        }));
   }
 
   getDishes() {
@@ -325,7 +371,7 @@ export class DishCycleEditorComponent {
     let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
     f = f + (this.dishCycleEdit.dishTypeId ? '(DishTypeId)==' + this.dishCycleEdit.dishTypeId + ',' : '');
     filter.filters = f + '(IsActive)==true';
-    this.dishService.getDishesByFilter(filter)
+    this.subscription.add(this.dishService.getDishesByFilter(filter)
       .subscribe(results => {
         this.dishes = results.pagedData;
         //this.dishes.forEach((p, index, ps) => {
@@ -336,18 +382,18 @@ export class DishCycleEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dishes.\r\n"`,
             MessageSeverity.error);
-        })
+        }))
   }
 
   getPeriods(isClearValue: boolean, outletProfileId?: string) {
-    if (outletProfileId) {
+    if (outletProfileId || this.dishCycleEdit.outletProfileId) {
       //if (isClearValue) this.dishCycleEdit.outletProfileId = '';
       let filter = new Filter();
       filter.sorts = 'sequence';
       let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
-      filter.filters = f + '(IsActive)==true,(OutletProfileId)==' + outletProfileId;
+      filter.filters = f + '(IsActive)==true,(OutletProfileId)==' + this.dishCycleEdit.outletProfileId;
 
-      this.mealService.getMealPeriodsByFilter(filter)
+      this.subscription.add(this.mealService.getMealPeriodsByFilter(filter)
         .subscribe(results => {
           this.periods = results.pagedData;
           this.periods.forEach((p, index, ps) => {
@@ -358,7 +404,7 @@ export class DishCycleEditorComponent {
             //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
             //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving periods.\r\n"`,
             //  MessageSeverity.error);
-          })
+          }))
     } else {
 
     }
@@ -368,10 +414,10 @@ export class DishCycleEditorComponent {
     let filter = new Filter();
     let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
     filter.filters = f + '(IsActive)==true';
-    this.deliveryService.getOutletProfilesByFilter(filter)
+    this.subscription.add(this.deliveryService.getOutletProfilesByFilter(filter)
       .subscribe(results => {
         this.outletProfiles = results.pagedData;
-        this.getPeriods(false, this.dishCycleEdit.outletProfileId);
+        //this.getPeriods(false, this.dishCycleEdit.outletProfileId);
         //this.dishes.forEach((p, index, ps) => {
         //  (<any>p).checked = this.dishCycleEdit.schedules != null && this.dishCycleEdit.schedules.findIndex(f=> f.dishId == p.id) > -1;
         //});
@@ -380,7 +426,7 @@ export class DishCycleEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving outlets.\r\n"`,
             MessageSeverity.error);
-        })
+        }))
   }
 
   //getMealPeriods() {
@@ -401,34 +447,46 @@ export class DishCycleEditorComponent {
   //}
 
   getDishCyles() {
+    this.cancelPreviousRequests.next();
+    this.isLoadingDishCycles = true;
     let filter = new Filter();
     filter.sorts = 'label';
     filter.filters = '(IsActive)==true,(OutletProfileId)==' + this.dishCycleEdit.outletProfileId;
 
     this.dishService.getDishCyclesByFilter(filter)
-      .subscribe(results => {
-        this.dishCycles = results.pagedData;
-        this.initiliaseSet();
-      },
-        error => {
-          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving periods.\r\n"`,
-          //  MessageSeverity.error);
+      .pipe(
+        takeUntil(this.cancelPreviousRequests),
+        switchMap(results => {
+
+          this.dishCycles = results.pagedData;
+          this.initiliaseSet();
+          return [];
         })
+      )
+      .subscribe(
+        () => { this.isLoadingDishCycles = false; },
+        error => {
+          this.isLoadingDishCycles = false;
+          this.alertService.stopLoadingMessage();
+          this.alertService.showStickyMessage("Get Error", `An error occurred while retrieving records.\r\n"`, MessageSeverity.error);
+        }
+    );
   }
 
   getMealTypes() {
+    console.log('getMealTypes');
     let filter = new Filter();
     filter.sorts = 'name';
     //let f = this.menuCycle.catererId ? '(CatererId)==' + this.menuCycle.catererId + ',' : '';
     filter.filters = '(MealTypeByOutletProfileId)==' + this.dishCycleEdit.outletProfileId + ',(IsActive)==true';
     //filter.filters = f + '(IsActive)==true';
-    this.mealService.getMealTypesByFilter(filter).subscribe(results => {
+    this.subscription.add(this.mealService.getMealTypesByFilter(filter).subscribe(results => {
       this.mealTypes = results.pagedData;
     },
       error => {
         this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
           MessageSeverity.error);
-      })
+      }))
   }
 
   getMealTypesByType(type) {
@@ -560,6 +618,7 @@ export class DishCycleEditorComponent {
     this.dishCycleEdit.schedules = [];
     this.getMealTypes();
     this.generateSchedule();
+    this.getPeriods(false, this.dishCycleEdit.outletProfileId);
     //this.getPeriods(true, outletProfileId);
   }
 

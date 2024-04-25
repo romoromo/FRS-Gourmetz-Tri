@@ -49,6 +49,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateMenuGroupAsync(MenuGroupDTO dto);
         Task<BaseOperationResponse> DeleteMenuGroupAsync(int id);
         Task<MenuGroupDTO> GetMenuGroupByIdAsync(int id);
+        Task<PagedEntity<MenuGroupSimpleDTO>> GetMenuGroupsSimpleAsync(BaseFilter filter);
         Task<PagedEntity<MenuGroupDTO>> GetMenuGroupsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateMenuGroupAsync(MenuGroupDTO dto);
 

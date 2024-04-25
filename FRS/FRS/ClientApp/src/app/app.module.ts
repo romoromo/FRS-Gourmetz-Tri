@@ -485,7 +485,7 @@ import { UserActivityLogsManagementComponent } from './components/audit/user-act
 import { UserActivityLogViewerComponent } from './components/audit/user-activity-log/user-activity-log-viewer.component';
 import { OutletTermsManagementComponent } from './components/meal-order-system/outlet/outlet-term/outlet-terms-management.component';
 import { OutletTermEditorComponent } from './components/meal-order-system/outlet/outlet-term/outlet-term-editor.component';
-import { StudentOrderManagementComponent, StatusDropdownComponent } from './components/meal-order-system/student/student-order/student-orders-management.component';
+import { StudentOrderManagementComponent, StatusDropdownComponent, MatStatusDropdownComponent } from './components/meal-order-system/student/student-order/student-orders-management.component';
 import { StudentOrderDetailComponent } from './components/meal-order-system/student/student-order/student-order-details.component';
 import { DefaultPipe } from './pipes/default-string-val.pipe';
 import { StudentOrderEditorComponent } from './components/meal-order-system/student/student-order/student-order-editor.component';
@@ -730,6 +730,7 @@ export const configFactory = (configService: ConfigurationService) => {
     UserActivityLogsManagementComponent, UserActivityLogViewerComponent,
     OutletTermsManagementComponent, OutletTermEditorComponent,
     StudentOrderManagementComponent, StatusDropdownComponent, StudentOrderDetailComponent,
+    MatStatusDropdownComponent,
     StudentEditorComponent, StudentOrderEditorComponent,
     DefaultPipe,
     OrderCollectionLogsManagementComponent,
@@ -914,6 +915,7 @@ export const configFactory = (configService: ConfigurationService) => {
     StudentGroupOrderSummaryComponent,
     UserActivityLogsManagementComponent, UserActivityLogViewerComponent,
     OutletTermsManagementComponent, OutletTermEditorComponent,
+    MatStatusDropdownComponent,
     StudentOrderManagementComponent, StatusDropdownComponent, StudentOrderDetailComponent,
     StudentEditorComponent, StudentOrderEditorComponent,
     OrderCollectionLogsManagementComponent,

@@ -318,6 +318,12 @@ namespace BAL.Services.MealOrder
 
         #region Menu Group
 
+        public async Task<PagedEntity<MenuGroupSimpleDTO>> GetMenuGroupsSimpleAsync(BaseFilter filter)
+        {
+            var result = Mapper.Map<PagedEntity<MenuGroupSimpleDTO>>(await this._uow.MenuGroups.GetMenuGroupsAsync(filter));
+            return result;
+        }
+
         public async Task<PagedEntity<MenuGroupDTO>> GetMenuGroupsAsync(BaseFilter filter)
         {
             var result = Mapper.Map<PagedEntity<MenuGroupDTO>>(await this._uow.MenuGroups.GetMenuGroupsAsync(filter));

@@ -1,4 +1,6 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { SearchBoxComponent } from '../../controls/search-box.component';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -21,7 +23,8 @@ import { saveAs } from 'file-saver';
   templateUrl: './delivery-orders-new-management.component.html',
   styleUrls: ['./delivery-orders-new-management.component.css']
 })
-export class DeliveryOrdersNewManagementComponent implements OnInit {
+export class DeliveryOrdersNewManagementComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
   columns: any[] = [];
   rows: DeliveryOrderNew[] = [];
   rowsCache: DeliveryOrderNew[] = [];
@@ -44,6 +47,11 @@ export class DeliveryOrdersNewManagementComponent implements OnInit {
 
   @ViewChild('deliveryOrderEditor')
   deliveryOrderEditor: DeliveryOrderNewEditorComponent;
+
+  @ViewChild('searchbox') searchbox: SearchBoxComponent;
+
+  @ViewChild('deliveryOrderNewTable') table: any;
+
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog) {
@@ -57,7 +65,8 @@ export class DeliveryOrdersNewManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.loadData(null);
+      if (!result || !result.isCancel)
+        this.loadData(null);
     });
   }
 
@@ -100,6 +109,10 @@ export class DeliveryOrdersNewManagementComponent implements OnInit {
     this.loadData();
   }
 
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
@@ -116,7 +129,7 @@ export class DeliveryOrdersNewManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     this.filter.filters = '(IsActive)==true,(DONumber)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
     
-    this.deliveryService.getDeliveryOrderNewsByFilter(this.filter)
+    this.subscription.add(this.deliveryService.getDeliveryOrderNewsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
 
@@ -140,12 +153,23 @@ export class DeliveryOrdersNewManagementComponent implements OnInit {
 
           this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
-        });
+        }));
   }
 
 
   onSearchChanged(value: string) {
     this.keyword = value;
+    //this.loadData(null);
+  }
+
+  clearFilterAndPagedResult() {
+    this.initializeFilter();
+    this.initializePagedResult();
+    this.table.offset = 0;
+  }
+
+  onSearch() {
+    this.clearFilterAndPagedResult();
     this.loadData(null);
   }
 
@@ -165,7 +189,7 @@ export class DeliveryOrdersNewManagementComponent implements OnInit {
   printDeliveryOrder(row: DeliveryOrderNew) {
     const fileName = row.doNumber + '_Print.pdf';
 
-    this.deliveryService.printDo(row.id).subscribe(
+    this.subscription.add(this.deliveryService.printDo(row.id).subscribe(
       data => {
         console.log(data);
         saveAs(data, fileName);
@@ -174,13 +198,13 @@ export class DeliveryOrdersNewManagementComponent implements OnInit {
         alert("Problem while downloading the file.");
         console.error(err);
       }
-    );
+    ));
   }
 
   printCCLabel(row: DeliveryOrderNew) {
     const fileName = row.doNumber + '_CartonContentLabel.pdf';
 
-    this.deliveryService.printCCLabel(row.id).subscribe(
+    this.subscription.add(this.deliveryService.printCCLabel(row.id).subscribe(
       data => {
         console.log(data);
         saveAs(data, fileName);
@@ -189,7 +213,7 @@ export class DeliveryOrdersNewManagementComponent implements OnInit {
         alert("Problem while downloading the file.");
         console.error(err);
       }
-    );
+    ));
   }
 
   deleteDeliveryOrder(row: DeliveryOrderNew) {

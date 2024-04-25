@@ -418,3 +418,32 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   font-family: 'Avenir Next';
   src: url('app/assets/styles/AvenirNext.ttc') format('truetype');
 }
+
+
+::ng-deep .mat-dialog-title {
+  margin: 0 0 20px !important;
+  display: block !important;
+  background-color: #f0f0f0 !important;
+  padding: 10px !important;
+}
+
+.mat-dialog-title {
+  margin: 0 0 20px !important;
+  display: block !important;
+  background-color: #f0f0f0 !important;
+  padding: 10px !important;
+}
+
+.mat-button-wrapper i {
+  margin-top: -2px;
+  margin-right: 5px;
+}
+
+.mat-dialog-actions {
+  background-color: #f0f0f0 !important;
+  margin-bottom: -15px !important;
+}
+
+.mat-dialog-actions .mat-button {
+  border: 1px solid #c3c3c3;
+}

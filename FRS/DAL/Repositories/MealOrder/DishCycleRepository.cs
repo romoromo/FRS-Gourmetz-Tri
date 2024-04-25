@@ -75,7 +75,11 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<DishCycle> GetByIdAsync(int id)
         {
-            return await GetAsync(id);
+            var records = await FindWithIncludeAsync(e=> e.Id == id, e => e.OutletProfile, 
+                                                                        e => e.OutletProfile.Caterer, 
+                                                                        e => e.OutletProfile.Outlets,
+                                                                        e => e.OutletProfile.Caterer.CatererOutlets);
+            return records.FirstOrDefault();
         }
 
         public async Task<List<DishCycleScheduleSetMenuDTO>> GetDishCycleScheduleSetMenus(int cycleId, int day, int? outletId)

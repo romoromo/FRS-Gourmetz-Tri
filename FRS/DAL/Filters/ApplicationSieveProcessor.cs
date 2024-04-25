@@ -706,6 +706,10 @@ namespace DAL.Filters
             mapper.Property<ClassBatch>(p => p.Year)
                 .CanFilter()
                 .CanSort();
+
+            mapper.Property<ClassBatch>(p => p.OutletId)
+                .CanFilter()
+                .CanSort();
         }
 
         private void ClassLevelMapping(ref SievePropertyMapper mapper)
@@ -2634,6 +2638,9 @@ namespace DAL.Filters
             mapper.Property<FaqSubject>(p => p.InstitutionId)
                 .CanFilter()
                 .CanSort();
+            mapper.Property<FaqSubject>(p => p.Order)
+                .CanFilter()
+                .CanSort();
         }
 
         private void FaqDetailMapping(ref SievePropertyMapper mapper)
@@ -2658,15 +2665,19 @@ namespace DAL.Filters
                 .CanFilter()
                 .CanSort();
 
+            mapper.Property<FaqDetail>(p => p.Order)
+                .CanFilter()
+                .CanSort();
+
             mapper.Property<FaqDetail>(p => p.FaqSubject.Name)
                 .CanFilter()
                 .CanSort()
-                .HasName("contactUsSubjectName");
+                .HasName("faqSubjectName");
 
             mapper.Property<FaqDetail>(p => p.FaqSubject.Description)
                .CanFilter()
                .CanSort()
-               .HasName("contactUsSubjectDescription");
+               .HasName("faqDescription");
         }
     }
 }

@@ -1,4 +1,4 @@
-import { Component, ViewChild, Inject } from '@angular/core';
+import { Component, ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
 
 import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
@@ -11,14 +11,15 @@ import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
 import { StaffService } from '../../../services/meal-order/staff.service';
 import { DeliveryService } from '../../../services/meal-order/delivery.service';
 import { CatererInfo } from '../../../models/meal-order/caterer-info.model';
-
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'bento-box-type-editor',
   templateUrl: './bento-box-type-editor.component.html',
   styleUrls: ['./bento-box-type-editor.component.css']
 })
-export class BentoBoxTypeEditorComponent {
+export class BentoBoxTypeEditorComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
 
   private isNewBentoBoxType = false;
   private isSaving: boolean;
@@ -53,6 +54,14 @@ export class BentoBoxTypeEditorComponent {
     this.getCatererInfos();
   }
 
+  ngOnInit() {
+    this.alertService.resetStickyMessage();
+  }
+
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   private showErrorAlert(caption: string, message: string) {
     this.alertService.showMessage(caption, message, MessageSeverity.error);
@@ -132,7 +141,7 @@ export class BentoBoxTypeEditorComponent {
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close({ isCancel: true });
   }
 
   resetForm(replace = false) {
@@ -181,7 +190,7 @@ export class BentoBoxTypeEditorComponent {
   getCatererInfos() {
     let filter = new Filter(-1, -1);
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getCatererInfosSimpleByFilter(filter)
+    this.subscription.add(this.deliveryService.getCatererInfosSimpleByFilter(filter)
       .subscribe(results => {
         this.catererInfos = results.pagedData;
       },
@@ -189,7 +198,7 @@ export class BentoBoxTypeEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving caterers.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
 

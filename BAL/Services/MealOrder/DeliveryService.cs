@@ -53,7 +53,12 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        public async Task<CatererInfoSimpleDTO> GetCatererInfoByIdAsync(int id)
+        public async Task<CatererInfoDTO> GetCatererInfoByIdAsync(int id)
+        {
+            return Mapper.Map<CatererInfoDTO>(await this._uow.CatererInfos.GetByIdAsync(id));
+        }
+
+        public async Task<CatererInfoSimpleDTO> GetCatererInfoSimpleByIdAsync(int id)
         {
             return Mapper.Map<CatererInfoSimpleDTO>(await this._uow.CatererInfos.GetByIdAsync(id));
         }

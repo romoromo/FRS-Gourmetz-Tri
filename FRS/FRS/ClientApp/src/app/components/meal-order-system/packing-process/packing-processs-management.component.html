@@ -47,7 +47,7 @@
     <button *ngIf="canManagePacking" class="btn btn-success" (click)="submit()" style="float: right;">Submit List</button>
   </div>
 
-  <ngx-datatable class="material colored-header"
+  <ngx-datatable class="material colored-header" #packingProcessTable
                  [loadingIndicator]="loadingIndicator"
                  [rows]="rows"
                  [rowHeight]="'auto'"

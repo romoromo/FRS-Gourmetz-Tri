@@ -99,14 +99,14 @@ export class MenuGroupEditorComponent implements OnInit, OnDestroy{
     let filter = new Filter();
     let f = this.outletId ? '(InOutletId)==' + this.outletId + ',' : '';
     filter.filters = f + '(IsActive)==true';
-    this.dishService.getDishCyclesByFilter(filter)
+    this.dishService.getDishCyclesSimpleByFilter(filter)
       .subscribe(results => {
          let allDishCycles = results.pagedData;
         this.dishCycles = [];
         this.selectedDishCycles = [];
         allDishCycles.forEach((d, i) => {
-          if (this.menuGroupEdit.menuGroupDishCycles) {
-            let indx = this.menuGroupEdit.menuGroupDishCycles.findIndex(e => e.dishCycleId == d.id);
+          if (this.menuGroupEdit.dishCycleIds) {
+            let indx = this.menuGroupEdit.dishCycleIds.findIndex(e => e == d.id);
             if (indx > -1) {
               this.selectedDishCycles.push(d);
             } else {
@@ -133,8 +133,8 @@ export class MenuGroupEditorComponent implements OnInit, OnDestroy{
         this.classes = [];
         this.selectedClasses = [];
         allClasses.forEach((d, i) => {
-          if (this.menuGroupEdit.classes) {
-            let indx = this.menuGroupEdit.classes.findIndex(e => e.classId == d.id);
+          if (this.menuGroupEdit.classIds) {
+            let indx = this.menuGroupEdit.classIds.findIndex(e => e == d.id);
             if (indx > -1) {
               this.selectedClasses.push(d);
             } else {
@@ -287,7 +287,7 @@ export class MenuGroupEditorComponent implements OnInit, OnDestroy{
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close(true);
   }
 
   resetForm(replace = false) {

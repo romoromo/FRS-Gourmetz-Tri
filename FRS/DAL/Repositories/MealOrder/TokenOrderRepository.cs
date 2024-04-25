@@ -292,7 +292,7 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        public async Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason)
+        public async Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason, int dishId)
         {
             _appContext.AuditUserActivityType = new AuditUserActivityType
             {
@@ -328,6 +328,14 @@ namespace DAL.Repositories.MealOrder
                 order.UpdatedBy = updatedById;
                 order.UpdatedDate = DateTime.Now;
                 order.AmendReason += "\n" + reason;
+
+                var selectedDishes = _appContext.TokenOrderDishes.Where(e => order.Tokens.Any(x => x.Id == e.TokenOrderedId));
+                foreach(var selectedDish in selectedDishes)
+                {
+                    selectedDish.DishId = dishId;
+                    _appContext.TokenOrderDishes.Update(selectedDish);
+                }
+
                 Update(order);
 
                 if (await _appContext.SaveChangesAsync() > 0)
@@ -989,7 +997,7 @@ namespace DAL.Repositories.MealOrder
                                     //{
                                     var cycleSets = _appContext.DishCycleScheduleSets.Where(e => e.IsActive &&
                                                                                     e.DishCycleId == cycle.Id && //e.Sequence == i && 
-                                                                                    e.DishCycleType.DishTypeId == dishTypeId);
+                                                                                    e.DishCycleType.DishTypeId == dishTypeId).OrderBy(e => e.Sequence);
 
                                     if (cycleSets != null)
                                     {

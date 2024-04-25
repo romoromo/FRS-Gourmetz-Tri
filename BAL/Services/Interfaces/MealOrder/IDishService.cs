@@ -34,6 +34,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateDishCycleAsync(DishCycleDTO dto);
         Task<BaseOperationResponse> DeleteDishCycleAsync(int id);
         Task<DishCycleDTO> GetDishCycleByIdAsync(int id);
+        Task<PagedEntity<DishCycleSimpleDTO>> GetDishCyclesSimpleAsync(BaseFilter filter);
         Task<PagedEntity<DishCycleDTO>> GetDishCyclesAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateDishCycleAsync(DishCycleDTO dto);
 

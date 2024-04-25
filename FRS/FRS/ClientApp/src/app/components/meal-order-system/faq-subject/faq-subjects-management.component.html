@@ -1,6 +1,6 @@
 <div>
   <header class="pageHeader" *ngIf="!isHideHeader">
-    <h3>FAQ Subjects</h3>
+    <h3>Frequently Asked Questions</h3>
   </header>
   <div class="row control-box">
     <div class="col-sm-8">
@@ -35,6 +35,20 @@
                  [limit]="pagedResult.filter.pageSize"
                  (page)="loadData($event)"
                  (sort)="loadData($event)">
+    <!-- Row Detail Template -->
+    <ngx-datatable-row-detail [rowHeight]="'100%'" #faqDetail (toggle)="onDetailToggle($event)">
+      <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+        <div style="min-height:450px;">
+          <mat-tab-group dynamicHeight mat-stretch-tabs style="width: 90vw">
+            <mat-tab label="FAQ Details" *ngIf="canManageFaqSubjects">
+              <div class="container-fluid" style="padding-top:20px">
+                <faq-details-management [isHideHeader]="true" [subjectId]="row.id"></faq-details-management>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </ng-template>
+    </ngx-datatable-row-detail>
   </ngx-datatable>
 
   <ng-template #flagTemplate let-row="row" let-value="value" let-i="index">
@@ -43,8 +57,11 @@
 
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageFaqSubjects && row.order > 1" class="btn btn-link btn-xs" href="javascript:;" (click)="orderFaq(row.id, true)"><i class="fa fa-arrow-up" aria-hidden="true"></i> </a>
+    <a *ngIf="canManageFaqSubjects && row.order < rows.length" class="btn btn-link btn-xs" href="javascript:;" (click)="orderFaq(row.id, false)"><i class="fa fa-arrow-down" aria-hidden="true"></i></a>
+    <a *ngIf="canManageFaqSubjects" class="btn btn-link btn-xs" href="javascript:;" (click)="toggleExpandRow(row)">Details</a>
     <a *ngIf="canManageFaqSubjects" class="btn btn-link btn-xs" href="javascript:;" (click)="editFaqSubject(row)"><i class="fa fa-pencil-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
-    <a *ngIf="!canManageFaqSubjects" class="btn btn-link btn-xs" href="javascript:;" (click)="editFaqSubject(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
+    <a *ngIf="!canManageFaqSubjects" class="btn btn-link btn-xs" href="javascript:;" (click)="editFaqSubject(row)"><i class="fa fa-eye" aria-hidden="true"></i> View</a>
     <a *ngIf="canManageFaqSubjects" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteFaqSubject(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
   </ng-template>
 </div>

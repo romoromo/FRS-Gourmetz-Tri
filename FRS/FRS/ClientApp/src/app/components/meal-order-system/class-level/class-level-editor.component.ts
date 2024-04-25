@@ -38,13 +38,7 @@ export class ClassLevelEditorComponent {
   constructor(private alertService: AlertService, private classService: ClassService, private accountService: AccountService,
     public dialogRef: MatDialogRef<ClassLevelEditorComponent>, private deliveryService: DeliveryService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-    if (typeof (data.classLevel) != typeof (undefined)) {
-      if (data.classLevel.id) {
-        this.editClassLevel(data.classLevel);
-      } else {
-        this.newClassLevel();
-      }
-    }
+    this.editClassLevel(data.classLevel);
 
     this.getOutlets();
   }
@@ -160,7 +154,7 @@ export class ClassLevelEditorComponent {
   }
 
   editClassLevel(classLevel: ClassLevel) {
-    if (classLevel) {
+    if (classLevel && classLevel.id) {
       this.isNewClassLevel = false;
       this.showValidationErrors = true;
 
@@ -168,12 +162,13 @@ export class ClassLevelEditorComponent {
       this.selectedValues = {};
       this.classLevelEdit = new ClassLevel();
       Object.assign(this.classLevelEdit, classLevel);
-
-      return this.classLevelEdit;
     }
     else {
-      return this.newClassLevel();
+      this.newClassLevel();
+      Object.assign(this.classLevelEdit, classLevel);
     }
+
+    return this.classLevelEdit;
   }
 
   get canManageClassLevels() {

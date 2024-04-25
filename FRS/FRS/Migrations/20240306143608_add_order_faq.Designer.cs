@@ -4,14 +4,16 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240306143608_add_order_faq")]
+    partial class add_order_faq
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2795,8 +2797,6 @@ namespace FRS.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int?>("OutletId");
-
                     b.Property<int?>("UpdatedBy");
 
                     b.Property<DateTime>("UpdatedDate");
@@ -2808,8 +2808,6 @@ namespace FRS.Migrations
                     b.HasIndex("CreatedBy");
 
                     b.HasIndex("InstitutionId");
-
-                    b.HasIndex("OutletId");
 
                     b.HasIndex("UpdatedBy");
 
@@ -10634,10 +10632,6 @@ namespace FRS.Migrations
                     b.HasOne("DAL.Models.Institution", "Institution")
                         .WithMany()
                         .HasForeignKey("InstitutionId");
-
-                    b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
-                        .WithMany()
-                        .HasForeignKey("OutletId");
 
                     b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
                         .WithMany()

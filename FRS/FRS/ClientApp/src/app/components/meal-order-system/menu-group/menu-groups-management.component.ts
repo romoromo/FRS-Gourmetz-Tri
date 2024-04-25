@@ -129,7 +129,7 @@ export class MenuGroupsManagementComponent implements OnInit {
     let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
     this.filter.filters = f + '(IsActive)==true,(Name)@=' + this.keyword;
     
-    this.menuService.getMenuGroupsByFilter(this.filter)
+    this.menuService.getMenuGroupsSimpleByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
 
@@ -209,7 +209,7 @@ export class MenuGroupsManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.loadData();
+      if(!result) this.loadData();
     });
   }
 

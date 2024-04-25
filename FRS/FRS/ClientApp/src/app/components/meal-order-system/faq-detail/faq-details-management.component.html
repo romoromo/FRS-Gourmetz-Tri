@@ -43,6 +43,8 @@
 
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageFaqDetails && row.order > 1" class="btn btn-link btn-xs" href="javascript:;" (click)="orderFaqDetail(row.id, true)"><i class="fa fa-arrow-up" aria-hidden="true"></i> </a>
+    <a *ngIf="canManageFaqDetails && row.order < rows.length" class="btn btn-link btn-xs" href="javascript:;" (click)="orderFaqDetail(row.id, false)"><i class="fa fa-arrow-down" aria-hidden="true"></i></a>
     <a *ngIf="canManageFaqDetails" class="btn btn-link btn-xs" href="javascript:;" (click)="editFaqDetail(row)"><i class="fa fa-pencil-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
     <a *ngIf="!canManageFaqDetails" class="btn btn-link btn-xs" href="javascript:;" (click)="editFaqDetail(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
     <a *ngIf="canManageFaqDetails" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteFaqDetail(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>

@@ -504,6 +504,18 @@ namespace FRS.Controllers
 
         #region Menu Group
 
+        [ApiKeyAuthorize]
+        [HttpGet("menugroups/simple/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllMenusPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetMenuGroupsSimple(BaseFilter filter)
+        {
+            var results = await this._service.GetMenuGroupsSimpleAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<MenuGroupSimpleDTO>>(results));
+        }
+
         #region Sieved
         [ApiKeyAuthorize]
         [HttpGet("menugroups/sieve/list")]

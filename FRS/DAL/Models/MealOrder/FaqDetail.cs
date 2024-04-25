@@ -20,6 +20,7 @@ namespace DAL.Models.MealOrder
 
         [Sieve(CanFilter = true, CanSort = true)]
         public int? InstitutionId { get; set; }
+        public int Order { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]
         public int FaqSubjectId { get; set; }

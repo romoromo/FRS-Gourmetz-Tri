@@ -1,4 +1,4 @@
-import { Component, ViewChild, Inject } from '@angular/core';
+import { Component, ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
 
 import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
@@ -13,6 +13,7 @@ import { DeliveryService } from '../../../services/meal-order/delivery.service';
 import { CatererInfo } from '../../../models/meal-order/caterer-info.model';
 import { DishService } from '../../../services/meal-order/dish.service';
 import { StoreInfo } from '../../../models/meal-order/store-info.model';
+import { Subscription } from 'rxjs';
 import * as moment from 'moment';
 
 
@@ -21,7 +22,8 @@ import * as moment from 'moment';
   templateUrl: './delivery-order-new-editor.component.html',
   styleUrls: ['./delivery-order-new-editor.component.css']
 })
-export class DeliveryOrderNewEditorComponent {
+export class DeliveryOrderNewEditorComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
 
   private isNewDeliveryOrder = false;
   private isSaving: boolean;
@@ -73,6 +75,14 @@ export class DeliveryOrderNewEditorComponent {
     this.getStoreTos();
   }
 
+  ngOnInit() {
+    this.alertService.resetStickyMessage();
+  }
+
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   private showErrorAlert(caption: string, message: string) {
     this.alertService.showMessage(caption, message, MessageSeverity.error);
@@ -155,7 +165,7 @@ export class DeliveryOrderNewEditorComponent {
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close({ isCancel: true });
   }
 
   resetForm(replace = false) {
@@ -253,7 +263,7 @@ export class DeliveryOrderNewEditorComponent {
   getCatererInfos() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getCatererInfosByFilter(filter)
+    this.subscription.add(this.deliveryService.getCatererInfosByFilter(filter)
       .subscribe(results => {
         this.catererInfos = results.pagedData;
       },
@@ -261,13 +271,13 @@ export class DeliveryOrderNewEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving caterers.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getStoreFroms() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true,(storeType)@=Kitchen';
-    this.deliveryService.getStoreInfosByFilter(filter)
+    this.subscription.add(this.deliveryService.getStoreInfosByFilter(filter)
       .subscribe(results => {
         this.storeFroms = results.pagedData;
       },
@@ -275,13 +285,13 @@ export class DeliveryOrderNewEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving store info.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getStoreTos() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true,(storeType)@=Inventory';
-    this.deliveryService.getStoreInfosByFilter(filter)
+    this.subscription.add(this.deliveryService.getStoreInfosByFilter(filter)
       .subscribe(results => {
         this.storeTos = results.pagedData;
       },
@@ -289,13 +299,13 @@ export class DeliveryOrderNewEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving store info types.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getCartonAssets() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getCartonAssetsByFilter(filter)
+    this.subscription.add(this.deliveryService.getCartonAssetsByFilter(filter)
       .subscribe(results => {
         this.cartonAssets = results.pagedData;
       },
@@ -303,13 +313,13 @@ export class DeliveryOrderNewEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving carton assets.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getTrackingStatuss() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getTrackingStatussByFilter(filter)
+    this.subscription.add(this.deliveryService.getTrackingStatussByFilter(filter)
       .subscribe(results => {
         this.trackingStatuss = results.pagedData;
       },
@@ -317,13 +327,13 @@ export class DeliveryOrderNewEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving tracking status.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getBentoAssets() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getBentoAssetsByFilter(filter)
+    this.subscription.add(this.deliveryService.getBentoAssetsByFilter(filter)
       .subscribe(results => {
         this.bentoAssets = results.pagedData;
       },
@@ -331,13 +341,13 @@ export class DeliveryOrderNewEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving bento assets.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getDishs() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.dishService.getDishesByFilter(filter)
+    this.subscription.add(this.dishService.getDishesByFilter(filter)
       .subscribe(results => {
         this.dishs = results.pagedData;
       },
@@ -345,7 +355,7 @@ export class DeliveryOrderNewEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dishs.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   addDetail(order) {

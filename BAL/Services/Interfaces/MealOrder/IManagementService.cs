@@ -14,11 +14,12 @@ namespace BAL.Services.Interfaces
         Task<FaqSubjectDTO> GetFaqSubjectByIdAsync(int id);
         Task<PagedEntity<FaqSubjectDTO>> GetFaqSubjectsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateFaqSubjectAsync(FaqSubjectDTO dto);
-
+        Task<BaseOperationResponse> OrderFaqSubjectAsync(int id, bool isAsc);
         Task<BaseOperationResponse> CreateFaqDetailAsync(FaqDetailDTO dto);
         Task<BaseOperationResponse> DeleteFaqDetailAsync(int id);
         Task<FaqDetailDTO> GetFaqDetailByIdAsync(int id);
         Task<PagedEntity<FaqDetailDTO>> GetFaqDetailsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateFaqDetailAsync(FaqDetailDTO dto);
+        Task<BaseOperationResponse> OrderFaqDetailAsync(int id, bool isAsc);
     }
 }

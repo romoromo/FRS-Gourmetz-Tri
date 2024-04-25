@@ -2,7 +2,7 @@ import { ViewChild, Component, Inject, OnInit, OnDestroy } from "@angular/core";
 import { AlertService, MessageSeverity, DialogType } from "src/app/services/alert.service";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDatepickerInputEvent } from "@angular/material";
 import { Subscription } from "rxjs";
-import { NewOrder } from "src/app/models/meal-order/token-order.model";
+import { AmendOrder } from "src/app/models/meal-order/token-order.model";
 import { DefaultPipe } from "../../../../pipes/default-string-val.pipe";
 import { MenuService } from "src/app/services/meal-order/menu.service";
 import { MomentUtcDateAdapter } from "src/app/helpers/moment-utc-adapter";
@@ -28,7 +28,7 @@ import { DishService } from "../../../../services/meal-order/dish.service";
 })
 export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
-  private order: NewOrder;
+  private order: AmendOrder;
   private blockedDates: any[];
   private outletBlockedDates: any[];
   private allDishCycles: any[] = [];
@@ -36,7 +36,7 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   private returnDishCycles: any = [];
   private availableDishCycles: any = [];
   
-  private selectedDish: any;
+  private selectedDish: any = {};
   selectedDate: Date;
   today = new Date();
 
@@ -50,10 +50,14 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: any) {
     this.order = data.order;
     this.selectedDate = this.minDate;
+    this.selectedDish.dishId = this.order.dishId;
     this.order.deliveryDate = moment(this.minDate).format('YYYY-MM-DD');
-    this.getStoreInfos();
+    console.log(this.order);
+    if (!this.order.tokenOrderId) {
+      this.getStoreInfos();
+    }
     //this.getAllDishCycles();
-    this.getAllDishCyclesByDate();
+    //this.getAllDishCyclesByDate();
     this.getSessions();
   }
 
@@ -421,21 +425,33 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
       dish.setPrice = set.price;
       dish.setId = set.id;
       this.selectedDish = dish;
-      console.log(this.selectedDish);
+      console.log('this.selectedDish', this.selectedDish);
     } else {
       this.selectedDish = null;
     }
   }
 
   isValidSet(set) {
-    const mp = this.sessions.find((m) => this.order.mealSessionDetailId === m.id);
-    const mpId = mp ? mp.mealPeriodId : null;
-    return set.dishCyclePeriods.find((d) => d.mealPeriodId === mpId) &&
-      set.displayMenus[0]; // &&
+    if (this.order.tokenOrderId) {
+      if (set.price <= this.order.totalAmount) {
+        const mp = this.sessions.find((m) => this.order.mealSessionDetailId === m.id);
+        const mpId = mp ? mp.mealPeriodId : null;
+        return set.dishCyclePeriods.find((d) => d.mealPeriodId === mpId) &&
+          set.displayMenus[0];
+      }
+
+    } else {
+      const mp = this.sessions.find((m) => this.order.mealSessionDetailId === m.id);
+      const mpId = mp ? mp.mealPeriodId : null;
+      return set.dishCyclePeriods.find((d) => d.mealPeriodId === mpId) &&
+        set.displayMenus[0]; // &&
       //this.formatDate(set.startDate) <= this.order.deliveryDate &&
       //this.formatDate(set.endDate) >= this.order.deliveryDate &&
       //this.formatDate(set.mgStartDate) <= this.order.deliveryDate &&
       //this.formatDate(set.mgEndDate) >= this.order.deliveryDate;
+    }
+    
+    
   }
 
   isValidSet2(set) {
@@ -472,9 +488,10 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
     this.combined = [];
     this.subscription.add(this.menuService.getStudentSessionsByFilter(this.order.profileId, this.order.deliveryDate)
       .subscribe(results => {
-        this.order.mealSessionDetailId = '';
+        if(!this.order.tokenOrderId) this.order.mealSessionDetailId = '';
         this.sessions = results;
-        console.log("sessions: ", this.sessions)
+        console.log("sessions: ", this.sessions);
+        this.onChangeSession();
       },
         error => {
           console.log(error);
@@ -521,8 +538,10 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
             return d.getTime() === delDate.getTime();
           });
 
+          console.log('filteredBlockedDates', filteredBlockedDates);
+
           if (!filteredBlockedDates || filteredBlockedDates.length == 0)
-            this.updateDate(this.order.deliveryDate, true);
+            this.updateDate(this.order.deliveryDate, !this.order.tokenOrderId);
 
           this.alertService.stopLoadingMessage();
         },
@@ -681,7 +700,11 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
     }
     if (!this.order.deliveryDate || !this.order.mealSessionDetailId) return;
 
-    this.alertService.showDialog('Are you sure you want to add selected order?', DialogType.confirm, () => this.saveOrderHelper());
+    if (this.order.tokenOrderId) {
+      this.alertService.showDialog('Are you sure you want to update the order?', DialogType.confirm, () => this.amendOrderHelper());
+    } else {
+      this.alertService.showDialog('Are you sure you want to add selected order?', DialogType.confirm, () => this.saveOrderHelper());
+    }
   }
 
   saveOrderHelper() {
@@ -703,6 +726,7 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
     order.totalAmount = this.selectedDish.setPrice;
     order.status = 'paid';
     order.periodId = '';
+    order.updatedById = this.order.updatedBy;
 
     this.subscription.add(this.orderService.createPrepaidOrder(order)
       .subscribe(results => {
@@ -722,6 +746,41 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
           this.alertService.showStickyMessage("Save Error", `An error occured while saving the orders\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
         }));
+  }
+
+  amendOrderHelper() {
+    this.alertService.startLoadingMessage("Saving order...");
+
+    let model = {
+      id: this.order.tokenOrderId,
+      reason: this.order.reason,
+      status: this.order.status,
+      invoiceNumber: this.order.invoiceNumber,
+      fomoId: this.order.fomoId,
+      dishId: this.selectedDish.dishId,
+      updatedById: this.order.updatedBy
+    }
+    this.subscription.add(this.orderService.amendOrder(model)
+      .subscribe(results => {
+        this.alertService.stopLoadingMessage();
+
+        this.alertService.showMessage('Success', 'Orders successfully updated.', MessageSeverity.success);
+        this.dialogRef.close();
+      },
+        error => {
+          this.alertService.stopLoadingMessage();
+
+          this.alertService.showStickyMessage("Amend Error", `An error occured while updating the orders\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+            MessageSeverity.error);
+        }));
+
+    
+  }
+
+  onStatusChange(row, newStatus) {
+    row.status = newStatus;
+    console.log('row status', row.status);
+    console.log('newStatus', newStatus);
   }
 
   getFileImage(path) {

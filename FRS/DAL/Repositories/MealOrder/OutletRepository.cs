@@ -59,6 +59,18 @@ namespace DAL.Repositories.MealOrder
             {
                 result.Message = "Successfully saved!";
                 result.IsSuccess = true;
+
+                // assign it to the user who created it
+                if (data.CreatedBy.HasValue)
+                {
+                    var user = await _appContext.Users.FirstOrDefaultAsync(e => e.Id == data.CreatedBy);
+                    if(user != null)
+                    {
+                        user.UserOutlets.Add(new UserOutlet { UserId = user.Id, OutletId = f.Id });
+                        await _appContext.SaveChangesAsync();
+                    }
+                }
+
                 result.Data = f;
             }
             else

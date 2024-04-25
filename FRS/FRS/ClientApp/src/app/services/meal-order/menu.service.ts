@@ -347,6 +347,10 @@ export class MenuService {
     return this.commonEndpoint.getSieve<PagedResult>(this.menuGroupUrl + '/sieve/list', filter);
   }
 
+  getMenuGroupsSimpleByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.menuGroupUrl + '/simple/sieve/list', filter);
+  }
+
   updateMenuGroup(menuGroup: MenuGroup) {
     if (menuGroup.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.menuGroupUrl, menuGroup, menuGroup.id);

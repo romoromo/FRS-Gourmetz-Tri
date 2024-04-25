@@ -47,6 +47,8 @@ export class FaqDetailsManagementComponent implements OnInit {
   header: string;
   @Input() isHideHeader: boolean;
 
+  @Input() subjectId: string;
+
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private faqService: FaqService, public dialog: MatDialog) {
   }
@@ -83,11 +85,11 @@ export class FaqDetailsManagementComponent implements OnInit {
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
-      { prop: 'faqSubjectName', name: 'Subject' },
-      { prop: 'faqSubjectDescription', name: 'Subject Desc' },
-      { prop: 'label', name: 'Label' },
-      { prop: 'description', name: 'Details' },
-      { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
+      //{ prop: 'faqSubjectName', name: 'Subject' },
+      //{ prop: 'faqSubjectDescription', name: 'Subject Desc' },
+      { prop: 'label', name: 'Question', sortable: false },
+      { prop: 'description', name: 'Details', sortable: false },
+      { name: '', width: 250, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
   }
 
@@ -97,7 +99,6 @@ export class FaqDetailsManagementComponent implements OnInit {
     this.initializeTableDefinition();
     this.loadData();
   }
-
 
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
@@ -112,7 +113,8 @@ export class FaqDetailsManagementComponent implements OnInit {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(IsActive)==true,(Label)@=' + this.keyword;
+    this.filter.sorts = 'Order';
+    this.filter.filters = '(IsActive)==true,(Label)@=' + this.keyword + ',FaqSubjectId==' + this.subjectId;
     
     this.faqService.getFaqDetailsByFilter(this.filter)
       .subscribe(results => {
@@ -130,7 +132,6 @@ export class FaqDetailsManagementComponent implements OnInit {
 
         this.rowsCache = [...faqDetails];
         this.rows = faqDetails;
-
       },
         error => {
           this.alertService.stopLoadingMessage();
@@ -156,6 +157,7 @@ export class FaqDetailsManagementComponent implements OnInit {
   newFaqDetail() {
     this.header = 'New FAQ Detail';
     this.editedFaqDetail = new FaqDetail();
+    this.editedFaqDetail.faqSubjectId = this.subjectId;
     this.openDialog(this.editedFaqDetail);
   }
 
@@ -188,6 +190,68 @@ export class FaqDetailsManagementComponent implements OnInit {
           this.loadingIndicator = false;
 
           this.alertService.showStickyMessage("Delete Error", `An error occured while deleting.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+            MessageSeverity.error);
+        });
+  }
+
+  orderFaqDetail(id: string, asc: boolean) {
+    let currentRow = this.rows.find(e => e.id == id);
+    let order = currentRow.order;
+
+    if (asc) {
+      if (order < 1) return;
+
+      //let previousRow = this.rows.find(e => e.order < currentRow.order);
+
+      let previousRow = this.rows
+        .filter(row => row.order < currentRow.order)
+        .reduce((prev, curr) => prev && prev.order > curr.order ? prev : curr, null);
+
+      if (previousRow == null) {
+        previousRow = this.rows
+          .filter(row => row.id < currentRow.id)
+          .reduce((prev, curr) => prev && prev.id > curr.id ? prev : curr, null);
+      }
+
+      if (previousRow != null) {
+        currentRow.order = previousRow.order;
+        previousRow.order = order;
+      }
+      
+    } else {
+      if (order >= this.rows.length) return;
+
+      //let nextRow = this.rows.find(e => e.order > currentRow.order);
+      let nextRow = this.rows
+        .filter(row => row.order > currentRow.order)
+        .reduce((prev, curr) => prev && prev.order < curr.order ? prev : curr, null);
+
+      if (nextRow == null) {
+        nextRow = this.rows
+          .filter(row => row.id > currentRow.id)
+          .reduce((prev, curr) => prev && prev.id < curr.id ? prev : curr, null);
+      }
+
+      if (nextRow != null) {
+        currentRow.order = nextRow.order;
+        nextRow.order = order;
+      }
+    }
+    
+
+    this.faqService.orderFaqDetail(id, asc)
+      .subscribe(results => {
+        this.alertService.stopLoadingMessage();
+        this.loadingIndicator = false;
+
+        this.rows.sort((a, b) => a.order - b.order);
+        this.rows == [...this.rows];
+      },
+        error => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+
+          this.alertService.showStickyMessage("Sorting Error", `An error occured while sorting.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
         });
   }

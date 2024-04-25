@@ -384,6 +384,15 @@ namespace FRS.Controllers
 
         #region Dish Cycles
 
+        [HttpGet("dishcycles/simple/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetDishCyclesSimple(BaseFilter filter)
+        {
+            var results = await this._service.GetDishCyclesSimpleAsync(filter);
+            return Ok(Mapper.Map<PagedEntityViewModel<DishCycleSimpleDTO>>(results));
+        }
+
         #region Sieved
         //[ApiKeyAuthorize]
         [HttpGet("dishcycles/sieve/list")]
@@ -398,6 +407,15 @@ namespace FRS.Controllers
         }
 
         #endregion
+
+        [HttpGet("dishcycles/get/id/{id}")]
+        [ProducesResponseType(200, Type = typeof(DishCycleDTO))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetDishCycleById(int id)
+        {
+            var results = await this._service.GetDishCycleByIdAsync(id);
+            return Ok(results);
+        }
 
         [HttpPost("dishcycles")]
         //[Authorize(Authorization.Policies.ManageAllDishCyclesPolicy)]

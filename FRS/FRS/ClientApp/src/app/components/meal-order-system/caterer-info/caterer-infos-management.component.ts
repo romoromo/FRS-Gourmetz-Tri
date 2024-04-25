@@ -218,7 +218,7 @@ export class CatererInfosManagementComponent implements OnInit {
   }
 
   openDishCalendar(row) {
-    window.open(getBaseUrl() + '/dishcyclecalendars/' + row.id, '_blank');
+    window.open(getBaseUrl() + '/dishcyclecalendars/' + row.id + '/' + row.name, '_blank');
   }
 
   get canManageCatererInfos() {

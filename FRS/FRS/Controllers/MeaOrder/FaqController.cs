@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces;
+using DAL.Core;
 using DAL.Filters;
 using FRS.Attributes;
 using FRS.ViewModels;
@@ -26,6 +27,8 @@ namespace FRS.Controllers
             _service = service;
             _logger = logger;
         }
+
+        #region Subjects
 
         #region Sieved
         [HttpGet("subjects/sieve/list")]
@@ -111,7 +114,19 @@ namespace FRS.Controllers
             return BadRequest(ModelState);
         }
 
-        #region Contact Us Details
+        [HttpGet("subjects/order/{id}")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> OrderFaqSubject(int id, bool isAsc)
+        {
+            var result = await this._service.OrderFaqSubjectAsync(id, isAsc);
+            return Ok(result);
+        }
+
+        #endregion
+
+        #region FAQ Details
 
         #region Sieved
         [ApiKeyAuthorize]
@@ -149,6 +164,16 @@ namespace FRS.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpGet("details/order/{id}")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> OrderFaqDetail(int id, bool isAsc)
+        {
+            var result = await this._service.OrderFaqDetailAsync(id, isAsc);
+            return Ok(result);
         }
 
 

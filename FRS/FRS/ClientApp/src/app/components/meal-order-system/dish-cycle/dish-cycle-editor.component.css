@@ -91,3 +91,29 @@ input.form-control {
 .mat-list-base .mat-list-item{
   font-size:12px;
 }
+
+.dialog-actions {
+  background-color: #f0f0f0;
+}
+
+.sticky-column {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: #fff;
+}
+
+.stick-header {
+  background-color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.mw-200 {
+  min-width: 200px !important;
+}
+
+.mw-300{
+    min-width: 300px !important; 
+}

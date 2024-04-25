@@ -27,9 +27,10 @@ export class CatererSelectorComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.outlet) != typeof (undefined)) {
 
+      this.alertService.startLoadingMessage("Loading outlet details...");
       this.deliveryService.getOutletById(data.outlet.id).subscribe(results => {
         this.editOutlet = results;
-
+        this.alertService.stopLoadingMessage();
         this.alertService.startLoadingMessage("Loading caterer information");
         this.selectedCaterers = results.catererOutlets;
 
@@ -114,7 +115,7 @@ export class CatererSelectorComponent implements OnInit {
     catererOutlet.outlet.mealSessions = catererOutlet.outlet.mealSessions.filter(e => e.catererId == catererId);
     const dialogRef = this.dialog.open(MealSessionEditorComponent, {
       data: { header: "Meal Sessions", outlet: catererOutlet.outlet, outletProfileId: outletProfileId, catererId: catererId, outletId: this.editOutlet.id },
-      width: '1200px',
+      width: '85vw',
       disableClose: true
     });
 

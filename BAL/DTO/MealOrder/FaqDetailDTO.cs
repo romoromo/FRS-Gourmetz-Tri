@@ -15,5 +15,6 @@ namespace BAL.DTO.MealOrder
         public int FaqSubjectId { get; set; }
         public string FaqSubjectName { get; set; }
         public string FaqSubjectDescription { get; set; }
+        public int Order { get; set; }
     }
 }

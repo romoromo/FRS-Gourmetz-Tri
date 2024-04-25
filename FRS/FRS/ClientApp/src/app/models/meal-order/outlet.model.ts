@@ -32,6 +32,7 @@ export class OutletSimple {
   public locationName: string;
   public outletProfileId: string;
   public daysToFreezeOrdering: string;
+  public createdBy: string;
 }
 
 export class Outlet extends OutletSimple {
@@ -40,6 +41,7 @@ export class Outlet extends OutletSimple {
     super(id, name);
   }
 
+  public catererIds: string[];
   public catererOutlets: CatererOutlet[];
   public mealSessions: MealSession[];
   public stores: StoreInfo[];

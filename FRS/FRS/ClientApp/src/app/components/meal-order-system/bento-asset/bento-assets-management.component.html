@@ -5,7 +5,7 @@
   <div class="row control-box">
     <div class="col-sm-8">
       <div class="form-group search-box">
-        <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
+        <search-box #searchbox (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()" placeholder="{{'common.Search' | translate}}"></search-box>
       </div>
     </div>
     <div class="col-sm-4">
@@ -29,7 +29,7 @@
     </div>
   </div>
 
-  <ngx-datatable class="material colored-header"
+  <ngx-datatable class="material colored-header" #bentoAssetTable
                  [loadingIndicator]="loadingIndicator"
                  [rows]="rows"
                  [rowHeight]="'auto'"
@@ -40,7 +40,6 @@
                  [externalPaging]="true"
                  [externalSorting]="true"
                  [count]="pagedResult.totalCount"
-                 [offset]="pagedResult.filter.pageNumber"
                  [limit]="pagedResult.filter.pageSize"
                  (page)="loadData($event)"
                  (sort)="loadData($event)">

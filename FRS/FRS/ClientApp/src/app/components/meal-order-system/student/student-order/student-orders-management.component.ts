@@ -7,7 +7,7 @@ import { DateTimeOnlyPipe } from 'src/app/pipes/datetime.pipe';
 import { Subscription } from 'rxjs';
 import { saveAs } from 'file-saver';
 import * as moment from 'moment';
-import { TokenOrder, NewOrder } from 'src/app/models/meal-order/token-order.model';
+import { TokenOrder, AmendOrder } from 'src/app/models/meal-order/token-order.model';
 import { OrderService } from 'src/app/services/meal-order/order.service';
 import { OrderCancellationFilter, PagedResult, StudentOrderFilter } from 'src/app/models/sieve-filter.model';
 import { AlertService, MessageSeverity, DialogType } from 'src/app/services/alert.service';
@@ -120,7 +120,7 @@ export class StudentOrderManagementComponent implements OnInit, AfterViewInit, O
       //{ prop: 'isFASDisplay', name: 'FAS', sortable: false },
       { prop: 'deliveryDate', name: 'Delivery Date', pipe: new DateTimeOnlyPipe('en-SG')},
       { prop: 'transactionTime', name: 'Date', pipe: new DateTimeOnlyPipe('en-SG') },
-      { prop: 'mealSessionDetailName', name: 'Session' },
+      { prop: 'mealSessionName', name: 'Session' },
       { name: 'Meal Description', cellTemplate: this.mealDescriptionTemplate, sortable: false, draggable: false },
       { prop: 'totalAmount', name: 'Total Amount' },
       { prop: 'status', name: 'Status' },
@@ -328,6 +328,14 @@ export class StudentOrderManagementComponent implements OnInit, AfterViewInit, O
     Object.assign(row, this.beforeEditingRow[row.id]);
   }
 
+  isSkipAmend(row) {
+    let d1 = new Date(row.deliveryDate);
+    let d2 = new Date();
+    d2.setHours(0, 0, 0, 0);
+
+    return d1.getTime() < d2.getTime();
+  }
+
   saveRow(row) {
     this.editing[row.id] = false;
     //delete this.beforeEditingRow[row.id];
@@ -391,7 +399,7 @@ export class StudentOrderManagementComponent implements OnInit, AfterViewInit, O
   }
 
   addOrder(): void {
-    let order: NewOrder = new NewOrder();
+    let order: AmendOrder = new AmendOrder();
     order.transactionTime = new Date();
     order.profileId = this.studentId;
     order.studentName = this.studentName;
@@ -402,13 +410,47 @@ export class StudentOrderManagementComponent implements OnInit, AfterViewInit, O
     order.processedBy = this.accountService.currentUser.userName;
     order.outletId = this.outletId;
     const dialogRef = this.dialog.open(StudentOrderEditorComponent, {
-      data: { order: order },
+      data: { order: order, header: 'New Order' },
       width: '600px',
       disableClose: true
     });
 
     dialogRef.afterClosed().subscribe(result => {
       //this.loadData(null);
+    });
+  }
+
+
+  changeOrder(row: TokenOrder): void {
+    let order: AmendOrder = new AmendOrder();
+    order.transactionTime = new Date();
+    order.profileId = this.studentId;
+    order.studentName = this.studentName;
+    order.studentEmail = this.studentEmail;
+    order.updatedBy = this.accountService.currentUser.id;
+    order.processedBy = this.accountService.currentUser.userName;
+    order.outletId = this.outletId;
+    order.voucherCode = row.voucherCode;
+    order.fomoId = row.fomoId;
+    order.paymentNumber = row.paymentNumber;
+    order.paymentTypeName = row.paymentTypeName;
+    order.invoiceNumber = row.invoiceNumber;
+    order.tokenOrderId = row.id;
+    order.deliveryDate = row.deliveryDate;
+    order.mealSessionDetailName = row.mealSessionDetailName;
+    order.totalAmount = row.totalAmount;
+    order.status = row.status;
+    order.dishId = row.tokens != null && row.tokens.length > 0 && row.tokens[0].selectedDishes && row.tokens[0].selectedDishes.length > 0 ? row.tokens[0].selectedDishes[0].dishId : '';
+    order.mealSessionDetailId = row.mealSessionDetailId;
+
+    const dialogRef = this.dialog.open(StudentOrderEditorComponent, {
+      data: { order: order, header: 'Amend Order' },
+      width: '600px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadData(null);
     });
   }
 
@@ -449,3 +491,34 @@ export class StatusDropdownComponent {
     this.statusChanged.emit(this.selectedStatus);
   }
 }
+
+@Component({
+  selector: 'mat-status-dropdown',
+  template: `
+    <mat-form-field [ngClass]="classVal ? classVal : 'col-xs-12'" *ngIf="isShow">
+      <mat-label>{{label}}</mat-label>
+      <mat-select placeholder="{{placeholder}}" name="{{name}}" [(ngModel)]="selectedStatus" (selectionChange)="onStatusChange($event)">
+        <mat-option [value]="pending">Pending</mat-option>
+        <mat-option [value]="paid">Paid</mat-option>
+        <mat-option [value]="cancelled">Cancelled</mat-option>
+      </mat-select>
+    </mat-form-field>
+  `,
+})
+export class MatStatusDropdownComponent {
+  @Input() selectedStatus: string; 
+  @Input() classVal: string;
+  @Input() label: string;
+  @Input() placeholder: string;
+  @Input() name: string;
+  @Input() isShow: boolean;
+
+  @Output() statusChanged = new EventEmitter<string>();
+
+  onStatusChange(ev) {
+    console.log('selectedStatus', this.selectedStatus)
+    console.log('onStatusChange', ev)
+    this.statusChanged.emit(this.selectedStatus);
+  }
+}
+

@@ -1,4 +1,7 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, Inject, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { SearchBoxComponent } from '../../controls/search-box.component';
+
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -21,7 +24,8 @@ import { BentoBoxType } from '../../../models/meal-order/bento-box-type.model';
   templateUrl: './bento-assets-management.component.html',
   styleUrls: ['./bento-assets-management.component.css']
 })
-export class BentoAssetsManagementComponent implements OnInit {
+export class BentoAssetsManagementComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
   columns: any[] = [];
   rows: BentoAsset[] = [];
   rowsCache: BentoAsset[] = [];
@@ -41,6 +45,10 @@ export class BentoAssetsManagementComponent implements OnInit {
 
   @ViewChild('bentoAssetEditor')
   bentoAssetEditor: BentoAssetEditorComponent;
+
+  @ViewChild('searchbox') searchbox: SearchBoxComponent;
+
+  @ViewChild('bentoAssetTable') table: any;
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog) {
@@ -54,7 +62,8 @@ export class BentoAssetsManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.loadData(null);
+      if (!result || !result.isCancel)
+        this.loadData(null);
     });
   }
 
@@ -100,6 +109,10 @@ export class BentoAssetsManagementComponent implements OnInit {
     this.loadData();
   }
 
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
@@ -116,7 +129,7 @@ export class BentoAssetsManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     this.filter.filters = '(IsActive)==true,(Code)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
     
-    this.deliveryService.getBentoAssetsByFilter(this.filter)
+    this.subscription.add(this.deliveryService.getBentoAssetsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
 
@@ -140,12 +153,23 @@ export class BentoAssetsManagementComponent implements OnInit {
 
           this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
-        });
+        }));
   }
 
 
   onSearchChanged(value: string) {
     this.keyword = value;
+    //this.loadData(null);
+  }
+
+  clearFilterAndPagedResult() {
+    this.initializeFilter();
+    this.initializePagedResult();
+    this.table.offset = 0;
+  }
+
+  onSearch() {
+    this.clearFilterAndPagedResult();
     this.loadData(null);
   }
 
@@ -198,6 +222,7 @@ export class BentoAssetsManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      if(!result || !result.isCancel)
       setTimeout(() => this.loadData(null), 2000);
     });
   }
@@ -208,8 +233,8 @@ export class BentoAssetsManagementComponent implements OnInit {
   selector: 'new-multiple-bento-asset',
   templateUrl: 'new-multiple-bento-asset.html',
 })
-export class NewMultipleBentoAsset {
-
+export class NewMultipleBentoAsset implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
   bentoAssetCode: any;
   bentoBoxType: any;
   bentoBoxTypes : any;
@@ -226,6 +251,14 @@ export class NewMultipleBentoAsset {
     @Inject(MAT_DIALOG_DATA) public data: any, public deliveryService: DeliveryService, private accountService: AccountService) {
 
     this.getBentoBoxTypes();
+  }
+
+  ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
   }
 
   bentoChanged() {
@@ -296,7 +329,7 @@ export class NewMultipleBentoAsset {
   getBentoBoxTypes() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getBentoBoxTypesByFilter(filter)
+    this.subscription.add(this.deliveryService.getBentoBoxTypesByFilter(filter)
       .subscribe(results => {
         this.bentoBoxTypes = results.pagedData;
       },
@@ -304,6 +337,6 @@ export class NewMultipleBentoAsset {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving bento box types.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 }

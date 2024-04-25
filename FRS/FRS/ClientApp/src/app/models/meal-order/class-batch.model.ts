@@ -11,4 +11,5 @@ export class ClassBatch {
   public name: string;
   public year: string;
   public institutionId: string;
+  public outletId: string;
 }

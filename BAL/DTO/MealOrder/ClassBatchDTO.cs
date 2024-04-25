@@ -15,5 +15,7 @@ namespace BAL.DTO.MealOrder
         public int? InstitutionId { get; set; }
 
         public string InstitutionName { get; set; }
+
+        public int? OutletId { get; set; }
     }
 }

@@ -11,6 +11,7 @@ export class FaqSubject {
   public name: string;
   public description: string;
   public institutionId: string;
+  public order: number;
 }
 
 
@@ -29,4 +30,5 @@ export class FaqDetail {
   public faqSubjectName: string;
   public faqSubjectDescription: string;
   public description: string;
+  public order: number;
 }

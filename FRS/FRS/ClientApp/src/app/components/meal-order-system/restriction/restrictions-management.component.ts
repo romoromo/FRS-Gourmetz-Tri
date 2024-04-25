@@ -1,4 +1,5 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -11,6 +12,7 @@ import { MatDialog } from '@angular/material';
 import { Restriction } from 'src/app/models/meal-order/restriction.model';
 import { RestrictionEditorComponent } from './restriction-editor.component';
 import { RestrictionService } from 'src/app/services/meal-order/restriction.service';
+import { SearchBoxComponent } from '../../controls/search-box.component';
 
 
 @Component({
@@ -18,7 +20,8 @@ import { RestrictionService } from 'src/app/services/meal-order/restriction.serv
   templateUrl: './restrictions-management.component.html',
   styleUrls: ['./restrictions-management.component.css']
 })
-export class RestrictionsManagementComponent implements OnInit {
+export class RestrictionsManagementComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
   columns: any[] = [];
   rows: Restriction[] = [];
   rowsCache: Restriction[] = [];
@@ -38,6 +41,11 @@ export class RestrictionsManagementComponent implements OnInit {
 
   @ViewChild('restrictionEditor')
   restrictionEditor: RestrictionEditorComponent;
+
+  @ViewChild('searchbox') searchbox: SearchBoxComponent;
+
+  @ViewChild('restrictionTable') table: any;
+
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private restrictionService: RestrictionService, public dialog: MatDialog) {
@@ -51,6 +59,7 @@ export class RestrictionsManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      if(!result || !result.isCancel)
       this.loadData(null);
     });
   }
@@ -98,6 +107,10 @@ export class RestrictionsManagementComponent implements OnInit {
     this.loadData();
   }
 
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
@@ -114,7 +127,7 @@ export class RestrictionsManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     this.filter.filters = '(IsActive)==true,(Code|Label)@=' + this.keyword;
     
-    this.restrictionService.getRestrictionsByFilter(this.filter)
+    this.subscription.add(this.restrictionService.getRestrictionsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
 
@@ -138,12 +151,23 @@ export class RestrictionsManagementComponent implements OnInit {
 
           this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
-        });
+        }));
   }
 
 
   onSearchChanged(value: string) {
     this.keyword = value;
+    //this.loadData(null);
+  }
+
+  clearFilterAndPagedResult() {
+    this.initializeFilter();
+    this.initializePagedResult();
+    this.table.offset = 0;
+  }
+
+  onSearch() {
+    this.clearFilterAndPagedResult();
     this.loadData(null);
   }
 

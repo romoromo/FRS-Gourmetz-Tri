@@ -37,6 +37,7 @@ export class DishCycleCalendarComponent implements OnInit, AfterViewInit {
   loadingIndicator: boolean;
   activeDayIsOpen: boolean = false;
   public catererId: string;
+  public catererName: string;
   outletProfileId: any;
   @Input()
 
@@ -95,6 +96,7 @@ export class DishCycleCalendarComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute) {
     this.route.params.subscribe(queryParams => {
       this.catererId = queryParams["catererId"];
+      this.catererName = queryParams["name"]; 
     });
 
     this.getOutletProfiles();
@@ -328,7 +330,7 @@ export class DishCycleCalendarComponent implements OnInit, AfterViewInit {
       .subscribe(results => {
         this.alertService.stopLoadingMessage();
         this.loadingIndicator = false;
-
+        this.alertService.showMessage("Success", `Date is now \"${isUnblock ? "unblocked" : "blocked"}\"`, MessageSeverity.success);
         this.loadData(this.outletProfileId);
       },
         error => {

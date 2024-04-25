@@ -206,6 +206,12 @@ namespace BAL.Services.MealOrder
 
         #region Dish Cycle
 
+        public async Task<PagedEntity<DishCycleSimpleDTO>> GetDishCyclesSimpleAsync(BaseFilter filter)
+        {
+            var result = Mapper.Map<PagedEntity<DishCycleSimpleDTO>>(await this._uow.DishCycles.GetDishCyclesAsync(filter));
+            return result;
+        }
+
         public async Task<PagedEntity<DishCycleDTO>> GetDishCyclesAsync(BaseFilter filter)
         {
             var result = Mapper.Map<PagedEntity<DishCycleDTO>>(await this._uow.DishCycles.GetDishCyclesAsync(filter));

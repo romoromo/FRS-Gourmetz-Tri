@@ -146,6 +146,7 @@ export class ClassLevelsManagementComponent implements OnInit {
   newClassLevel() {
     this.header = 'New Class Level';
     this.editedClassLevel = new ClassLevel();
+    this.editedClassLevel.outletId = this.outletId;
     this.openDialog(this.editedClassLevel);
   }
 

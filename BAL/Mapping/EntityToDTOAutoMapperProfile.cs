@@ -665,6 +665,11 @@ namespace BAL.Mapping
                 .ForMember(e => e.MenuGroupDishCycles, map => map.MapFrom(f => f.MenuGroupDishCycles.Where(m => m.IsActive && m.DishCycle != null && m.DishCycle.IsActive)));
             CreateMap<MenuGroupDTO, MenuGroup>();
 
+            CreateMap<MenuGroup, MenuGroupSimpleDTO>()
+                .ForMember(e => e.OutletName, map => map.MapFrom(f => f.Outlet.Name))
+                .ForMember(e => e.DishCycleIds, map => map.MapFrom(f => f.MenuGroupDishCycles.Select(x => x.DishCycleId).Distinct()))
+                .ForMember(e => e.ClassIds, map => map.MapFrom(f => f.Classes.Select(x => x.ClassId).Distinct()));
+
             CreateMap<MenuGroupDishCycle, MenuGroupDishCycleDTO>()
                 .ForMember(e => e.MenuGroupName, map => map.MapFrom(f => f.MenuGroup.Name))
                 .ForMember(e => e.DishCycleLabel, map => map.MapFrom(f => f.DishCycle.Label));
@@ -674,6 +679,9 @@ namespace BAL.Mapping
                 .ForMember(e => e.MenuGroupName, map => map.MapFrom(f => f.MenuGroup.Name))
                 .ForMember(e => e.ClassName, map => map.MapFrom(f => f.Class.Name));
             CreateMap<MenuGroupClassDTO, MenuGroupClass>();
+
+            CreateMap<DishCycle, DishCycleSimpleDTO>()
+               .ForMember(e => e.OutletProfileName, map => map.MapFrom(f => f.OutletProfile.Label));
 
             CreateMap<DishCycle, DishCycleDTO>()
                 .ForMember(e => e.OutletProfileName, map => map.MapFrom(f => f.OutletProfile.Label))
@@ -775,7 +783,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.ContactUsSubjectDescription, map => map.MapFrom(f => f.ContactUsSubject.Description));
 
             CreateMap<FaqSubject, FaqSubjectDTO>()
-                .ForMember(e => e.Details, map => map.MapFrom(f => f.FaqDetails.Where(e => e.IsActive)));
+                .ForMember(e => e.Details, map => map.MapFrom(f => f.FaqDetails.Where(e => e.IsActive).OrderBy(x => x.Order).ThenBy(x => x.Label)));
             CreateMap<FaqSubjectDTO, FaqSubject>();
 
             CreateMap<FaqDetailDTO, FaqDetail>();

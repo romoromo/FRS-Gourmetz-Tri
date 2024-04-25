@@ -1,5 +1,5 @@
 
-export class MenuGroup {
+export class MenuGroupSimple {
 
   constructor(id?: string, name?: string) {
 
@@ -14,6 +14,17 @@ export class MenuGroup {
   public startDate: Date;
   public endDate: Date;
   public isPublished: boolean;
+  public dishCycleIds: string[];
+  public classIds: string[];
+}
+
+export class MenuGroup extends MenuGroupSimple {
+
+  constructor(id?: string, name?: string) {
+
+    super(id, name);
+  }
+
   public menuGroupDishCycles: MenuGroupDishCycle[];
   public classes: MenuGroupClass[];
 }

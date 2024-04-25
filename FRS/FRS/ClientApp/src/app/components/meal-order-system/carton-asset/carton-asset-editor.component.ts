@@ -1,4 +1,4 @@
-import { Component, ViewChild, Inject } from '@angular/core';
+import { Component, ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
 
 import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
@@ -12,6 +12,7 @@ import { StaffService } from '../../../services/meal-order/staff.service';
 import { DeliveryService } from '../../../services/meal-order/delivery.service';
 import { CartonType } from '../../../models/meal-order/carton-type.model';
 import { DishService } from '../../../services/meal-order/dish.service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -19,7 +20,8 @@ import { DishService } from '../../../services/meal-order/dish.service';
   templateUrl: './carton-asset-editor.component.html',
   styleUrls: ['./carton-asset-editor.component.css']
 })
-export class CartonAssetEditorComponent {
+export class CartonAssetEditorComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
 
   private isNewCartonAsset = false;
   private isSaving: boolean;
@@ -60,6 +62,14 @@ export class CartonAssetEditorComponent {
     this.getStoreInfos();
   }
 
+  ngOnInit() {
+    this.alertService.resetStickyMessage();
+  }
+
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   private showErrorAlert(caption: string, message: string) {
     this.alertService.showMessage(caption, message, MessageSeverity.error);
@@ -133,7 +143,7 @@ export class CartonAssetEditorComponent {
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close({ isCancel: true });
   }
 
   resetForm(replace = false) {
@@ -182,7 +192,7 @@ export class CartonAssetEditorComponent {
   getCartonTypes() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getCartonTypesByFilter(filter)
+    this.subscription.add(this.deliveryService.getCartonTypesByFilter(filter)
       .subscribe(results => {
         this.cartonTypes = results.pagedData;
       },
@@ -190,13 +200,13 @@ export class CartonAssetEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving carton types.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getStoreInfos() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getStoreInfosByFilter(filter)
+    this.subscription.add(this.deliveryService.getStoreInfosByFilter(filter)
       .subscribe(results => {
         this.storeInfos = results.pagedData;
       },
@@ -204,13 +214,13 @@ export class CartonAssetEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving bento box types.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getDishs() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.dishService.getDishesByFilter(filter)
+    this.subscription.add(this.dishService.getDishesByFilter(filter)
       .subscribe(results => {
         this.dishs = results.pagedData;
       },
@@ -218,7 +228,7 @@ export class CartonAssetEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dishs.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
 

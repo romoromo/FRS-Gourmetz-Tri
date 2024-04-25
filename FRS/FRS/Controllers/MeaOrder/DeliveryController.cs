@@ -71,6 +71,21 @@ namespace FRS.Controllers
 
         #endregion
 
+        [HttpGet("catererinfos/get/id/{id}")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllStudentsPolicy)]
+        [ProducesResponseType(200, Type = typeof(CatererInfoDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetCatererInfoByIdAsync(int id)
+        {
+            var dto = await this._service.GetCatererInfoByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            return Ok(dto);
+        }
+
         [HttpPost("catererinfos")]
         //[Authorize(Authorization.Policies.ManageAllCatererInfosPolicy)]
         [ProducesResponseType(201, Type = typeof(CatererInfoDTO))]
@@ -86,8 +101,8 @@ namespace FRS.Controllers
                 var result = await this._service.CreateCatererInfoAsync(dto);
                 if (result.IsSuccess)
                 {
-                    CatererInfoDTO vm = Mapper.Map<CatererInfoDTO>(result.Data);
-                    return CreatedAtAction("GetCatererInfoById", new { id = vm.Id }, vm);
+                    //CatererInfoDTO vm = Mapper.Map<CatererInfoDTO>(result.Data);
+                    return CreatedAtAction("GetCatererInfoById", new {});
                 }
 
                 AddErrors(new string[] { result.Message });
@@ -104,7 +119,7 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteCatererInfo(int id)
         {
-            var dto = await this._service.GetCatererInfoByIdAsync(id);
+            var dto = await this._service.GetCatererInfoSimpleByIdAsync(id);
             if (dto == null)
                 return NotFound(id);
 
@@ -131,7 +146,7 @@ namespace FRS.Controllers
                     return BadRequest("Conflicting type id in parameter and model data");
 
 
-                var dto = await this._service.GetCatererInfoByIdAsync(model.Id);
+                var dto = await this._service.GetCatererInfoSimpleByIdAsync(model.Id);
 
                 if (dto == null)
                     return NotFound(id);
@@ -237,8 +252,9 @@ namespace FRS.Controllers
                 var result = await this._service.CreateOutletAsync(dto);
                 if (result.IsSuccess)
                 {
-                    OutletDTO vm = Mapper.Map<OutletDTO>(result.Data);
-                    return CreatedAtAction("GetOutletById", new { id = vm.Id }, vm);
+                    //OutletDTO vm = Mapper.Map<OutletDTO>(result.Data);
+                    //return CreatedAtAction("GetOutletById", new { id = vm.Id }, vm);
+                    return CreatedAtAction("GetOutletById", new { });
                 }
 
                 AddErrors(new string[] { result.Message });

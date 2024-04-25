@@ -107,7 +107,8 @@ export class ClassBatchesManagementComponent implements OnInit {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(IsActive)==true,(Name)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
+    let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
+    this.filter.filters = f + '(IsActive)==true,(Name)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
     
     this.classService.getClassBatchesByFilter(this.filter)
       .subscribe(results => {
@@ -145,6 +146,7 @@ export class ClassBatchesManagementComponent implements OnInit {
   newClassBatch() {
     this.header = 'New Class Batch';
     this.editedClassBatch = new ClassBatch();
+    this.editedClassBatch.outletId = this.outletId;
     this.openDialog(this.editedClassBatch);
   }
 

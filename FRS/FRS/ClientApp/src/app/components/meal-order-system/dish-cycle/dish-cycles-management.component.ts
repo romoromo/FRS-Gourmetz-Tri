@@ -52,12 +52,14 @@ export class DishCyclesManagementComponent implements OnInit {
   openDialog(dishCycle: DishCycle): void {
     const dialogRef = this.dialog.open(DishCycleEditorComponent, {
       data: { header: this.header, dishCycle: dishCycle, catererId: this.catererId },
-      width: '900px',
+      width: '100vw',
+      height: '100vh',
+      panelClass: 'full-screen-dialog',
       disableClose: true
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.loadData(null);
+      if(!result) this.loadData(null);
     });
   }
 
@@ -117,7 +119,7 @@ export class DishCyclesManagementComponent implements OnInit {
     let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
     this.filter.filters = f + '(IsActive)==true,(Label)@=' + this.keyword;
     
-    this.dishService.getDishCyclesByFilter(this.filter)
+    this.dishService.getDishCyclesSimpleByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
 
@@ -168,10 +170,32 @@ export class DishCyclesManagementComponent implements OnInit {
 
 
   editDishCycle(row: DishCycle) {
-    this.editedDishCycle = row;
     this.header = 'Edit Dish Cycle';
+    this.editedDishCycle = row;
     this.editedDishCycle.catererId = this.catererId;
+    this.editedDishCycle.id = row.id;
     this.openDialog(this.editedDishCycle);
+
+    //this.alertService.startLoadingMessage("Fetching Dish Cycle Details");
+
+    //this.dishService.getDishCycleById(row.id)
+    //  .subscribe(results => {
+    //    this.editedDishCycle = results;
+    //    this.header = 'Edit Dish Cycle';
+    //    this.editedDishCycle.catererId = this.catererId;
+    //    this.editedDishCycle.id = row.id;
+    //    this.openDialog(this.editedDishCycle);
+    //    this.alertService.stopLoadingMessage();
+    //  },
+    //    error => {
+    //      this.alertService.stopLoadingMessage();
+    //      this.loadingIndicator = false;
+
+    //      this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
+    //        MessageSeverity.error);
+    //    });
+
+    
   }
 
   deleteDishCycle(row: DishCycle) {

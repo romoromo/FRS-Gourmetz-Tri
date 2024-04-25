@@ -74,6 +74,7 @@ export class OutletEditorComponent {
     this.alertService.startLoadingMessage("Saving changes...");
 
     if (this.isNewOutlet) {
+      this.outletEdit.createdBy = this.accountService.currentUser.id;
       this.deliveryService.newOutlet(this.outletEdit).subscribe(outlet => this.saveSuccessHelper(outlet), error => this.saveFailedHelper(error));
     }
     else {

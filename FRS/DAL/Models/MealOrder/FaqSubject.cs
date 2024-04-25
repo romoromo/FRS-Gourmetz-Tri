@@ -15,7 +15,7 @@ namespace DAL.Models.MealOrder
 
         [Sieve(CanFilter = true, CanSort = true)]
         public string Description { get; set; }
-
+        public int Order { get; set; }
         public int? InstitutionId { get; set; }
 
         [ForeignKey("InstitutionId")]

@@ -46,7 +46,7 @@ export class ClassesManagementComponent implements OnInit {
 
   openDialog(classModel: Class): void {
     const dialogRef = this.dialog.open(ClassEditorComponent, {
-      data: { header: this.header, classModel: classModel },
+      data: { header: this.header, classModel: classModel, outletId: this.outletId },
       width: '400px',
       disableClose: true
     });

@@ -26,6 +26,7 @@ export class ClassEditorComponent implements OnInit, OnDestroy {
   private selectedValues: { [key: string]: boolean; } = {};
   public formResetToggle = true;
   public classLevels = [];
+  private outletId: string;
 
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
@@ -43,7 +44,7 @@ export class ClassEditorComponent implements OnInit, OnDestroy {
     } else {
       this.newClass();
     }
-
+    this.outletId = data.outletId;
     this.getClassLevels();
   }
 
@@ -58,7 +59,8 @@ export class ClassEditorComponent implements OnInit, OnDestroy {
 
   getClassLevels() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
+    let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
+    filter.filters = f + '(IsActive)==true';
     this.subscription.add(this.classService.getClassLevelsByFilter(filter)
       .subscribe(results => {
         this.classLevels = results.pagedData;

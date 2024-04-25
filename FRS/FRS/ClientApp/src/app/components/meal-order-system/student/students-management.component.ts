@@ -65,7 +65,7 @@ export class StudentsManagementComponent implements OnInit {
 
   openDialog(student: Student): void {
     const dialogRef = this.dialog.open(StudentEditorComponent, {
-      data: { header: this.header, student: student },
+      data: { header: this.header, student: student, outletId: this.outletId },
       width: '800px',
       disableClose: true
     });
@@ -440,11 +440,13 @@ export class StudentsManagementComponent implements OnInit {
 
   createAccount() {
     const dialogRef = this.dialog.open(CreateAccountMultiple, {
+      data: { outletId: this.outletId },
       width: '60vw',
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      setTimeout(() => this.loadData(null), 2000);
+      if(result && !result.isCancel)
+        setTimeout(() => this.loadData(null), 2000);
     });
   }
 
@@ -535,6 +537,7 @@ export class CreateAccountMultiple {
 
   search: string = '';
   prevSearch
+  outletId: string;
 
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
@@ -544,10 +547,12 @@ export class CreateAccountMultiple {
   constructor(private alertService: AlertService, private accountService: AccountService,
     public dialogRef: MatDialogRef<any>,
     @Inject(MAT_DIALOG_DATA) public data: any, public studentService: StudentService) {
+    this.outletId = data.outletId;
+    this.loadData();
   }
 
   ngOnInit() {
-    this.loadData();
+    
   }
 
   pageChanged(newValue) {
@@ -587,8 +592,11 @@ export class CreateAccountMultiple {
   }
 
   loadData() {
+    console.log('OutletId', this.outletId);
+    let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
+
     let filter: any = {
-      filters: "(IsActive)==true,(Name)@=" + this.search,
+      filters: f + "(IsActive)==true,(Name)@=" + this.search,
       page: this.page || 1,
       pageSize: this.pageSize,
       sorts: "name",

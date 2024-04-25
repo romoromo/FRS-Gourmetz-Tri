@@ -1,5 +1,5 @@
-import { Component, ViewChild, Inject } from '@angular/core';
-
+import { Component, ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
@@ -19,8 +19,8 @@ import { DishService } from '../../../services/meal-order/dish.service';
   templateUrl: './bento-asset-editor.component.html',
   styleUrls: ['./bento-asset-editor.component.css']
 })
-export class BentoAssetEditorComponent {
-
+export class BentoAssetEditorComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
   private isNewBentoAsset = false;
   private isSaving: boolean;
   private showValidationErrors: boolean = true;
@@ -60,6 +60,14 @@ export class BentoAssetEditorComponent {
     this.getCartonAssets();
     this.getDishs();
     this.getStoreInfos();
+  }
+
+  ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
   }
 
 
@@ -135,7 +143,7 @@ export class BentoAssetEditorComponent {
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
 
-    this.dialogRef.close();
+    this.dialogRef.close({ isCancel: true });
   }
 
   resetForm(replace = false) {
@@ -184,7 +192,7 @@ export class BentoAssetEditorComponent {
   getStoreInfos() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getStoreInfosByFilter(filter)
+    this.subscription.add(this.deliveryService.getStoreInfosByFilter(filter)
       .subscribe(results => {
         this.storeInfos = results.pagedData;
       },
@@ -192,13 +200,13 @@ export class BentoAssetEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving bento box types.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getBentoBoxTypes() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getBentoBoxTypesByFilter(filter)
+    this.subscription.add(this.deliveryService.getBentoBoxTypesByFilter(filter)
       .subscribe(results => {
         this.bentoBoxTypes = results.pagedData;
       },
@@ -206,13 +214,13 @@ export class BentoAssetEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving bento box types.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getCartonAssets() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getCartonAssetsByFilter(filter)
+    this.subscription.add(this.deliveryService.getCartonAssetsByFilter(filter)
       .subscribe(results => {
         this.cartonAssets = results.pagedData;
       },
@@ -220,13 +228,13 @@ export class BentoAssetEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving carton assets.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getDishs() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.dishService.getDishesByFilter(filter)
+    this.subscription.add(this.dishService.getDishesByFilter(filter)
       .subscribe(results => {
         this.dishs = results.pagedData;
       },
@@ -234,7 +242,7 @@ export class BentoAssetEditorComponent {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dishs.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
 

@@ -35,13 +35,7 @@ export class ClassBatchEditorComponent {
   constructor(private alertService: AlertService, private classService: ClassService, private accountService: AccountService,
     public dialogRef: MatDialogRef<ClassBatchEditorComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-    if (typeof (data.classBatch) != typeof (undefined)) {
-      if (data.classBatch.id) {
-        this.editClassBatch(data.classBatch);
-      } else {
-        this.newClassBatch();
-      }
-    }
+    this.editClassBatch(data.classBatch);
   }
 
 
@@ -143,7 +137,7 @@ export class ClassBatchEditorComponent {
   }
 
   editClassBatch(classBatch: ClassBatch) {
-    if (classBatch) {
+    if (classBatch && classBatch.id) {
       this.isNewClassBatch = false;
       this.showValidationErrors = true;
 
@@ -155,7 +149,10 @@ export class ClassBatchEditorComponent {
       return this.classBatchEdit;
     }
     else {
-      return this.newClassBatch();
+      this.newClassBatch();
+      Object.assign(this.classBatchEdit, classBatch);
+      console.log(this.classBatchEdit);
+      return this.classBatchEdit;
     }
   }
 

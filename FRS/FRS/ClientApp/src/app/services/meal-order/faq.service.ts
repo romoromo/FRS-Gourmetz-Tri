@@ -75,4 +75,12 @@ export class FaqService {
   deleteFaqDetail(faqDetailOrFaqDetailId: string | FaqDetail): Observable<FaqDetail> {
     return this.commonEndpoint.getDeleteEndpoint<FaqDetail>(this.faqDetailUrl, <string>faqDetailOrFaqDetailId);
   }
+
+  orderFaqDetail(faqDetailId: string, isAsc: boolean): Observable<any> {
+    return this.commonEndpoint.get<any>(`${this.faqDetailUrl}/order/${faqDetailId}?isAsc=${isAsc}`);
+  }
+
+  orderFaqSubject(id: string, isAsc: boolean): Observable<any> {
+    return this.commonEndpoint.get<any>(`${this.faqSubjectUrl}/order/${id}?isAsc=${isAsc}`);
+  }
 }

@@ -1,4 +1,6 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, TemplateRef, ViewChild, Input, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { SearchBoxComponent } from '../../controls/search-box.component';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -21,7 +23,8 @@ import { Dish } from '../../../models/meal-order/dish.model';
   templateUrl: './dishing-processs-management.component.html',
   styleUrls: ['./dishing-processs-management.component.css']
 })
-export class DishingProcesssManagementComponent implements OnInit {
+export class DishingProcesssManagementComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
   columns: any[] = [];
   rows: any[] = [];
   map: any = {};
@@ -44,6 +47,10 @@ export class DishingProcesssManagementComponent implements OnInit {
 
   @ViewChild('actionsTemplate')
   actionsTemplate: TemplateRef<any>;
+
+  @ViewChild('searchbox') searchbox: SearchBoxComponent;
+
+  @ViewChild('dishingProcessTable') table: any;
 
   header: string;
 
@@ -107,6 +114,10 @@ export class DishingProcesssManagementComponent implements OnInit {
     this.initializeTableDefinition();
   }
 
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   onSearchChanged(value: string) {
     this.keyword = value;
@@ -258,7 +269,7 @@ export class DishingProcesssManagementComponent implements OnInit {
   getBentoAssets() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.deliveryService.getBentoAssetsByFilter(filter)
+    this.subscription.add(this.deliveryService.getBentoAssetsByFilter(filter)
       .subscribe(results => {
         this.bentoAssets = results.pagedData;
       },
@@ -266,13 +277,13 @@ export class DishingProcesssManagementComponent implements OnInit {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving bento assets.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   getDishs() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.dishService.getDishesByFilter(filter)
+    this.subscription.add(this.dishService.getDishesByFilter(filter)
       .subscribe(results => {
         this.dishs = results.pagedData;
       },
@@ -280,7 +291,7 @@ export class DishingProcesssManagementComponent implements OnInit {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dishs.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
   }
 
   get canManageDishing() {

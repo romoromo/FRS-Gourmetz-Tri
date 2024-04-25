@@ -21,5 +21,10 @@ namespace DAL.Models.MealOrder
 
         [ForeignKey("InstitutionId")]
         public virtual Institution Institution { get; set; }
+
+        public int? OutletId { get; set; }
+
+        [ForeignKey("OutletId")]
+        public virtual Outlet Outlet { get; set; }
     }
 }

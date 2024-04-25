@@ -298,7 +298,7 @@ const routes: Routes = [
       { path: "studentcalendars/:id", component: StudentMenuCycleCalendarComponent, canActivate: [AuthGuard], data: { title: "Student Calendar" } },
       { path: "dishcycles", component: DishCyclesManagementComponent, canActivate: [AuthGuard], data: { title: "Menu Cyles" } },
       { path: "dishcyclecalendars", component: DishCycleCalendarComponent, canActivate: [AuthGuard], data: { title: "Dish Cycle Calendar" } },
-      { path: "dishcyclecalendars/:catererId", component: DishCycleCalendarComponent, canActivate: [AuthGuard], data: { title: "Dish Cycle Calendar" } },
+      { path: "dishcyclecalendars/:catererId/:name", component: DishCycleCalendarComponent, canActivate: [AuthGuard], data: { title: "Dish Cycle Calendar" } },
       { path: "paymentthankyou", component: TokenOrderPaymentThankyouComponent, canActivate: [AuthGuard], data: { title: "Payment Thankyou" } },
       { path: "paymenttypes", component: PaymentTypesManagementComponent, canActivate: [AuthGuard], data: { title: "Payment Types" } },
       { path: "transactionfees", component: TransactionFeesManagementComponent, canActivate: [AuthGuard], data: { title: "Transaction Fees" } },

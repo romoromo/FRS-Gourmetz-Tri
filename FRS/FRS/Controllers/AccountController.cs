@@ -532,6 +532,10 @@ namespace FRS.Controllers
                         throw new Exception("Update not allowed.");
                     }
 
+                    var studentAccount = await _accountManager.GetUserByEmailAsync(student.NewEmail);
+                    if (studentAccount != null)
+                        throw new Exception("Email is already used.");
+
                     await this._studentService.UpdateStudentEmail(dto.Id, student.NewEmail);
 
                     if (dto.UserId.HasValue)

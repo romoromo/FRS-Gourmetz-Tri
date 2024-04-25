@@ -123,6 +123,10 @@ export class DishService {
     return this.commonEndpoint.getById<any>(this.dishCycleUrl + '/get', dishCycleId);
   }
 
+  getDishCyclesSimpleByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.dishCycleUrl + '/simple/sieve/list', filter);
+  }
+
   getDishCyclesByFilter(filter: Filter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.dishCycleUrl + '/sieve/list', filter);
   }

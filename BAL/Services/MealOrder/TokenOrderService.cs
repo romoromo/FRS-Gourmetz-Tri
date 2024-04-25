@@ -85,9 +85,9 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        public async Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason)
+        public async Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason, int dishId)
         {
-            var result = Mapper.Map<BaseOperationResponse>(await this._uow.TokenOrders.AmendOrder(id, status, invoiceNumber, fomoId, updatedById, reason));
+            var result = Mapper.Map<BaseOperationResponse>(await this._uow.TokenOrders.AmendOrder(id, status, invoiceNumber, fomoId, updatedById, reason, dishId));
             return result;
         }
 
@@ -2787,15 +2787,24 @@ namespace BAL.Services.MealOrder
                     var dataFormatCustom = wb.CreateDataFormat();
 
 
+                    IDataFormat format = wb.CreateDataFormat();
+                    ICellStyle dateCellStyle = wb.CreateCellStyle();
+                    dateCellStyle.DataFormat = format.GetFormat(dateFormat);
+
+
+                    var dateTimeCellStyle = wb.CreateCellStyle();
+                    format = wb.CreateDataFormat();
+                    dateTimeCellStyle.DataFormat = format.GetFormat(dateTimeFormat);
+
                     var createHelper = wb.GetCreationHelper();
-                    var format = wb.CreateDataFormat();
-                    var dateCellStyle = wb.CreateCellStyle();
-                    dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
+                    //var format = wb.CreateDataFormat();
+                    //var dateCellStyle = wb.CreateCellStyle();
+                    //dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
                     dateCellStyle.Alignment = HorizontalAlignment.Right;
                     dateCellStyle.SetFont(contentFont);
 
-                    var dateTimeCellStyle = wb.CreateCellStyle();
-                    dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
+                    //var dateTimeCellStyle = wb.CreateCellStyle();
+                    //dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
                     dateTimeCellStyle.Alignment = HorizontalAlignment.Right;
                     dateTimeCellStyle.SetFont(contentFont);
 
@@ -2852,7 +2861,8 @@ namespace BAL.Services.MealOrder
                             cell.CellStyle = contentStyle;
 
                             cell = row.CreateCell(col++);
-                            cell.SetCellValue(studentDetails.OrderDate.ToString(dateFormat));
+                            cell.SetCellValue(studentDetails.OrderDate);
+                            cell.SetCellType(CellType.Numeric);
                             cell.CellStyle = dateCellStyle;
 
                             cell = row.CreateCell(col++);
@@ -2914,7 +2924,8 @@ namespace BAL.Services.MealOrder
 
                                 firstOrder++;
                                 cell = row.CreateCell(col++);
-                                cell.SetCellValue(dt.DeliveryDate.ToString(dateFormat));
+                                cell.SetCellValue(dt.DeliveryDate);
+                                cell.SetCellType(CellType.Numeric);
                                 cell.CellStyle = dateCellStyle;
 
                                 cell = row.CreateCell(col++);
@@ -2930,7 +2941,8 @@ namespace BAL.Services.MealOrder
                                 cell.CellStyle = contentStyle;
 
                                 cell = row.CreateCell(col++);
-                                cell.SetCellValue(dt.Quantity.ToString());
+                                cell.SetCellValue(dt.Quantity);
+                                cell.SetCellType(CellType.Numeric);
                                 cell.CellStyle = contentStyle;
 
                                 cell = row.CreateCell(col++);
@@ -2940,6 +2952,7 @@ namespace BAL.Services.MealOrder
 
                                 cell = row.CreateCell(col++);
                                 cell.SetCellValue(dt.CollectionTime);
+                                cell.SetCellType(CellType.Numeric);
                                 cell.CellStyle = dateTimeCellStyle;
 
                                 cell = row.CreateCell(col++);
@@ -2948,11 +2961,11 @@ namespace BAL.Services.MealOrder
 
                                 cell = row.CreateCell(col++);
                                 cell.SetCellValue(dt.ReturnTime);
+                                cell.SetCellType(CellType.Numeric);
                                 cell.CellStyle = dateTimeCellStyle;
 
                                 cell = row.CreateCell(col++);
                                 cell.SetCellValue(dt.IsFAS ? "Y" : "N");
-                                cell.CellStyle = dateTimeCellStyle;
                             });
 
                         }
@@ -3215,15 +3228,24 @@ namespace BAL.Services.MealOrder
                     var dataFormatCustom = wb.CreateDataFormat();
 
 
+                    IDataFormat format = wb.CreateDataFormat();
+                    ICellStyle dateCellStyle = wb.CreateCellStyle();
+                    dateCellStyle.DataFormat = format.GetFormat(dateFormat);
+
+
+                    var dateTimeCellStyle = wb.CreateCellStyle();
+                    format = wb.CreateDataFormat();
+                    dateTimeCellStyle.DataFormat = format.GetFormat(dateTimeFormat);
+
                     var createHelper = wb.GetCreationHelper();
-                    var format = wb.CreateDataFormat();
-                    var dateCellStyle = wb.CreateCellStyle();
-                    dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
+                    //var format = wb.CreateDataFormat();
+                    //var dateCellStyle = wb.CreateCellStyle();
+                    //dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
                     dateCellStyle.Alignment = HorizontalAlignment.Right;
                     dateCellStyle.SetFont(contentFont);
 
-                    var dateTimeCellStyle = wb.CreateCellStyle();
-                    dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
+                    //var dateTimeCellStyle = wb.CreateCellStyle();
+                    //dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
                     dateTimeCellStyle.Alignment = HorizontalAlignment.Right;
                     dateTimeCellStyle.SetFont(contentFont);
 
@@ -3262,7 +3284,8 @@ namespace BAL.Services.MealOrder
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.OrderDate.ToString(dateFormat));
+                        cell.SetCellValue(dt.OrderDate);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
@@ -3318,7 +3341,8 @@ namespace BAL.Services.MealOrder
                         #endregion
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.DeliveryDate.ToString(dateFormat));
+                        cell.SetCellValue(dt.DeliveryDate);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
@@ -3334,7 +3358,8 @@ namespace BAL.Services.MealOrder
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.Quantity.ToString());
+                        cell.SetCellValue(dt.Quantity);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(col++);
@@ -3344,6 +3369,7 @@ namespace BAL.Services.MealOrder
 
                         cell = row.CreateCell(col++);
                         cell.SetCellValue(dt.CollectionTime);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateTimeCellStyle;
 
                         cell = row.CreateCell(col++);
@@ -3352,11 +3378,11 @@ namespace BAL.Services.MealOrder
 
                         cell = row.CreateCell(col++);
                         cell.SetCellValue(dt.ReturnTime);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateTimeCellStyle;
 
                         cell = row.CreateCell(col++);
                         cell.SetCellValue(dt.IsFAS ? "Y" : "N");
-                        cell.CellStyle = dateTimeCellStyle;
                     });
 
                     #endregion
@@ -3471,16 +3497,24 @@ namespace BAL.Services.MealOrder
                     contentStyle.Alignment = HorizontalAlignment.Left;
                     var dataFormatCustom = wb.CreateDataFormat();
 
+                    IDataFormat format = wb.CreateDataFormat();
+                    ICellStyle dateCellStyle = wb.CreateCellStyle();
+                    dateCellStyle.DataFormat = format.GetFormat(dateFormat);
+
+
+                    var dateTimeCellStyle = wb.CreateCellStyle();
+                    format = wb.CreateDataFormat();
+                    dateTimeCellStyle.DataFormat = format.GetFormat(dateTimeFormat);
 
                     var createHelper = wb.GetCreationHelper();
-                    var format = wb.CreateDataFormat();
-                    var dateCellStyle = wb.CreateCellStyle();
-                    dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
+                    //var format = wb.CreateDataFormat();
+                    //var dateCellStyle = wb.CreateCellStyle();
+                    //dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
                     dateCellStyle.Alignment = HorizontalAlignment.Right;
                     dateCellStyle.SetFont(contentFont);
 
-                    var dateTimeCellStyle = wb.CreateCellStyle();
-                    dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
+                    //var dateTimeCellStyle = wb.CreateCellStyle();
+                    //dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
                     dateTimeCellStyle.Alignment = HorizontalAlignment.Right;
                     dateTimeCellStyle.SetFont(contentFont);
 
@@ -3507,7 +3541,8 @@ namespace BAL.Services.MealOrder
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.OrderDate.ToString(dateFormat));
+                        cell.SetCellValue(dt.OrderDate);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
@@ -3674,15 +3709,22 @@ namespace BAL.Services.MealOrder
                     var dataFormatCustom = wb.CreateDataFormat();
 
 
+                    IDataFormat format = wb.CreateDataFormat();
+                    ICellStyle dateCellStyle = wb.CreateCellStyle();
+                    dateCellStyle.DataFormat = format.GetFormat(dateFormat);
+
                     var createHelper = wb.GetCreationHelper();
-                    var format = wb.CreateDataFormat();
-                    var dateCellStyle = wb.CreateCellStyle();
-                    dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
+                    //var format = wb.CreateDataFormat();
+                    //var dateCellStyle = wb.CreateCellStyle();
+                    //dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
                     dateCellStyle.Alignment = HorizontalAlignment.Right;
                     dateCellStyle.SetFont(contentFont);
 
                     var dateTimeCellStyle = wb.CreateCellStyle();
-                    dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
+                    format = wb.CreateDataFormat();
+                    dateTimeCellStyle.DataFormat = format.GetFormat(dateTimeFormat);
+
+                    //dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
                     dateTimeCellStyle.Alignment = HorizontalAlignment.Right;
                     dateTimeCellStyle.SetFont(contentFont);
 
@@ -3709,9 +3751,9 @@ namespace BAL.Services.MealOrder
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue((double)dt.VoucherAmount);
+                        cell.SetCellValue(dt.VoucherAmount);
                         cell.SetCellType(CellType.Numeric);
-                        cell.CellStyle = contentStyle;
+                        cell.CellStyle = numericCellStyle;
 
 
                         cell = row.CreateCell(col++);
@@ -3719,11 +3761,13 @@ namespace BAL.Services.MealOrder
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.ValidityStartDate.ToString(dateFormat));
+                        cell.SetCellType(CellType.Numeric);
+                        cell.SetCellValue(dt.ValidityStartDate);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.ValidityEndDate.ToString(dateFormat));
+                        cell.SetCellType(CellType.Numeric);
+                        cell.SetCellValue(dt.ValidityEndDate);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
@@ -3735,16 +3779,18 @@ namespace BAL.Services.MealOrder
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.UtilisedDate.Date == DateTime.MinValue.Date ? string.Empty : dt.UtilisedDate.Date.ToString(dateFormat));
+                        cell.SetCellType(CellType.Numeric);
+                        if(dt.UtilisedDate.Date != DateTime.MinValue.Date)
+                            cell.SetCellValue(dt.UtilisedDate.Date);
+
+                        //cell.SetCellValue(dt.UtilisedDate.Date == DateTime.MinValue.Date ? string.Empty : dt.UtilisedDate.Date);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
                         cell.SetCellValue(dt.InvoiceNumber);
-                        cell.SetCellType(CellType.Numeric);
-                        cell.CellStyle = numericCellStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue((double)dt.Discount);
+                        cell.SetCellValue(dt.Discount);
                         cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = numericCellStyle;
 
@@ -3899,15 +3945,23 @@ namespace BAL.Services.MealOrder
                     var dataFormatCustom = wb.CreateDataFormat();
 
 
+                    IDataFormat format = wb.CreateDataFormat();
+                    ICellStyle dateCellStyle = wb.CreateCellStyle();
+                    dateCellStyle.DataFormat = format.GetFormat(dateFormat);
+
                     var createHelper = wb.GetCreationHelper();
-                    var format = wb.CreateDataFormat();
-                    var dateCellStyle = wb.CreateCellStyle();
-                    dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
+                    //var format = wb.CreateDataFormat();
+                    //var dateCellStyle = wb.CreateCellStyle();
+                    //dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
                     dateCellStyle.Alignment = HorizontalAlignment.Right;
                     dateCellStyle.SetFont(contentFont);
 
-                    var dateTimeCellStyle = wb.CreateCellStyle();
-                    dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
+                    format = wb.CreateDataFormat();
+                    ICellStyle dateTimeCellStyle = wb.CreateCellStyle();
+                    dateTimeCellStyle.DataFormat = format.GetFormat(dateTimeFormat);
+
+                    //var dateTimeCellStyle = wb.CreateCellStyle();
+                    //dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
                     dateTimeCellStyle.Alignment = HorizontalAlignment.Right;
                     dateTimeCellStyle.SetFont(contentFont);
 
@@ -3981,11 +4035,13 @@ namespace BAL.Services.MealOrder
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.OrderDate.ToString(dateFormat));
+                        cell.SetCellValue(dt.OrderDate);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.DeliveryDate.ToString(dateFormat));
+                        cell.SetCellValue(dt.DeliveryDate);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
@@ -4108,10 +4164,12 @@ namespace BAL.Services.MealOrder
 
                         cell = row.CreateCell(col++);
                         cell.SetCellValue(orderHeader.CancelledOn);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(orderHeader.OrderDate.ToString(dateFormat));
+                        cell.SetCellValue(orderHeader.OrderDate);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateCellStyle;
 
                         wmorders.Orders.ForEach(dt =>
@@ -4119,7 +4177,8 @@ namespace BAL.Services.MealOrder
                             #region 
 
                             cell = row.CreateCell(col++);
-                            cell.SetCellValue(dt.DeliveryDate.ToString(dateFormat));
+                            cell.SetCellValue(dt.DeliveryDate);
+                            cell.SetCellType(CellType.Numeric);
                             cell.CellStyle = dateCellStyle;
 
                             cell = row.CreateCell(col++);
@@ -4329,15 +4388,24 @@ namespace BAL.Services.MealOrder
                     var dataFormatCustom = wb.CreateDataFormat();
 
 
+                    IDataFormat format = wb.CreateDataFormat();
+                    ICellStyle dateCellStyle = wb.CreateCellStyle();
+                    dateCellStyle.DataFormat = format.GetFormat(dateFormat);
+
+
+                    var dateTimeCellStyle = wb.CreateCellStyle();
+                    format = wb.CreateDataFormat();
+                    dateTimeCellStyle.DataFormat = format.GetFormat(dateTimeFormat);
+
                     var createHelper = wb.GetCreationHelper();
-                    var format = wb.CreateDataFormat();
-                    var dateCellStyle = wb.CreateCellStyle();
+                    //var format = wb.CreateDataFormat();
+                    //var dateCellStyle = wb.CreateCellStyle();
                     dateCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateFormat);
                     dateCellStyle.Alignment = HorizontalAlignment.Right;
                     dateCellStyle.SetFont(contentFont);
 
-                    var dateTimeCellStyle = wb.CreateCellStyle();
-                    dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
+                    //var dateTimeCellStyle = wb.CreateCellStyle();
+                    //dateTimeCellStyle.DataFormat = createHelper.CreateDataFormat().GetFormat(dateTimeFormat);
                     dateTimeCellStyle.Alignment = HorizontalAlignment.Right;
                     dateTimeCellStyle.SetFont(contentFont);
 
@@ -4382,7 +4450,7 @@ namespace BAL.Services.MealOrder
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.OrderDate.ToString(dateFormat));
+                        cell.SetCellValue(dt.OrderDate);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
@@ -4438,7 +4506,7 @@ namespace BAL.Services.MealOrder
                         #endregion
 
                         cell = row.CreateCell(col++);
-                        cell.SetCellValue(dt.DeliveryDate.ToString(dateFormat));
+                        cell.SetCellValue(dt.DeliveryDate);
                         cell.CellStyle = dateCellStyle;
 
                         cell = row.CreateCell(col++);
@@ -4464,6 +4532,7 @@ namespace BAL.Services.MealOrder
 
                         cell = row.CreateCell(col++);
                         cell.SetCellValue(dt.CollectionTime);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateTimeCellStyle;
 
                         cell = row.CreateCell(col++);
@@ -4472,6 +4541,7 @@ namespace BAL.Services.MealOrder
 
                         cell = row.CreateCell(col++);
                         cell.SetCellValue(dt.ReturnTime);
+                        cell.SetCellType(CellType.Numeric);
                         cell.CellStyle = dateTimeCellStyle;
 
                         cell = row.CreateCell(col++);

@@ -1,4 +1,6 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { SearchBoxComponent } from '../../controls/search-box.component';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -21,7 +23,8 @@ import { saveAs } from 'file-saver';
   templateUrl: './carton-assets-management.component.html',
   styleUrls: ['./carton-assets-management.component.css']
 })
-export class CartonAssetsManagementComponent implements OnInit {
+export class CartonAssetsManagementComponent implements OnInit, OnDestroy {
+  private subscription: Subscription = new Subscription();
   columns: any[] = [];
   rows: CartonAsset[] = [];
   rowsCache: CartonAsset[] = [];
@@ -41,6 +44,10 @@ export class CartonAssetsManagementComponent implements OnInit {
 
   @ViewChild('cartonAssetEditor')
   cartonAssetEditor: CartonAssetEditorComponent;
+
+  @ViewChild('searchbox') searchbox: SearchBoxComponent;
+
+  @ViewChild('cartonAssetTable') table: any;
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog) {
@@ -54,7 +61,8 @@ export class CartonAssetsManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.loadData(null);
+      if (!result || !result.isCancel)
+        this.loadData(null);
     });
   }
 
@@ -97,6 +105,10 @@ export class CartonAssetsManagementComponent implements OnInit {
     this.loadData();
   }
 
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
 
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
@@ -113,7 +125,7 @@ export class CartonAssetsManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     this.filter.filters = '(IsActive)==true,(Code)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
     
-    this.deliveryService.getCartonAssetsByFilter(this.filter)
+    this.subscription.add(this.deliveryService.getCartonAssetsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
 
@@ -137,12 +149,23 @@ export class CartonAssetsManagementComponent implements OnInit {
 
           this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
-        });
+        }));
   }
 
 
   onSearchChanged(value: string) {
     this.keyword = value;
+    //this.loadData(null);
+  }
+
+  clearFilterAndPagedResult() {
+    this.initializeFilter();
+    this.initializePagedResult();
+    this.table.offset = 0;
+  }
+
+  onSearch() {
+    this.clearFilterAndPagedResult();
     this.loadData(null);
   }
 
@@ -192,7 +215,7 @@ export class CartonAssetsManagementComponent implements OnInit {
   printCCLabel(row: CartonAsset) {
     const fileName = row.code + '_CartonContentLabel.pdf';
 
-    this.deliveryService.printCCLabel(row.id).subscribe(
+    this.subscription.add(this.deliveryService.printCCLabel(row.id).subscribe(
       data => {
         console.log(data);
         saveAs(data, fileName);
@@ -201,7 +224,7 @@ export class CartonAssetsManagementComponent implements OnInit {
         alert("Carton is Empty");
         console.error(err);
       }
-    );
+    ));
   }
 
 }
