@@ -67,7 +67,7 @@
                 <students-management [isHideHeader]="true" [outletId]="row.id"></students-management>
               </div>
             </mat-tab>
-            <!--<mat-tab label="FAS Meal Ordering" *ngIf="canViewFas">
+            <mat-tab label="FAS Meal Ordering" *ngIf="canViewFas">
               <div class="container-fluid" style="padding-top:20px">
                 <fas-meal-order-summary [isHideHeader]="true" [outletId]="row.id"></fas-meal-order-summary>
               </div>
@@ -76,17 +76,17 @@
               <div class="container-fluid" style="padding-top:20px">
                 <student-groups-management [isHideHeader]="true" [outletId]="row.id"></student-groups-management>
               </div>
-            </mat-tab>-->
+            </mat-tab>
             <mat-tab label="Menu Groups" *ngIf="canViewMenus">
               <div class="container-fluid" style="padding-top:20px">
                 <menu-groups-management [isHideHeader]="true" [outletId]="row.id"></menu-groups-management>
               </div>
             </mat-tab>
-            <!--<mat-tab label="Order Cancellation" *ngIf="canViewCancellations">
+            <mat-tab label="Order Cancellation" *ngIf="canViewCancellations">
               <div class="container-fluid" style="padding-top:20px">
                 <order-cancellations-management [isHideHeader]="true" [outletId]="row.id"></order-cancellations-management>
               </div>
-            </mat-tab>-->
+            </mat-tab>
             <!--<mat-tab label="Staff Types">
     <div class="container-fluid" style="padding-top:20px">
       <staff-types-management [isHideHeader]="true" [outletId]="row.id"></staff-types-management>
@@ -102,7 +102,7 @@
       <interest-groups-management [isHideHeader]="true" [outletId]="row.id"></interest-groups-management>
     </div>
   </mat-tab>-->
-            <!--<mat-tab label="Order Portal Content" *ngIf="canViewPortalContents">
+            <mat-tab label="Order Portal Content" *ngIf="canViewPortalContents">
               <div class="container-fluid" style="padding-top:20px">
                 <order-portal-content-management [isHideHeader]="true" [outletId]="row.id"></order-portal-content-management>
               </div>
@@ -121,7 +121,7 @@
               <div class="container-fluid" style="padding-top:20px">
                 <packing-allocations-management [isHideHeader]="true" [outletId]="row.id"></packing-allocations-management>
               </div>
-            </mat-tab>-->
+            </mat-tab>
           </mat-tab-group>
         </div>
       </ng-template>
