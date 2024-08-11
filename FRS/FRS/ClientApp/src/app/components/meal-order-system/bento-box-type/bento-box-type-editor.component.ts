@@ -10,6 +10,7 @@ import { Filter } from 'src/app/models/sieve-filter.model';
 import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
 import { StaffService } from '../../../services/meal-order/staff.service';
 import { DeliveryService } from '../../../services/meal-order/delivery.service';
+import { FileService } from '../../../services/file.service';
 import { CatererInfo } from '../../../models/meal-order/caterer-info.model';
 import { Subscription } from 'rxjs';
 
@@ -41,7 +42,7 @@ export class BentoBoxTypeEditorComponent implements OnInit, OnDestroy {
   private form;
 
   constructor(private alertService: AlertService, private deliveryService: DeliveryService, private accountService: AccountService,
-    public dialogRef: MatDialogRef<BentoBoxTypeEditorComponent>, private mealService: MealService,
+    public dialogRef: MatDialogRef<BentoBoxTypeEditorComponent>, private mealService: MealService, private fileService: FileService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.bentoBoxType) != typeof (undefined)) {
       if (data.bentoBoxType.id) {
@@ -90,6 +91,9 @@ export class BentoBoxTypeEditorComponent implements OnInit, OnDestroy {
     if (this.bentoBoxTypeEdit.picture) this.bentoBoxTypeEdit.picture = this.bentoBoxTypeEdit.picture.replace(/\\/g, '/');
   }
 
+  getFileImage(path) {
+    return this.fileService.getFile(path);
+  }
 
   private saveSuccessHelper(bentoBoxType?: BentoBoxType) {
     if (bentoBoxType)

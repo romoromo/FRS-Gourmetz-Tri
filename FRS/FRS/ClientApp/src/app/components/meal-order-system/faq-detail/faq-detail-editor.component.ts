@@ -36,6 +36,7 @@ export class FaqDetailEditorComponent implements OnInit, AfterViewInit {
   public changesFailedCallback: () => void;
   public changesCancelledCallback: () => void;
   public faqSubjects = [];
+  public subjectId: string;
 
   public fg: FormGroup = new FormGroup({
     html: new FormControl('', Validators.required)
@@ -47,15 +48,17 @@ export class FaqDetailEditorComponent implements OnInit, AfterViewInit {
   constructor(private alertService: AlertService, private faqService: FaqService, private accountService: AccountService,
     public dialogRef: MatDialogRef<FaqDetailEditorComponent>, private mealService: MealService, private sanitizer: DomSanitizer,
     @Inject(MAT_DIALOG_DATA) public data: any) {
+
     if (typeof (data.faqDetail) != typeof (undefined)) {
       this.catererId = data.catererId;
-      if (data.faqDetail.id) {
+      //if (data.faqDetail.id) {
+      this.subjectId = data.faqDetail.faqSubjectId;
         this.editFaqDetail(data.faqDetail);
-      } else {
-        this.newFaqDetail();
-      }
+      //} else {
+      //  this.newFaqDetail();
+      //}
     }
-    this.getFaqSubjects();
+    //this.getFaqSubjects();
   }
 
   public editorOptions = {
@@ -282,11 +285,12 @@ export class FaqDetailEditorComponent implements OnInit, AfterViewInit {
     this.editingFaqDetailCode = null;
     this.selectedValues = {};
     this.faqDetailEdit = new FaqDetail();
+    this.faqDetailEdit.faqSubjectId = this.subjectId;
     return this.faqDetailEdit;
   }
 
   editFaqDetail(faqDetail: FaqDetail) {
-    if (faqDetail) {
+    if (faqDetail && faqDetail.id) {
       this.isNewFaqDetail = false;
       this.showValidationErrors = true;
 

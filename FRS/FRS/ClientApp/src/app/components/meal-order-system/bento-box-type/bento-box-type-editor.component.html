@@ -45,7 +45,9 @@
 
         <div class="col-md-12">
           Picture <file-upload (onUploadFinished)="uploadFinished($event)"></file-upload>
-          <img [hidden]="!bentoBoxTypeEdit.picture" [src]="bentoBoxTypeEdit.picture" style="max-width: 300px; max-height: 300px;padding:2px" />
+          <div *ngIf="bentoBoxTypeEdit.picture" class="col-md-6" style="padding:10px; border: 1px dashed #808080;text-align:center">
+            <img [src]="getFileImage(bentoBoxTypeEdit.picture)" alt="icon" style="max-width: 300px; max-height: 300px; padding: 2px" />
+          </div>
         </div>
 
       </div>

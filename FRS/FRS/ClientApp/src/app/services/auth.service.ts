@@ -290,7 +290,7 @@ export class AuthService {
 
     let user = currentUser || this.localStorage.getDataObject<User>(DBkeys.CURRENT_USER);
     let isLoggedIn = false;
-    console.log('reevaluateLoginStatus', this.isEnableMFA, isValidateMfa, this.isEnableMFA);
+    //console.log('reevaluateLoginStatus', this.isEnableMFA, isValidateMfa, this.isEnableMFA);
     if (this.isEnableMFA) {
       isLoggedIn = user != null && user.last2FAValidatedTime != null;// && (new Date(user.last2FAValidatedTime) > d);
     }

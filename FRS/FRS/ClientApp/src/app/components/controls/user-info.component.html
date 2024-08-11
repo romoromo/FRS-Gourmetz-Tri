@@ -20,7 +20,7 @@
           ((isChangePassword || isNewUser) && newPassword.valid && confirmPassword.errors?.validateEqual && showErrorAlert('Passwword mismatch', 'New password and comfirmation password do not match'));
 
           (canAssignRoles && !roles.valid && showErrorAlert('Roles is required', 'Please select a minimum of 1 role'));">
-    <div class="form-group">
+    <!--<div class="form-group">
       <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="employeeId-{{uniqueId}}">{{'users.editor.EmployeeId' | translate}}</label>
       <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
         <p class="form-control-static">{{user.employeeId}}</p>
@@ -44,7 +44,7 @@
       <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
         <input autofocus type="text" attr.id="jobTitle-{{uniqueId}}" name="jobTitle" placeholder="Enter Job Title" class="form-control" [(ngModel)]="userEdit.jobTitle" />
       </div>
-    </div>
+    </div>-->
 
     <div class="row">
       <div class="col-md-12">
@@ -235,7 +235,7 @@
     </div>
 
     <!--******************************************************************************************************-->
-    <div class="row" *ngIf="(user && !user.departmentId) || (userEdit && !userEdit.departmentId)">
+    <!--<div class="row" *ngIf="(user && !user.departmentId) || (userEdit && !userEdit.departmentId)">
       <div class="col-md-12">
         <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
       </div>
@@ -249,7 +249,7 @@
       <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
         <input type="text" readonly attr.id="registeredDepartment-{{uniqueId}}" name="registeredDepartment" class="form-control" [(ngModel)]="userEdit.registeredDepartment" />
       </div>
-    </div>
+    </div>-->
 
     <div *ngIf="!isEditMode || canManageDepartments" class="row">
       <div class="col-md-12">
@@ -443,7 +443,7 @@
       </div>
     </div>
 
-    <div class="form-group">
+    <!--<div class="form-group">
       <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="status-{{uniqueId}}">Status</label>
       <div *ngIf="!isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
         <p class="form-control-static">{{user.status}}</p>
@@ -460,9 +460,9 @@
       <div *ngIf="isEditMode && selectedStatus == 'CUSTOM'" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
         <input type="text" attr.id="status-{{uniqueId}}" name="status" placeholder="" class="form-control" [(ngModel)]="userEdit.status" />
       </div>
-    </div>
+    </div>-->
 
-    <div class="row">
+    <!--<div class="row">
       <div class="col-md-12">
         <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
       </div>
@@ -479,7 +479,7 @@
           {{'users.editor.PinRequired' | translate}}
         </span>
       </div>
-    </div>
+    </div>-->
 
     <div class="row">
       <div class="col-md-12">
@@ -497,7 +497,7 @@
       </div>
     </div>
 
-    <div *ngIf="!isViewOnly" class="row">
+    <!--<div *ngIf="!isViewOnly" class="row">
       <div class="col-md-12">
         <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
       </div>
@@ -527,9 +527,9 @@
       <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
         <input type="text" attr.id="mobileNo-{{uniqueId}}" name="mobileNo" placeholder="Enter mobile number" class="form-control" [(ngModel)]="userEdit.mobileNo" />
       </div>
-    </div>
+    </div>-->
 
-    <div *ngIf="!isViewOnly" class="row">
+    <!--<div *ngIf="!isViewOnly" class="row">
       <div class="col-md-12">
         <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
       </div>
@@ -543,16 +543,16 @@
       <div *ngIf="isEditMode" [class.col-md-9]="isViewOnly" [class.col-md-10]="!isViewOnly">
         <input type="text" attr.id="unitNumber-{{uniqueId}}" name="unitNumber" placeholder="Enter unit number" class="form-control" [(ngModel)]="userEdit.unitNumber" />
       </div>
-    </div>
+    </div>-->
     <div *ngIf="!isViewOnly" class="row">
       <div class="col-md-12">
         <hr [class.separator-hr]="!isEditMode" [class.edit-separator-hr]="isEditMode" />
       </div>
     </div>
     <div class="form-group">
-      <div class="col-xs-12">
+      <div class="">
         <label [class.col-md-3]="isViewOnly" [class.col-md-2]="!isViewOnly" class="control-label" for="facilities-facility-icon">Photo</label>
-        <div class="col-md-7" *ngIf="isEditMode">
+        <div class="col-md-5" *ngIf="isEditMode">
           <file-upload (onUploadFinished)="uploadFinished($event)" fileTypes="image/*"></file-upload>
         </div>
 

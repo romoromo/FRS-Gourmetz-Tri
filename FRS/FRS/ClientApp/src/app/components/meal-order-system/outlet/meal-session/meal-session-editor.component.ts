@@ -367,8 +367,8 @@ export class MealSessionEditorComponent {
 
   addClassRoster(mealSession: MealSession): void {
     const dialogRef = this.dialog.open(OutletClassRosterEditorComponent, {
-      data: { header: mealSession.name + ' - Class Detailing', mealSession: mealSession, catererId: this.catererId, outletId: this.outletId, outletProfileId: this.outletProfileId },
-      width: '900px',
+      data: { header: mealSession.name + ' - Class Rostering', mealSession: mealSession, catererId: this.catererId, outletId: this.outletId, outletProfileId: this.outletProfileId },
+      width: '85vw',
       disableClose: true
     });
 
@@ -390,8 +390,8 @@ export class MealSessionEditorComponent {
     let mealSessionCopy = {};
     Object.assign(mealSessionCopy, mealSession);
     const dialogRef = this.dialog.open(OutletClassRostersManagementComponent, {
-      data: { header: mealSession.name + ' - Class Detailing', mealSession: mealSessionCopy, catererId: this.catererId, outletId: this.outletId, outletProfileId: this.outletProfileId },
-      width: '900px'
+      data: { header: mealSession.name + ' - Class Rostering', mealSession: mealSessionCopy, catererId: this.catererId, outletId: this.outletId, outletProfileId: this.outletProfileId },
+      width: '85vw'
     });
 
     dialogRef.afterClosed().subscribe(result => {

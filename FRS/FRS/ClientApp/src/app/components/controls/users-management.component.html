@@ -8,12 +8,12 @@
         <search-box (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()"  placeholder="{{'users.management.Search' | translate}}"></search-box>
       </div>
     </div>
-    <div class="col-sm-2">
+    <!--<div class="col-sm-2">
       <input type="checkbox" (click)="onFilterApprovedUsers()" [(ngModel)]="forApproval" /> <span><small>Pending for approval</small></span>
     </div>
     <div class="col-sm-2">
       <input type="checkbox" (click)="onFilterOnlineUsers()" [(ngModel)]="forOnline" /> <span><small>Online only</small></span>
-    </div>
+    </div>-->
     <div class="col-sm-4">
       <div class="navbar action-box">
         <ul class="nav navbar-nav navbar-right">

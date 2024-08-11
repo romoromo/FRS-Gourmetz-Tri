@@ -385,6 +385,7 @@ export class RoleEditorComponent implements AfterViewInit {
     this.allPermissionsTree = allPermissionsTree;
     this.selectedValues = {};
     this.roleEdit = new Role();
+    this.selectedPermissions = [];
     return this.roleEdit;
   }
 

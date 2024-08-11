@@ -537,9 +537,9 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        public async Task<List<GroupedTermStudentGroupDTO>> GetStudentMealPlanAsync(DateTime? orderDate)
+        public async Task<List<GroupedTermStudentGroupDTO>> GetStudentMealPlanAsync(int outletId, DateTime? orderDate)
         {
-            var mealPlans = Mapper.Map<List<StudentGroupDTO>>(await _uow.StudentGroups.GetAllStudentGroupsAsync(orderDate));
+            var mealPlans = Mapper.Map<List<StudentGroupDTO>>(await _uow.StudentGroups.GetAllStudentGroupsAsync(outletId, orderDate));
 
             return mealPlans.GroupBy(e => e.OutletTermId).Select(e => new GroupedTermStudentGroupDTO
             {

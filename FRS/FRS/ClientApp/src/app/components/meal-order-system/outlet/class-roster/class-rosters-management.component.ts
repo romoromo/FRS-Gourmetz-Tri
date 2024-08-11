@@ -50,7 +50,7 @@ export class OutletClassRostersManagementComponent implements OnInit {
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private classService: ClassService, public dialog: MatDialog, public dialogRef: MatDialogRef<OutletClassRostersManagementComponent>, 
     @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.header = data ? data.header : 'Class Detailing';
+    this.header = data ? data.header : 'Class Rostering';
     if (typeof (data.mealSession) != typeof (undefined)) {
       this.outletId = data.mealSession.outletId;
       this.catererId = data.mealSession.catererId;
@@ -62,7 +62,7 @@ export class OutletClassRostersManagementComponent implements OnInit {
   openDialog(outletClassRoster: OutletClassRoster): void {
     const dialogRef = this.dialog.open(OutletClassRosterEditorComponent, {
       data: { header: this.dialogHeader, outletClassRoster: outletClassRoster, catererId: this.catererId, mealSession: this.mealSession, outletProfileId: this.outletProfileId },
-      width: '900px',
+      width: '85vw',
       disableClose: false
     });
 

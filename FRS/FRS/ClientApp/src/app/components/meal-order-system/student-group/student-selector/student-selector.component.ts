@@ -139,7 +139,8 @@ export class StudentSelectorComponent implements OnInit {
 
   getClasses() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
+    let f = this.outletId ? '(classOutletId)==' + this.outletId + ',' : '';
+    filter.filters = f + '(IsActive)==true';
 
     this.classService.getClassesByFilter(filter)
       .subscribe(results => {

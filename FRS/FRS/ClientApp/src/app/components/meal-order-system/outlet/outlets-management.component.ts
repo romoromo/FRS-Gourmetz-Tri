@@ -248,7 +248,7 @@ export class OutletsManagementComponent implements OnInit {
 
     const dialogRef = this.dialog.open(CatererSelectorComponent, {
       data: { header: "Caterers", outlet: row},
-      width: '100vw',
+      width: '60vw',
       disableClose: true
     });
 

@@ -231,9 +231,9 @@ namespace FRS.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetStudentMealPlan(DateTime? orderDate)
+        public async Task<IActionResult> GetStudentMealPlan(int outletId, DateTime? orderDate)
         {
-            var dto = await this._studentService.GetStudentMealPlanAsync(orderDate);
+            var dto = await this._studentService.GetStudentMealPlanAsync(outletId, orderDate);
             return Ok(dto);
         }
 

@@ -78,7 +78,7 @@
                     <tr>
                       <th scope="col" style="width: 100px; z-index: 3 !important;" class="sticky-column stick-header mw-200 text-center">Day</th>
                       <th scope="col" class="stick-header mw-300" *ngFor="let set of dishCycleEdit.sets; let i=index">
-                        <div *ngIf="!isMeal()" style="padding-left:15px;text-align:center">{{set.label}}</div>
+                        <div *ngIf="!isMeal()" style="padding-left:15px;text-align:center">{{set.label}} <small><i>(Sequence {{set.sequence}})</i></small></div>
                         <mat-form-field *ngIf="isMeal()" class="col-xs-6">
                           <mat-select [disabled]="!canManageDishCycles" id="setType-{{i}}" name="setType-{{i}}" [(ngModel)]="set.cycleTypeId" #setType="ngModel" required (selectionChange)="getAlaCarteCols($event.value, set)">
                             <mat-option *ngFor="let dishCycle of dishCycles" [value]="dishCycle.id">
@@ -95,7 +95,7 @@
                         <mat-form-field *ngIf="isMeal()" class="col-xs-6">
                           <mat-select [disabled]="!canManageDishCycles" id="setTypeSequence-{{i}}" name="setTypeSequence-{{i}}" [(ngModel)]="set.cycleTypeSequence" #setTypeSequence="ngModel" required (selectionChange)="onMealCreditColChange(set.cycleTypeId, $event.value, set.sequence)">
                             <mat-option *ngFor="let sequence of set.cycleSequences" [value]="sequence.sequence">
-                              {{sequence.label}}
+                              {{sequence.label}} <small><i>(Sequence {{sequence.sequence}})</i></small>
                             </mat-option>
                           </mat-select>
                           <!--<mat-select *ngIf="dishCycleEdit.cycleType != 'Main Menu'"  [disabled]="!canManageDishCycles" id="setTypeSequence-{{i}}" name="setTypeSequence-{{i}}" [(ngModel)]="set.cycleTypeSequence" #setTypeSequence="ngModel" required (selectionChange)="onAlaCarteColChange(set.cycleTypeId, $event.value, set.sequence)">

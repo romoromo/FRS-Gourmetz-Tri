@@ -38,14 +38,14 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        public async Task<List<StudentGroup>> GetAllStudentGroupsAsync(DateTime? orderDate)
+        public async Task<List<StudentGroup>> GetAllStudentGroupsAsync(int outletId, DateTime? orderDate)
         {
             var date = orderDate != null ? orderDate?.Date : DateTime.Today;
 
             IQueryable<StudentGroup> query = _appContext.StudentGroups.Where(t => t.IsActive &&
                                                     t.Type == StudentMealType.MEAL_PLAN &&
-                                                    t.StartDate.HasValue && t.StartDate.Value <= date &&
-                                                    t.EndDate.HasValue && date <= t.EndDate.Value);
+                                                    t.StartDate.HasValue && t.EndDate.HasValue &&
+                                                    date >= t.StartDate.Value && date <= t.EndDate.Value);
 
             return query.ToList();
         }

@@ -144,7 +144,7 @@ export class ClassesManagementComponent implements OnInit {
   }
 
   newClass() {
-    this.header = 'New Class Level';
+    this.header = 'New Class';
     this.editedClass = new Class();
     this.openDialog(this.editedClass);
   }
@@ -152,12 +152,12 @@ export class ClassesManagementComponent implements OnInit {
 
   editClass(row: Class) {
     this.editedClass = row;
-    this.header = 'Edit Class Level';
+    this.header = 'Edit Class';
     this.openDialog(this.editedClass);
   }
 
   deleteClass(row: Class) {
-    this.alertService.showDialog('Are you sure you want to delete the \"' + row.name + '\" class level?', DialogType.confirm, () => this.deleteClassHelper(row));
+    this.alertService.showDialog('Are you sure you want to delete the \"' + row.name + '\" class?', DialogType.confirm, () => this.deleteClassHelper(row));
   }
 
 
@@ -177,7 +177,7 @@ export class ClassesManagementComponent implements OnInit {
           this.alertService.stopLoadingMessage();
           this.loadingIndicator = false;
 
-          this.alertService.showStickyMessage("Delete Error", `An error occured while deleting the class level.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Delete Error", `An error occured while deleting the class.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
         });
   }

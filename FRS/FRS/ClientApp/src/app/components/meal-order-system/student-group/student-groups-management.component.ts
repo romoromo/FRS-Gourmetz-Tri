@@ -90,6 +90,7 @@ export class StudentGroupsManagementComponent implements OnInit {
     this.columns = [
       { prop: 'code', name: 'Code' },
       { prop: 'name', name: 'Name' },
+      { prop: 'type', name: 'Type' },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
 

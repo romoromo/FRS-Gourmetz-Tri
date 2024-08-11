@@ -20,6 +20,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
 
         Task<bool> CreateOrUpdateStudentGroupDetailAsync(int StudentGroupId, int StudentId, bool IsActive);
         Task<string> GenerateCode(int id);
-        Task<List<StudentGroup>> GetAllStudentGroupsAsync(DateTime? orderDate);
+        Task<List<StudentGroup>> GetAllStudentGroupsAsync(int outletId, DateTime? orderDate);
     }
 }

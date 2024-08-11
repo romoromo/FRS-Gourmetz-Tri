@@ -97,8 +97,8 @@ export class UsersManagementComponent implements OnInit, AfterViewInit, OnDestro
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
-      { prop: "index", name: '', width: 100, cellTemplate: this.indexTemplate, canAutoResize: false },
-      { prop: 'jobTitle', name: gT('users.management.Title') },
+      //{ prop: "index", name: '', width: 100, cellTemplate: this.indexTemplate, canAutoResize: false },
+      //{ prop: 'jobTitle', name: gT('users.management.Title') },
       { prop: 'userName', name: gT('users.management.UserName'), cellTemplate: this.userNameTemplate },
       { prop: 'fullName', name: gT('users.management.FullName') },
       { prop: 'email', name: gT('users.management.Email') },
