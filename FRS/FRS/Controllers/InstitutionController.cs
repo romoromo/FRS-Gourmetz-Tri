@@ -10,23 +10,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class InstitutionController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public InstitutionController(IUnitOfWork unitOfWork, ILogger<InstitutionController> logger)
+        public InstitutionController(IUnitOfWork unitOfWork, ILogger<InstitutionController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDefaultInstitution()
         {
             var result = await _unitOfWork.Institutions.GetDefaultInstitutionAsync();
-            return Ok(Mapper.Map<InstitutionViewModel>(result));
+            return Ok(_mapper.Map<InstitutionViewModel>(result));
         }
 
         /// <summary>
@@ -53,7 +55,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiInstitutions(int? institutionId = null)
         {
             var result = await _unitOfWork.Institutions.GetApiInstitutions(institutionId);
-            var data = Mapper.Map<List<InstitutionViewModel>>(result.Data);
+            var data = _mapper.Map<List<InstitutionViewModel>>(result.Data);
 
             if (institutionId.HasValue)
             {
@@ -83,7 +85,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetInstitutions(int pageNumber, int pageSize)
         {
             var results = await _unitOfWork.Institutions.GetInstitutionsLoadRelatedAsync(pageNumber, pageSize);
-            return Ok(Mapper.Map<List<InstitutionViewModel>>(results));
+            return Ok(_mapper.Map<List<InstitutionViewModel>>(results));
         }
 
         [HttpPost("")]
@@ -98,12 +100,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(institution)} cannot be null");
 
 
-                var type = Mapper.Map<Institution>(institution);
+                var type = _mapper.Map<Institution>(institution);
 
                 var result = await _unitOfWork.Institutions.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    InstitutionViewModel institutionVM = Mapper.Map<InstitutionViewModel>(result.Data);
+                    InstitutionViewModel institutionVM = _mapper.Map<InstitutionViewModel>(result.Data);
                     return CreatedAtAction("GetInstitutionById", new { id = institutionVM.Id }, institutionVM);
                 }
 
@@ -127,7 +129,7 @@ namespace FRS.Controllers
 
             var institution = await this._unitOfWork.Institutions.GetByIdAsync(id);
 
-            InstitutionViewModel institutionVM = Mapper.Map<InstitutionViewModel>(institution);
+            InstitutionViewModel institutionVM = _mapper.Map<InstitutionViewModel>(institution);
             if (institutionVM == null)
                 return NotFound(id);
 
@@ -158,11 +160,11 @@ namespace FRS.Controllers
 
                 var institution = await this._unitOfWork.Institutions.GetByIdAsync(model.Id);
 
-                InstitutionViewModel institutionVM = Mapper.Map<InstitutionViewModel>(institution);
+                InstitutionViewModel institutionVM = _mapper.Map<InstitutionViewModel>(institution);
                 if (institutionVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Institution>(model);
+                var updatedModel = _mapper.Map<Institution>(model);
                 var result = await _unitOfWork.Institutions.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

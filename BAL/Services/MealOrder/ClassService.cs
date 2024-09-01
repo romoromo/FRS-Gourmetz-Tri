@@ -27,37 +27,39 @@ namespace BAL.Services.MealOrder
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public ClassService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public ClassService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         #region Class Batches
 
         public async Task<PagedEntity<ClassBatchDTO>> GetClassBatchesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<ClassBatchDTO>>(await this._uow.ClassBatches.GetClassBatchesAsync(filter));
+            var result = _mapper.Map<PagedEntity<ClassBatchDTO>>(await this._uow.ClassBatches.GetClassBatchesAsync(filter));
             return result;
         }
 
         public async Task<ClassBatchDTO> GetClassBatchByIdAsync(int id)
         {
-            return Mapper.Map<ClassBatchDTO>(await this._uow.ClassBatches.GetByIdAsync(id));
+            return _mapper.Map<ClassBatchDTO>(await this._uow.ClassBatches.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateClassBatchAsync(ClassBatchDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.ClassBatches.CreateAsync(Mapper.Map<ClassBatch>(dto));
+            result = await this._uow.ClassBatches.CreateAsync(_mapper.Map<ClassBatch>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateClassBatchAsync(ClassBatchDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.ClassBatches.UpdateAsync(Mapper.Map<ClassBatch>(dto));
+            result = await this._uow.ClassBatches.UpdateAsync(_mapper.Map<ClassBatch>(dto));
             return result;
         }
 
@@ -74,26 +76,26 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<ClassLevelDTO>> GetClassLevelsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<ClassLevelDTO>>(await this._uow.ClassLevels.GetClassLevelsAsync(filter));
+            var result = _mapper.Map<PagedEntity<ClassLevelDTO>>(await this._uow.ClassLevels.GetClassLevelsAsync(filter));
             return result;
         }
 
         public async Task<ClassLevelDTO> GetClassLevelByIdAsync(int id)
         {
-            return Mapper.Map<ClassLevelDTO>(await this._uow.ClassLevels.GetByIdAsync(id));
+            return _mapper.Map<ClassLevelDTO>(await this._uow.ClassLevels.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateClassLevelAsync(ClassLevelDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.ClassLevels.CreateAsync(Mapper.Map<ClassLevel>(dto));
+            result = await this._uow.ClassLevels.CreateAsync(_mapper.Map<ClassLevel>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateClassLevelAsync(ClassLevelDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.ClassLevels.UpdateAsync(Mapper.Map<ClassLevel>(dto));
+            result = await this._uow.ClassLevels.UpdateAsync(_mapper.Map<ClassLevel>(dto));
             return result;
         }
 
@@ -110,26 +112,26 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<ClassDTO>> GetClassesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<ClassDTO>>(await this._uow.Classes.GetClassesAsync(filter));
+            var result = _mapper.Map<PagedEntity<ClassDTO>>(await this._uow.Classes.GetClassesAsync(filter));
             return result;
         }
 
         public async Task<ClassDTO> GetClassByIdAsync(int id)
         {
-            return Mapper.Map<ClassDTO>(await this._uow.Classes.GetByIdAsync(id));
+            return _mapper.Map<ClassDTO>(await this._uow.Classes.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateClassAsync(ClassDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.Classes.CreateAsync(Mapper.Map<Class>(dto));
+            result = await this._uow.Classes.CreateAsync(_mapper.Map<Class>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateClassAsync(ClassDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.Classes.UpdateAsync(Mapper.Map<Class>(dto));
+            result = await this._uow.Classes.UpdateAsync(_mapper.Map<Class>(dto));
             return result;
         }
 
@@ -145,28 +147,28 @@ namespace BAL.Services.MealOrder
         #region Class Rostering
         public async Task<PagedEntity<OutletClassRosterDTO>> GetOutletClassRostersAsync(ClassRosterFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<OutletClassRosterDTO>>(await this._uow.OutletClassRosters.GetOutletClassRostersAsync(filter));
+            var result = _mapper.Map<PagedEntity<OutletClassRosterDTO>>(await this._uow.OutletClassRosters.GetOutletClassRostersAsync(filter));
             return result;
         }
 
         public async Task<BaseOperationResponse> CreateOutletClassRosterAsync(OutletClassRosterDTO dto)
         {
-            return await this._uow.OutletClassRosters.CreateAsync(Mapper.Map<OutletClassRoster>(dto));
+            return await this._uow.OutletClassRosters.CreateAsync(_mapper.Map<OutletClassRoster>(dto));
         }
 
         public async Task<List<OutletClassRosterDTO>> GetOutletClassRosterByIdAsync(int outletId, int catererId, int mealSessionId)
         {
-            return Mapper.Map<List<OutletClassRosterDTO>>(await this._uow.OutletClassRosters.GetByCatererOutletIdAsync(outletId, catererId, mealSessionId));
+            return _mapper.Map<List<OutletClassRosterDTO>>(await this._uow.OutletClassRosters.GetByCatererOutletIdAsync(outletId, catererId, mealSessionId));
         }
 
         public async Task<BaseOperationResponse> UpdateOutletClassRosterAsync(OutletClassRosterDTO dto)
         {
-            return await this._uow.OutletClassRosters.UpdateAsync(Mapper.Map<OutletClassRoster>(dto));
+            return await this._uow.OutletClassRosters.UpdateAsync(_mapper.Map<OutletClassRoster>(dto));
         }
 
         public async Task<OutletClassRosterDTO> GetOutletClassRosterByIdAsync(int id)
         {
-            return Mapper.Map<OutletClassRosterDTO>(await this._uow.OutletClassRosters.GetByIdAsync(id));
+            return _mapper.Map<OutletClassRosterDTO>(await this._uow.OutletClassRosters.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> DeleteOutletClassRosterAsync(int id)
@@ -178,7 +180,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<MealSessionDetailDTO> GetCurrentOrderMealSessionAsync(int? outletId, DateTime orderDate, int mealSessionId, int classId)
         {
-            var result = Mapper.Map<MealSessionDetailDTO>(await this._uow.OutletClassRosters.GetCurrentOrderMealSessionAsync(outletId, orderDate, mealSessionId, classId));
+            var result = _mapper.Map<MealSessionDetailDTO>(await this._uow.OutletClassRosters.GetCurrentOrderMealSessionAsync(outletId, orderDate, mealSessionId, classId));
             return result;
         }
 
@@ -193,7 +195,7 @@ namespace BAL.Services.MealOrder
             if (classRoster != null)
             {
                 var periods = classRoster.MealSession.Details.Where(e => e.IsActive).ToList().OrderBy(e => e.StartDate.TimeOfDay);
-                var roster = Mapper.Map<OutletClassRosterDTO>(classRoster);
+                var roster = _mapper.Map<OutletClassRosterDTO>(classRoster);
                 using (var stream = new System.IO.MemoryStream())
                 {
                     var wb = new XSSFWorkbook();

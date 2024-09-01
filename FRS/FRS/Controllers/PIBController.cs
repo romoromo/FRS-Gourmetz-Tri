@@ -36,13 +36,15 @@ namespace FRS.Controllers
         readonly ILogger _logger;
         private IHubContext<FRSHub> _frsHub;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public PIBController(IUnitOfWork unitOfWork, ILogger<PIBTemplateController> logger, IConfiguration configuration, IHubContext<FRSHub> frsHub)
+        public PIBController(IUnitOfWork unitOfWork, ILogger<PIBTemplateController> logger, IConfiguration configuration, IHubContext<FRSHub> frsHub, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _configuration = configuration;
             _frsHub = frsHub;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -56,7 +58,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiPIBTemplates(int? templateId = null, string mac = null)
         {
             var result = await _unitOfWork.PIBTemplates.GetApiPIBTemplates(templateId, mac);
-            var data = Mapper.Map<List<PIBTemplateViewModel>>(result.Data);
+            var data = _mapper.Map<List<PIBTemplateViewModel>>(result.Data);
 
             if (templateId.HasValue || !string.IsNullOrEmpty(mac))
             {
@@ -86,7 +88,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetPIBTemplates(int pageNumber, int pageSize)
         {
             var results = await _unitOfWork.PIBTemplates.GetPIBTemplatesLoadRelatedAsync(pageNumber, pageSize);
-            return Ok(Mapper.Map<List<PIBTemplateViewModel>>(results));
+            return Ok(_mapper.Map<List<PIBTemplateViewModel>>(results));
         }
 
         [HttpPost("")]
@@ -106,12 +108,12 @@ namespace FRS.Controllers
                     pibTemplate.DeviceAPIUrl = deviceAPIUrl;
                 }
 
-                var type = Mapper.Map<PIBTemplate>(pibTemplate);
+                var type = _mapper.Map<PIBTemplate>(pibTemplate);
 
                 var result = await _unitOfWork.PIBTemplates.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    PIBTemplateViewModel pibTemplateVM = Mapper.Map<PIBTemplateViewModel>(result.Data);
+                    PIBTemplateViewModel pibTemplateVM = _mapper.Map<PIBTemplateViewModel>(result.Data);
                     return CreatedAtAction("GetPIBTemplateById", new { id = pibTemplateVM.Id }, pibTemplateVM);
                 }
 
@@ -135,7 +137,7 @@ namespace FRS.Controllers
 
             var pibTemplate = await this._unitOfWork.PIBTemplates.GetByIdAsync(id);
 
-            PIBTemplateViewModel pibTemplateVM = Mapper.Map<PIBTemplateViewModel>(pibTemplate);
+            PIBTemplateViewModel pibTemplateVM = _mapper.Map<PIBTemplateViewModel>(pibTemplate);
             if (pibTemplateVM == null)
                 return NotFound(id);
 
@@ -166,11 +168,11 @@ namespace FRS.Controllers
 
                 var pibTemplate = await this._unitOfWork.PIBTemplates.GetByIdAsync(model.Id);
 
-                PIBTemplateViewModel pibTemplateVM = Mapper.Map<PIBTemplateViewModel>(pibTemplate);
+                PIBTemplateViewModel pibTemplateVM = _mapper.Map<PIBTemplateViewModel>(pibTemplate);
                 if (pibTemplateVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<PIBTemplate>(model);
+                var updatedModel = _mapper.Map<PIBTemplate>(model);
                 var result = await _unitOfWork.PIBTemplates.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();
@@ -190,7 +192,7 @@ namespace FRS.Controllers
         {
             string apiUrl = _configuration["AppSettings:patientApiUrl"];
             var results = await GetApiRestrictionTypes(apiUrl);
-            return Ok(Mapper.Map<List<RestrictionType>>(results));
+            return Ok(_mapper.Map<List<RestrictionType>>(results));
         }
 
         [HttpGet("get/piblocations")]
@@ -200,7 +202,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetLocations()
         {
             var results = await _unitOfWork.PIBTemplates.GetPIBLocationsLoadRelatedAsync(-1, -1);
-            return Ok(Mapper.Map<List<PIBTemplateLocationViewModel>>(results));
+            return Ok(_mapper.Map<List<PIBTemplateLocationViewModel>>(results));
         }
 
         [HttpGet("get/piblocations/sync")]
@@ -246,7 +248,7 @@ namespace FRS.Controllers
                 {
                     string apiUrl = _configuration["AppSettings:pibPatientInfoApiUrl"];
                     var deviceResult = await this._unitOfWork.PIBTemplates.GetApiPIBDevices(macAddress: template.MacAddress);
-                    var data = Mapper.Map<List<PIBDeviceViewModel>>(deviceResult.Data);
+                    var data = _mapper.Map<List<PIBDeviceViewModel>>(deviceResult.Data);
 
                     if (!string.IsNullOrEmpty(template.MacAddress) && data.Any())
                     {
@@ -481,7 +483,7 @@ namespace FRS.Controllers
             if (isNew)
             {
                 var objectData = data.GetType().GetProperty("data").GetValue(data, null);
-                await _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", Mapper.Map<PIBDeviceViewModel>(objectData as PIBDevice));
+                await _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", _mapper.Map<PIBDeviceViewModel>(objectData as PIBDevice));
             }
 
             return Ok(result);
@@ -495,13 +497,13 @@ namespace FRS.Controllers
             var result = await _unitOfWork.PIBTemplates.GetApiPIBDevices(macAddress: mac_address);
             if (!string.IsNullOrEmpty(mac_address))
             {
-                var deviceData = Mapper.Map<List<PIBDeviceViewModel>>(result.Data);
+                var deviceData = _mapper.Map<List<PIBDeviceViewModel>>(result.Data);
 
                 if (deviceData.Any())
                 {
                     var device = deviceData.First();
                     var templateResult = await _unitOfWork.PIBTemplates.GetApiPIBTemplates(macAddress: mac_address);
-                    var templateData = Mapper.Map<List<PIBTemplateViewModel>>(templateResult.Data);
+                    var templateData = _mapper.Map<List<PIBTemplateViewModel>>(templateResult.Data);
 
                     if (templateData.Any())
                     {
@@ -1035,7 +1037,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiPIBDevices(int? deviceId = null, string mac_address = null)
         {
             var result = await _unitOfWork.PIBTemplates.GetApiPIBDevices(deviceId, mac_address);
-            var data = Mapper.Map<List<PIBDeviceViewModel>>(result.Data);
+            var data = _mapper.Map<List<PIBDeviceViewModel>>(result.Data);
 
             if (deviceId.HasValue || !string.IsNullOrEmpty(mac_address))
             {
@@ -1065,7 +1067,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetPIBDevices(int pageNumber, int pageSize)
         {
             var results = await _unitOfWork.PIBTemplates.GetPIBDevicesLoadRelatedAsync(pageNumber, pageSize);
-            return Ok(Mapper.Map<List<PIBDeviceViewModel>>(results));
+            return Ok(_mapper.Map<List<PIBDeviceViewModel>>(results));
         }
 
         [HttpPost("device")]
@@ -1079,12 +1081,12 @@ namespace FRS.Controllers
                 if (pibDevice == null)
                     return BadRequest($"{nameof(pibDevice)} cannot be null");
 
-                var device = Mapper.Map<PIBDevice>(pibDevice);
+                var device = _mapper.Map<PIBDevice>(pibDevice);
 
                 var result = await _unitOfWork.PIBTemplates.CreateDeviceAsync(device);
                 if (result.IsSuccess)
                 {
-                    PIBDeviceViewModel pibDeviceVM = Mapper.Map<PIBDeviceViewModel>(result.Data);
+                    PIBDeviceViewModel pibDeviceVM = _mapper.Map<PIBDeviceViewModel>(result.Data);
                     return CreatedAtAction("GetPIBDeviceById", new { id = pibDeviceVM.Id }, pibDeviceVM);
                 }
 
@@ -1108,7 +1110,7 @@ namespace FRS.Controllers
 
             var pibDevice = await this._unitOfWork.PIBTemplates.GetByDeviceIdAsync(id);
 
-            PIBDeviceViewModel pibDeviceVM = Mapper.Map<PIBDeviceViewModel>(pibDevice);
+            PIBDeviceViewModel pibDeviceVM = _mapper.Map<PIBDeviceViewModel>(pibDevice);
             if (pibDeviceVM == null)
                 return NotFound(id);
 
@@ -1139,11 +1141,11 @@ namespace FRS.Controllers
 
                 var pibDevice = await this._unitOfWork.PIBTemplates.GetByDeviceIdAsync(model.Id);
 
-                PIBDeviceViewModel pibDeviceVM = Mapper.Map<PIBDeviceViewModel>(pibDevice);
+                PIBDeviceViewModel pibDeviceVM = _mapper.Map<PIBDeviceViewModel>(pibDevice);
                 if (pibDeviceVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<PIBDevice>(model);
+                var updatedModel = _mapper.Map<PIBDevice>(model);
                 var result = await _unitOfWork.PIBTemplates.UpdateDeviceAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();
@@ -1178,7 +1180,7 @@ namespace FRS.Controllers
 
                     JArray jsonArray = JArray.Parse(content);
                     var patient_info = JObject.Parse(jsonArray[0].ToString());
-                    patient = Mapper.Map<PatientInfo>(patient_info);
+                    patient = _mapper.Map<PatientInfo>(patient_info);
                     //var epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
                     //patient = new PatientInfo
                     //{
@@ -1200,7 +1202,7 @@ namespace FRS.Controllers
                     //string restrictionContent = patient_info["restrictions"].Value<string>();
                     //JArray jsonRestrictions = JArray.Parse(restrictionContent);
 
-                    //CorporateRatesInfo dto = Mapper.Map<CorporateRatesInfo>(jsonRestrictions);
+                    //CorporateRatesInfo dto = _mapper.Map<CorporateRatesInfo>(jsonRestrictions);
                     //dummy restrictions
                     //patient.location_label = "SKCH Ward 710";
                     //patient.mode_of_feeding = "Oral";
@@ -1316,7 +1318,7 @@ namespace FRS.Controllers
                     var contentJson = JObject.Parse(content);
                     JArray jsonArray = contentJson["data"] as JArray;
 
-                    //locations = Mapper.Map<List<PIBTemplateLocationViewModel>>(dataArray);
+                    //locations = _mapper.Map<List<PIBTemplateLocationViewModel>>(dataArray);
 
                     //JArray jsonArray = contentJson["data"] as JArray;
 
@@ -1324,7 +1326,7 @@ namespace FRS.Controllers
                     {
                         if (jsonArray[i]["bed"] != null && jsonArray[i]["bed"].Value<bool>())
                         {
-                            //var data = Mapper.Map<PIBTemplateLocationViewModel>(jsonArray[i]);
+                            //var data = _mapper.Map<PIBTemplateLocationViewModel>(jsonArray[i]);
                             //PIBTemplateLocationViewModel data = new PIBTemplateLocationViewModel()
                             //{
                             //    location_id = jsonArray[i]["location_id"] != null ? jsonArray[i]["location_id"].Value<long>() : 0,
@@ -1334,7 +1336,7 @@ namespace FRS.Controllers
                             //    alias = jsonArray[i]["alias"] != null ? jsonArray[i]["alias"].Value<string>() : string.Empty,
                             //    ward = jsonArray[i]["ward"] != null ? jsonArray[i]["ward"].Value<bool>() : false,
                             //    bed = jsonArray[i]["bed"] != null ? jsonArray[i]["bed"].Value<bool>() : false,
-                            //    ancestor = jsonArray[i]["ancestor"] != null ? Mapper.Map<PIBTemplateLocationViewModel>(jsonArray[i]) : null
+                            //    ancestor = jsonArray[i]["ancestor"] != null ? _mapper.Map<PIBTemplateLocationViewModel>(jsonArray[i]) : null
 
                             //};
                             var data = MapLocation(jsonArray[i] as JObject);
@@ -1393,7 +1395,7 @@ namespace FRS.Controllers
                 response.EnsureSuccessStatusCode();
                 var content = response.Content.ReadAsStringAsync().Result;
                 JArray jsonArray = JArray.Parse(content);
-                locations = Mapper.Map<List<PIBTemplateLocationViewModel>>(jsonArray);
+                locations = _mapper.Map<List<PIBTemplateLocationViewModel>>(jsonArray);
             }
 
             return locations.OrderBy(e => e.label).ToList();

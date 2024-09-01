@@ -13,23 +13,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class MediaController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public MediaController(IUnitOfWork unitOfWork, ILogger<MediaController> logger)
+        public MediaController(IUnitOfWork unitOfWork, ILogger<MediaController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -43,7 +45,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiMedias(int? mediaId = null)
         {
             var result = await _unitOfWork.Medias.GetApiMedias(mediaId).ConfigureAwait(false);
-            var data = Mapper.Map<List<MediaViewModel>>(result.Data);
+            var data = _mapper.Map<List<MediaViewModel>>(result.Data);
 
             data = await Map(data);
             if (mediaId.HasValue)
@@ -74,7 +76,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMedias(int pageNumber, int pageSize)
         {
             var results = await _unitOfWork.Medias.GetMediasLoadRelatedAsync(pageNumber, pageSize).ConfigureAwait(false);
-            var data = Mapper.Map<List<MediaViewModel>>(results);
+            var data = _mapper.Map<List<MediaViewModel>>(results);
             data = await Map(data);
             return Ok(data);
         }
@@ -93,7 +95,7 @@ namespace FRS.Controllers
                 if (!await _unitOfWork.Medias.TestCanCreateAsync(media.Name))
                     return BadRequest("Name already exists.");
 
-                var type = Mapper.Map<Media>(media);
+                var type = _mapper.Map<Media>(media);
 
                 var result = await _unitOfWork.Medias.CreateAsync(type, media.RolesArr, media.UserGroupsArr);
                 if (result.IsSuccess)
@@ -121,7 +123,7 @@ namespace FRS.Controllers
                         }
                     }
 
-                    MediaViewModel mediaVM = Mapper.Map<MediaViewModel>(result.Data);
+                    MediaViewModel mediaVM = _mapper.Map<MediaViewModel>(result.Data);
                     return CreatedAtAction("GetMediaById", new { id = mediaVM.Id }, mediaVM);
                 }
 
@@ -145,7 +147,7 @@ namespace FRS.Controllers
 
             var media = await this._unitOfWork.Medias.GetByIdAsync(id);
 
-            MediaViewModel mediaVM = Mapper.Map<MediaViewModel>(media);
+            MediaViewModel mediaVM = _mapper.Map<MediaViewModel>(media);
             if (mediaVM == null)
                 return NotFound(id);
 
@@ -192,11 +194,11 @@ namespace FRS.Controllers
 
                 var media = await this._unitOfWork.Medias.GetByIdAsync(model.Id).ConfigureAwait(false);
 
-                MediaViewModel mediaVM = Mapper.Map<MediaViewModel>(media);
+                MediaViewModel mediaVM = _mapper.Map<MediaViewModel>(media);
                 if (mediaVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Media>(model);
+                var updatedModel = _mapper.Map<Media>(model);
                 var result = await _unitOfWork.Medias.UpdateAsync(updatedModel, model.RolesArr, model.UserGroupsArr);
                 if (result.IsSuccess)
                 {

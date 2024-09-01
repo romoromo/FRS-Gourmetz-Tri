@@ -12,25 +12,27 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class EmployeeScheduleController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         private IHubContext<EmployeeScheduleHub> _hub;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public EmployeeScheduleController(IUnitOfWork unitOfWork, ILogger<EmployeeScheduleController> logger, IHubContext<EmployeeScheduleHub> hub)
+        public EmployeeScheduleController(IUnitOfWork unitOfWork, ILogger<EmployeeScheduleController> logger, IHubContext<EmployeeScheduleHub> hub, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _hub = hub;
+            _mapper = mapper;
         }
 
 
@@ -49,7 +51,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmployeeSchedules(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.EmployeeSchedules.GetEmployeeSchedulesLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<EmployeeScheduleViewModel>>(result));
+            return Ok(_mapper.Map<List<EmployeeScheduleViewModel>>(result));
         }
 
         [HttpPost("")]
@@ -64,12 +66,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(employeeSchedule)} cannot be null");
 
 
-                var type = Mapper.Map<EmployeeSchedule>(employeeSchedule);
+                var type = _mapper.Map<EmployeeSchedule>(employeeSchedule);
 
                 var result = await _unitOfWork.EmployeeSchedules.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    EmployeeScheduleViewModel employeeScheduleVM = Mapper.Map<EmployeeScheduleViewModel>(result.Data);
+                    EmployeeScheduleViewModel employeeScheduleVM = _mapper.Map<EmployeeScheduleViewModel>(result.Data);
                     return CreatedAtAction("GetEmployeeScheduleById", new { id = employeeScheduleVM.Id }, employeeScheduleVM);
                 }
 
@@ -89,7 +91,7 @@ namespace FRS.Controllers
         {
             var employeeSchedule = await this._unitOfWork.EmployeeSchedules.GetByIdAsync(id);
 
-            EmployeeScheduleViewModel employeeScheduleVM = Mapper.Map<EmployeeScheduleViewModel>(employeeSchedule);
+            EmployeeScheduleViewModel employeeScheduleVM = _mapper.Map<EmployeeScheduleViewModel>(employeeSchedule);
             if (employeeScheduleVM == null)
                 return NotFound(id);
 
@@ -120,11 +122,11 @@ namespace FRS.Controllers
 
                 var employeeSchedule = await this._unitOfWork.EmployeeSchedules.GetByIdAsync(model.Id);
 
-                EmployeeScheduleViewModel employeeScheduleVM = Mapper.Map<EmployeeScheduleViewModel>(employeeSchedule);
+                EmployeeScheduleViewModel employeeScheduleVM = _mapper.Map<EmployeeScheduleViewModel>(employeeSchedule);
                 if (employeeScheduleVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<EmployeeSchedule>(model);
+                var updatedModel = _mapper.Map<EmployeeSchedule>(model);
                 var result = await _unitOfWork.EmployeeSchedules.UpdateAsync(updatedModel);
 
                 foreach (var l in updatedModel.Locations)

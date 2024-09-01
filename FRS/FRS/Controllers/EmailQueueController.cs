@@ -13,23 +13,26 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using NPOI.SS.Formula.Functions;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class EmailQueueController : BaseController
     {
         private IEmailQueueService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public EmailQueueController(IEmailQueueService service, ILogger<EmailQueueController> logger)
+        public EmailQueueController(IEmailQueueService service, ILogger<EmailQueueController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -42,7 +45,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmailQueues(BaseFilter filter)
         {
             var results = await this._service.GetEmailQueuesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<EmailQueueDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<EmailQueueDTO>>(results));
         }
 
         #endregion
@@ -62,7 +65,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateEmailQueueAsync(dto);
                 if (result.IsSuccess)
                 {
-                    EmailQueueDTO vm = Mapper.Map<EmailQueueDTO>(result.Data);
+                    EmailQueueDTO vm = _mapper.Map<EmailQueueDTO>(result.Data);
                     return CreatedAtAction("GetEmailQueueById", new { id = vm.Id }, vm);
                 }
 

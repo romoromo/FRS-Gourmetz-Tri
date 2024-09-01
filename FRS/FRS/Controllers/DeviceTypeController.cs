@@ -18,24 +18,27 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class DeviceTypeController : BaseController
     {
         private IDeviceService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public DeviceTypeController(IDeviceService service, ILogger<DeviceTypeController> logger)
+        public DeviceTypeController(IDeviceService service, ILogger<DeviceTypeController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Device Types
@@ -50,7 +53,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDeviceTypes(BaseFilter filter)
         {
             var results = await this._service.GetDeviceTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DeviceTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<DeviceTypeDTO>>(results));
         }
 
         #endregion
@@ -70,7 +73,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateDeviceTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    DeviceTypeDTO vm = Mapper.Map<DeviceTypeDTO>(result.Data);
+                    DeviceTypeDTO vm = _mapper.Map<DeviceTypeDTO>(result.Data);
                     return CreatedAtAction("GetDeviceTypeById", new { id = vm.Id }, vm);
                 }
 

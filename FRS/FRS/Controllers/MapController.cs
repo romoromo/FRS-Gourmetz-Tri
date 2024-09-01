@@ -13,23 +13,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using OpenIddict.Validation;
+using NPOI.SS.Formula.Functions;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class MapController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public MapController(IUnitOfWork unitOfWork, ILogger<MapController> logger)
+        public MapController(IUnitOfWork unitOfWork, ILogger<MapController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("floorconnector")]
@@ -38,7 +41,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetFloorConnectors(int? mapId = null)
         {
             var result = await _unitOfWork.Maps.GetFloorConnectors(mapId);
-            var rmap = Mapper.Map<List<PointViewModel>>(result);
+            var rmap = _mapper.Map<List<PointViewModel>>(result);
             return Ok(rmap);
         }
 
@@ -48,7 +51,7 @@ namespace FRS.Controllers
         [ProducesResponseType(200, Type = typeof(PointViewModel))]
         public async Task<IActionResult> GetPointById(int id)
         {
-            var result = Mapper.Map<PointViewModel>(_unitOfWork.Maps.GetPointById(id));
+            var result = _mapper.Map<PointViewModel>(_unitOfWork.Maps.GetPointById(id));
 
             return Ok(result);
         }
@@ -59,7 +62,7 @@ namespace FRS.Controllers
         [ProducesResponseType(200, Type = typeof(MapViewModel))]
         public async Task<IActionResult> GetMapById(int id)
         {
-            var result = Mapper.Map<MapViewModel>(await _unitOfWork.Maps.GetByIdAsync(id));
+            var result = _mapper.Map<MapViewModel>(await _unitOfWork.Maps.GetByIdAsync(id));
 
             if (result != null && !string.IsNullOrWhiteSpace(result.map_url))
             {
@@ -90,7 +93,7 @@ namespace FRS.Controllers
                 }
             }
 
-            result.Data = Mapper.Map<List<PointViewModel>>(result.Data);
+            result.Data = _mapper.Map<List<PointViewModel>>(result.Data);
 
             if (result.Data != null)
             {
@@ -100,7 +103,7 @@ namespace FRS.Controllers
                     {
                         pointMap[p.Id].Map.Points = null;
                         pointMap[p.Id].Map.Lines = null;
-                        p.MapInfo = Mapper.Map<MapViewModel>(pointMap[p.Id].Map);
+                        p.MapInfo = _mapper.Map<MapViewModel>(pointMap[p.Id].Map);
 
                         p.MapInfo.FloorOrder = pointMap[p.Id]?.Map?.Floor?.Buildings?.FirstOrDefault(b => b.Building != null && b.IsActive)?.order;
 
@@ -127,7 +130,7 @@ namespace FRS.Controllers
             var result = await _unitOfWork.Maps.GetRouteTest(startDirectoryId, destDirectoryId, wheelchair, sheltered);
 
 
-            result.Data = Mapper.Map<List<PointViewModel>>(result.Data);
+            result.Data = _mapper.Map<List<PointViewModel>>(result.Data);
 
             
 
@@ -150,7 +153,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMaps(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.Maps.GetMapsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            var rmap = Mapper.Map<List<MapViewModel>>(result);
+            var rmap = _mapper.Map<List<MapViewModel>>(result);
 
             foreach (var map in rmap)
             {
@@ -159,7 +162,7 @@ namespace FRS.Controllers
                     if (point.IsFloorConnector)
                     {
                         var connectors = await _unitOfWork.Maps.GetConnectors(point.Id);
-                        point.connectors = Mapper.Map<List<LineViewModel>>(connectors);
+                        point.connectors = _mapper.Map<List<LineViewModel>>(connectors);
 
                         foreach (var con in point.connectors)
                         {
@@ -185,11 +188,11 @@ namespace FRS.Controllers
 
                 AddConnectorToLine(map);
 
-                var type = Mapper.Map<Map>(map);
+                var type = _mapper.Map<Map>(map);
                 var result = await _unitOfWork.Maps.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    MapViewModel mapVM = Mapper.Map<MapViewModel>(result.Data);
+                    MapViewModel mapVM = _mapper.Map<MapViewModel>(result.Data);
                     return CreatedAtAction("GetMapById", new { id = mapVM.Id }, mapVM);
                 }
 
@@ -209,7 +212,7 @@ namespace FRS.Controllers
         {
             var map = await this._unitOfWork.Maps.GetByIdAsync(id);
 
-            MapViewModel mapVM = Mapper.Map<MapViewModel>(map);
+            MapViewModel mapVM = _mapper.Map<MapViewModel>(map);
             if (mapVM == null)
                 return NotFound(id);
 
@@ -240,13 +243,13 @@ namespace FRS.Controllers
 
                 var map = await this._unitOfWork.Maps.GetByIdAsync(model.Id);
 
-                MapViewModel mapVM = Mapper.Map<MapViewModel>(map);
+                MapViewModel mapVM = _mapper.Map<MapViewModel>(map);
                 if (mapVM == null)
                     return NotFound(id);
 
                 AddConnectorToLine(model);
 
-                var updatedModel = Mapper.Map<Map>(model);
+                var updatedModel = _mapper.Map<Map>(model);
 
                 var result = await _unitOfWork.Maps.UpdateAsync(updatedModel);
                 if (result.IsSuccess)

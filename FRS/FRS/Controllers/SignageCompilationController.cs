@@ -11,25 +11,27 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class SignageCompilationController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
         private SignageComponentController _componentController;
+        private readonly IMapper _mapper;
 
 
-        public SignageCompilationController(IUnitOfWork unitOfWork, ILogger<SignageCompilationController> logger, SignageComponentController componentController)
+        public SignageCompilationController(IUnitOfWork unitOfWork, ILogger<SignageCompilationController> logger, SignageComponentController componentController, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _componentController = componentController;
+            _mapper = mapper;
         }
 
 
@@ -48,7 +50,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetSignageCompilations(int pageNumber, int pageSize, int? institutionId = null)
         {
             var data = await _unitOfWork.SignageCompilations.GetSignageCompilationsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<SignageCompilationViewModel>>(data));
+            return Ok(_mapper.Map<List<SignageCompilationViewModel>>(data));
         }
 
         [HttpGet("signagecompilations/export")]
@@ -57,7 +59,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetSignageComponents(string ids)
         {
             var data = await _unitOfWork.SignageCompilations.GetSignageCompilations(ids);
-            return Ok(Mapper.Map<List<SignageCompilationViewModel>>(data));
+            return Ok(_mapper.Map<List<SignageCompilationViewModel>>(data));
         }
 
         [HttpGet("signagecompilations/import")]
@@ -106,7 +108,7 @@ namespace FRS.Controllers
                             dco.CompilationId = dbdata.Id;
                             dco.ComponentId = dcodata.Id;
 
-                            await _unitOfWork.SignageCompilations.AddOrUpdateCompilationComponentAsync(Mapper.Map<SignageCompilationComponent>(dco));
+                            await _unitOfWork.SignageCompilations.AddOrUpdateCompilationComponentAsync(_mapper.Map<SignageCompilationComponent>(dco));
                         }
                     }
                 }
@@ -131,12 +133,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(signageCompilation)} cannot be null");
 
 
-                var type = Mapper.Map<SignageCompilation>(signageCompilation);
+                var type = _mapper.Map<SignageCompilation>(signageCompilation);
 
                 var result = await _unitOfWork.SignageCompilations.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    SignageCompilationViewModel signageCompilationVM = Mapper.Map<SignageCompilationViewModel>(result.Data);
+                    SignageCompilationViewModel signageCompilationVM = _mapper.Map<SignageCompilationViewModel>(result.Data);
                     return CreatedAtAction("GetSignageCompilationById", new { id = signageCompilationVM.Id }, signageCompilationVM);
                 }
 
@@ -156,7 +158,7 @@ namespace FRS.Controllers
         {
             var signageCompilation = await this._unitOfWork.SignageCompilations.GetByIdAsync(id);
 
-            SignageCompilationViewModel signageCompilationVM = Mapper.Map<SignageCompilationViewModel>(signageCompilation);
+            SignageCompilationViewModel signageCompilationVM = _mapper.Map<SignageCompilationViewModel>(signageCompilation);
             if (signageCompilationVM == null)
                 return NotFound(id);
 
@@ -187,11 +189,11 @@ namespace FRS.Controllers
 
                 var signageCompilation = await this._unitOfWork.SignageCompilations.GetByIdAsync(model.Id);
 
-                SignageCompilationViewModel signageCompilationVM = Mapper.Map<SignageCompilationViewModel>(signageCompilation);
+                SignageCompilationViewModel signageCompilationVM = _mapper.Map<SignageCompilationViewModel>(signageCompilation);
                 if (signageCompilationVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<SignageCompilation>(model);
+                var updatedModel = _mapper.Map<SignageCompilation>(model);
                 var result = await _unitOfWork.SignageCompilations.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

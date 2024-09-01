@@ -27,35 +27,37 @@ namespace BAL.Services.MealOrder
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
         private IAccountManager _accountManager;
+        private readonly IMapper _mapper;
 
-        public RestrictionService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager)
+        public RestrictionService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
             _accountManager = accountManager;
+            _mapper = mapper;
         }
 
         #region Restriction
 
         public async Task<PagedEntity<RestrictionDTO>> GetRestrictionsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<RestrictionDTO>>(await this._uow.Restrictions.GetRestrictionsAsync(filter));
+            var result = _mapper.Map<PagedEntity<RestrictionDTO>>(await this._uow.Restrictions.GetRestrictionsAsync(filter));
             return result;
         }
 
         public async Task<RestrictionDTO> GetRestrictionByIdAsync(int id)
         {
-            return Mapper.Map<RestrictionDTO>(await this._uow.Restrictions.GetByIdAsync(id));
+            return _mapper.Map<RestrictionDTO>(await this._uow.Restrictions.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateRestrictionAsync(RestrictionDTO dto)
         {
-            return await this._uow.Restrictions.CreateAsync(Mapper.Map<Restriction>(dto));
+            return await this._uow.Restrictions.CreateAsync(_mapper.Map<Restriction>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateRestrictionAsync(RestrictionDTO dto)
         {
-            return await this._uow.Restrictions.UpdateAsync(Mapper.Map<Restriction>(dto));
+            return await this._uow.Restrictions.UpdateAsync(_mapper.Map<Restriction>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteRestrictionAsync(int id)
@@ -71,23 +73,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<RestrictionTypeDTO>> GetRestrictionTypesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<RestrictionTypeDTO>>(await this._uow.RestrictionTypes.GetRestrictionTypesAsync(filter));
+            var result = _mapper.Map<PagedEntity<RestrictionTypeDTO>>(await this._uow.RestrictionTypes.GetRestrictionTypesAsync(filter));
             return result;
         }
 
         public async Task<RestrictionTypeDTO> GetRestrictionTypeByIdAsync(int id)
         {
-            return Mapper.Map<RestrictionTypeDTO>(await this._uow.RestrictionTypes.GetByIdAsync(id));
+            return _mapper.Map<RestrictionTypeDTO>(await this._uow.RestrictionTypes.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateRestrictionTypeAsync(RestrictionTypeDTO dto)
         {
-            return await this._uow.RestrictionTypes.CreateAsync(Mapper.Map<RestrictionType>(dto));
+            return await this._uow.RestrictionTypes.CreateAsync(_mapper.Map<RestrictionType>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateRestrictionTypeAsync(RestrictionTypeDTO dto)
         {
-            return await this._uow.RestrictionTypes.UpdateAsync(Mapper.Map<RestrictionType>(dto));
+            return await this._uow.RestrictionTypes.UpdateAsync(_mapper.Map<RestrictionType>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteRestrictionTypeAsync(int id)

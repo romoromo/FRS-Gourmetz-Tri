@@ -25,11 +25,13 @@ namespace BAL.Services
     {
         private IUnitOfWork _uow;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public SmartRoomService(IUnitOfWork uow, IConfiguration configuration)
+        public SmartRoomService(IUnitOfWork uow, IConfiguration configuration, IMapper mapper)
         {
             this._uow = uow;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         public async Task<BaseOperationResponse> GetListOfSmartRoomResourcesAsync(SMARTRoomXML tokenResponse = null, bool isReadByFile = false)
@@ -275,17 +277,17 @@ namespace BAL.Services
 
         public async Task<PagedEntity<SmartRoomSchedulerLogDTO>> GetSchedulerLogs(BaseFilter filter)
         {
-            return Mapper.Map<PagedEntity<SmartRoomSchedulerLogDTO>>(await _uow.SmartRoomSchedulerLogs.GetSmartRoomSchedulerLogsAsync(filter));
+            return _mapper.Map<PagedEntity<SmartRoomSchedulerLogDTO>>(await _uow.SmartRoomSchedulerLogs.GetSmartRoomSchedulerLogsAsync(filter));
         }
 
         public async Task<BaseOperationResponse> CreateSchedulerLog(SmartRoomSchedulerLogDTO log)
         {
-            return await this._uow.SmartRoomSchedulerLogs.CreateAsync(Mapper.Map<SmartRoomSchedulerLog>(log));
+            return await this._uow.SmartRoomSchedulerLogs.CreateAsync(_mapper.Map<SmartRoomSchedulerLog>(log));
         }
 
         public async Task<BaseOperationResponse> BulkCreateSchedulerLogs(List<SmartRoomSchedulerLogDTO> logs)
         {
-            return await this._uow.SmartRoomSchedulerLogs.BulkCreateAsync(Mapper.Map<List<SmartRoomSchedulerLog>>(logs));
+            return await this._uow.SmartRoomSchedulerLogs.BulkCreateAsync(_mapper.Map<List<SmartRoomSchedulerLog>>(logs));
         }
     }
 }

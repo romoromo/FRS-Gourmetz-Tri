@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 using NPOI.SS.Formula.Functions;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using IsolationLevel = System.Transactions.IsolationLevel;
 using Microsoft.Extensions.Logging;
@@ -780,7 +780,10 @@ namespace DAL.Repositories.MealOrder
 
                         foreach (var row in rows)
                         {
-                            var sClass = await _appContext.Classes.FirstOrDefaultAsync(e => e.IsActive && e.Name.Equals(row.Class, StringComparison.InvariantCultureIgnoreCase));
+                            var className = row.Class?.ToLower() ?? "";
+                            var sName = row.Name?.ToLower() ?? "";
+
+                            var sClass = await _appContext.Classes.FirstOrDefaultAsync(e => e.IsActive && e.Name.ToLower() == className);
                             if (sClass == null)
                             {
                                 throw new Exception(string.Format("Class not found. Please check the imported file."));
@@ -789,7 +792,7 @@ namespace DAL.Repositories.MealOrder
                             var batch = await _appContext.ClassBatches.FirstOrDefaultAsync(e => e.IsActive && e.Name.Equals(row.Batch, StringComparison.InvariantCultureIgnoreCase));
 
                             var student = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive &&
-                                                e.Name.Equals(row.Name, StringComparison.InvariantCultureIgnoreCase));
+                                                e.Name.ToLower() == sName);
 
                             ApplicationUser user = null;
                             //check if student exists using account
@@ -981,7 +984,11 @@ namespace DAL.Repositories.MealOrder
                         var allStudentCards = _appContext.StudentCards.Where(e => e.IsActive).ToList();
                         var allUsers = _appContext.Users.Where(e => e.IsActive);
                         var allAsociatedEmails = rows.Where(e => !string.IsNullOrEmpty(e.AssociatedEmail)).Select(e => e.AssociatedEmail);
-                        var allParentAccounts = allUsers.Where(e => allAsociatedEmails.Any(x => e.Email.Equals(x, StringComparison.InvariantCultureIgnoreCase))).ToList();
+
+                        var parentEmails = allAsociatedEmails.Select(email => email.ToLower()).ToList();
+                        var allParentAccounts = allUsers
+                            .Where(e => parentEmails.Contains(e.Email.ToLower()))
+                            .ToList();
 
                         foreach (var row in rows)
                         {
@@ -1013,8 +1020,13 @@ namespace DAL.Repositories.MealOrder
 
                             var students = allStudents.Where(e => e.Name.Equals(row.Name, StringComparison.InvariantCultureIgnoreCase));
 
-                            var associatedEmails = !string.IsNullOrEmpty(row.AssociatedEmail) ? row.AssociatedEmail.Split(',').Select(e => e.Trim()).ToList() : new List<string>();
-                            var parentAccounts = allParentAccounts.Where(e => associatedEmails.Any(x => e.Email.Equals(x, StringComparison.InvariantCultureIgnoreCase)));
+                            var associatedEmails = !string.IsNullOrEmpty(row.AssociatedEmail)
+                                                ? row.AssociatedEmail.Split(',').Select(e => e.Trim().ToLower()).ToList()
+                                                : new List<string>();
+
+                            var parentAccounts = allParentAccounts
+                                .Where(e => associatedEmails.Contains(e.Email.ToLower()))
+                                .ToList();
 
                             var studentNameIds = students.Select(e => e.Id).ToList();
                             Student student = parentAccounts?.SelectMany(f => f.Students)?.FirstOrDefault(e => studentNameIds.Contains(e.StudentId))?.Student;
@@ -1223,7 +1235,7 @@ namespace DAL.Repositories.MealOrder
                             }
 
 
-                            await _appContext.Database.ExecuteSqlCommandAsync(
+                            await _appContext.Database.ExecuteSqlRawAsync(
                                 "EXEC dbo.ImportStudentData @StudentData",
                                 new SqlParameter("@StudentData", SqlDbType.Structured)
                                 {
@@ -1253,8 +1265,7 @@ namespace DAL.Repositories.MealOrder
 
         private async Task<string> GenerateStudentEmail(string className, string name, int outletId)
         {
-            
-            int classCount = _appContext.Students.Count(e => e.IsActive && e.Class.Name.Equals(className, StringComparison.InvariantCultureIgnoreCase));
+            int classCount = _appContext.Students.Count(e => e.IsActive && e.Class.Name.ToLower() == className.ToLower());
             int retries = 20;
 
             //replace non a
@@ -1267,7 +1278,11 @@ namespace DAL.Repositories.MealOrder
             string studentEmail = originalEmail;
             while (retries > 0)
             {
-                var exists = await _appContext.Students.FirstOrDefaultAsync(e => e.OutletId == outletId && e.IsActive && e.Email != null && e.Email.Equals(studentEmail, StringComparison.InvariantCultureIgnoreCase));
+                var exists = await _appContext.Students
+                                .FirstOrDefaultAsync(e => e.OutletId == outletId
+                                                        && e.IsActive
+                                                        && e.Email != null
+                                                        && e.Email.ToLower() == studentEmail.ToLower());
                 if (exists != null)
                 {
                     studentEmail = string.Format("{0}{1}", originalEmail, ++classCount);
@@ -1286,31 +1301,31 @@ namespace DAL.Repositories.MealOrder
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 
-    public static class IQueryableExtensions
-    {
-        private static readonly TypeInfo QueryCompilerTypeInfo = typeof(QueryCompiler).GetTypeInfo();
+    //public static class IQueryableExtensions
+    //{
+    //    private static readonly TypeInfo QueryCompilerTypeInfo = typeof(QueryCompiler).GetTypeInfo();
 
-        private static readonly FieldInfo QueryCompilerField = typeof(EntityQueryProvider).GetTypeInfo().DeclaredFields.First(x => x.Name == "_queryCompiler");
+    //    private static readonly FieldInfo QueryCompilerField = typeof(EntityQueryProvider).GetTypeInfo().DeclaredFields.First(x => x.Name == "_queryCompiler");
 
-        private static readonly FieldInfo QueryModelGeneratorField = QueryCompilerTypeInfo.DeclaredFields.First(x => x.Name == "_queryModelGenerator");
+    //    private static readonly FieldInfo QueryModelGeneratorField = QueryCompilerTypeInfo.DeclaredFields.First(x => x.Name == "_queryModelGenerator");
 
-        private static readonly FieldInfo DataBaseField = QueryCompilerTypeInfo.DeclaredFields.Single(x => x.Name == "_database");
+    //    private static readonly FieldInfo DataBaseField = QueryCompilerTypeInfo.DeclaredFields.Single(x => x.Name == "_database");
 
-        private static readonly PropertyInfo DatabaseDependenciesField = typeof(Database).GetTypeInfo().DeclaredProperties.Single(x => x.Name == "Dependencies");
+    //    private static readonly PropertyInfo DatabaseDependenciesField = typeof(Database).GetTypeInfo().DeclaredProperties.Single(x => x.Name == "Dependencies");
 
-        public static string ToSql<TEntity>(this IQueryable<TEntity> query) where TEntity : class
-        {
-            var queryCompiler = (QueryCompiler)QueryCompilerField.GetValue(query.Provider);
-            var modelGenerator = (QueryModelGenerator)QueryModelGeneratorField.GetValue(queryCompiler);
-            var queryModel = modelGenerator.ParseQuery(query.Expression);
-            var database = (IDatabase)DataBaseField.GetValue(queryCompiler);
-            var databaseDependencies = (DatabaseDependencies)DatabaseDependenciesField.GetValue(database);
-            var queryCompilationContext = databaseDependencies.QueryCompilationContextFactory.Create(false);
-            var modelVisitor = (RelationalQueryModelVisitor)queryCompilationContext.CreateQueryModelVisitor();
-            modelVisitor.CreateQueryExecutor<TEntity>(queryModel);
-            var sql = modelVisitor.Queries.First().ToString();
+    //    public static string ToSql<TEntity>(this IQueryable<TEntity> query) where TEntity : class
+    //    {
+    //        var queryCompiler = (QueryCompiler)QueryCompilerField.GetValue(query.Provider);
+    //        var modelGenerator = (QueryModelGenerator)QueryModelGeneratorField.GetValue(queryCompiler);
+    //        var queryModel = modelGenerator.ParseQuery(query.Expression);
+    //        var database = (IDatabase)DataBaseField.GetValue(queryCompiler);
+    //        var databaseDependencies = (DatabaseDependencies)DatabaseDependenciesField.GetValue(database);
+    //        var queryCompilationContext = databaseDependencies.QueryCompilationContextFactory.Create(false);
+    //        var modelVisitor = (RelationalQueryModelVisitor)queryCompilationContext.CreateQueryModelVisitor();
+    //        modelVisitor.CreateQueryExecutor<TEntity>(queryModel);
+    //        var sql = modelVisitor.Queries.First().ToString();
 
-            return sql;
-        }
-    }
+    //        return sql;
+    //    }
+    //}
 }

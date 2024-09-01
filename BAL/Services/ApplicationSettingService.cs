@@ -25,16 +25,18 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public ApplicationSettingService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public ApplicationSettingService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         public async Task<ApplicationSettingDTO> GetApplicationSettingByKey(string key)
         {
-            var result = Mapper.Map<ApplicationSettingDTO>(await this._uow.ApplicationSettings.GetByKeyAsync(key));
+            var result = _mapper.Map<ApplicationSettingDTO>(await this._uow.ApplicationSettings.GetByKeyAsync(key));
             return result;
         }
     }

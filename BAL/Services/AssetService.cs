@@ -22,37 +22,39 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public AssetService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public AssetService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         #region Asset Types
 
         public async Task<PagedEntity<AssetTypeDTO>> GetAssetTypesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<AssetTypeDTO>>(await this._uow.AssetTypes.GetAssetTypesAsync(filter));
+            var result = _mapper.Map<PagedEntity<AssetTypeDTO>>(await this._uow.AssetTypes.GetAssetTypesAsync(filter));
             return result;
         }
 
         public async Task<AssetTypeDTO> GetAssetTypeByIdAsync(int id)
         {
-            return Mapper.Map<AssetTypeDTO>(await this._uow.AssetTypes.GetByIdAsync(id));
+            return _mapper.Map<AssetTypeDTO>(await this._uow.AssetTypes.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateAssetTypeAsync(AssetTypeDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.AssetTypes.CreateAsync(Mapper.Map<AssetType>(dto));
+            result = await this._uow.AssetTypes.CreateAsync(_mapper.Map<AssetType>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateAssetTypeAsync(AssetTypeDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.AssetTypes.UpdateAsync(Mapper.Map<AssetType>(dto));
+            result = await this._uow.AssetTypes.UpdateAsync(_mapper.Map<AssetType>(dto));
             return result;
         }
 
@@ -69,26 +71,26 @@ namespace BAL.Services
 
         public async Task<PagedEntity<AssetModelDTO>> GetAssetModelsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<AssetModelDTO>>(await this._uow.AssetModels.GetAssetModelsAsync(filter));
+            var result = _mapper.Map<PagedEntity<AssetModelDTO>>(await this._uow.AssetModels.GetAssetModelsAsync(filter));
             return result;
         }
 
         public async Task<AssetModelDTO> GetAssetModelByIdAsync(int id)
         {
-            return Mapper.Map<AssetModelDTO>(await this._uow.AssetModels.GetByIdAsync(id));
+            return _mapper.Map<AssetModelDTO>(await this._uow.AssetModels.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateAssetModelAsync(AssetModelDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.AssetModels.CreateAsync(Mapper.Map<AssetModel>(dto));
+            result = await this._uow.AssetModels.CreateAsync(_mapper.Map<AssetModel>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateAssetModelAsync(AssetModelDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.AssetModels.UpdateAsync(Mapper.Map<AssetModel>(dto));
+            result = await this._uow.AssetModels.UpdateAsync(_mapper.Map<AssetModel>(dto));
             return result;
         }
 
@@ -105,31 +107,31 @@ namespace BAL.Services
 
         public async Task<PagedEntity<AssetDTO>> GetAssetsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<AssetDTO>>(await this._uow.Assets.GetAssetsAsync(filter));
+            var result = _mapper.Map<PagedEntity<AssetDTO>>(await this._uow.Assets.GetAssetsAsync(filter));
             return result;
         }
 
         public async Task<AssetDTO> GetAssetByIdAsync(int id)
         {
-            return Mapper.Map<AssetDTO>(await this._uow.Assets.GetByIdAsync(id));
+            return _mapper.Map<AssetDTO>(await this._uow.Assets.GetByIdAsync(id));
         }
 
         public async Task<AssetDTO> GetAssetByCodeAsync(string serialNumber)
         {
-            return Mapper.Map<AssetDTO>(await this._uow.Assets.GetByCodeAsync(serialNumber));
+            return _mapper.Map<AssetDTO>(await this._uow.Assets.GetByCodeAsync(serialNumber));
         }
 
         public async Task<BaseOperationResponse> CreateAssetAsync(AssetDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.Assets.CreateAsync(Mapper.Map<Asset>(dto));
+            result = await this._uow.Assets.CreateAsync(_mapper.Map<Asset>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateAssetAsync(AssetDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.Assets.UpdateAsync(Mapper.Map<Asset>(dto));
+            result = await this._uow.Assets.UpdateAsync(_mapper.Map<Asset>(dto));
             return result;
         }
 

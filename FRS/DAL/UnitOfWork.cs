@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DAL.Core.Interfaces;
 using DAL.Core.Logging;
 using DAL.Filters;
@@ -21,6 +22,7 @@ namespace DAL
         readonly ApplicationDbContext _context;
         ISieveProcessor _sieveProcessor;
         private ILoggerFactory _loggerFactory;
+        private readonly IMapper _mapper;
         IDepartmentRepository _departments;
         IImageRepository _images;
         IBookingRepository _bookings;
@@ -147,12 +149,13 @@ namespace DAL
         private FaqSubjectRepository _faqSubjects;
         private FaqDetailRepository _faqDetails;
 
-        public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory)
+        public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper)
         {
             _context = context;
             _configuration = configuration;
             _sieveProcessor = sieveProcessor;
             _loggerFactory = loggerFactory;
+            _mapper = mapper;
             Logger.ConfigureLogger(loggerFactory, configuration);
         }
 
@@ -394,7 +397,7 @@ namespace DAL
             get
             {
                 if (_reservations == null)
-                    _reservations = new ReservationRepository(_context);
+                    _reservations = new ReservationRepository(_context, _mapper);
 
                 return _reservations;
             }

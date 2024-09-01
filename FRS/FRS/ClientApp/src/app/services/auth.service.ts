@@ -171,6 +171,16 @@ export class AuthService {
     return this.endpointFactory.getResetPasswordEndpoint<any>(resetPassword);
   }
 
+  getUserPermissions(roleNames: string[]) {
+    return this.endpointFactory.getUserPermissions<PermissionValues[]>(roleNames).pipe(
+      map(permissions => {
+        console.log(permissions);
+        this.saveUserPermissionsDetails(permissions);
+        return permissions; // Ensure you return the permissions if needed
+      })
+    );
+  }
+
   private processLogin2FAResponse(response: Login2FAResponse) {
 
     if (!response.validated)
@@ -234,6 +244,15 @@ export class AuthService {
     this.saveUserDetails(user, permissions, accessToken, idToken, refreshToken, accessTokenExpiry, rememberMe);
 
     this.reevaluateLoginStatus(user, isValidateMfa);
+    this.getUserPermissions(Array.isArray(decodedIdToken.role) ? decodedIdToken.role : [decodedIdToken.role])
+      .subscribe({
+        next: (permissions) => {
+          console.log('Permissions:', permissions);
+        },
+        error: (error) => {
+          console.error('Error getting permissions:', error);
+        }
+      });
 
     return user;
   }
@@ -259,6 +278,10 @@ export class AuthService {
     //}
 
     this.localStorage.savePermanentData(rememberMe, DBkeys.REMEMBER_ME);
+  }
+
+  private saveUserPermissionsDetails(permissions: PermissionValues[]) {
+    this.localStorage.savePermanentData(permissions, DBkeys.USER_PERMISSIONS);
   }
 
 

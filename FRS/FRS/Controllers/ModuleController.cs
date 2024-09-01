@@ -10,23 +10,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class ModuleController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public ModuleController(IUnitOfWork unitOfWork, ILogger<ModuleController> logger)
+        public ModuleController(IUnitOfWork unitOfWork, ILogger<ModuleController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiModules(int? moduleId = null)
         {
             var result = await _unitOfWork.Modules.GetApiModules(moduleId).ConfigureAwait(false);
-            var data = Mapper.Map<List<ModuleViewModel>>(result.Data);
+            var data = _mapper.Map<List<ModuleViewModel>>(result.Data);
 
             if (moduleId.HasValue)
             {
@@ -70,7 +72,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetModules(int pageNumber, int pageSize)
         {
             var results = await _unitOfWork.Modules.GetModulesLoadRelatedAsync(pageNumber, pageSize).ConfigureAwait(false);
-            return Ok(Mapper.Map<List<ModuleViewModel>>(results));
+            return Ok(_mapper.Map<List<ModuleViewModel>>(results));
         }
 
         [HttpPost("")]
@@ -85,12 +87,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(module)} cannot be null");
 
 
-                var type = Mapper.Map<Module>(module);
+                var type = _mapper.Map<Module>(module);
 
                 var result = await _unitOfWork.Modules.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    ModuleViewModel moduleVM = Mapper.Map<ModuleViewModel>(result.Data);
+                    ModuleViewModel moduleVM = _mapper.Map<ModuleViewModel>(result.Data);
                     return CreatedAtAction("GetModuleById", new { id = moduleVM.Id }, moduleVM);
                 }
 
@@ -114,7 +116,7 @@ namespace FRS.Controllers
 
             var module = await this._unitOfWork.Modules.GetByIdAsync(id).ConfigureAwait(false);
 
-            ModuleViewModel moduleVM = Mapper.Map<ModuleViewModel>(module);
+            ModuleViewModel moduleVM = _mapper.Map<ModuleViewModel>(module);
             if (moduleVM == null)
                 return NotFound(id);
 
@@ -145,11 +147,11 @@ namespace FRS.Controllers
 
                 var module = await this._unitOfWork.Modules.GetByIdAsync(model.Id).ConfigureAwait(false);
 
-                ModuleViewModel moduleVM = Mapper.Map<ModuleViewModel>(module);
+                ModuleViewModel moduleVM = _mapper.Map<ModuleViewModel>(module);
                 if (moduleVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Module>(model);
+                var updatedModel = _mapper.Map<Module>(model);
                 var result = await _unitOfWork.Modules.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

@@ -144,7 +144,7 @@ namespace DAL.Repositories.MealOrder
         public async Task<BaseOperationResponse> ResetAsync()
         {
             var result = new BaseOperationResponse();
-            if (await _appContext.Database.ExecuteSqlCommandAsync("UPDATE [dbo].[CartonAssets] SET [Qty] = 0,[DishId] = null,[StoreInfoId] = 1,[ToStoreInfoId] = null") > 0)
+            if (await _appContext.Database.ExecuteSqlRawAsync("UPDATE [dbo].[CartonAssets] SET [Qty] = 0,[DishId] = null,[StoreInfoId] = 1,[ToStoreInfoId] = null") > 0)
             {
                 result.Message = "Successfully Update!";
                 result.IsSuccess = true;

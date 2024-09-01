@@ -10,8 +10,9 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 using System.Diagnostics;
+using NPOI.SS.Formula.Functions;
 
 namespace FRS.Controllers
 {
@@ -21,12 +22,14 @@ namespace FRS.Controllers
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public KioskSettingsController(IUnitOfWork unitOfWork, ILogger<KioskSettingsController> logger)
+        public KioskSettingsController(IUnitOfWork unitOfWork, ILogger<KioskSettingsController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("id/{id}")]
@@ -36,7 +39,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetLocationById(int id)
         {
             var kioskSettings = await _unitOfWork.KioskSettings.GetByIdAsync(id);
-            return Ok(Mapper.Map<KioskSettingsViewModel>(kioskSettings));
+            return Ok(_mapper.Map<KioskSettingsViewModel>(kioskSettings));
         }
 
         [HttpGet("KioskSettings/list")]
@@ -56,7 +59,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetKioskSettings(int pageNumber, int pageSize, int? institutionId = null)
         {
             var results = await _unitOfWork.KioskSettings.GetKioskSettingsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<KioskSettingsViewModel>>(results));
+            return Ok(_mapper.Map<List<KioskSettingsViewModel>>(results));
         }
 
         [HttpPost("")]
@@ -71,13 +74,13 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(kioskSettings)} cannot be null");
 
 
-                var type = Mapper.Map<KioskSettings>(kioskSettings);
+                var type = _mapper.Map<KioskSettings>(kioskSettings);
 
                 var result = await _unitOfWork.KioskSettings.CreateAsync(type);
                 if (result.IsSuccess && result.Data != null)
                 {
                     var Id = result.Data.GetType().GetProperty("Id").GetValue(result.Data, null);
-                    //ContactGroupViewModel contactGroupVM = Mapper.Map<ContactGroupViewModel>(result.Data);
+                    //ContactGroupViewModel contactGroupVM = _mapper.Map<ContactGroupViewModel>(result.Data);
                     return CreatedAtAction("GetKioskSettingsById", new { id = Id }, kioskSettings);
                 }
 
@@ -102,7 +105,7 @@ namespace FRS.Controllers
 
             var kioskSettings = await this._unitOfWork.KioskSettings.GetByIdAsync(id);
 
-            KioskSettingsViewModel kioskSettingsVM = Mapper.Map<KioskSettingsViewModel>(kioskSettings);
+            KioskSettingsViewModel kioskSettingsVM = _mapper.Map<KioskSettingsViewModel>(kioskSettings);
             if (kioskSettingsVM == null)
                 return NotFound(id);
 
@@ -134,11 +137,11 @@ namespace FRS.Controllers
 
                 var kioskSettings = await this._unitOfWork.KioskSettings.GetByIdAsync(model.Id);
 
-                KioskSettingsViewModel kioskSettingsVM = Mapper.Map<KioskSettingsViewModel>(kioskSettings);
+                KioskSettingsViewModel kioskSettingsVM = _mapper.Map<KioskSettingsViewModel>(kioskSettings);
                 if (kioskSettingsVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<KioskSettings>(model);
+                var updatedModel = _mapper.Map<KioskSettings>(model);
                 Debug.WriteLine("Model to update: ", Newtonsoft.Json.JsonConvert.SerializeObject(updatedModel));
                 var result = await _unitOfWork.KioskSettings.UpdateAsync(updatedModel);
                 if (result.IsSuccess)

@@ -28,40 +28,42 @@ namespace BAL.Services.MealOrder
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
         private IAccountManager _accountManager;
+        private readonly IMapper _mapper;
 
-        public MenuService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager)
+        public MenuService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
             _accountManager = accountManager;
+            _mapper = mapper;
         }
 
         #region Menu 
 
         public async Task<PagedEntity<MenuDTO>> GetMenusAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<MenuDTO>>(await this._uow.Menus.GetMenusAsync(filter));
+            var result = _mapper.Map<PagedEntity<MenuDTO>>(await this._uow.Menus.GetMenusAsync(filter));
             return result;
         }
 
         public async Task<MenuDTO> GetMenuByIdAsync(int id)
         {
-            return Mapper.Map<MenuDTO>(await this._uow.Menus.GetByIdAsync(id));
+            return _mapper.Map<MenuDTO>(await this._uow.Menus.GetByIdAsync(id));
         }
 
         public async Task<MenuDishMealTypeDTO> GetMenuDishMealTypesByIdAsync(int id, int page, int pageSize)
         {
-            return Mapper.Map<MenuDishMealTypeDTO>(await this._uow.Menus.GetMenuDishMealTypesByIdAsync(id, page, pageSize));
+            return _mapper.Map<MenuDishMealTypeDTO>(await this._uow.Menus.GetMenuDishMealTypesByIdAsync(id, page, pageSize));
         }
 
         public async Task<BaseOperationResponse> CreateMenuAsync(MenuDTO dto)
         {
-            return await this._uow.Menus.CreateAsync(Mapper.Map<Menu>(dto));
+            return await this._uow.Menus.CreateAsync(_mapper.Map<Menu>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateMenuAsync(MenuDTO dto)
         {
-            return await this._uow.Menus.UpdateAsync(Mapper.Map<Menu>(dto));
+            return await this._uow.Menus.UpdateAsync(_mapper.Map<Menu>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteMenuAsync(int id)
@@ -78,23 +80,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<MenuCycleDTO>> GetMenuCyclesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<MenuCycleDTO>>(await this._uow.MenuCycles.GetMenuCyclesAsync(filter));
+            var result = _mapper.Map<PagedEntity<MenuCycleDTO>>(await this._uow.MenuCycles.GetMenuCyclesAsync(filter));
             return result;
         }
 
         public async Task<MenuCycleDTO> GetMenuCycleByIdAsync(int id)
         {
-            return Mapper.Map<MenuCycleDTO>(await this._uow.MenuCycles.GetByIdAsync(id));
+            return _mapper.Map<MenuCycleDTO>(await this._uow.MenuCycles.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateMenuCycleAsync(MenuCycleDTO dto)
         {
-            return await this._uow.MenuCycles.CreateAsync(Mapper.Map<MenuCycle>(dto));
+            return await this._uow.MenuCycles.CreateAsync(_mapper.Map<MenuCycle>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateMenuCycleAsync(MenuCycleDTO dto)
         {
-            return await this._uow.MenuCycles.UpdateAsync(Mapper.Map<MenuCycle>(dto));
+            return await this._uow.MenuCycles.UpdateAsync(_mapper.Map<MenuCycle>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteMenuCycleAsync(int id)
@@ -106,23 +108,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<BaseOperationResponse> BlockMenuCycleDate(List<MenuCycleBlockedDateDTO> dto)
         {
-            return await this._uow.MenuCycles.BlockMenuCycleDate(Mapper.Map<List<MenuCycleBlockedDate>>(dto));
+            return await this._uow.MenuCycles.BlockMenuCycleDate(_mapper.Map<List<MenuCycleBlockedDate>>(dto));
         }
 
         public async Task<BaseOperationResponse> UnblockMenuCycleDate(List<MenuCycleBlockedDateDTO> dto)
         {
-            return await this._uow.MenuCycles.UnblockMenuCycleDate(Mapper.Map<List<MenuCycleBlockedDate>>(dto));
+            return await this._uow.MenuCycles.UnblockMenuCycleDate(_mapper.Map<List<MenuCycleBlockedDate>>(dto));
         }
 
         public async Task<List<MenuCycleSchedulePeriodDTO>> GetMenuCycleSchedulePeriods(int menuCycleId, int day)
         {
-            var result = Mapper.Map<List<MenuCycleSchedulePeriodDTO>>(await this._uow.MenuCycles.GetMenuCycleSchedulePeriods(menuCycleId, day));
+            var result = _mapper.Map<List<MenuCycleSchedulePeriodDTO>>(await this._uow.MenuCycles.GetMenuCycleSchedulePeriods(menuCycleId, day));
             return result;
         }
 
         public async Task<BaseOperationResponse> CreateSchedulePeriodMenus(List<MenuCycleSchedulePeriodDTO> model)
         {
-            var result = await this._uow.MenuCycles.CreateSchedulePeriodMenus(Mapper.Map<List<MenuCycleSchedulePeriod>>(model));
+            var result = await this._uow.MenuCycles.CreateSchedulePeriodMenus(_mapper.Map<List<MenuCycleSchedulePeriod>>(model));
             return result;
         }
 
@@ -131,29 +133,29 @@ namespace BAL.Services.MealOrder
 
         public async Task<List<MenuCycleDTO>> GetOutletMenuCyclesAsync(int outletId, int catererId)
         {
-            var result = Mapper.Map<List<MenuCycleDTO>>(await this._uow.MenuCycles.GetOutletMenuCyclesAsync(outletId, catererId));
+            var result = _mapper.Map<List<MenuCycleDTO>>(await this._uow.MenuCycles.GetOutletMenuCyclesAsync(outletId, catererId));
             return result;
         }
 
         public async Task<BaseOperationResponse> BlockOutletDate(List<OutletBlockedDateDTO> dto)
         {
-            return await this._uow.MenuCycles.BlockOutletDate(Mapper.Map<List<OutletBlockedDate>>(dto));
+            return await this._uow.MenuCycles.BlockOutletDate(_mapper.Map<List<OutletBlockedDate>>(dto));
         }
 
         public async Task<BaseOperationResponse> UnblockOutletDate(List<OutletBlockedDateDTO> dto)
         {
-            return await this._uow.MenuCycles.UnblockOutletDate(Mapper.Map<List<OutletBlockedDate>>(dto));
+            return await this._uow.MenuCycles.UnblockOutletDate(_mapper.Map<List<OutletBlockedDate>>(dto));
         }
 
         public async Task<List<MenuCycleSchedulePeriodDTO>> GetOutletMenuCycleSchedulePeriods(int outletId, int catererId, int menuCycleId, int day)
         {
-            var result = Mapper.Map<List<MenuCycleSchedulePeriodDTO>>(await this._uow.MenuCycles.GetOutletMenuCycleSchedulePeriods(outletId, catererId, menuCycleId, day));
+            var result = _mapper.Map<List<MenuCycleSchedulePeriodDTO>>(await this._uow.MenuCycles.GetOutletMenuCycleSchedulePeriods(outletId, catererId, menuCycleId, day));
             return result;
         }
 
         public async Task<BaseOperationResponse> CreateOutletSchedulePeriodMenus(List<MenuCycleSchedulePeriodDTO> model)
         {
-            var result = await this._uow.MenuCycles.CreateOutletSchedulePeriodMenus(Mapper.Map<List<MenuCycleSchedulePeriod>>(model));
+            var result = await this._uow.MenuCycles.CreateOutletSchedulePeriodMenus(_mapper.Map<List<MenuCycleSchedulePeriod>>(model));
             return result;
         }
 
@@ -168,11 +170,11 @@ namespace BAL.Services.MealOrder
                 Day = e.Day,
                 Id = e.Id,
                 OutletClassRosterId = e.OutletClassRosterId,
-                OutletClassRoster = Mapper.Map<OutletClassRosterDTO>(e.OutletClassRoster),
+                OutletClassRoster = _mapper.Map<OutletClassRosterDTO>(e.OutletClassRoster),
                 HasClass = e.Periods.Any(f => f.IsActive && f.Classes.Any(x => x.ClassId == student.ClassId)),
                 Periods = e.Periods.Where(f => f.IsActive).Select(f => new OutletClassRosterSchedulePeriodDTO
                 {
-                    Classes = Mapper.Map<List<OutletClassRosterSchedulePeriodClassDTO>>(f.Classes.Where(x => x.IsActive && x.ClassId == student.ClassId)),
+                    Classes = _mapper.Map<List<OutletClassRosterSchedulePeriodClassDTO>>(f.Classes.Where(x => x.IsActive && x.ClassId == student.ClassId)),
                     MealSessionDetailName = f.MealSessionDetail.Name,
                     MealSessionDetailId = f.MealSessionDetailId,
                     OutletClassRosterScheduleId = f.OutletClassRosterScheduleId,
@@ -215,7 +217,7 @@ namespace BAL.Services.MealOrder
                 listOfSessions.AddRange(sessions);
             }
 
-            return Mapper.Map<List<MealSessionDetailDTO>>(listOfSessions);
+            return _mapper.Map<List<MealSessionDetailDTO>>(listOfSessions);
         }
 
         public async Task<List<MealSessionDetailDTO>> GetOutletMealSessions(int outletId, DateTime orderDate, DateTime? startDate, DateTime? endDate, DateTime? orderDateTo = null)
@@ -279,7 +281,7 @@ namespace BAL.Services.MealOrder
                 }
             }
 
-            return Mapper.Map<List<MealSessionDetailDTO>>(listOfSessions.Distinct());
+            return _mapper.Map<List<MealSessionDetailDTO>>(listOfSessions.Distinct());
         }
 
         #endregion
@@ -288,23 +290,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<MenuCycleCalendarDTO>> GetMenuCycleCalendarsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<MenuCycleCalendarDTO>>(await this._uow.MenuCycleCalendars.GetMenuCycleCalendarsAsync(filter));
+            var result = _mapper.Map<PagedEntity<MenuCycleCalendarDTO>>(await this._uow.MenuCycleCalendars.GetMenuCycleCalendarsAsync(filter));
             return result;
         }
 
         public async Task<MenuCycleCalendarDTO> GetMenuCycleCalendarByIdAsync(int id)
         {
-            return Mapper.Map<MenuCycleCalendarDTO>(await this._uow.MenuCycleCalendars.GetByIdAsync(id));
+            return _mapper.Map<MenuCycleCalendarDTO>(await this._uow.MenuCycleCalendars.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateMenuCycleCalendarAsync(MenuCycleCalendarDTO dto)
         {
-            return await this._uow.MenuCycleCalendars.CreateAsync(Mapper.Map<MenuCycleCalendar>(dto));
+            return await this._uow.MenuCycleCalendars.CreateAsync(_mapper.Map<MenuCycleCalendar>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateMenuCycleCalendarAsync(MenuCycleCalendarDTO dto)
         {
-            return await this._uow.MenuCycleCalendars.UpdateAsync(Mapper.Map<MenuCycleCalendar>(dto));
+            return await this._uow.MenuCycleCalendars.UpdateAsync(_mapper.Map<MenuCycleCalendar>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteMenuCycleCalendarAsync(int id)
@@ -320,47 +322,47 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<MenuGroupSimpleDTO>> GetMenuGroupsSimpleAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<MenuGroupSimpleDTO>>(await this._uow.MenuGroups.GetMenuGroupsAsync(filter));
+            var result = _mapper.Map<PagedEntity<MenuGroupSimpleDTO>>(await this._uow.MenuGroups.GetMenuGroupsAsync(filter));
             return result;
         }
 
         public async Task<PagedEntity<MenuGroupDTO>> GetMenuGroupsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<MenuGroupDTO>>(await this._uow.MenuGroups.GetMenuGroupsAsync(filter));
+            var result = _mapper.Map<PagedEntity<MenuGroupDTO>>(await this._uow.MenuGroups.GetMenuGroupsAsync(filter));
             return result;
         }
 
         public async Task<List<DishCycleDTO>> GetMenuGroupDishCyclesAsync(int studentId, DateTime orderDate)
         {
-            var result = Mapper.Map<List<DishCycleDTO>>(await this._uow.MenuGroups.GetMenuGroupDishCyclesAsync(studentId, orderDate));
+            var result = _mapper.Map<List<DishCycleDTO>>(await this._uow.MenuGroups.GetMenuGroupDishCyclesAsync(studentId, orderDate));
             return result.Distinct().ToList();
         }
 
         public async Task<List<MenuGroupDTO>> GetActiveMenuGroupDishCyclesAsync(int studentId)
         {
-            var result = Mapper.Map<List<MenuGroupDTO>>(await this._uow.MenuGroups.GetActiveMenuGroupDishCyclesAsync(studentId));
+            var result = _mapper.Map<List<MenuGroupDTO>>(await this._uow.MenuGroups.GetActiveMenuGroupDishCyclesAsync(studentId));
             return result.Distinct().ToList();
         }
 
         public async Task<List<DishByDateDTO>> GetMenuGroupDishesByDateAsync(int studentId, DateTime startDate, DateTime endDate)
         {
-            var result = Mapper.Map<List<DishByDateDTO>>(await this._uow.MenuGroups.GetMenuGroupDishesByDateAsync(studentId, startDate, endDate));
+            var result = _mapper.Map<List<DishByDateDTO>>(await this._uow.MenuGroups.GetMenuGroupDishesByDateAsync(studentId, startDate, endDate));
             return result.Distinct().ToList();
         }
 
         public async Task<MenuGroupDTO> GetMenuGroupByIdAsync(int id)
         {
-            return Mapper.Map<MenuGroupDTO>(await this._uow.MenuGroups.GetByIdAsync(id));
+            return _mapper.Map<MenuGroupDTO>(await this._uow.MenuGroups.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateMenuGroupAsync(MenuGroupDTO dto)
         {
-            return await this._uow.MenuGroups.CreateAsync(Mapper.Map<MenuGroup>(dto));
+            return await this._uow.MenuGroups.CreateAsync(_mapper.Map<MenuGroup>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateMenuGroupAsync(MenuGroupDTO dto)
         {
-            return await this._uow.MenuGroups.UpdateAsync(Mapper.Map<MenuGroup>(dto));
+            return await this._uow.MenuGroups.UpdateAsync(_mapper.Map<MenuGroup>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteMenuGroupAsync(int id)

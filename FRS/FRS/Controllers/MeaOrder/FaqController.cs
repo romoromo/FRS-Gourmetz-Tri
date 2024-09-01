@@ -10,22 +10,24 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class FaqController : BaseController
     {
         private IManagementService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public FaqController(IManagementService service, ILogger<FaqController> logger)
+        public FaqController(IManagementService service, ILogger<FaqController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Subjects
@@ -36,7 +38,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetFaqSubjects(BaseFilter filter)
         {
             var results = await this._service.GetFaqSubjectsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<FaqSubjectDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<FaqSubjectDTO>>(results));
         }
 
         #endregion
@@ -55,7 +57,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateFaqSubjectAsync(dto);
                 if (result.IsSuccess)
                 {
-                    FaqSubjectDTO vm = Mapper.Map<FaqSubjectDTO>(result.Data);
+                    FaqSubjectDTO vm = _mapper.Map<FaqSubjectDTO>(result.Data);
                     return CreatedAtAction("GetFaqSubjectById", new { id = vm.Id }, vm);
                 }
 
@@ -137,7 +139,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetFaqDetails(BaseFilter filter)
         {
             var results = await this._service.GetFaqDetailsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<FaqDetailDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<FaqDetailDTO>>(results));
         }
 
         #endregion
@@ -156,7 +158,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateFaqDetailAsync(dto);
                 if (result.IsSuccess)
                 {
-                    FaqDetailDTO vm = Mapper.Map<FaqDetailDTO>(result.Data);
+                    FaqDetailDTO vm = _mapper.Map<FaqDetailDTO>(result.Data);
                     return CreatedAtAction("GetFaqDetailById", new { id = vm.Id }, vm);
                 }
 

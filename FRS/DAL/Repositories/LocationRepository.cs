@@ -974,7 +974,7 @@ namespace DAL.Repositories
 
                         foreach (var row in rows)
                         {
-                            var institution = await _appContext.Institutions.FirstOrDefaultAsync(e => e.IsActive && e.Name.Equals(institutionName, StringComparison.InvariantCultureIgnoreCase));
+                            var institution = await _appContext.Institutions.FirstOrDefaultAsync(e => e.IsActive && e.Name.ToLower() == institutionName.ToLower());
 
                             if (institution == null)
                             {
@@ -984,18 +984,22 @@ namespace DAL.Repositories
                             {
                                 institutionId = institution.Id;
 
-                                var locationType = await _appContext.LocationTypes.FirstOrDefaultAsync(e => e.IsActive && e.Name.Equals(row.Type, StringComparison.InvariantCultureIgnoreCase));
+                                var rt = row.Type.ToLower() ?? "";
+                                var parent = row.Parent.ToLower() ?? "";
+                                var locName = row.Name.ToLower() ?? "";
+
+                                var locationType = await _appContext.LocationTypes.FirstOrDefaultAsync(e => e.IsActive && e.Name.ToLower() == rt);
 
                                 Location parentLocation = null;
                                 if (!string.IsNullOrEmpty(row.Parent))
                                 {
                                     parentLocation = await _appContext.Locations.FirstOrDefaultAsync(e => e.IsActive && e.InstitutionId == institutionId &&
-                                                                e.Name.Equals(row.Parent, StringComparison.InvariantCultureIgnoreCase));
+                                                                e.Name.ToLower() == parent);
                                 }
 
                                 var location = await _appContext.Locations.FirstOrDefaultAsync(e => e.IsActive && e.InstitutionId == institutionId &&
                                                 (parentLocation == null || e.ParentLocationId == parentLocation.Id) &&
-                                                e.Name.Equals(row.Name, StringComparison.InvariantCultureIgnoreCase));
+                                                e.Name.ToLower() == locName);
 
                                 if (location == null)
                                 {

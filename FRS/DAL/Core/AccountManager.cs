@@ -1,8 +1,6 @@
 ﻿using DAL;
 using DAL.Core.Interfaces;
 using DAL.Models;
-using AspNet.Security.OpenIdConnect.Primitives;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,13 +16,15 @@ using System.DirectoryServices;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using System.Net.Http;
-using Newtonsoft.Json;
 using DAL.Filters;
 using Sieve.Services;
 using DAL.Models.MealOrder;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using AutoMapper;
+using OpenIddict.Abstractions;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace DAL.Core
 {
@@ -47,7 +47,7 @@ namespace DAL.Core
             _context = context;
             if (httpAccessor.HttpContext != null && httpAccessor.HttpContext.User != null)
             {
-                _context.CurrentUserId = Convert.ToInt32(httpAccessor.HttpContext?.User.FindFirst(OpenIdConnectConstants.Claims.Subject)?.Value?.Trim());
+                _context.CurrentUserId = Convert.ToInt32(httpAccessor.HttpContext?.User.FindFirst(OpenIddictConstants.Claims.Subject)?.Value?.Trim());
             }
             _userManager = userManager;
             _roleManager = roleManager;
@@ -959,9 +959,20 @@ namespace DAL.Core
         }
 
 
+        public async Task<IEnumerable<string>> GetRolePermissionsByRoleName(List<string> roleNames)
+        {
+            var claims = new List<string>();
+            foreach (var roleName in roleNames)
+            {
+                var role = await GetRoleByNameAsync(roleName);
+                var roleClaims = (await _roleManager.GetClaimsAsync(role)).Where(c => c.Type == CustomClaimTypes.Permission);
+                claims.AddRange(roleClaims.Select(e => e.Value));
+            }
+            
+            return claims;
+        }
 
-
-
+        
 
         public async Task<ApplicationRole> GetRoleByIdAsync(int roleId)
         {

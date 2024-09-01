@@ -12,12 +12,12 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class SignagePublicationController : BaseController
     {
@@ -25,14 +25,16 @@ namespace FRS.Controllers
         readonly ILogger _logger;
         private readonly IAccountManager _accountManager;
         private readonly IEmailSender _emailSender;
+        private readonly IMapper _mapper;
 
 
-        public SignagePublicationController(IUnitOfWork unitOfWork, ILogger<SignagePublicationController> logger, IAccountManager accountManager, IEmailSender emailSender)
+        public SignagePublicationController(IUnitOfWork unitOfWork, ILogger<SignagePublicationController> logger, IAccountManager accountManager, IEmailSender emailSender, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _accountManager = accountManager;
             _emailSender = emailSender;
+            _mapper = mapper;
         }
 
         [HttpGet("signagepublication/{id}")]
@@ -41,7 +43,7 @@ namespace FRS.Controllers
         [ProducesResponseType(200, Type = typeof(SignagePublicationViewModel))]
         public async Task<IActionResult> GetSignagePublication(int id)
         {
-            return Ok(Mapper.Map<SignagePublicationViewModel>(await _unitOfWork.SignagePublications.GetByIdAsync(id)));
+            return Ok(_mapper.Map<SignagePublicationViewModel>(await _unitOfWork.SignagePublications.GetByIdAsync(id)));
         }
 
         [HttpGet("signagepublications/list")]
@@ -60,7 +62,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetSignagePublications(int pageNumber, int pageSize, int? institutionId = null)
         {
             var data = await _unitOfWork.SignagePublications.GetSignagePublicationsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<SignagePublicationViewModel>>(data));
+            return Ok(_mapper.Map<List<SignagePublicationViewModel>>(data));
         }
 
         [HttpGet("exportapprovedhistory")]
@@ -92,12 +94,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(signagePublication)} cannot be null");
 
 
-                var type = Mapper.Map<SignagePublication>(signagePublication);
+                var type = _mapper.Map<SignagePublication>(signagePublication);
 
                 var result = await _unitOfWork.SignagePublications.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    SignagePublicationViewModel signagePublicationVM = Mapper.Map<SignagePublicationViewModel>(result.Data);
+                    SignagePublicationViewModel signagePublicationVM = _mapper.Map<SignagePublicationViewModel>(result.Data);
 
                     var users = await _accountManager.GetUserByClaimValueAsync("frsmgt.accesscontrol.publication.email");
 
@@ -151,7 +153,7 @@ namespace FRS.Controllers
         {
             var signagePublication = await this._unitOfWork.SignagePublications.GetByIdAsync(id);
 
-            SignagePublicationViewModel signagePublicationVM = Mapper.Map<SignagePublicationViewModel>(signagePublication);
+            SignagePublicationViewModel signagePublicationVM = _mapper.Map<SignagePublicationViewModel>(signagePublication);
             if (signagePublicationVM == null)
                 return NotFound(id);
 
@@ -182,11 +184,11 @@ namespace FRS.Controllers
 
                 var signagePublication = await this._unitOfWork.SignagePublications.GetByIdAsync(model.Id);
 
-                SignagePublicationViewModel signagePublicationVM = Mapper.Map<SignagePublicationViewModel>(signagePublication);
+                SignagePublicationViewModel signagePublicationVM = _mapper.Map<SignagePublicationViewModel>(signagePublication);
                 if (signagePublicationVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<SignagePublication>(model);
+                var updatedModel = _mapper.Map<SignagePublication>(model);
                 var result = await _unitOfWork.SignagePublications.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();
@@ -207,7 +209,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDeviceSignagePublications(int? institutionId = null)
         {
             var data = await _unitOfWork.SignagePublications.GetSignagePublicationsLoadRelatedAsync(-1, -1, institutionId);
-            return Ok(Mapper.Map<List<SignagePublicationViewModel>>(data));
+            return Ok(_mapper.Map<List<SignagePublicationViewModel>>(data));
         }
 
         #endregion

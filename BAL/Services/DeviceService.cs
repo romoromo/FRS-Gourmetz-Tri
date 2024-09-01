@@ -22,37 +22,39 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public DeviceService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public DeviceService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         #region Device Types
 
         public async Task<PagedEntity<DeviceTypeDTO>> GetDeviceTypesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<DeviceTypeDTO>>(await this._uow.DeviceTypes.GetDeviceTypesAsync(filter));
+            var result = _mapper.Map<PagedEntity<DeviceTypeDTO>>(await this._uow.DeviceTypes.GetDeviceTypesAsync(filter));
             return result;
         }
 
         public async Task<DeviceTypeDTO> GetDeviceTypeByIdAsync(int id)
         {
-            return Mapper.Map<DeviceTypeDTO>(await this._uow.DeviceTypes.GetByIdAsync(id));
+            return _mapper.Map<DeviceTypeDTO>(await this._uow.DeviceTypes.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateDeviceTypeAsync(DeviceTypeDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.DeviceTypes.CreateAsync(Mapper.Map<DeviceType>(dto));
+            result = await this._uow.DeviceTypes.CreateAsync(_mapper.Map<DeviceType>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateDeviceTypeAsync(DeviceTypeDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.DeviceTypes.UpdateAsync(Mapper.Map<DeviceType>(dto));
+            result = await this._uow.DeviceTypes.UpdateAsync(_mapper.Map<DeviceType>(dto));
             return result;
         }
 

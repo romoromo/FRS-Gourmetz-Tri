@@ -23,23 +23,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class DeliveryController : BaseController
     {
         private IDeliveryService _service;
         readonly ILogger _logger;
         private readonly IAccountManager _accountManager;
+        private readonly IMapper _mapper;
 
-        public DeliveryController(IDeliveryService service, ILogger<StaffController> logger, IAccountManager accountManager)
+        public DeliveryController(IDeliveryService service, ILogger<StaffController> logger, IAccountManager accountManager, IMapper mapper)
         {
             _service = service;
             _logger = logger;
             _accountManager = accountManager;
+            _mapper = mapper;
         }
 
         #region CatererInfos
@@ -53,7 +55,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetCatererInfosSimple(BaseFilter filter)
         {
             var results = await this._service.GetCatererInfosSimpleAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<CatererInfoSimpleDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<CatererInfoSimpleDTO>>(results));
         }
 
         #region Sieved
@@ -66,7 +68,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetCatererInfos(BaseFilter filter)
         {
             var results = await this._service.GetCatererInfosAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<CatererInfoDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<CatererInfoDTO>>(results));
         }
 
         #endregion
@@ -101,7 +103,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateCatererInfoAsync(dto);
                 if (result.IsSuccess)
                 {
-                    //CatererInfoDTO vm = Mapper.Map<CatererInfoDTO>(result.Data);
+                    //CatererInfoDTO vm = _mapper.Map<CatererInfoDTO>(result.Data);
                     return CreatedAtAction("GetCatererInfoById", new {});
                 }
 
@@ -187,7 +189,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOutletsSimple(BaseFilter filter)
         {
             var results = await this._service.GetOutletsSimpleAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<OutletSimpleDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<OutletSimpleDTO>>(results));
         }
 
         #endregion
@@ -202,7 +204,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOutlets(BaseFilter filter)
         {
             var results = await this._service.GetOutletsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<OutletDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<OutletDTO>>(results));
         }
 
         #endregion
@@ -252,7 +254,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateOutletAsync(dto);
                 if (result.IsSuccess)
                 {
-                    //OutletDTO vm = Mapper.Map<OutletDTO>(result.Data);
+                    //OutletDTO vm = _mapper.Map<OutletDTO>(result.Data);
                     //return CreatedAtAction("GetOutletById", new { id = vm.Id }, vm);
                     return CreatedAtAction("GetOutletById", new { });
                 }
@@ -361,7 +363,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOutletProfiles(BaseFilter filter)
         {
             var results = await this._service.GetOutletProfilesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<OutletProfileDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<OutletProfileDTO>>(results));
         }
 
         #endregion
@@ -396,7 +398,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateOutletProfileAsync(dto);
                 if (result.IsSuccess)
                 {
-                    OutletProfileDTO vm = Mapper.Map<OutletProfileDTO>(result.Data);
+                    OutletProfileDTO vm = _mapper.Map<OutletProfileDTO>(result.Data);
                     return CreatedAtAction("GetOutletProfileById", new { id = vm.Id }, vm);
                 }
 
@@ -474,7 +476,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetBentoBoxTypes(BaseFilter filter)
         {
             var results = await this._service.GetBentoBoxTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<BentoBoxTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<BentoBoxTypeDTO>>(results));
         }
 
         #endregion
@@ -495,7 +497,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateBentoBoxTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    BentoBoxTypeDTO vm = Mapper.Map<BentoBoxTypeDTO>(result.Data);
+                    BentoBoxTypeDTO vm = _mapper.Map<BentoBoxTypeDTO>(result.Data);
                     return CreatedAtAction("GetBentoBoxTypeById", new { id = vm.Id }, vm);
                 }
 
@@ -573,7 +575,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetCartonTypes(BaseFilter filter)
         {
             var results = await this._service.GetCartonTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<CartonTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<CartonTypeDTO>>(results));
         }
 
         #endregion
@@ -594,7 +596,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateCartonTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    CartonTypeDTO vm = Mapper.Map<CartonTypeDTO>(result.Data);
+                    CartonTypeDTO vm = _mapper.Map<CartonTypeDTO>(result.Data);
                     return CreatedAtAction("GetCartonTypeById", new { id = vm.Id }, vm);
                 }
 
@@ -671,7 +673,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDeliveryOrders(BaseFilter filter)
         {
             var results = await this._service.GetDeliveryOrdersAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DeliveryOrderDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<DeliveryOrderDTO>>(results));
         }
 
         #endregion
@@ -692,7 +694,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateDeliveryOrderAsync(dto);
                 if (result.IsSuccess)
                 {
-                    DeliveryOrderDTO vm = Mapper.Map<DeliveryOrderDTO>(result.Data);
+                    DeliveryOrderDTO vm = _mapper.Map<DeliveryOrderDTO>(result.Data);
                     return CreatedAtAction("GetDeliveryOrderById", new { id = vm.Id }, vm);
                 }
 
@@ -768,7 +770,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDeliveryOrderNews(BaseFilter filter)
         {
             var results = await this._service.GetDeliveryOrderNewsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DeliveryOrderNewDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<DeliveryOrderNewDTO>>(results));
         }
 
         #endregion
@@ -782,7 +784,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetBentoUsages(BaseFilter filter)
         {
             var results = await this._service.GetBentoUsage(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<BentoUsageCountDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<BentoUsageCountDTO>>(results));
         }
 
         #endregion
@@ -803,7 +805,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateDeliveryOrderNewAsync(dto);
                 if (result.IsSuccess)
                 {
-                    DeliveryOrderNewDTO vm = Mapper.Map<DeliveryOrderNewDTO>(result.Data);
+                    DeliveryOrderNewDTO vm = _mapper.Map<DeliveryOrderNewDTO>(result.Data);
                     return CreatedAtAction("GetDeliveryOrderByIdNew", new { id = vm.Id }, vm);
                 }
 
@@ -912,7 +914,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStoreInventories(BaseFilter filter)
         {
             var results = await this._service.GetStoreInventoriesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<StoreInventoryDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<StoreInventoryDTO>>(results));
         }
 
         #endregion
@@ -926,7 +928,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStoreInventoryDetails(BaseFilter filter)
         {
             var results = await this._service.GetStoreInventoryDetailsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<StoreInventoryDetailDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<StoreInventoryDetailDTO>>(results));
         }
 
         #endregion
@@ -947,7 +949,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateStoreInventoryAsync(dto);
                 if (result.IsSuccess)
                 {
-                    StoreInventoryDTO vm = Mapper.Map<StoreInventoryDTO>(result.Data);
+                    StoreInventoryDTO vm = _mapper.Map<StoreInventoryDTO>(result.Data);
                     return CreatedAtAction("GetStoreInventoryById", new { id = vm.Id }, vm);
                 }
 
@@ -1025,7 +1027,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetTrackingStatuss(BaseFilter filter)
         {
             var results = await this._service.GetTrackingStatussAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TrackingStatusDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<TrackingStatusDTO>>(results));
         }
 
         #endregion
@@ -1045,7 +1047,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateTrackingStatusAsync(dto);
                 if (result.IsSuccess)
                 {
-                    TrackingStatusDTO vm = Mapper.Map<TrackingStatusDTO>(result.Data);
+                    TrackingStatusDTO vm = _mapper.Map<TrackingStatusDTO>(result.Data);
                     return CreatedAtAction("GetTrackingStatusById", new { id = vm.Id }, vm);
                 }
 
@@ -1120,7 +1122,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStoreInfos(BaseFilter filter)
         {
             var results = await this._service.GetStoreInfosAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<StoreInfoDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<StoreInfoDTO>>(results));
         }
 
         #endregion
@@ -1141,7 +1143,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateStoreInfoAsync(dto);
                 if (result.IsSuccess)
                 {
-                    StoreInfoDTO vm = Mapper.Map<StoreInfoDTO>(result.Data);
+                    StoreInfoDTO vm = _mapper.Map<StoreInfoDTO>(result.Data);
                     return CreatedAtAction("GetStoreInfoById", new { id = vm.Id }, vm);
                 }
 
@@ -1219,7 +1221,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetBentoAssets(BaseFilter filter)
         {
             var results = await this._service.GetBentoAssetsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<BentoAssetDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<BentoAssetDTO>>(results));
         }
 
         #endregion
@@ -1240,7 +1242,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateBentoAssetAsync(dto);
                 if (result.IsSuccess)
                 {
-                    BentoAssetDTO vm = Mapper.Map<BentoAssetDTO>(result.Data);
+                    BentoAssetDTO vm = _mapper.Map<BentoAssetDTO>(result.Data);
                     return CreatedAtAction("GetBentoAssetById", new { id = vm.Id }, vm);
                 }
 
@@ -1332,7 +1334,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetCartonAssets(BaseFilter filter)
         {
             var results = await this._service.GetCartonAssetsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<CartonAssetDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<CartonAssetDTO>>(results));
         }
 
         #endregion
@@ -1353,7 +1355,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateCartonAssetAsync(dto);
                 if (result.IsSuccess)
                 {
-                    CartonAssetDTO vm = Mapper.Map<CartonAssetDTO>(result.Data);
+                    CartonAssetDTO vm = _mapper.Map<CartonAssetDTO>(result.Data);
                     return CreatedAtAction("GetCartonAssetById", new { id = vm.Id }, vm);
                 }
 
@@ -1445,7 +1447,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDisposableBoxes(BaseFilter filter)
         {
             var results = await this._service.GetDisposableBoxesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<CartonDisposableBoxDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<CartonDisposableBoxDTO>>(results));
         }
 
         #endregion
@@ -1471,7 +1473,7 @@ namespace FRS.Controllers
                         var result = await this._service.CreateDisposableBoxAsync(dto);
                         if (result.IsSuccess)
                         {
-                            CartonDisposableBoxDTO vm = Mapper.Map<CartonDisposableBoxDTO>(result.Data);
+                            CartonDisposableBoxDTO vm = _mapper.Map<CartonDisposableBoxDTO>(result.Data);
                             return CreatedAtAction("GetDisposableBoxById", new { id = vm.Id }, vm);
                         }
 
@@ -1483,7 +1485,7 @@ namespace FRS.Controllers
                     var result = await this._service.CreateDisposableBoxAsync(dto);
                     if (result.IsSuccess)
                     {
-                        CartonDisposableBoxDTO vm = Mapper.Map<CartonDisposableBoxDTO>(result.Data);
+                        CartonDisposableBoxDTO vm = _mapper.Map<CartonDisposableBoxDTO>(result.Data);
                         return CreatedAtAction("GetDisposableBoxById", new { id = vm.Id }, vm);
                     }
 
@@ -1576,7 +1578,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDrivers(BaseFilter filter)
         {
             var results = await this._service.GetDriversAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DriverDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<DriverDTO>>(results));
         }
 
         #endregion
@@ -1595,7 +1597,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateDriverAsync(dto);
                 if (result.IsSuccess)
                 {
-                    DriverDTO vm = Mapper.Map<DriverDTO>(result.Data);
+                    DriverDTO vm = _mapper.Map<DriverDTO>(result.Data);
                     return CreatedAtAction("GetDriverById", new { id = vm.Id }, vm);
                 }
 
@@ -1667,7 +1669,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetRoutes(BaseFilter filter)
         {
             var results = await this._service.GetRoutesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<RouteDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<RouteDTO>>(results));
         }
 
         #endregion
@@ -1686,7 +1688,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateRouteAsync(dto);
                 if (result.IsSuccess)
                 {
-                    RouteDTO vm = Mapper.Map<RouteDTO>(result.Data);
+                    RouteDTO vm = _mapper.Map<RouteDTO>(result.Data);
                     return CreatedAtAction("GetRouteById", new { id = vm.Id }, vm);
                 }
 
@@ -1809,7 +1811,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOutletTerms(BaseFilter filter)
         {
             var results = await this._service.GetOutletTermsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<OutletTermDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<OutletTermDTO>>(results));
         }
 
         #endregion
@@ -1829,7 +1831,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateOutletTermAsync(dto);
                 if (result.IsSuccess)
                 {
-                    OutletTermDTO vm = Mapper.Map<OutletTermDTO>(result.Data);
+                    OutletTermDTO vm = _mapper.Map<OutletTermDTO>(result.Data);
                     return CreatedAtAction("GetOutletTermById", new { id = vm.Id }, vm);
                 }
 

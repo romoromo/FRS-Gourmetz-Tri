@@ -26,14 +26,15 @@ using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 using Microsoft.Extensions.Configuration;
 using DAL.Core.Helpers;
 using System.Globalization;
+using NPOI.SS.Formula.Functions;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class StudentController : BaseController
     {
@@ -43,7 +44,8 @@ namespace FRS.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ApplicationUserManager _userManager;
         private readonly IConfiguration _configuration;
-        public StudentController(IStudentService service, ILogger<StudentController> logger, IAccountManager accountManager, IEmailSender emailSender, ApplicationUserManager userManager, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        public StudentController(IStudentService service, ILogger<StudentController> logger, IAccountManager accountManager, IEmailSender emailSender, ApplicationUserManager userManager, IConfiguration configuration, IMapper mapper)
         {
             _service = service;
             _logger = logger;
@@ -51,6 +53,7 @@ namespace FRS.Controllers
             _emailSender = emailSender;
             _userManager = userManager;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         #region Students
@@ -65,7 +68,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStudents(BaseFilter filter, bool noAccount = false)
         {
             var results = await this._service.GetStudentsAsync(filter, noAccount);
-            return Ok(Mapper.Map<PagedEntityViewModel<StudentDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<StudentDTO>>(results));
         }
 
         #endregion
@@ -78,7 +81,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStudentsByUser(int userId)
         {
             var results = await this._service.GetStudentsByUserAsync(userId);
-            return Ok(Mapper.Map<List<StudentDTO>>(results));
+            return Ok(_mapper.Map<List<StudentDTO>>(results));
         }
 
         [HttpGet("students/get/id/{id}")]
@@ -112,7 +115,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateStudentAsync(dto);
                 if (result.IsSuccess)
                 {
-                    StudentDTO vm = Mapper.Map<StudentDTO>(result.Data);
+                    StudentDTO vm = _mapper.Map<StudentDTO>(result.Data);
                     return CreatedAtAction("GetStudentById", new { id = vm.Id }, vm);
                 }
 
@@ -394,7 +397,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStudentCards(BaseFilter filter)
         {
             var results = await this._service.GetStudentCardsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<StudentCardDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<StudentCardDTO>>(results));
         }
 
         #endregion
@@ -460,7 +463,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateStudentCardAsync(dto);
                 if (result.IsSuccess)
                 {
-                    StudentCardDTO vm = Mapper.Map<StudentCardDTO>(result.Data);
+                    StudentCardDTO vm = _mapper.Map<StudentCardDTO>(result.Data);
                     return CreatedAtAction("GetStudentCardById", new { id = vm.Id }, vm);
                 }
 
@@ -656,7 +659,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetInterestGroups(BaseFilter filter)
         {
             var results = await this._service.GetInterestGroupsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<InterestGroupDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<InterestGroupDTO>>(results));
         }
 
         #endregion
@@ -676,7 +679,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateInterestGroupAsync(dto);
                 if (result.IsSuccess)
                 {
-                    InterestGroupDTO vm = Mapper.Map<InterestGroupDTO>(result.Data);
+                    InterestGroupDTO vm = _mapper.Map<InterestGroupDTO>(result.Data);
                     return CreatedAtAction("GetInterestGroupById", new { id = vm.Id }, vm);
                 }
 
@@ -769,7 +772,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStudentGroups(BaseFilter filter)
         {
             var results = await this._service.GetStudentGroupsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<StudentGroupDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<StudentGroupDTO>>(results));
         }
 
         [ApiKeyAuthorize]
@@ -781,7 +784,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetSimpleStudentGroups(BaseFilter filter)
         {
             var results = await this._service.GetStudentGroupsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<StudentGroupSimpleDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<StudentGroupSimpleDTO>>(results));
         }
 
         #endregion
@@ -828,7 +831,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateStudentGroupAsync(dto);
                 if (result.IsSuccess)
                 {
-                    StudentGroupDTO vm = Mapper.Map<StudentGroupDTO>(result.Data);
+                    StudentGroupDTO vm = _mapper.Map<StudentGroupDTO>(result.Data);
                     return CreatedAtAction("GetStudentGroupById", new { id = vm.Id }, vm);
                 }
 
@@ -940,7 +943,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOutletTerms(BaseFilter filter)
         {
             var results = await this._service.GetOutletTermsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<OutletTermDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<OutletTermDTO>>(results));
         }
 
         #endregion

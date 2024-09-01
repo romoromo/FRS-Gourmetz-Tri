@@ -11,23 +11,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class DepartmentController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public DepartmentController(IUnitOfWork unitOfWork, ILogger<DepartmentController> logger)
+        public DepartmentController(IUnitOfWork unitOfWork, ILogger<DepartmentController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -40,7 +42,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDepartments(BaseFilter filter)
         {
             var departments = await _unitOfWork.Departments.GetDepartmentsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DepartmentViewModel>>(departments));
+            return Ok(_mapper.Map<PagedEntityViewModel<DepartmentViewModel>>(departments));
         }
 
         #endregion
@@ -62,7 +64,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDepartments(int pageNumber, int pageSize, int? institutionId = null, string institutionCode = null)
         {
             var facilities = await _unitOfWork.Departments.GetDepartmentsLoadRelatedAsync(pageNumber, pageSize, institutionId, institutionCode);
-            return Ok(Mapper.Map<List<DepartmentViewModel>>(facilities));
+            return Ok(_mapper.Map<List<DepartmentViewModel>>(facilities));
         }
 
         [HttpPost("")]
@@ -77,12 +79,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(department)} cannot be null");
 
 
-                var type = Mapper.Map<Department>(department);
+                var type = _mapper.Map<Department>(department);
 
                 var result = await _unitOfWork.Departments.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    DepartmentViewModel departmentVM = Mapper.Map<DepartmentViewModel>(result.Data);
+                    DepartmentViewModel departmentVM = _mapper.Map<DepartmentViewModel>(result.Data);
                     return CreatedAtAction("GetDepartmentById", new { id = departmentVM.Id }, departmentVM);
                 }
 
@@ -106,7 +108,7 @@ namespace FRS.Controllers
 
             var department = await this._unitOfWork.Departments.GetByIdAsync(id);
 
-            DepartmentViewModel departmentVM = Mapper.Map<DepartmentViewModel>(department);
+            DepartmentViewModel departmentVM = _mapper.Map<DepartmentViewModel>(department);
             if (departmentVM == null)
                 return NotFound(id);
 
@@ -137,11 +139,11 @@ namespace FRS.Controllers
 
                 var department = await this._unitOfWork.Departments.GetByIdAsync(model.Id);
 
-                DepartmentViewModel departmentVM = Mapper.Map<DepartmentViewModel>(department);
+                DepartmentViewModel departmentVM = _mapper.Map<DepartmentViewModel>(department);
                 if (departmentVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Department>(model);
+                var updatedModel = _mapper.Map<Department>(model);
                 var result = await _unitOfWork.Departments.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

@@ -13,7 +13,7 @@ using FRS.Authorization;
 using FRS.Helpers;
 using Microsoft.AspNetCore.JsonPatch;
 using DAL.Core;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 using DAL;
 using Microsoft.Extensions.Configuration;
 using System.Web;
@@ -30,7 +30,7 @@ using BAL.Services.Interfaces.MealOrder;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class AccountController : BaseController
     {
@@ -47,11 +47,12 @@ namespace FRS.Controllers
         private IWalletService _walletService;
         private IRewardService _rewardService;
         private readonly IStudentService _studentService;
+        private readonly IMapper _mapper;
 
         public AccountController(IAccountManager accountManager, IAuthorizationService authorizationService, IUnitOfWork unitOfWork,
             ApplicationUserManager userManager, IEmailSender emailSender, IConfiguration configuration,
             SignInManager<ApplicationUser> signInManager, IWalletService walletService, IRewardService rewardService,
-            IHubContext<UserHub> userHub, IStudentService studentService)
+            IHubContext<UserHub> userHub, IStudentService studentService, IMapper mapper)
         {
             _accountManager = accountManager;
             _authorizationService = authorizationService;
@@ -64,6 +65,7 @@ namespace FRS.Controllers
             _walletService = walletService;
             _rewardService = rewardService;
             _studentService = studentService;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -76,7 +78,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetUsers(BaseFilter filter)
         {
             var users = await _accountManager.GetUsersAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<UserViewModel>>(users));
+            return Ok(_mapper.Map<PagedEntityViewModel<UserViewModel>>(users));
         }
 
         [ApiKeyAuthorize]
@@ -88,7 +90,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetRoles(BaseFilter filter)
         {
             var roles = await _accountManager.GetRolesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<RoleViewModel>>(roles));
+            return Ok(_mapper.Map<PagedEntityViewModel<RoleViewModel>>(roles));
         }
         #endregion
 
@@ -145,7 +147,7 @@ namespace FRS.Controllers
 
             //UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
 
-            var userVM = Mapper.Map<UserSimpleViewModel>(appUser);
+            var userVM = _mapper.Map<UserSimpleViewModel>(appUser);
 
             if (userVM != null)
                 return Ok(userVM);
@@ -167,7 +169,7 @@ namespace FRS.Controllers
 
 
 
-        //    var userVM = Mapper.Map<UserSimpleViewModel>(appUser);
+        //    var userVM = _mapper.Map<UserSimpleViewModel>(appUser);
 
         //    if (userVM != null)
         //        return Ok(userVM);
@@ -197,7 +199,7 @@ namespace FRS.Controllers
 
             //UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
 
-            var userVM = Mapper.Map<UserViewModel>(appUser);
+            var userVM = _mapper.Map<UserViewModel>(appUser);
 
             if (userVM != null)
                 return Ok(userVM);
@@ -228,7 +230,7 @@ namespace FRS.Controllers
 
             //UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
 
-            var userVM = Mapper.Map<UserViewModel>(appUser);
+            var userVM = _mapper.Map<UserViewModel>(appUser);
 
             if (userVM != null)
                 return Ok(userVM);
@@ -258,7 +260,7 @@ namespace FRS.Controllers
 
             foreach (var item in usersAndRoles)
             {
-                var userVM = Mapper.Map<UserViewModel>(item.Item1);
+                var userVM = _mapper.Map<UserViewModel>(item.Item1);
                 userVM.Roles = item.Item2;
 
                 usersVM.Add(userVM);
@@ -332,7 +334,7 @@ namespace FRS.Controllers
 
                 if (isValid)
                 {
-                    Mapper.Map<UserViewModel, ApplicationUser>(user, appUser);
+                    _mapper.Map<UserViewModel, ApplicationUser>(user, appUser);
                     if (sendEmail) appUser.IsEnabled = true;
 
                     var result = await _accountManager.UpdateUserAsync(appUser, user.Roles);
@@ -377,7 +379,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetUserReport(BaseFilter filter)
         {
             var logs = await _accountManager.GetUserReportAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<UserReportDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<UserReportDTO>>(logs));
         }
 
         [HttpPost("users/report/export")]
@@ -406,7 +408,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetRoleReport(RoleReportFilter filter)
         {
             var logs = await _accountManager.GetRoleReportAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<RoleReportDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<RoleReportDTO>>(logs));
         }
 
         [HttpPost("roles/report/export")]
@@ -641,13 +643,13 @@ namespace FRS.Controllers
                     return NotFound(id);
 
 
-                UserPatchViewModel userPVM = Mapper.Map<UserPatchViewModel>(appUser);
+                UserPatchViewModel userPVM = _mapper.Map<UserPatchViewModel>(appUser);
                 patch.ApplyTo(userPVM, ModelState);
 
 
                 if (ModelState.IsValid)
                 {
-                    Mapper.Map<UserPatchViewModel, ApplicationUser>(userPVM, appUser);
+                    _mapper.Map<UserPatchViewModel, ApplicationUser>(userPVM, appUser);
 
                     var result = await _accountManager.UpdateUserAsync(appUser);
                     if (result.Item1)
@@ -684,7 +686,7 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(user)} cannot be null");
 
                 if (string.IsNullOrEmpty(user.UserName)) user.UserName = user.Email;
-                ApplicationUser appUser = Mapper.Map<ApplicationUser>(user);
+                ApplicationUser appUser = _mapper.Map<ApplicationUser>(user);
 
                 user.IsChangePassword = true;
                 var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
@@ -856,6 +858,20 @@ namespace FRS.Controllers
             return Ok(roleVM);
         }
 
+        [HttpPost("roles/permissions")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<string>))]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetRolePermissionsByName([FromBody] List<string> roleNames)
+        {
+            if(roleNames == null)
+                return NotFound();
+
+            var permissions = await _accountManager.GetRolePermissionsByRoleName(roleNames);
+
+            return Ok(permissions);
+        }
+
         [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("roles")]
         //[Authorize(Authorization.Policies.ViewAllRolesPolicy)]
@@ -872,7 +888,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetRoles(int pageNumber, int pageSize, int? institutionId = null)
         {
             var roles = await _accountManager.GetRolesLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<RoleViewModel>>(roles));
+            return Ok(_mapper.Map<List<RoleViewModel>>(roles));
         }
 
 
@@ -899,7 +915,7 @@ namespace FRS.Controllers
                     return NotFound(id);
 
 
-                Mapper.Map<RoleViewModel, ApplicationRole>(role, appRole);
+                _mapper.Map<RoleViewModel, ApplicationRole>(role, appRole);
 
                 var result = await _accountManager.UpdateRoleAsync(appRole, role.Permissions?.Select(p => p.Value).ToArray());
                 if (result.Item1)
@@ -925,7 +941,7 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(role)} cannot be null");
 
 
-                ApplicationRole appRole = Mapper.Map<ApplicationRole>(role);
+                ApplicationRole appRole = _mapper.Map<ApplicationRole>(role);
 
                 var result = await _accountManager.CreateRoleAsync(appRole, role.Permissions?.Select(p => p.Value).ToArray());
                 if (result.Item1)
@@ -976,7 +992,7 @@ namespace FRS.Controllers
         //[ProducesResponseType(200, Type = typeof(List<PermissionViewModel>))]
         //public IActionResult GetAllPermissions()
         //{
-        //    return Ok(Mapper.Map<List<PermissionViewModel>>(ApplicationPermissions.AllPermissions));
+        //    return Ok(_mapper.Map<List<PermissionViewModel>>(ApplicationPermissions.AllPermissions));
         //}
 
         [HttpGet("permissions")]
@@ -995,8 +1011,8 @@ namespace FRS.Controllers
         [ProducesResponseType(200, Type = typeof(List<PermissionTreeViewModel>))]
         public IActionResult GetAllPermissionsTree()
         {
-            //return Ok(Mapper.Map<SimpleApiTreeResult>(ApplicationPermissionsTrees.AllPermissionsTree));
-            //return Ok(Mapper.Map<SimpleApiTreeResult>(ApplicationPermissionsTrees.Tree()));
+            //return Ok(_mapper.Map<SimpleApiTreeResult>(ApplicationPermissionsTrees.AllPermissionsTree));
+            //return Ok(_mapper.Map<SimpleApiTreeResult>(ApplicationPermissionsTrees.Tree()));
             var aclPath = _configuration["AppSettings:ACL_PATH"];
             return Ok(ApplicationPermissionsTrees.TreeFromJson(aclPath));
         }
@@ -1048,7 +1064,7 @@ namespace FRS.Controllers
 
                 if (isValid)
                 {
-                    Mapper.Map<UserViewModel, ApplicationUser>(user, appUser);
+                    _mapper.Map<UserViewModel, ApplicationUser>(user, appUser);
 
                     var result = await _accountManager.UpdateUserAsync(appUser, user.Roles);
 
@@ -1104,7 +1120,7 @@ namespace FRS.Controllers
                 }
 
                 if (string.IsNullOrEmpty(user.UserName)) user.UserName = user.Email;
-                ApplicationUser appUser = Mapper.Map<ApplicationUser>(user);
+                ApplicationUser appUser = _mapper.Map<ApplicationUser>(user);
                 appUser.InstitutionId = institution.Id;
                 if (!string.IsNullOrEmpty(user.Provider) && !string.IsNullOrEmpty(user.Key))
                 {
@@ -1349,7 +1365,7 @@ namespace FRS.Controllers
             if (userAndRoles == null)
                 return null;
 
-            var userVM = Mapper.Map<UserEditViewModel>(userAndRoles.Item1);
+            var userVM = _mapper.Map<UserEditViewModel>(userAndRoles.Item1);
             userVM.Roles = userAndRoles.Item2;
 
             if (userVM != null)
@@ -1391,7 +1407,7 @@ namespace FRS.Controllers
         {
             var phoneBooks = await _accountManager.GetUserPhonebooksLoadRelatedAsync(pageNumber, pageSize, userId);
 
-            var userPhonebookVM = Mapper.Map<List<UserPhonebookViewModel>>(phoneBooks);
+            var userPhonebookVM = _mapper.Map<List<UserPhonebookViewModel>>(phoneBooks);
 
             return Ok(userPhonebookVM);
         }
@@ -1410,12 +1426,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(userPhonebook)} cannot be null");
 
 
-                var pb = Mapper.Map<UserPhonebook>(userPhonebook);
+                var pb = _mapper.Map<UserPhonebook>(userPhonebook);
 
                 var result = await _accountManager.CreateUserPhonebookAsync(pb, userPhonebook.FilePath);
                 if (result.IsSuccess)
                 {
-                    UserPhonebookViewModel userPhonebookVM = Mapper.Map<UserPhonebookViewModel>(result.Data);
+                    UserPhonebookViewModel userPhonebookVM = _mapper.Map<UserPhonebookViewModel>(result.Data);
                     return CreatedAtAction("GetUserPhonebookById", new { id = userPhonebookVM.Id }, userPhonebookVM);
                 }
 
@@ -1441,7 +1457,7 @@ namespace FRS.Controllers
 
             var userPhonebook = await _accountManager.GetUserPhonebookByIdAsync(id);
 
-            UserPhonebookViewModel userPhonebookVM = Mapper.Map<UserPhonebookViewModel>(userPhonebook);
+            UserPhonebookViewModel userPhonebookVM = _mapper.Map<UserPhonebookViewModel>(userPhonebook);
             if (userPhonebookVM == null)
                 return NotFound(id);
 
@@ -1474,11 +1490,11 @@ namespace FRS.Controllers
 
                 var userPhonebook = await _accountManager.GetUserPhonebookByIdAsync(model.Id);
 
-                UserPhonebookViewModel userPhonebookVM = Mapper.Map<UserPhonebookViewModel>(userPhonebook);
+                UserPhonebookViewModel userPhonebookVM = _mapper.Map<UserPhonebookViewModel>(userPhonebook);
                 if (userPhonebookVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<UserPhonebook>(model);
+                var updatedModel = _mapper.Map<UserPhonebook>(model);
                 var result = await _accountManager.UpdateUserPhonebookAsync(updatedModel, model.FilePath);
                 if (result.IsSuccess)
                     return NoContent();
@@ -1514,7 +1530,7 @@ namespace FRS.Controllers
         {
             var vehicles = await _accountManager.GetUserVehiclesLoadRelatedAsync(pageNumber, pageSize, userId, status);
 
-            var userVehicleVM = Mapper.Map<List<UserVehicleViewModel>>(vehicles);
+            var userVehicleVM = _mapper.Map<List<UserVehicleViewModel>>(vehicles);
 
             return Ok(userVehicleVM);
         }
@@ -1532,7 +1548,7 @@ namespace FRS.Controllers
             {
                 UserId = e.Key,
                 UserName = e.First().User != null ? e.First().User.FriendlyName : string.Empty,
-                Vechicles = Mapper.Map<List<UserVehicleViewModel>>(e)
+                Vechicles = _mapper.Map<List<UserVehicleViewModel>>(e)
 
             });
 
@@ -1553,7 +1569,7 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(userVehicle)} cannot be null");
 
 
-                var pb = Mapper.Map<UserVehicle>(userVehicle);
+                var pb = _mapper.Map<UserVehicle>(userVehicle);
                 if (string.IsNullOrEmpty(pb.VehicleStatus))
                 {
                     pb.VehicleStatus = VehicleStatus.PENDING.ToString();
@@ -1562,7 +1578,7 @@ namespace FRS.Controllers
                 var result = await _accountManager.CreateUserVehicleAsync(pb);
                 if (result.IsSuccess)
                 {
-                    UserVehicleViewModel userVehicleVM = Mapper.Map<UserVehicleViewModel>(result.Data);
+                    UserVehicleViewModel userVehicleVM = _mapper.Map<UserVehicleViewModel>(result.Data);
                     return CreatedAtAction("GetUserVehicleById", new { id = userVehicleVM.Id }, userVehicleVM);
                 }
 
@@ -1588,7 +1604,7 @@ namespace FRS.Controllers
 
             var userVehicle = await _accountManager.GetUserVehicleByIdAsync(id);
 
-            UserVehicleViewModel userVehicleVM = Mapper.Map<UserVehicleViewModel>(userVehicle);
+            UserVehicleViewModel userVehicleVM = _mapper.Map<UserVehicleViewModel>(userVehicle);
             if (userVehicleVM == null)
                 return NotFound(id);
 
@@ -1621,11 +1637,11 @@ namespace FRS.Controllers
 
                 var userVehicle = await _accountManager.GetUserVehicleByIdAsync(model.Id);
 
-                UserVehicleViewModel userVehicleVM = Mapper.Map<UserVehicleViewModel>(userVehicle);
+                UserVehicleViewModel userVehicleVM = _mapper.Map<UserVehicleViewModel>(userVehicle);
                 if (userVehicleVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<UserVehicle>(model);
+                var updatedModel = _mapper.Map<UserVehicle>(model);
                 if (userVehicleVM.VehicleStatus != VehicleStatus.APPROVED.ToString() && model.IsApprove)
                 {
                     updatedModel.VehicleStatus = VehicleStatus.APPROVED.ToString();
@@ -1672,7 +1688,7 @@ namespace FRS.Controllers
         {
             var cardIds = await _accountManager.GetUserCardIdsLoadRelatedAsync(pageNumber, pageSize, userId, status);
 
-            var userCardIdVM = Mapper.Map<List<UserCardIdViewModel>>(cardIds);
+            var userCardIdVM = _mapper.Map<List<UserCardIdViewModel>>(cardIds);
 
             return Ok(userCardIdVM);
         }
@@ -1689,7 +1705,7 @@ namespace FRS.Controllers
         //    {
         //        UserId = e.Key,
         //        UserName = e.First().User != null ? e.First().User.FriendlyName : string.Empty,
-        //        Vechicles = Mapper.Map<List<UserVehicleViewModel>>(e)
+        //        Vechicles = _mapper.Map<List<UserVehicleViewModel>>(e)
 
         //    });
 
@@ -1710,7 +1726,7 @@ namespace FRS.Controllers
                 return NotFound("Card Id: " + cardId + " is not found or Inactive");
             }
 
-            var userCardIdVM = Mapper.Map<UserViewModel>(cardIds.User);
+            var userCardIdVM = _mapper.Map<UserViewModel>(cardIds.User);
 
             return Ok(userCardIdVM);
         }
@@ -1725,7 +1741,7 @@ namespace FRS.Controllers
 
             var cardIds = await _accountManager.GetActiveUserCardId(userId);
 
-            var userCardIdVM = Mapper.Map<UserCardIdViewModel>(cardIds);
+            var userCardIdVM = _mapper.Map<UserCardIdViewModel>(cardIds);
 
             return Ok(userCardIdVM);
         }
@@ -1744,13 +1760,13 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(userCardId)} cannot be null");
 
 
-                var pb = Mapper.Map<UserCardId>(userCardId);
+                var pb = _mapper.Map<UserCardId>(userCardId);
                 pb.Status = CardIdStatus.ACTIVE.ToString();
 
                 var result = await _accountManager.CreateUserCardIdActivateAsync(pb);
                 if (result.IsSuccess)
                 {
-                    UserCardIdViewModel userCardIdVM = Mapper.Map<UserCardIdViewModel>(result.Data);
+                    UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(result.Data);
                     return CreatedAtAction("GetUserCardIdById", new { id = userCardIdVM.Id }, userCardIdVM);
                 }
 
@@ -1774,7 +1790,7 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(userCardId)} cannot be null");
 
 
-                var pb = Mapper.Map<UserCardId>(userCardId);
+                var pb = _mapper.Map<UserCardId>(userCardId);
                 if (string.IsNullOrEmpty(pb.Status))
                 {
                     pb.Status = CardIdStatus.INACTIVE.ToString();
@@ -1783,7 +1799,7 @@ namespace FRS.Controllers
                 var result = await _accountManager.CreateUserCardIdAsync(pb);
                 if (result.IsSuccess)
                 {
-                    UserCardIdViewModel userCardIdVM = Mapper.Map<UserCardIdViewModel>(result.Data);
+                    UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(result.Data);
                     return CreatedAtAction("GetUserCardIdById", new { id = userCardIdVM.Id }, userCardIdVM);
                 }
 
@@ -1810,7 +1826,7 @@ namespace FRS.Controllers
 
             var userCardId = await _accountManager.GetUserCardIdByIdAsync(id);
 
-            UserCardIdViewModel userCardIdVM = Mapper.Map<UserCardIdViewModel>(userCardId);
+            UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(userCardId);
             if (userCardIdVM == null)
                 return NotFound(id);
 
@@ -1843,11 +1859,11 @@ namespace FRS.Controllers
 
                 var userCardId = await _accountManager.GetUserCardIdByIdAsync(model.Id);
 
-                UserCardIdViewModel userCardIdVM = Mapper.Map<UserCardIdViewModel>(userCardId);
+                UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(userCardId);
                 if (userCardIdVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<UserCardId>(model);
+                var updatedModel = _mapper.Map<UserCardId>(model);
                 //if (userCardIdVM.Status != CardIdStatus.INACTIVE.ToString())
                 //{
                 //    updatedModel.Status = CardIdStatus.INACTIVE.ToString();
@@ -1880,7 +1896,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetWallets(BaseFilter filter)
         {
             var results = await this._walletService.GetWalletsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<WalletDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<WalletDTO>>(results));
         }
 
         #endregion
@@ -1903,7 +1919,7 @@ namespace FRS.Controllers
 
             if (appUser == null)
                 return NotFound(null);
-            var userVM = Mapper.Map<UserViewModel>(appUser);
+            var userVM = _mapper.Map<UserViewModel>(appUser);
 
             if (userVM != null)
                 return Ok(userVM);
@@ -1932,7 +1948,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetWallet(int id)
         {
             var result = await this._walletService.GetByIdAsync(id);
-            return Ok(Mapper.Map<WalletDTO>(result));
+            return Ok(_mapper.Map<WalletDTO>(result));
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -2025,7 +2041,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetRewards(BaseFilter filter)
         {
             var results = await this._rewardService.GetRewardsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<RewardDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<RewardDTO>>(results));
         }
 
         #endregion
@@ -2051,7 +2067,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetReward(int id)
         {
             var result = await this._rewardService.GetByIdAsync(id);
-            return Ok(Mapper.Map<RewardDTO>(result));
+            return Ok(_mapper.Map<RewardDTO>(result));
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -2119,7 +2135,7 @@ namespace FRS.Controllers
             if (userAndRoles == null)
                 return null;
 
-            var userVM = Mapper.Map<UserViewModel>(userAndRoles.Item1);
+            var userVM = _mapper.Map<UserViewModel>(userAndRoles.Item1);
             userVM.Roles = userAndRoles.Item2;
 
             return userVM;
@@ -2130,7 +2146,7 @@ namespace FRS.Controllers
         {
             var role = await _accountManager.GetRoleLoadRelatedAsync(roleName);
             if (role != null)
-                return Mapper.Map<RoleViewModel>(role);
+                return _mapper.Map<RoleViewModel>(role);
 
 
             return null;

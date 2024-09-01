@@ -10,23 +10,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [ApiExplorerSettings(IgnoreApi = true)]
     [Route("api/[controller]")]
     public class ApplicationSettingController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public ApplicationSettingController(IUnitOfWork unitOfWork, ILogger<ApplicationSettingController> logger)
+        public ApplicationSettingController(IUnitOfWork unitOfWork, ILogger<ApplicationSettingController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -47,7 +49,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApplicationSettings(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.ApplicationSettings.GetApplicationSettingsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<ApplicationSettingViewModel>>(result));
+            return Ok(_mapper.Map<List<ApplicationSettingViewModel>>(result));
         }
 
         [HttpGet("get")]
@@ -56,7 +58,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApplicationSettings(int? institutionId = null, string key = null)
         {
             var result = await _unitOfWork.ApplicationSettings.GetByKeyAsync(key, institutionId);
-            return Ok(Mapper.Map<ApplicationSettingViewModel>(result));
+            return Ok(_mapper.Map<ApplicationSettingViewModel>(result));
         }
         [HttpPost("")]
         //[Authorize(Authorization.Policies.ManageAllApplicationSettingsPolicy)]
@@ -70,12 +72,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(applicationSetting)} cannot be null");
 
 
-                var type = Mapper.Map<ApplicationSetting>(applicationSetting);
+                var type = _mapper.Map<ApplicationSetting>(applicationSetting);
 
                 var result = await _unitOfWork.ApplicationSettings.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    ApplicationSettingViewModel applicationSettingVM = Mapper.Map<ApplicationSettingViewModel>(result.Data);
+                    ApplicationSettingViewModel applicationSettingVM = _mapper.Map<ApplicationSettingViewModel>(result.Data);
                     return CreatedAtAction("GetApplicationSettingById", new { id = applicationSettingVM.Id }, applicationSettingVM);
                 }
 
@@ -95,7 +97,7 @@ namespace FRS.Controllers
         {
             var applicationSetting = await this._unitOfWork.ApplicationSettings.GetByIdAsync(id);
 
-            ApplicationSettingViewModel appSettingVM = Mapper.Map<ApplicationSettingViewModel>(applicationSetting);
+            ApplicationSettingViewModel appSettingVM = _mapper.Map<ApplicationSettingViewModel>(applicationSetting);
             if (appSettingVM == null)
                 return NotFound(id);
 
@@ -126,11 +128,11 @@ namespace FRS.Controllers
 
                 var applicationSetting = await this._unitOfWork.ApplicationSettings.GetByIdAsync(model.Id);
 
-                ApplicationSettingViewModel appSettingVM = Mapper.Map<ApplicationSettingViewModel>(applicationSetting);
+                ApplicationSettingViewModel appSettingVM = _mapper.Map<ApplicationSettingViewModel>(applicationSetting);
                 if (appSettingVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<ApplicationSetting>(model);
+                var updatedModel = _mapper.Map<ApplicationSetting>(model);
                 var result = await _unitOfWork.ApplicationSettings.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

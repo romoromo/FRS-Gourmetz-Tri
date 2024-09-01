@@ -24,7 +24,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using DAL.Models.StoredProcedures;
 
@@ -37,15 +37,17 @@ namespace BAL.Services.MealOrder
         private IAccountManager _accountManager;
         private ApplicationDbContext _appContext;
         private IClassService _classService;
+        private readonly IMapper _mapper;
 
         public TokenOrderService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, ApplicationDbContext context,
-            IClassService classService)
+            IClassService classService, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
             _accountManager = accountManager;
             this._appContext = context;
             this._classService = classService;
+            _mapper = mapper;
         }
 
         #region TokenOrder
@@ -57,37 +59,37 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<TokenOrderDTO>> GetTokenOrdersAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<TokenOrderDTO>>(await this._uow.TokenOrders.GetTokenOrdersAsync(filter));
+            var result = _mapper.Map<PagedEntity<TokenOrderDTO>>(await this._uow.TokenOrders.GetTokenOrdersAsync(filter));
             return result;
         }
 
         public async Task<PagedEntity<TokenOrderOrderingPortalDTO>> GetTokenOrdersOrderingPortalAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<TokenOrderOrderingPortalDTO>>(await this._uow.TokenOrders.GetTokenOrdersAsync(filter));
+            var result = _mapper.Map<PagedEntity<TokenOrderOrderingPortalDTO>>(await this._uow.TokenOrders.GetTokenOrdersAsync(filter));
             return result;
         }
 
         public async Task<PagedEntity<TokenOrderDTO>> GetTokenOrdersForCancellationAsync(OrderCancellationFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<TokenOrderDTO>>(await this._uow.TokenOrders.GetCancellationOrdersAsync(filter));
+            var result = _mapper.Map<PagedEntity<TokenOrderDTO>>(await this._uow.TokenOrders.GetCancellationOrdersAsync(filter));
             return result;
         }
 
         public async Task<BaseOperationResponse> CancelOrders(List<int> orderIds, int cancelledById, string reason)
         {
-            var result = Mapper.Map<BaseOperationResponse>(await this._uow.TokenOrders.CancelOrders(orderIds, cancelledById, reason));
+            var result = _mapper.Map<BaseOperationResponse>(await this._uow.TokenOrders.CancelOrders(orderIds, cancelledById, reason));
             return result;
         }
 
         public async Task<PagedEntity<TokenOrderDTO>> GetStudentOrdersAsync(StudentOrderFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<TokenOrderDTO>>(await this._uow.TokenOrders.GetStudentOrdersAsync(filter));
+            var result = _mapper.Map<PagedEntity<TokenOrderDTO>>(await this._uow.TokenOrders.GetStudentOrdersAsync(filter));
             return result;
         }
 
         public async Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason, int dishId)
         {
-            var result = Mapper.Map<BaseOperationResponse>(await this._uow.TokenOrders.AmendOrder(id, status, invoiceNumber, fomoId, updatedById, reason, dishId));
+            var result = _mapper.Map<BaseOperationResponse>(await this._uow.TokenOrders.AmendOrder(id, status, invoiceNumber, fomoId, updatedById, reason, dishId));
             return result;
         }
 
@@ -99,7 +101,7 @@ namespace BAL.Services.MealOrder
             if (result.IsSuccess)
             {
                 var to = (TokenOrder)result.Data;
-                var history = Mapper.Map<TokensOrderHistoryDTO>(to);
+                var history = _mapper.Map<TokensOrderHistoryDTO>(to);
                 await CreateTokensOrderHistoryAsync(history, to);
                 result.Data = null;
             }
@@ -109,32 +111,32 @@ namespace BAL.Services.MealOrder
 
         public async Task<List<TokenOrderDTO>> GetUnupdatedTokenOrdersAsync()
         {
-            var result = Mapper.Map<List<TokenOrderDTO>>(await this._uow.TokenOrders.GetUnupdatedTokenOrdersAsync());
+            var result = _mapper.Map<List<TokenOrderDTO>>(await this._uow.TokenOrders.GetUnupdatedTokenOrdersAsync());
             return result;
         }
 
         public async Task<List<MealPlanOrderDTO>> GetUnupdatedMealPlanOrdersAsync()
         {
-            var result = Mapper.Map<List<MealPlanOrderDTO>>(await this._uow.TokenOrders.GetUnupdatedMealPlanOrdersAsync());
+            var result = _mapper.Map<List<MealPlanOrderDTO>>(await this._uow.TokenOrders.GetUnupdatedMealPlanOrdersAsync());
             return result;
         }
 
         public async Task<TokenOrderDTO> GetTokenOrderByIdAsync(int id)
         {
-            return Mapper.Map<TokenOrderDTO>(await this._uow.TokenOrders.GetByIdAsync(id));
+            return _mapper.Map<TokenOrderDTO>(await this._uow.TokenOrders.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateTokenOrderAsync(TokenOrderDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<TokenOrder>(dto);
-            var tokens = Mapper.Map<List<TokenOrdered>>(dto.Tokens);
+            var order = _mapper.Map<TokenOrder>(dto);
+            var tokens = _mapper.Map<List<TokenOrdered>>(dto.Tokens);
             result = await this._uow.TokenOrders.CreateAsync(order, tokens);
 
             if (result.IsSuccess)
             {
                 var to = (TokenOrder)result.Data;
-                var history = Mapper.Map<TokensOrderHistoryDTO>(to);
+                var history = _mapper.Map<TokensOrderHistoryDTO>(to);
                 await CreateTokensOrderHistoryAsync(history, to);
             }
 
@@ -144,14 +146,14 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> UpdateTokenOrderAsync(TokenOrderDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<TokenOrder>(dto);
-            var tokens = Mapper.Map<List<TokenOrdered>>(dto.Tokens);
+            var order = _mapper.Map<TokenOrder>(dto);
+            var tokens = _mapper.Map<List<TokenOrdered>>(dto.Tokens);
             result = await this._uow.TokenOrders.UpdateAsync(order, tokens);
 
             if (result.IsSuccess)
             {
                 var to = (TokenOrder)result.Data;
-                var history = Mapper.Map<TokensOrderHistoryDTO>(to);
+                var history = _mapper.Map<TokensOrderHistoryDTO>(to);
                 await CreateTokensOrderHistoryAsync(history, to);
             }
 
@@ -176,7 +178,7 @@ namespace BAL.Services.MealOrder
             if (result.IsSuccess)
             {
                 var to = (TokenOrder)result.Data;
-                var history = Mapper.Map<TokensOrderHistoryDTO>(to);
+                var history = _mapper.Map<TokensOrderHistoryDTO>(to);
                 if (history != null)
                 {
                     history.Status = "cancelled";
@@ -196,7 +198,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<FasTokenOrderSummaryDTO> GetFasTokenOrderSummaryAsync(int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetailDTO> mealSessionDetailsDto)
         {
-            var mealSessionDetails = Mapper.Map<List<MealSessionDetail>>(mealSessionDetailsDto);
+            var mealSessionDetails = _mapper.Map<List<MealSessionDetail>>(mealSessionDetailsDto);
             var result = await this._uow.TokenOrders.GetFasTokenOrderSummaryAsync(outletId, storeId, deliveryDate, deliveryDateTo, mealSessionDetails);
 
             return result;
@@ -207,7 +209,7 @@ namespace BAL.Services.MealOrder
         #region Meal Plan
         public async Task<List<GroupedTermStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime? orderDate)
         {
-            var mealPlans =  Mapper.Map<List<StudentGroupMealPlanDTO>>(await this._uow.TokenOrders.GetStudentMealPlansAsync(studentId, orderDate));
+            var mealPlans =  _mapper.Map<List<StudentGroupMealPlanDTO>>(await this._uow.TokenOrders.GetStudentMealPlansAsync(studentId, orderDate));
             //var grpMealPlans = mealPlans.GroupBy(e => e.StudentGroupId).Select(e => new GroupedStudentGroupMealPlanDTO
             //{
             //    StudentGroupId = e.Key,
@@ -258,7 +260,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<MealPlanTokenOrderSummaryDTO> GetMealPlanOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetailDTO> mealSessionDetailsDto)
         {
-            var mealSessionDetails = Mapper.Map<List<MealSessionDetail>>(mealSessionDetailsDto);
+            var mealSessionDetails = _mapper.Map<List<MealSessionDetail>>(mealSessionDetailsDto);
             var result = await this._uow.TokenOrders.GetMealPlanOrderSummaryAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, mealSessionDetails);
 
             return result;
@@ -276,7 +278,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<StudentGroupTokenOrderSummaryDTO> GetStudentGroupOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetailDTO> mealSessionDetailsDto, string type)
         {
-            var mealSessionDetails = Mapper.Map<List<MealSessionDetail>>(mealSessionDetailsDto);
+            var mealSessionDetails = _mapper.Map<List<MealSessionDetail>>(mealSessionDetailsDto);
             var result = await this._uow.TokenOrders.GetStudentGroupOrderSummaryAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, mealSessionDetails, type);
 
             return result;
@@ -288,19 +290,19 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<TokensOrderHistoryDTO>> GetTokensOrderHistorysAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<TokensOrderHistoryDTO>>(await this._uow.TokensOrderHistorys.GetTokensOrderHistorysAsync(filter));
+            var result = _mapper.Map<PagedEntity<TokensOrderHistoryDTO>>(await this._uow.TokensOrderHistorys.GetTokensOrderHistorysAsync(filter));
             return result;
         }
 
         public async Task<TokensOrderHistoryDTO> GetTokensOrderHistoryByIdAsync(int id)
         {
-            return Mapper.Map<TokensOrderHistoryDTO>(await this._uow.TokensOrderHistorys.GetByIdAsync(id));
+            return _mapper.Map<TokensOrderHistoryDTO>(await this._uow.TokensOrderHistorys.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateTokensOrderHistoryAsync(TokensOrderHistoryDTO dto, TokenOrder tokenOrder = null)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<TokensOrderHistory>(dto);
+            var order = _mapper.Map<TokensOrderHistory>(dto);
 
             if (order != null)
             {
@@ -321,7 +323,7 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> UpdateTokensOrderHistoryAsync(TokensOrderHistoryDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<TokensOrderHistory>(dto);
+            var order = _mapper.Map<TokensOrderHistory>(dto);
             result = await this._uow.TokensOrderHistorys.UpdateAsync(order);
             return result;
         }
@@ -339,24 +341,24 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<TokenOrderedDTO>> GetTokenOrderedsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<TokenOrderedDTO>>(await this._uow.TokenOrdereds.GetTokenOrderedsAsync(filter));
+            var result = _mapper.Map<PagedEntity<TokenOrderedDTO>>(await this._uow.TokenOrdereds.GetTokenOrderedsAsync(filter));
             return result;
         }
 
         public async Task<TokenOrderedDTO> GetTokenOrderedByIdAsync(int id)
         {
-            return Mapper.Map<TokenOrderedDTO>(await this._uow.TokenOrdereds.GetByIdAsync(id));
+            return _mapper.Map<TokenOrderedDTO>(await this._uow.TokenOrdereds.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateTokenOrderedAsync(TokenOrderedDTO dto)
         {
-            var result = await this._uow.TokenOrdereds.CreateAsync(Mapper.Map<TokenOrdered>(dto));
+            var result = await this._uow.TokenOrdereds.CreateAsync(_mapper.Map<TokenOrdered>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateTokenOrderedAsync(TokenOrderedDTO dto)
         {
-            var result = await this._uow.TokenOrdereds.UpdateAsync(Mapper.Map<TokenOrdered>(dto));
+            var result = await this._uow.TokenOrdereds.UpdateAsync(_mapper.Map<TokenOrdered>(dto));
             return result;
         }
 
@@ -371,20 +373,20 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<TokenLabelDTO>> GetTokenLabelsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<TokenLabelDTO>>(await this._uow.TokenLabels.GetTokenLabelsAsync(filter));
+            var result = _mapper.Map<PagedEntity<TokenLabelDTO>>(await this._uow.TokenLabels.GetTokenLabelsAsync(filter));
             return result;
         }
 
         public async Task<TokenLabelDTO> GetTokenLabelByIdAsync(int id)
         {
-            return Mapper.Map<TokenLabelDTO>(await this._uow.TokenLabels.GetByIdAsync(id));
+            return _mapper.Map<TokenLabelDTO>(await this._uow.TokenLabels.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateTokenLabelAsync(TokenLabelDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<TokenLabel>(dto);
-            var tokens = Mapper.Map<List<TokenDishLabel>>(dto.dishes);
+            var order = _mapper.Map<TokenLabel>(dto);
+            var tokens = _mapper.Map<List<TokenDishLabel>>(dto.dishes);
             result = await this._uow.TokenLabels.CreateAsync(order, tokens);
             return result;
         }
@@ -392,8 +394,8 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> UpdateTokenLabelAsync(TokenLabelDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<TokenLabel>(dto);
-            var tokens = Mapper.Map<List<TokenDishLabel>>(dto.dishes);
+            var order = _mapper.Map<TokenLabel>(dto);
+            var tokens = _mapper.Map<List<TokenDishLabel>>(dto.dishes);
             result = await this._uow.TokenLabels.UpdateAsync(order, tokens);
             return result;
         }
@@ -411,20 +413,20 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<MealAllocationDTO>> GetMealAllocationsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<MealAllocationDTO>>(await this._uow.MealAllocations.GetMealAllocationsAsync(filter));
+            var result = _mapper.Map<PagedEntity<MealAllocationDTO>>(await this._uow.MealAllocations.GetMealAllocationsAsync(filter));
             return result;
         }
 
         public async Task<MealAllocationDTO> GetMealAllocationByIdAsync(int id)
         {
-            return Mapper.Map<MealAllocationDTO>(await this._uow.MealAllocations.GetByIdAsync(id));
+            return _mapper.Map<MealAllocationDTO>(await this._uow.MealAllocations.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateMealAllocationAsync(MealAllocationDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<MealAllocation>(dto);
-            var tokens = Mapper.Map<List<TokenLabel>>(dto.tokens);
+            var order = _mapper.Map<MealAllocation>(dto);
+            var tokens = _mapper.Map<List<TokenLabel>>(dto.tokens);
             result = await this._uow.MealAllocations.CreateAsync(order, tokens);
             return result;
         }
@@ -432,8 +434,8 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> UpdateMealAllocationAsync(MealAllocationDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<MealAllocation>(dto);
-            var tokens = Mapper.Map<List<TokenLabel>>(dto.tokens);
+            var order = _mapper.Map<MealAllocation>(dto);
+            var tokens = _mapper.Map<List<TokenLabel>>(dto.tokens);
             result = await this._uow.MealAllocations.UpdateAsync(order, tokens);
             return result;
         }
@@ -451,20 +453,20 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<PackingAllocationDTO>> GetPackingAllocationsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<PackingAllocationDTO>>(await this._uow.PackingAllocations.GetPackingAllocationsAsync(filter));
+            var result = _mapper.Map<PagedEntity<PackingAllocationDTO>>(await this._uow.PackingAllocations.GetPackingAllocationsAsync(filter));
             return result;
         }
 
         public async Task<PackingAllocationDTO> GetPackingAllocationByIdAsync(int id)
         {
-            return Mapper.Map<PackingAllocationDTO>(await this._uow.PackingAllocations.GetByIdAsync(id));
+            return _mapper.Map<PackingAllocationDTO>(await this._uow.PackingAllocations.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreatePackingAllocationAsync(PackingAllocationDTO dto)
         {
             var result = new BaseOperationResponse();
-            var allocation = Mapper.Map<PackingAllocation>(dto);
-            var dishes = Mapper.Map<List<DishAllocation>>(dto.Dishes);
+            var allocation = _mapper.Map<PackingAllocation>(dto);
+            var dishes = _mapper.Map<List<DishAllocation>>(dto.Dishes);
             result = await this._uow.PackingAllocations.CreateAsync(allocation, dishes);
             return result;
         }
@@ -472,8 +474,8 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> UpdatePackingAllocationAsync(PackingAllocationDTO dto)
         {
             var result = new BaseOperationResponse();
-            var allocation = Mapper.Map<PackingAllocation>(dto);
-            var dishes = Mapper.Map<List<DishAllocation>>(dto.Dishes);
+            var allocation = _mapper.Map<PackingAllocation>(dto);
+            var dishes = _mapper.Map<List<DishAllocation>>(dto.Dishes);
             result = await this._uow.PackingAllocations.UpdateAsync(allocation, dishes);
             return result;
         }
@@ -491,19 +493,19 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<MealPlanOrderDTO>> GetMealPlanOrdersAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<MealPlanOrderDTO>>(await this._uow.MealPlanOrders.GetMealPlanOrdersAsync(filter));
+            var result = _mapper.Map<PagedEntity<MealPlanOrderDTO>>(await this._uow.MealPlanOrders.GetMealPlanOrdersAsync(filter));
             return result;
         }
 
         public async Task<MealPlanOrderDTO> GetMealPlanOrderByIdAsync(int id)
         {
-            return Mapper.Map<MealPlanOrderDTO>(await this._uow.MealPlanOrders.GetByIdAsync(id));
+            return _mapper.Map<MealPlanOrderDTO>(await this._uow.MealPlanOrders.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateMealPlanOrderAsync(MealPlanOrderDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<MealPlanOrder>(dto);
+            var order = _mapper.Map<MealPlanOrder>(dto);
             result = await this._uow.MealPlanOrders.CreateAsync(order);
             return result;
         }
@@ -511,7 +513,7 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> UpdateMealPlanOrderAsync(MealPlanOrderDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<MealPlanOrder>(dto);
+            var order = _mapper.Map<MealPlanOrder>(dto);
             result = await this._uow.MealPlanOrders.UpdateAsync(order);
             return result;
         }
@@ -535,7 +537,7 @@ namespace BAL.Services.MealOrder
             var filter = new Sieve.Models.SieveModel();
             filter.Filters = "(DeliveryDate)>=" + DateTime.Now.ToString().Split(' ')[0];
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var orders = Mapper.Map<List<TokenOrder>>(await query.ToListAsync());
+            var orders = _mapper.Map<List<TokenOrder>>(await query.ToListAsync());
 
             if (orders != null)
             {
@@ -547,7 +549,7 @@ namespace BAL.Services.MealOrder
                         o.MealSessionDetailId = currentOrderMealSession.Id;
                     }
 
-                    var tokens = Mapper.Map<List<TokenOrdered>>(o.Tokens);
+                    var tokens = _mapper.Map<List<TokenOrdered>>(o.Tokens);
 
                     result = await this._uow.TokenOrders.UpdateAsync(o, tokens);
                 }
@@ -565,7 +567,7 @@ namespace BAL.Services.MealOrder
             IQueryable<TokenOrder> query = _appContext.TokenOrders;
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var orders = Mapper.Map<List<TokenOrder>>(await query.ToListAsync());
+            var orders = _mapper.Map<List<TokenOrder>>(await query.ToListAsync());
 
             if (orders != null)
             {
@@ -1216,7 +1218,7 @@ namespace BAL.Services.MealOrder
             IQueryable<TokenOrder> query = _appContext.TokenOrders;
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var orders = Mapper.Map<List<TokenOrder>>(await query.ToListAsync());
+            var orders = _mapper.Map<List<TokenOrder>>(await query.ToListAsync());
 
             List<DOReportDTO> DOReports = new List<DOReportDTO>();
             List<DOReportSessionDTO> AllSessions = new List<DOReportSessionDTO>();
@@ -1257,7 +1259,7 @@ namespace BAL.Services.MealOrder
                         //var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.Session?.MealSession?.OutletId, o.DeliveryDate, o.Session.MealSessionId, o.Student.ClassId);
                         if (currentOrderMealSession != null)
                         {
-                            o.Session = Mapper.Map<MealSessionDetail>(currentOrderMealSession);
+                            o.Session = _mapper.Map<MealSessionDetail>(currentOrderMealSession);
                         }
                         if (o.Student != null)
                         {
@@ -1468,7 +1470,7 @@ namespace BAL.Services.MealOrder
             IQueryable<TokenOrder> query = _appContext.TokenOrders;
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var orders = Mapper.Map<List<TokenOrder>>(await query.ToListAsync());
+            var orders = _mapper.Map<List<TokenOrder>>(await query.ToListAsync());
 
             List<DOReportDTO> DOReports = new List<DOReportDTO>();
             List<DOReportRouteDTO> AllRoutes = new List<DOReportRouteDTO>();
@@ -1510,7 +1512,7 @@ namespace BAL.Services.MealOrder
                         //var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.Session?.MealSession?.OutletId, o.DeliveryDate, o.Session.MealSessionId, o.Student.ClassId);
                         if (currentOrderMealSession != null)
                         {
-                            o.Session = Mapper.Map<MealSessionDetail>(currentOrderMealSession);
+                            o.Session = _mapper.Map<MealSessionDetail>(currentOrderMealSession);
                         }
                         if (o.Student != null)
                         {
@@ -1935,7 +1937,7 @@ namespace BAL.Services.MealOrder
             List<SalesDataDTO> dtos = new List<SalesDataDTO>();
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var orders = Mapper.Map<List<TokenOrder>>(await query.ToListAsync());
+            var orders = _mapper.Map<List<TokenOrder>>(await query.ToListAsync());
 
             if (orders != null)
             {
@@ -2054,7 +2056,7 @@ namespace BAL.Services.MealOrder
             List<TokenOrder> dtos = new List<TokenOrder>();
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var orders = Mapper.Map<List<TokenOrder>>(await query.ToListAsync());
+            var orders = _mapper.Map<List<TokenOrder>>(await query.ToListAsync());
 
             if (orders != null)
             {
@@ -2207,7 +2209,7 @@ namespace BAL.Services.MealOrder
             IQueryable<TokenOrder> query = _appContext.TokenOrders;
             filter.Page = -1;
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
-            var orders = Mapper.Map<List<TokenOrderDTO>>(result.PagedData);
+            var orders = _mapper.Map<List<TokenOrderDTO>>(result.PagedData);
 
             if (orders != null)
             {
@@ -2651,7 +2653,7 @@ namespace BAL.Services.MealOrder
             int total = salesOrders != null && salesOrders.Any() ? salesOrders.FirstOrDefault().Total : 0;
             var result = new PagedEntity<TokenOrderDTO>();
             result.Filter = filter;
-            result.PagedData = Mapper.Map<List<TokenOrderDTO>>(salesOrders);
+            result.PagedData = _mapper.Map<List<TokenOrderDTO>>(salesOrders);
             result.CurrentPage = filter.Page ?? 1;
             result.PageSize = filter.PageSize ?? 10;
             result.PageCount = total / result.PageSize;
@@ -2666,7 +2668,7 @@ namespace BAL.Services.MealOrder
             int total = orders != null && orders.Any() ? orders.FirstOrDefault().Total : 0;
             var result = new PagedEntity<VoucherUtilisation>();
             result.Filter = filter;
-            result.PagedData = Mapper.Map<List<VoucherUtilisation>>(orders);
+            result.PagedData = _mapper.Map<List<VoucherUtilisation>>(orders);
             result.CurrentPage = filter.Page ?? 1;
             result.PageSize = filter.PageSize ?? 10;
             result.PageCount = total / result.PageSize;
@@ -4572,19 +4574,19 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<CancelOrderRequestDTO>> GetCancelOrderRequestsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<CancelOrderRequestDTO>>(await this._uow.CancelOrderRequests.GetCancelOrderRequestsAsync(filter));
+            var result = _mapper.Map<PagedEntity<CancelOrderRequestDTO>>(await this._uow.CancelOrderRequests.GetCancelOrderRequestsAsync(filter));
             return result;
         }
 
         public async Task<CancelOrderRequestDTO> GetCancelOrderRequestByIdAsync(int id)
         {
-            return Mapper.Map<CancelOrderRequestDTO>(await this._uow.CancelOrderRequests.GetByIdAsync(id));
+            return _mapper.Map<CancelOrderRequestDTO>(await this._uow.CancelOrderRequests.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateCancelOrderRequestAsync(CancelOrderRequestDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<CancelOrderRequest>(dto);
+            var order = _mapper.Map<CancelOrderRequest>(dto);
             result = await this._uow.CancelOrderRequests.CreateAsync(order);
 
             //var tokenOrder = await GetTokenOrderByIdAsync(dto.OrderId);
@@ -4597,7 +4599,7 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> UpdateCancelOrderRequestAsync(CancelOrderRequestDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<CancelOrderRequest>(dto);
+            var order = _mapper.Map<CancelOrderRequest>(dto);
             result = await this._uow.CancelOrderRequests.UpdateAsync(order);
             return result;
         }
@@ -4612,7 +4614,7 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> ApprovalCancelOrderRequestAsync(CancelOrderRequestDTO dto)
         {
             var result = new BaseOperationResponse();
-            var order = Mapper.Map<CancelOrderRequest>(dto);
+            var order = _mapper.Map<CancelOrderRequest>(dto);
             bool isApproved = order.Status == "Approved";
             result = await this._uow.CancelOrderRequests.UpdateAsync(order);
             result = await this._uow.TokenOrders.UpdateCancellationStatus(dto.OrderId, isApproved, dto.Response);
@@ -4620,7 +4622,7 @@ namespace BAL.Services.MealOrder
             if (isApproved && result.IsSuccess && result.Data != null)
             {
                 var to = (TokenOrder)result.Data;
-                var history = Mapper.Map<TokensOrderHistoryDTO>(result.Data);
+                var history = _mapper.Map<TokensOrderHistoryDTO>(result.Data);
                 if (history != null)
                 {
                     history.Status = "cancelled";

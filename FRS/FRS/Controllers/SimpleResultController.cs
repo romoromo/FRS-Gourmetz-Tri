@@ -10,23 +10,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class SimpleResultController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public SimpleResultController(IUnitOfWork unitOfWork, ILogger<SimpleResultController> logger)
+        public SimpleResultController(IUnitOfWork unitOfWork, ILogger<SimpleResultController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region DEVICE MANAGEMENT USAGES
@@ -38,7 +40,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetInstitutions(int? institutionId = null)
         {
             var results = await _unitOfWork.Institutions.GetInstitutionsLoadRelatedAsync(-1, -1);
-            return Ok(Mapper.Map<List<SimpleApiResult>>(results));
+            return Ok(_mapper.Map<List<SimpleApiResult>>(results));
         }
 
         [HttpGet("locations/list")]
@@ -48,7 +50,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetLocations(int? institutionId = null)
         {
             var results = await _unitOfWork.Locations.GetLocationsLoadRelatedAsync(-1, -1, institutionId);
-            return Ok(Mapper.Map<List<SimpleApiResult>>(results));
+            return Ok(_mapper.Map<List<SimpleApiResult>>(results));
         }
 
         [HttpGet("signagepublications/list")]
@@ -58,7 +60,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetSignagePublications(int? institutionId = null)
         {
             var data = await _unitOfWork.SignagePublications.GetSignagePublicationsLoadRelatedAsync(-1, -1, institutionId);
-            return Ok(Mapper.Map<List<SimpleApiResult>>(data));
+            return Ok(_mapper.Map<List<SimpleApiResult>>(data));
         }
         #endregion
     }

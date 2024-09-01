@@ -13,7 +13,6 @@ using System.IO;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using Microsoft.AspNetCore.Http;
-using AspNet.Security.OpenIdConnect.Primitives;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -25,9 +24,12 @@ namespace DAL.Repositories
     {
         private const string _hrTimeFormat = "hh:mm tt";
         private readonly IHttpContextAccessor _httpAccessor;
+        private readonly IMapper _mapper;
 
-        public ReservationRepository(ApplicationDbContext context) : base(context)
-        { }
+        public ReservationRepository(ApplicationDbContext context, IMapper mapper) : base(context)
+        {
+            _mapper = mapper;
+        }
 
 
         public async Task<Reservation> GetByIdAsync(int id)
@@ -2473,7 +2475,7 @@ namespace DAL.Repositories
             {
                 foreach (var vehicle in list)
                 {
-                    var vehicleEntry = Mapper.Map<VehicleEntry>(vehicle);
+                    var vehicleEntry = _mapper.Map<VehicleEntry>(vehicle);
 
                     if (!string.IsNullOrEmpty(vehicle.SeasonId))
                     {
@@ -2585,7 +2587,7 @@ namespace DAL.Repositories
                 }
             }
 
-            var logs = Mapper.Map<List<VMSVehicleLog>>(await query.ToListAsync());
+            var logs = _mapper.Map<List<VMSVehicleLog>>(await query.ToListAsync());
             return logs.OrderByDescending(r => r.Timestamp).ToList();
         }
 

@@ -10,23 +10,26 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using NPOI.SS.Formula.Functions;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class FacilityController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
         private readonly string[] ACCEPTED_FILE_TYPES = new[] { ".jpg", ".jpeg", ".png" };
+        private readonly IMapper _mapper;
 
-        public FacilityController(IUnitOfWork unitOfWork, ILogger<FacilityController> logger)
+        public FacilityController(IUnitOfWork unitOfWork, ILogger<FacilityController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -41,7 +44,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiFacilities(int? facilityId = null, int? institutionId = null)
         {
             var result = await _unitOfWork.Facilities.GetApiFacilities(facilityId, institutionId);
-            var data = Mapper.Map<List<FacilityViewModel>>(result.Data);
+            var data = _mapper.Map<List<FacilityViewModel>>(result.Data);
 
             if (facilityId.HasValue)
             {
@@ -71,7 +74,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetFacilities(int pageNumber, int pageSize, int? institutionId = null)
         {
             var facilities = await _unitOfWork.Facilities.GetFacilitiesLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<FacilityViewModel>>(facilities));
+            return Ok(_mapper.Map<List<FacilityViewModel>>(facilities));
         }
 
         [HttpPost("")]
@@ -85,12 +88,12 @@ namespace FRS.Controllers
                 if (model == null)
                     return BadRequest($"{nameof(model)} cannot be null");
 
-                var facility = Mapper.Map<Facility>(model);
+                var facility = _mapper.Map<Facility>(model);
 
                 var result = await _unitOfWork.Facilities.CreateAsync(facility, model.FilePath);
                 if (result.IsSuccess)
                 {
-                    FacilityViewModel facilityVM = Mapper.Map<FacilityViewModel>(result.Data);
+                    FacilityViewModel facilityVM = _mapper.Map<FacilityViewModel>(result.Data);
                     return CreatedAtAction("GetFacilityById", new { id = facilityVM.Id }, facilityVM);
                 }
 
@@ -114,7 +117,7 @@ namespace FRS.Controllers
 
             var facilityType = await this._unitOfWork.Facilities.GetByIdAsync(id);
 
-            FacilityViewModel facilityVM = Mapper.Map<FacilityViewModel>(facilityType);
+            FacilityViewModel facilityVM = _mapper.Map<FacilityViewModel>(facilityType);
             if (facilityVM == null)
                 return NotFound(id);
 
@@ -145,11 +148,11 @@ namespace FRS.Controllers
 
                 var facilityType = await this._unitOfWork.Facilities.GetByIdAsync(model.Id);
 
-                FacilityViewModel facilityVM = Mapper.Map<FacilityViewModel>(facilityType);
+                FacilityViewModel facilityVM = _mapper.Map<FacilityViewModel>(facilityType);
                 if (facilityVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Facility>(model);
+                var updatedModel = _mapper.Map<Facility>(model);
                 var result = await _unitOfWork.Facilities.UpdateAsync(updatedModel, model.FilePath);
                 if (result.IsSuccess)
                     return NoContent();

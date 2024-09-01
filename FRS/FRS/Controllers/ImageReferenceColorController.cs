@@ -13,23 +13,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class ImageReferenceColorController : BaseController
     {
         private IImageReferenceColorService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public ImageReferenceColorController(IImageReferenceColorService service, ILogger<ImageReferenceColorController> logger)
+        public ImageReferenceColorController(IImageReferenceColorService service, ILogger<ImageReferenceColorController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -42,7 +44,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetImageReferenceColors(BaseFilter filter)
         {
             var results = await this._service.GetImageReferenceColorsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ImageReferenceColorDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<ImageReferenceColorDTO>>(results));
         }
 
         #endregion
@@ -62,7 +64,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateAsync(dto);
                 if (result.IsSuccess)
                 {
-                    ImageReferenceColorDTO vm = Mapper.Map<ImageReferenceColorDTO>(result.Data);
+                    ImageReferenceColorDTO vm = _mapper.Map<ImageReferenceColorDTO>(result.Data);
                     return CreatedAtAction("GetImageReferenceColorById", new { id = vm.Id }, vm);
                 }
 

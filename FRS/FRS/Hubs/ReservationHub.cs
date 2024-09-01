@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Connections.Features;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,10 +101,12 @@ namespace FRS.Hubs
         public const string RefreshTableKey = "RefreshTable";
 
         private IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public QueueHub(IUnitOfWork unitOfWork)
+        public QueueHub(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public override Task OnConnectedAsync()
@@ -180,13 +183,15 @@ namespace FRS.Hubs
         private readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
         private readonly IUpDownTimeLogService _upDownTimeLogService;
+        private readonly IMapper _mapper;
 
-        public FRSDeviceHub(IUnitOfWork unitOfWork, IHubContext<FRSHub> frsHub, ILoggerFactory loggerFactory, IEmailSender emailSender, IUpDownTimeLogService upDownTimeLogService)
+        public FRSDeviceHub(IUnitOfWork unitOfWork, IHubContext<FRSHub> frsHub, ILoggerFactory loggerFactory, IEmailSender emailSender, IUpDownTimeLogService upDownTimeLogService, IMapper mapper)
         {
             _emailSender = emailSender;
             _unitOfWork = unitOfWork;
             _frsHub = frsHub;
             _upDownTimeLogService = upDownTimeLogService;
+            _mapper = mapper;
             _logger = loggerFactory.CreateLogger<FRSDeviceHub>();
         }
 
@@ -267,7 +272,7 @@ namespace FRS.Hubs
                         _logger.LogInformation(string.Format("FRSDeviceHub Device UPDATED MESSAGE: {0} - {1}.", updateDeviceTask.IsSuccess, updateDeviceTask.Message));
 
                         _logger.LogInformation(string.Format("TRYING TO REFRESH DEVICE LIST"));
-                        await _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", Mapper.Map<DeviceViewModel>(device));
+                        await _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", _mapper.Map<DeviceViewModel>(device));
                         //task.Wait();
                         _logger.LogInformation(string.Format("DEVICE LIST REFRESH IS INVOKED"));
                     }
@@ -339,7 +344,7 @@ namespace FRS.Hubs
                     _logger.LogInformation(string.Format("FRSDeviceHub Device UPDATED MESSAGE: {0} - {1}.", updateDeviceTask.IsSuccess, updateDeviceTask.Message));
 
                     _logger.LogInformation(string.Format("TRYING TO REFRESH DEVICE LIST"));
-                    var task = _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", Mapper.Map<DeviceViewModel>(device));
+                    var task = _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", _mapper.Map<DeviceViewModel>(device));
                     //task.Wait();
 
                     _logger.LogInformation(string.Format("DEVICE LIST REFRESH IS INVOKED"));
@@ -487,13 +492,15 @@ namespace FRS.Hubs
         private readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
         private readonly IUpDownTimeLogService _upDownTimeLogService;
-        public PIBDeviceHub(IUnitOfWork unitOfWork, IHubContext<FRSHub> frsHub, ILoggerFactory loggerFactory, IEmailSender emailSender, IUpDownTimeLogService upDownTimeLogService)
+        private readonly IMapper _mapper;
+        public PIBDeviceHub(IUnitOfWork unitOfWork, IHubContext<FRSHub> frsHub, ILoggerFactory loggerFactory, IEmailSender emailSender, IUpDownTimeLogService upDownTimeLogService, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _frsHub = frsHub;
             _logger = loggerFactory.CreateLogger<PIBDeviceHub>();
             _emailSender = emailSender;
             _upDownTimeLogService = upDownTimeLogService;
+            _mapper = mapper;
         }
 
         public override async Task OnConnectedAsync()
@@ -570,7 +577,7 @@ namespace FRS.Hubs
                     _logger.LogInformation(string.Format("PIBDeviceHub Device UPDATED MESSAGE: {0} - {1}.", updateDeviceTask.IsSuccess, updateDeviceTask.Message));
 
                     _logger.LogInformation(string.Format("TRYING TO REFRESH DEVICE LIST"));
-                    await _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", Mapper.Map<DeviceViewModel>(device));
+                    await _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", _mapper.Map<DeviceViewModel>(device));
                     //task.Wait();
                     _logger.LogInformation(string.Format("DEVICE LIST REFRESH IS INVOKED"));
                 }
@@ -638,7 +645,7 @@ namespace FRS.Hubs
                     _logger.LogInformation(string.Format("PIBDeviceHub Device UPDATED MESSAGE: {0} - {1}.", updateDeviceTask.IsSuccess, updateDeviceTask.Message));
 
                     _logger.LogInformation(string.Format("TRYING TO REFRESH DEVICE LIST"));
-                    var task = _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", Mapper.Map<DeviceViewModel>(device));
+                    var task = _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", _mapper.Map<DeviceViewModel>(device));
                     //task.Wait();
 
                     _logger.LogInformation(string.Format("DEVICE LIST REFRESH IS INVOKED"));

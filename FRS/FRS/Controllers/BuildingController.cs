@@ -12,23 +12,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class BuildingController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public BuildingController(IUnitOfWork unitOfWork, ILogger<BuildingController> logger)
+        public BuildingController(IUnitOfWork unitOfWork, ILogger<BuildingController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -49,13 +51,13 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetBuildings(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.Buildings.GetBuildingsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            var rmap = Mapper.Map<List<BuildingViewModel>>(result);
+            var rmap = _mapper.Map<List<BuildingViewModel>>(result);
 
             rmap.ForEach(b =>
             {
                 b.floors?.ForEach(f =>
                 {
-                    f.Map = Mapper.Map<MapViewModel>(_unitOfWork.Maps.GetMapByFloorId(f.FloorId));
+                    f.Map = _mapper.Map<MapViewModel>(_unitOfWork.Maps.GetMapByFloorId(f.FloorId));
 
                     if (f.Map != null && !string.IsNullOrWhiteSpace(f.Map.map_url))
                     {
@@ -82,12 +84,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(building)} cannot be null");
 
 
-                var type = Mapper.Map<Building>(building);
+                var type = _mapper.Map<Building>(building);
 
                 var result = await _unitOfWork.Buildings.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    BuildingViewModel buildingVM = Mapper.Map<BuildingViewModel>(result.Data);
+                    BuildingViewModel buildingVM = _mapper.Map<BuildingViewModel>(result.Data);
                     return CreatedAtAction("GetBuildingById", new { id = buildingVM.Id }, buildingVM);
                 }
 
@@ -107,7 +109,7 @@ namespace FRS.Controllers
         {
             var building = await this._unitOfWork.Buildings.GetByIdAsync(id);
 
-            BuildingViewModel buildingVM = Mapper.Map<BuildingViewModel>(building);
+            BuildingViewModel buildingVM = _mapper.Map<BuildingViewModel>(building);
             if (buildingVM == null)
                 return NotFound(id);
 
@@ -138,11 +140,11 @@ namespace FRS.Controllers
 
                 var building = await this._unitOfWork.Buildings.GetByIdAsync(model.Id);
 
-                BuildingViewModel buildingVM = Mapper.Map<BuildingViewModel>(building);
+                BuildingViewModel buildingVM = _mapper.Map<BuildingViewModel>(building);
                 if (buildingVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Building>(model);
+                var updatedModel = _mapper.Map<Building>(model);
                 var result = await _unitOfWork.Buildings.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

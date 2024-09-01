@@ -15,7 +15,7 @@ using AutoMapper;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using DAL.Models.MealOrder;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using DAL.Models.StoredProcedures;
 using System.Data;
 using BAL.DTO.MealOrder;
@@ -26,11 +26,13 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private ApplicationDbContext _appContext;
+        private readonly IMapper _mapper;
 
-        public AuditLogService(ApplicationDbContext context, ISieveProcessor sieveProcessor)
+        public AuditLogService(ApplicationDbContext context, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._appContext = context;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -45,7 +47,7 @@ namespace BAL.Services
             {
                 Filter = filter,
                 TotalCount = totalCount,
-                PagedData =  Mapper.Map<List<AuditLogDTO>>(await query.ToListAsync())
+                PagedData =  _mapper.Map<List<AuditLogDTO>>(await query.ToListAsync())
             };
 
             return result;
@@ -62,7 +64,7 @@ namespace BAL.Services
             {
                 Filter = filter,
                 TotalCount = totalCount,
-                PagedData = Mapper.Map<List<AuditLogDetailDTO>>(await query.ToListAsync())
+                PagedData = _mapper.Map<List<AuditLogDetailDTO>>(await query.ToListAsync())
             };
 
             return result;
@@ -73,7 +75,7 @@ namespace BAL.Services
             IQueryable<AuditLog> query = _appContext.AuditLogs;
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            //var logs = Mapper.Map<List<AuditLogDTO>>(await query.ToListAsync());
+            //var logs = _mapper.Map<List<AuditLogDTO>>(await query.ToListAsync());
             var logs = await query.ToListAsync();
 
             if (logs != null)
@@ -210,7 +212,7 @@ namespace BAL.Services
         #endregion
         public async Task<AuditLogDTO> GetByIdAsync(int id)
         {
-            return Mapper.Map<AuditLogDTO>(await _appContext.AuthenticationLogs.FindAsync(id));
+            return _mapper.Map<AuditLogDTO>(await _appContext.AuthenticationLogs.FindAsync(id));
         }
 
         #region external login log
@@ -225,7 +227,7 @@ namespace BAL.Services
             {
                 Filter = filter,
                 TotalCount = totalCount,
-                PagedData = Mapper.Map<List<ExternalAppLoginLogDTO>>(await query.ToListAsync())
+                PagedData = _mapper.Map<List<ExternalAppLoginLogDTO>>(await query.ToListAsync())
             };
 
             return result;
@@ -233,7 +235,7 @@ namespace BAL.Services
 
         public async Task<BaseOperationResponse> CreateExternalLoginLogAsync(ExternalAppLoginLogDTO dto)
         {
-            var externalAppLoginLog = Mapper.Map<ExternalAppLoginLog>(dto);
+            var externalAppLoginLog = _mapper.Map<ExternalAppLoginLog>(dto);
 
             var result = new BaseOperationResponse();
             var f = await _appContext.ExternalAppLoginLogs.AddAsync(externalAppLoginLog);
@@ -350,7 +352,7 @@ namespace BAL.Services
             var logs = new List<UserActivityLogDTO>();
             foreach(var header in results.Headers)
             {
-                var details = Mapper.Map<List<UserActivityLogDetailDTO>>(results.Details.Where(e => e.GroupId == header.GroupId));
+                var details = _mapper.Map<List<UserActivityLogDetailDTO>>(results.Details.Where(e => e.GroupId == header.GroupId));
                 var log = new UserActivityLogDTO
                 {
                     GroupId = header.GroupId,
@@ -401,11 +403,11 @@ namespace BAL.Services
                 {
                     while (reader.Read())
                     {
-                        var header = Mapper.Map<IDataRecord, spGetUserActivityLogHeader>((IDataRecord)reader);
+                        var header = _mapper.Map<IDataRecord, spGetUserActivityLogHeader>((IDataRecord)reader);
                         result.Headers.Add(header);
                     }
 
-                    //MyDTO dto = mapper.Map<IDataRecord, MyDTO>((IDataRecord)reader);
+                    //MyDTO dto = _mapper.Map<IDataRecord, MyDTO>((IDataRecord)reader);
 
                     //// Read the first result set (header) into a list of UserActivityLogHeader
                     //var headers = _appContext.Set<spGetUserActivityLogHeader>().FromSql("exec spGetUserActivityLog @ReportDateFrom, @ReportDateTo, @UserName, @ActionName", from, to, keywords, reportType).ToList();
@@ -415,7 +417,7 @@ namespace BAL.Services
 
                     while (reader.Read())
                     {
-                        var detail = Mapper.Map<IDataRecord, spGetUserActivityLogDetail>((IDataRecord)reader);
+                        var detail = _mapper.Map<IDataRecord, spGetUserActivityLogDetail>((IDataRecord)reader);
                         result.Details.Add(detail);
                     }
 
@@ -439,7 +441,7 @@ namespace BAL.Services
             var logs = new List<UserActivityLogDTO>();
             foreach (var header in results.Headers)
             {
-                var details = Mapper.Map<List<UserActivityLogDetailDTO>>(results.Details.Where(e => e.GroupId == header.GroupId));
+                var details = _mapper.Map<List<UserActivityLogDetailDTO>>(results.Details.Where(e => e.GroupId == header.GroupId));
                 var log = new UserActivityLogDTO
                 {
                     GroupId = header.GroupId,

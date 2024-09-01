@@ -15,11 +15,11 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiKeyAuthorize]
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -28,12 +28,14 @@ namespace FRS.Controllers
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
         private ITokenOrderService _tokenOrderService;
+        private readonly IMapper _mapper;
 
-        public ReportController(IUnitOfWork unitOfWork, ILogger<AuditController> logger, ITokenOrderService tokenOrderService)
+        public ReportController(IUnitOfWork unitOfWork, ILogger<AuditController> logger, ITokenOrderService tokenOrderService, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _tokenOrderService = tokenOrderService;
+            _mapper = mapper;
         }
 
         [HttpGet("orders/sieve/list")]
@@ -42,7 +44,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOrderLogs(SalesOrderReportFilter filter)
         {
             var logs = await _tokenOrderService.GetSalesOrdersAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
         }
 
         [HttpPost("orders/payment")]
@@ -70,7 +72,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOrderCancellations(SalesOrderReportFilter filter)
         {
             var orders = await _tokenOrderService.GetSalesOrdersAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(orders));
+            return Ok(_mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(orders));
         }
 
         [HttpPost("orders/cancellation/export")]
@@ -98,7 +100,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetVoucherUtilisations(VoucherUtilisationReportFilter filter)
         {
             var vouchers = await _tokenOrderService.GetVoucherUtilisationsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<VoucherUtilisation>>(vouchers));
+            return Ok(_mapper.Map<PagedEntityViewModel<VoucherUtilisation>>(vouchers));
         }
 
         [HttpPost("vouchers/ulisation/export")]

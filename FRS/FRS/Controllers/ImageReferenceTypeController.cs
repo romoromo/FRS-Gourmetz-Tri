@@ -13,23 +13,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class ImageReferenceTypeController : BaseController
     {
         private IImageReferenceTypeService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public ImageReferenceTypeController(IImageReferenceTypeService service, ILogger<ImageReferenceTypeController> logger)
+        public ImageReferenceTypeController(IImageReferenceTypeService service, ILogger<ImageReferenceTypeController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -42,7 +44,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetImageReferenceTypes(BaseFilter filter)
         {
             var results = await this._service.GetImageReferenceTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ImageReferenceTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<ImageReferenceTypeDTO>>(results));
         }
 
         #endregion
@@ -62,7 +64,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateAsync(dto);
                 if (result.IsSuccess)
                 {
-                    ImageReferenceTypeDTO vm = Mapper.Map<ImageReferenceTypeDTO>(result.Data);
+                    ImageReferenceTypeDTO vm = _mapper.Map<ImageReferenceTypeDTO>(result.Data);
                     return CreatedAtAction("GetImageReferenceTypeById", new { id = vm.Id }, vm);
                 }
 

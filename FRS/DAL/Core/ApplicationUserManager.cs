@@ -39,10 +39,10 @@ namespace DAL.Core
             ApplicationUser user = null;
             if (institution != null)
             {
-                user = await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == institution.Id && e.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
+                user = await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == institution.Id && e.UserName.ToLower() == userName.ToLower());
             }
 
-            return user ?? await base.Users.FirstOrDefaultAsync(e => e.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
+            return user ?? await base.Users.FirstOrDefaultAsync(e => e.UserName.ToLower() == userName.ToLower());
         }
 
         public override async Task<ApplicationUser> FindByEmailAsync(string email)
@@ -53,10 +53,10 @@ namespace DAL.Core
             ApplicationUser user = null;
             if (institution != null)
             {
-                user = await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == institution.Id && e.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+                user = await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == institution.Id && e.Email.ToLower() == email.ToLower());
             }
 
-            return user ?? await base.Users.FirstOrDefaultAsync(e => e.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+            return user ?? await base.Users.FirstOrDefaultAsync(e => e.Email.ToLower() == email.ToLower());
         }
 
         public override async Task<IdentityResult> CreateAsync(ApplicationUser user)
@@ -132,7 +132,7 @@ namespace DAL.Core
 
         public async Task<bool> IsUsedEmail(int userID, string email)
         {
-            return await base.Users.AnyAsync(e => e.Id != userID && e.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+            return await base.Users.AnyAsync(e => e.Id != userID && e.Email.ToLower() == email.ToLower());
         }
 
         public Task UpdateEmailAsync(ApplicationUser appuser, string email)

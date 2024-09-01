@@ -21,7 +21,7 @@ using DAL.Core.Helpers;
 using DAL.Core.Logging;
 using Microsoft.Extensions.Logging;
 using DAL.Models.StoredProcedures;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using static DAL.Core.Constants;
 using NPOI.SS.Formula.Functions;
 
@@ -76,7 +76,7 @@ namespace DAL.Repositories.MealOrder
             sortBy.Value = isDesc;
 
             var orders = await _appContext.spSalesOrderReport
-                            .FromSql($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupIds, @OrderType, @CollectionStatuses",
+                            .FromSqlRaw($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupIds, @OrderType, @CollectionStatuses",
                                     from, to, status, isFas, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupIds, orderType, collectionStatuses).ToListAsync();
 
             return orders;
@@ -105,7 +105,7 @@ namespace DAL.Repositories.MealOrder
             sortBy.Value = isDesc;
 
             var orders = await _appContext.spVoucherUtilisationReport
-                            .FromSql($"exec spVoucherUtilisationReport @ReportDateFrom, @ReportDateTo, @Status, @Page, @PageSize, @Keywords, @SortBy, @SortDirection",
+                            .FromSqlRaw($"exec spVoucherUtilisationReport @ReportDateFrom, @ReportDateTo, @Status, @Page, @PageSize, @Keywords, @SortBy, @SortDirection",
                                     from, to, status, page, pageSize, keywords, sortByCol, sortBy).ToListAsync();
 
             return orders;
@@ -1130,7 +1130,7 @@ namespace DAL.Repositories.MealOrder
             pMealSessionIds.Value = string.Join(",", mealSessionIds);
 
             var orders = await _appContext.spGetFasTokenOrderSummary
-                            .FromSql($"exec spGetFasTokenOrderSummary @outletId, @storeId, @deliveryDate, @deliveryDateTo, @mealSessionIds",
+                            .FromSqlRaw($"exec spGetFasTokenOrderSummary @outletId, @storeId, @deliveryDate, @deliveryDateTo, @mealSessionIds",
                                     from, to, pOutletId, pStoreId, pMealSessionIds).ToListAsync();
 
             return orders;

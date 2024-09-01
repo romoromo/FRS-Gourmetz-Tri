@@ -13,12 +13,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class QueueTableMapController : BaseController
     {
@@ -26,17 +26,19 @@ namespace FRS.Controllers
         private IHubContext<QueueHub> _queueHub;
         readonly ILogger _logger;
         private ApplicationSettingController _applicationSettingController;
+        private readonly IMapper _mapper;
 
         private const string tokenKey = "QUEUE_ACCESS_TOKEN_VALUE";
         private const string tokenExpireKey = "QUEUE_ACCESS_TOKEN_EXPIRE";
 
 
-        public QueueTableMapController(IUnitOfWork unitOfWork, ILogger<QueueTableMapController> logger, IHubContext<QueueHub> queueHub, ApplicationSettingController applicationSettingController)
+        public QueueTableMapController(IUnitOfWork unitOfWork, ILogger<QueueTableMapController> logger, IHubContext<QueueHub> queueHub, ApplicationSettingController applicationSettingController, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _queueHub = queueHub;
             _logger = logger;
             _applicationSettingController = applicationSettingController;
+            _mapper = mapper;
         }
 
 
@@ -55,7 +57,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetQueueTableMaps(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.QueueTableMaps.GetQueueTableMapsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<QueueTableMapViewModel>>(result));
+            return Ok(_mapper.Map<List<QueueTableMapViewModel>>(result));
         }
 
         [HttpPost("gettoken")]
@@ -105,7 +107,7 @@ namespace FRS.Controllers
                     else
                     {
                         token.Value = tokenstr;
-                        await _applicationSettingController.UpdateApplicationSetting(token.Id.ToString(), Mapper.Map<ApplicationSettingViewModel>(token));
+                        await _applicationSettingController.UpdateApplicationSetting(token.Id.ToString(), _mapper.Map<ApplicationSettingViewModel>(token));
 
                     }
 
@@ -117,7 +119,7 @@ namespace FRS.Controllers
                     else
                     {
                         expiretime.Value = timedatestr;
-                        await _applicationSettingController.UpdateApplicationSetting(expiretime.Id.ToString(), Mapper.Map<ApplicationSettingViewModel>(expiretime));
+                        await _applicationSettingController.UpdateApplicationSetting(expiretime.Id.ToString(), _mapper.Map<ApplicationSettingViewModel>(expiretime));
 
                     }
 
@@ -151,12 +153,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(queueTableMap)} cannot be null");
 
 
-                var type = Mapper.Map<QueueTableMap>(queueTableMap);
+                var type = _mapper.Map<QueueTableMap>(queueTableMap);
 
                 var result = await _unitOfWork.QueueTableMaps.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    QueueTableMapViewModel queueTableMapVM = Mapper.Map<QueueTableMapViewModel>(result.Data);
+                    QueueTableMapViewModel queueTableMapVM = _mapper.Map<QueueTableMapViewModel>(result.Data);
                     return CreatedAtAction("GetQueueTableMapById", new { id = queueTableMapVM.Id }, queueTableMapVM);
                 }
 
@@ -185,7 +187,7 @@ namespace FRS.Controllers
             //}
 
 
-            var result = await _unitOfWork.QueueTableMaps.CallQueue(Mapper.Map<QueueLog>(param));
+            var result = await _unitOfWork.QueueTableMaps.CallQueue(_mapper.Map<QueueLog>(param));
 
             if (!result.IsSuccess)
             {
@@ -196,7 +198,7 @@ namespace FRS.Controllers
                     return BadRequest(new { ErrorCode = "ERR05", ErrorMessage = "Update data is failed, please try again." });
             }
 
-            var list = await _unitOfWork.QueueTableMaps.DeviceLists(Mapper.Map<QueueLog>(param));
+            var list = await _unitOfWork.QueueTableMaps.DeviceLists(_mapper.Map<QueueLog>(param));
 
             if (list == null || list.Count() == 0)
                 return BadRequest(new { ErrorCode = "ERR06", ErrorMessage = "No device was found with Queue Id." });
@@ -222,7 +224,7 @@ namespace FRS.Controllers
         {
             var queueTableMap = await this._unitOfWork.QueueTableMaps.GetByIdAsync(id);
 
-            QueueTableMapViewModel queueTableMapVM = Mapper.Map<QueueTableMapViewModel>(queueTableMap);
+            QueueTableMapViewModel queueTableMapVM = _mapper.Map<QueueTableMapViewModel>(queueTableMap);
             if (queueTableMapVM == null)
                 return NotFound(id);
 
@@ -253,11 +255,11 @@ namespace FRS.Controllers
 
                 var queueTableMap = await this._unitOfWork.QueueTableMaps.GetByIdAsync(model.Id);
 
-                QueueTableMapViewModel queueTableMapVM = Mapper.Map<QueueTableMapViewModel>(queueTableMap);
+                QueueTableMapViewModel queueTableMapVM = _mapper.Map<QueueTableMapViewModel>(queueTableMap);
                 if (queueTableMapVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<QueueTableMap>(model);
+                var updatedModel = _mapper.Map<QueueTableMap>(model);
                 var result = await _unitOfWork.QueueTableMaps.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

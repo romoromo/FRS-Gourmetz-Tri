@@ -22,13 +22,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     //[ApiKeyAuthorize]
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class NotificationController : BaseController
     {
@@ -40,9 +40,10 @@ namespace FRS.Controllers
         private readonly IStudentService _studentService;
         private readonly IConfiguration _configuration;
         private readonly IMenuService _menuService;
+        private readonly IMapper _mapper;
 
         public NotificationController(ILogger<NotificationController> logger, INotificationService notificationService, IAccountManager accountManager, IHubContext<UserHub> userHub,
-            IEmailSender emailSender, IConfiguration configuration, IStudentService studentService, IMenuService menuService)
+            IEmailSender emailSender, IConfiguration configuration, IStudentService studentService, IMenuService menuService, IMapper mapper)
         {
             _logger = logger;
             _notificationService = notificationService;
@@ -52,6 +53,7 @@ namespace FRS.Controllers
             _studentService = studentService;
             _configuration = configuration;
             _menuService = menuService;
+            _mapper = mapper;
         }
 
         #region Notifications
@@ -64,7 +66,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetNotifications(BaseFilter filter)
         {
             var notifications = await _notificationService.GetNotificationsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<NotificationViewModel>>(notifications));
+            return Ok(_mapper.Map<PagedEntityViewModel<NotificationViewModel>>(notifications));
         }
 
         #endregion
@@ -74,7 +76,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetNotification(int id)
         {
             var notification = await _notificationService.GetNotificationById(id);
-            return Ok(Mapper.Map<NotificationViewModel>(notification));
+            return Ok(_mapper.Map<NotificationViewModel>(notification));
         }
 
         [HttpPost("")]
@@ -88,12 +90,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(notificationVM)} cannot be null");
 
 
-                var notification = Mapper.Map<NotificationDTO>(notificationVM);
+                var notification = _mapper.Map<NotificationDTO>(notificationVM);
 
                 var result = await _notificationService.CreateAsync(notification);
                 if (result.IsSuccess)
                 {
-                    notificationVM = Mapper.Map<NotificationViewModel>(result.Data);
+                    notificationVM = _mapper.Map<NotificationViewModel>(result.Data);
                     var user = await _accountManager.GetUserByIdAsync(notificationVM.UserId);
 
                     if(user != null && !string.IsNullOrEmpty(user.Email))
@@ -179,7 +181,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetNotificationEvents(BaseFilter filter)
         {
             var results = await this._notificationService.GetNotificationEventsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<NotificationEventDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<NotificationEventDTO>>(results));
         }
 
         #endregion
@@ -199,7 +201,7 @@ namespace FRS.Controllers
                 var result = await this._notificationService.CreateNotificationEventAsync(dto);
                 if (result.IsSuccess)
                 {
-                    NotificationEventDTO vm = Mapper.Map<NotificationEventDTO>(result.Data);
+                    NotificationEventDTO vm = _mapper.Map<NotificationEventDTO>(result.Data);
                     return CreatedAtAction("GetNotificationEventById", new { id = vm.Id }, vm);
                 }
 
@@ -634,7 +636,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetNotificationSettings(BaseFilter filter)
         {
             var results = await this._notificationService.GetNotificationSettingsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<NotificationSettingDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<NotificationSettingDTO>>(results));
         }
 
         #endregion
@@ -646,7 +648,7 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> BulkUpdateNotificationSetting([FromBody] List<NotificationSettingViewModel> model)
         {
-            var dto = Mapper.Map<List<NotificationSettingDTO>>(model);
+            var dto = _mapper.Map<List<NotificationSettingDTO>>(model);
             var result = await this._notificationService.BulkUpdateNotificationSettingAsync(dto);
             return Ok(result);
         }

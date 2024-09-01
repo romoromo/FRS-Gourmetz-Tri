@@ -15,12 +15,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using NPOI.SS.Formula.Functions;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Microsoft.AspNetCore.Authorization.Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Microsoft.AspNetCore.Authorization.Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
     public class EmsScheduleController : BaseController
     {
@@ -29,14 +30,16 @@ namespace FRS.Controllers
         private IHubContext<FRSHub> _frsHub;
         private IHubContext<EMSHub> _emsHub;
         private DeviceManagerController _deviceManagerController;
+        private readonly IMapper _mapper;
 
-        public EmsScheduleController(IUnitOfWork unitOfWork, ILogger<EmsScheduleController> logger, IHubContext<FRSHub> frsHub, IHubContext<EMSHub> emsHub, DeviceManagerController deviceManagerController)
+        public EmsScheduleController(IUnitOfWork unitOfWork, ILogger<EmsScheduleController> logger, IHubContext<FRSHub> frsHub, IHubContext<EMSHub> emsHub, DeviceManagerController deviceManagerController, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _frsHub = frsHub;
             _emsHub = emsHub;
             _deviceManagerController = deviceManagerController;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace FRS.Controllers
             var result = new BaseOperationResponse();
             if (ModelState.IsValid)
             {
-                var emsScheduleInfo = Mapper.Map<EmsSchedule>(emsSchedule);
+                var emsScheduleInfo = _mapper.Map<EmsSchedule>(emsSchedule);
 
                 result = await _unitOfWork.EmsSchedules.CreateAsync(emsScheduleInfo);
             }
@@ -73,7 +76,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetRecSchedules(DateTime? start, DateTime? end)
         {
             var results = await _unitOfWork.EmsSchedules.GetRecSchedulesAsync(start, end);
-            return Ok(Mapper.Map<List<RSchedule>>(results));
+            return Ok(_mapper.Map<List<RSchedule>>(results));
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet("get/emsschedules")]
@@ -83,7 +86,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmsSchedules()
         {
             var results = await _unitOfWork.EmsSchedules.GetEmsSchedulesLoadRelatedAsync(-1, -1);
-            return Ok(Mapper.Map<List<EmsScheduleViewModel>>(results));
+            return Ok(_mapper.Map<List<EmsScheduleViewModel>>(results));
         }
 
 
@@ -104,7 +107,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmsSchedules(int pageNumber, int pageSize)
         {
             var facilities = await _unitOfWork.EmsSchedules.GetEmsSchedulesLoadRelatedAsync(pageNumber, pageSize);
-            return Ok(Mapper.Map<List<EmsScheduleViewModel>>(facilities));
+            return Ok(_mapper.Map<List<EmsScheduleViewModel>>(facilities));
         }
 
         [Microsoft.AspNetCore.Mvc.HttpPost("")]
@@ -120,13 +123,13 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(emsSchedule)} cannot be null");
 
 
-                var emsScheduleInfo = Mapper.Map<EmsSchedule>(emsSchedule);
+                var emsScheduleInfo = _mapper.Map<EmsSchedule>(emsSchedule);
 
                 var result = await _unitOfWork.EmsSchedules.CreateAsync(emsScheduleInfo);
                 if (result.IsSuccess)
                 {
                     await _emsHub.Clients.All.SendAsync("ReloadSchedule").ConfigureAwait(false);
-                    EmsScheduleViewModel vm = Mapper.Map<EmsScheduleViewModel>(result.Data);
+                    EmsScheduleViewModel vm = _mapper.Map<EmsScheduleViewModel>(result.Data);
                     return CreatedAtAction("GetEmsScheduleById", new { id = vm.Id }, vm);
                 }
 
@@ -147,7 +150,7 @@ namespace FRS.Controllers
 
             var emsScheduleType = await this._unitOfWork.EmsSchedules.GetByIdAsync(id);
 
-            EmsScheduleViewModel emsScheduleVM = Mapper.Map<EmsScheduleViewModel>(emsScheduleType);
+            EmsScheduleViewModel emsScheduleVM = _mapper.Map<EmsScheduleViewModel>(emsScheduleType);
             if (emsScheduleVM == null)
                 return NotFound(id);
 
@@ -178,11 +181,11 @@ namespace FRS.Controllers
 
                 var emsScheduleType = await this._unitOfWork.EmsSchedules.GetByIdAsync(model.Id);
 
-                EmsScheduleViewModel emsScheduleVM = Mapper.Map<EmsScheduleViewModel>(emsScheduleType);
+                EmsScheduleViewModel emsScheduleVM = _mapper.Map<EmsScheduleViewModel>(emsScheduleType);
                 if (emsScheduleVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<EmsSchedule>(model);
+                var updatedModel = _mapper.Map<EmsSchedule>(model);
                 var result = await _unitOfWork.EmsSchedules.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                 {
@@ -212,7 +215,7 @@ namespace FRS.Controllers
 
             foreach (var dq in devices)
             {
-                var d = Mapper.Map<DeviceViewModel>(dq);
+                var d = _mapper.Map<DeviceViewModel>(dq);
 
                 if (schedule.EmsProfile.ScreenStatus == 1) d.isScreenOn = true;
                 if (schedule.EmsProfile.ScreenStatus == 2) d.isScreenOn = false;

@@ -27,38 +27,40 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public NotificationService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public NotificationService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         public async Task<PagedEntity<NotificationDTO>> GetNotificationsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<NotificationDTO>>(await this._uow.Notifications.GetNotificationsAsync(filter));
+            var result = _mapper.Map<PagedEntity<NotificationDTO>>(await this._uow.Notifications.GetNotificationsAsync(filter));
             return result;
         }
 
         public async Task<List<NotificationDTO>> GetNotificationsByUser(int userId)
         {
-            var result = Mapper.Map<List<NotificationDTO>>(await this._uow.Notifications.FindAsync(e => e.UserId == userId));
+            var result = _mapper.Map<List<NotificationDTO>>(await this._uow.Notifications.FindAsync(e => e.UserId == userId));
             return result;
         }
 
         public async Task<NotificationDTO> GetNotificationById(int id)
         {
-            var result = Mapper.Map<NotificationDTO>(await this._uow.Notifications.GetByIdAsync(id));
+            var result = _mapper.Map<NotificationDTO>(await this._uow.Notifications.GetByIdAsync(id));
             return result;
         }
 
         public async Task<BaseOperationResponse> CreateAsync(NotificationDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.Notifications.CreateAsync(Mapper.Map<Notification>(dto));
+            result = await this._uow.Notifications.CreateAsync(_mapper.Map<Notification>(dto));
             if(result != null && result.Data is Notification)
             {
-                result.Data = Mapper.Map<NotificationDTO>(result.Data as Notification);
+                result.Data = _mapper.Map<NotificationDTO>(result.Data as Notification);
             }
             return result;
         }
@@ -74,26 +76,26 @@ namespace BAL.Services
 
         public async Task<PagedEntity<NotificationEventDTO>> GetNotificationEventsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<NotificationEventDTO>>(await this._uow.NotificationEvents.GetNotificationEventsAsync(filter));
+            var result = _mapper.Map<PagedEntity<NotificationEventDTO>>(await this._uow.NotificationEvents.GetNotificationEventsAsync(filter));
             return result;
         }
 
         public async Task<NotificationEventDTO> GetNotificationEventByIdAsync(int id)
         {
-            return Mapper.Map<NotificationEventDTO>(await this._uow.NotificationEvents.GetByIdAsync(id));
+            return _mapper.Map<NotificationEventDTO>(await this._uow.NotificationEvents.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateNotificationEventAsync(NotificationEventDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.NotificationEvents.CreateAsync(Mapper.Map<NotificationEvent>(dto));
+            result = await this._uow.NotificationEvents.CreateAsync(_mapper.Map<NotificationEvent>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateNotificationEventAsync(NotificationEventDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.NotificationEvents.UpdateAsync(Mapper.Map<NotificationEvent>(dto));
+            result = await this._uow.NotificationEvents.UpdateAsync(_mapper.Map<NotificationEvent>(dto));
             return result;
         }
 
@@ -109,29 +111,29 @@ namespace BAL.Services
         #region
         public async Task<PagedEntity<NotificationSettingDTO>> GetNotificationSettingsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<NotificationSettingDTO>>(await this._uow.NotificationSettings.GetNotificationSettingsAsync(filter));
+            var result = _mapper.Map<PagedEntity<NotificationSettingDTO>>(await this._uow.NotificationSettings.GetNotificationSettingsAsync(filter));
             return result;
         }
 
         public async Task<NotificationSettingDTO> GetNotificationSettingByType(NotificationSettingType type)
         {
-            var result = Mapper.Map<NotificationSettingDTO>(await this._uow.NotificationSettings.GetByTypeAsync(type));
+            var result = _mapper.Map<NotificationSettingDTO>(await this._uow.NotificationSettings.GetByTypeAsync(type));
             return result;
         }
 
         public async Task<NotificationSettingDTO> GetNotificationSettingById(int id)
         {
-            var result = Mapper.Map<NotificationSettingDTO>(await this._uow.NotificationSettings.GetByIdAsync(id));
+            var result = _mapper.Map<NotificationSettingDTO>(await this._uow.NotificationSettings.GetByIdAsync(id));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateNotificationSettingAsync(NotificationSettingDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.NotificationSettings.UpdateAsync(Mapper.Map<NotificationSetting>(dto));
+            result = await this._uow.NotificationSettings.UpdateAsync(_mapper.Map<NotificationSetting>(dto));
             if (result != null && result.Data is NotificationSetting)
             {
-                result.Data = Mapper.Map<NotificationSettingDTO>(result.Data as NotificationSetting);
+                result.Data = _mapper.Map<NotificationSettingDTO>(result.Data as NotificationSetting);
             }
             return result;
         }
@@ -141,7 +143,7 @@ namespace BAL.Services
             var result = new BaseOperationResponse();
             foreach(var setting in dto)
             {
-                result = await this._uow.NotificationSettings.UpdateAsync(Mapper.Map<NotificationSetting>(setting));
+                result = await this._uow.NotificationSettings.UpdateAsync(_mapper.Map<NotificationSetting>(setting));
                 result.Data = null;
             }
             
@@ -151,7 +153,7 @@ namespace BAL.Services
         public async Task<BaseOperationResponse> CreateUserAlertAsync(UserOrderAlertDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.Notifications.CreateUserAlertAsync(Mapper.Map<UserOrderAlert>(dto));
+            result = await this._uow.Notifications.CreateUserAlertAsync(_mapper.Map<UserOrderAlert>(dto));
             
             return result;
         }
@@ -159,7 +161,7 @@ namespace BAL.Services
         public async Task<BaseOperationResponse> UpdateUserAlertAsync(UserOrderAlertDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.Notifications.UpdateUserAlertAsync(Mapper.Map<UserOrderAlert>(dto));
+            result = await this._uow.Notifications.UpdateUserAlertAsync(_mapper.Map<UserOrderAlert>(dto));
             return result;
         }
 

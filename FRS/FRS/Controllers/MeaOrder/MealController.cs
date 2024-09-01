@@ -22,22 +22,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class MealController : BaseController
     {
         private IMealService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public MealController(IMealService service, ILogger<MealController> logger)
+        public MealController(IMealService service, ILogger<MealController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Meal Types
@@ -52,7 +54,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMealTypes(BaseFilter filter)
         {
             var results = await this._service.GetMealTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MealTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MealTypeDTO>>(results));
         }
 
         #endregion
@@ -72,7 +74,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateMealTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    MealTypeDTO vm = Mapper.Map<MealTypeDTO>(result.Data);
+                    MealTypeDTO vm = _mapper.Map<MealTypeDTO>(result.Data);
                     return CreatedAtAction("GetMealTypeById", new { id = vm.Id }, vm);
                 }
 
@@ -147,7 +149,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMealPeriods(BaseFilter filter)
         {
             var results = await this._service.GetMealPeriodsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MealPeriodDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MealPeriodDTO>>(results));
         }
 
         #endregion
@@ -167,7 +169,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateMealPeriodAsync(dto);
                 if (result.IsSuccess)
                 {
-                    MealPeriodDTO vm = Mapper.Map<MealPeriodDTO>(result.Data);
+                    MealPeriodDTO vm = _mapper.Map<MealPeriodDTO>(result.Data);
                     return CreatedAtAction("GetMealPeriodById", new { id = vm.Id }, vm);
                 }
 
@@ -242,7 +244,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMealSessions(BaseFilter filter)
         {
             var results = await this._service.GetMealSessionsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MealSessionDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MealSessionDTO>>(results));
         }
 
         #endregion
@@ -273,7 +275,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMealSessionsByMealPeriod(int outletId, int catererId, int outletProfileId)
         {
             var results = await this._service.GetMealSessionsByMealPeriod(outletId, catererId, outletProfileId);
-            return Ok(Mapper.Map<List<MealSessionMealPeriodDTO>>(results));
+            return Ok(_mapper.Map<List<MealSessionMealPeriodDTO>>(results));
         }
 
         [ApiKeyAuthorize]
@@ -297,7 +299,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMealSessionsByMealPeriodByOutlet(int outletId)
         {
             var results = await this._service.GetMealSessionsByMealPeriodByOutlet(outletId);
-            return Ok(Mapper.Map<List<MealSessionMealPeriodDTO>>(results));
+            return Ok(_mapper.Map<List<MealSessionMealPeriodDTO>>(results));
         }
 
         [HttpPost("mealsessions")]
@@ -315,7 +317,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateMealSessionAsync(dto);
                 if (result.IsSuccess)
                 {
-                    MealSessionDTO vm = Mapper.Map<MealSessionDTO>(result.Data);
+                    MealSessionDTO vm = _mapper.Map<MealSessionDTO>(result.Data);
                     return CreatedAtAction("GetMealSessionById", new { id = vm.Id }, vm);
                 }
 

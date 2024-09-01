@@ -13,6 +13,7 @@ using BAL.Services.Interfaces;
 using BAL.DTO;
 using AutoMapper;
 using DAL.Repositories.Interfaces;
+using NPOI.SS.Formula.Functions;
 
 namespace BAL.Services
 {
@@ -20,35 +21,37 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public ImageReferenceColorService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public ImageReferenceColorService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         public async Task<PagedEntity<ImageReferenceColorDTO>> GetImageReferenceColorsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<ImageReferenceColorDTO>>(await this._uow.ImageReferenceColors.GetImageReferenceColorsAsync(filter));
+            var result = _mapper.Map<PagedEntity<ImageReferenceColorDTO>>(await this._uow.ImageReferenceColors.GetImageReferenceColorsAsync(filter));
             return result;
         }
 
         public async Task<ImageReferenceColorDTO> GetByIdAsync(int id)
         {
-            return Mapper.Map<ImageReferenceColorDTO>(await this._uow.ImageReferenceColors.GetByIdAsync(id));
+            return _mapper.Map<ImageReferenceColorDTO>(await this._uow.ImageReferenceColors.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateAsync(ImageReferenceColorDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.ImageReferenceColors.CreateAsync(Mapper.Map<ImageReferenceColor>(dto));
+            result = await this._uow.ImageReferenceColors.CreateAsync(_mapper.Map<ImageReferenceColor>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateAsync(ImageReferenceColorDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.ImageReferenceColors.UpdateAsync(Mapper.Map<ImageReferenceColor>(dto));
+            result = await this._uow.ImageReferenceColors.UpdateAsync(_mapper.Map<ImageReferenceColor>(dto));
             return result;
         }
 

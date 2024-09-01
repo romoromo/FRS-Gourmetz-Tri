@@ -31,46 +31,48 @@ namespace BAL.Services.MealOrder
         private IUnitOfWork _uow;
         private IAccountManager _accountManager;
         private ApplicationDbContext _appContext;
+        private readonly IMapper _mapper;
 
-        public DeliveryService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager)
+        public DeliveryService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
             _accountManager = accountManager;
+            _mapper = mapper;
         }
 
         #region CatererInfo
 
         public async Task<PagedEntity<CatererInfoSimpleDTO>> GetCatererInfosSimpleAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<CatererInfoSimpleDTO>>(await this._uow.CatererInfos.GetCatererInfosAsync(filter));
+            var result = _mapper.Map<PagedEntity<CatererInfoSimpleDTO>>(await this._uow.CatererInfos.GetCatererInfosAsync(filter));
             return result;
         }
 
         public async Task<PagedEntity<CatererInfoDTO>> GetCatererInfosAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<CatererInfoDTO>>(await this._uow.CatererInfos.GetCatererInfosAsync(filter));
+            var result = _mapper.Map<PagedEntity<CatererInfoDTO>>(await this._uow.CatererInfos.GetCatererInfosAsync(filter));
             return result;
         }
 
         public async Task<CatererInfoDTO> GetCatererInfoByIdAsync(int id)
         {
-            return Mapper.Map<CatererInfoDTO>(await this._uow.CatererInfos.GetByIdAsync(id));
+            return _mapper.Map<CatererInfoDTO>(await this._uow.CatererInfos.GetByIdAsync(id));
         }
 
         public async Task<CatererInfoSimpleDTO> GetCatererInfoSimpleByIdAsync(int id)
         {
-            return Mapper.Map<CatererInfoSimpleDTO>(await this._uow.CatererInfos.GetByIdAsync(id));
+            return _mapper.Map<CatererInfoSimpleDTO>(await this._uow.CatererInfos.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateCatererInfoAsync(CatererInfoSimpleDTO dto)
         {
-            return await this._uow.CatererInfos.CreateAsync(Mapper.Map<CatererInfo>(dto));
+            return await this._uow.CatererInfos.CreateAsync(_mapper.Map<CatererInfo>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateCatererInfoAsync(CatererInfoSimpleDTO dto)
         {
-            return await this._uow.CatererInfos.UpdateAsync(Mapper.Map<CatererInfo>(dto));
+            return await this._uow.CatererInfos.UpdateAsync(_mapper.Map<CatererInfo>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteCatererInfoAsync(int id)
@@ -93,23 +95,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<BentoBoxTypeDTO>> GetBentoBoxTypesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<BentoBoxTypeDTO>>(await this._uow.BentoBoxTypes.GetBentoBoxTypesAsync(filter));
+            var result = _mapper.Map<PagedEntity<BentoBoxTypeDTO>>(await this._uow.BentoBoxTypes.GetBentoBoxTypesAsync(filter));
             return result;
         }
 
         public async Task<BentoBoxTypeDTO> GetBentoBoxTypeByIdAsync(int id)
         {
-            return Mapper.Map<BentoBoxTypeDTO>(await this._uow.BentoBoxTypes.GetByIdAsync(id));
+            return _mapper.Map<BentoBoxTypeDTO>(await this._uow.BentoBoxTypes.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateBentoBoxTypeAsync(BentoBoxTypeDTO dto)
         {
-            return await this._uow.BentoBoxTypes.CreateAsync(Mapper.Map<BentoBoxType>(dto));
+            return await this._uow.BentoBoxTypes.CreateAsync(_mapper.Map<BentoBoxType>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateBentoBoxTypeAsync(BentoBoxTypeDetailsDTO dto)
         {
-            return await this._uow.BentoBoxTypes.UpdateAsync(Mapper.Map<BentoBoxType>(dto));
+            return await this._uow.BentoBoxTypes.UpdateAsync(_mapper.Map<BentoBoxType>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteBentoBoxTypeAsync(int id)
@@ -126,23 +128,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<CartonTypeDTO>> GetCartonTypesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<CartonTypeDTO>>(await this._uow.CartonTypes.GetCartonTypesAsync(filter));
+            var result = _mapper.Map<PagedEntity<CartonTypeDTO>>(await this._uow.CartonTypes.GetCartonTypesAsync(filter));
             return result;
         }
 
         public async Task<CartonTypeDTO> GetCartonTypeByIdAsync(int id)
         {
-            return Mapper.Map<CartonTypeDTO>(await this._uow.CartonTypes.GetByIdAsync(id));
+            return _mapper.Map<CartonTypeDTO>(await this._uow.CartonTypes.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateCartonTypeAsync(CartonTypeDTO dto)
         {
-            return await this._uow.CartonTypes.CreateAsync(Mapper.Map<CartonType>(dto));
+            return await this._uow.CartonTypes.CreateAsync(_mapper.Map<CartonType>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateCartonTypeAsync(CartonTypeDetailsDTO dto)
         {
-            return await this._uow.CartonTypes.UpdateAsync(Mapper.Map<CartonType>(dto));
+            return await this._uow.CartonTypes.UpdateAsync(_mapper.Map<CartonType>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteCartonTypeAsync(int id)
@@ -158,23 +160,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<DeliveryOrderDTO>> GetDeliveryOrdersAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<DeliveryOrderDTO>>(await this._uow.DeliveryOrders.GetDeliveryOrdersAsync(filter));
+            var result = _mapper.Map<PagedEntity<DeliveryOrderDTO>>(await this._uow.DeliveryOrders.GetDeliveryOrdersAsync(filter));
             return result;
         }
 
         public async Task<DeliveryOrderDTO> GetDeliveryOrderByIdAsync(int id)
         {
-            return Mapper.Map<DeliveryOrderDTO>(await this._uow.DeliveryOrders.GetByIdAsync(id));
+            return _mapper.Map<DeliveryOrderDTO>(await this._uow.DeliveryOrders.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateDeliveryOrderAsync(DeliveryOrderDTO dto)
         {
-            return await this._uow.DeliveryOrders.CreateAsync(Mapper.Map<DeliveryOrder>(dto));
+            return await this._uow.DeliveryOrders.CreateAsync(_mapper.Map<DeliveryOrder>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateDeliveryOrderAsync(DeliveryOrderDTO dto)
         {
-            return await this._uow.DeliveryOrders.UpdateAsync(Mapper.Map<DeliveryOrder>(dto));
+            return await this._uow.DeliveryOrders.UpdateAsync(_mapper.Map<DeliveryOrder>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteDeliveryOrderAsync(int id)
@@ -190,28 +192,28 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<DeliveryOrderNewDTO>> GetDeliveryOrderNewsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<DeliveryOrderNewDTO>>(await this._uow.DeliveryOrderNews.GetDeliveryOrdersAsync(filter));
+            var result = _mapper.Map<PagedEntity<DeliveryOrderNewDTO>>(await this._uow.DeliveryOrderNews.GetDeliveryOrdersAsync(filter));
             return result;
         }
 
         public async Task<DeliveryOrderNewDTO> GetDeliveryOrderNewByIdAsync(int id)
         {
-            return Mapper.Map<DeliveryOrderNewDTO>(await this._uow.DeliveryOrderNews.GetByIdAsync(id));
+            return _mapper.Map<DeliveryOrderNewDTO>(await this._uow.DeliveryOrderNews.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateDeliveryOrderNewAsync(DeliveryOrderNewDTO dto)
         {
-            return await this._uow.DeliveryOrderNews.CreateAsync(Mapper.Map<DeliveryOrderNew>(dto));
+            return await this._uow.DeliveryOrderNews.CreateAsync(_mapper.Map<DeliveryOrderNew>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateDeliveryOrderNewAsync(DeliveryOrderNewDTO dto)
         {
-            return await this._uow.DeliveryOrderNews.UpdateAsync(Mapper.Map<DeliveryOrderNew>(dto));
+            return await this._uow.DeliveryOrderNews.UpdateAsync(_mapper.Map<DeliveryOrderNew>(dto));
         }
 
         public async Task<BaseOperationResponse> LoadDeliveryOrderNewAsync(DeliveryOrderNewDTO dto)
         {
-            return await this._uow.DeliveryOrderNews.LoadAsync(Mapper.Map<DeliveryOrderNew>(dto));
+            return await this._uow.DeliveryOrderNews.LoadAsync(_mapper.Map<DeliveryOrderNew>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteDeliveryOrderNewAsync(int id)
@@ -293,23 +295,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<StoreInventoryDTO>> GetStoreInventoriesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<StoreInventoryDTO>>(await this._uow.StoreInventories.GetStoreInventoriesAsync(filter));
+            var result = _mapper.Map<PagedEntity<StoreInventoryDTO>>(await this._uow.StoreInventories.GetStoreInventoriesAsync(filter));
             return result;
         }
 
         public async Task<StoreInventoryDTO> GetStoreInventoryByIdAsync(int id)
         {
-            return Mapper.Map<StoreInventoryDTO>(await this._uow.StoreInventories.GetByIdAsync(id));
+            return _mapper.Map<StoreInventoryDTO>(await this._uow.StoreInventories.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateStoreInventoryAsync(StoreInventoryDTO dto)
         {
-            return await this._uow.StoreInventories.CreateAsync(Mapper.Map<StoreInventory>(dto));
+            return await this._uow.StoreInventories.CreateAsync(_mapper.Map<StoreInventory>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateStoreInventoryAsync(StoreInventoryDTO dto)
         {
-            return await this._uow.StoreInventories.UpdateAsync(Mapper.Map<StoreInventory>(dto));
+            return await this._uow.StoreInventories.UpdateAsync(_mapper.Map<StoreInventory>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteStoreInventoryAsync(int id)
@@ -321,7 +323,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<StoreInventoryDetailDTO>> GetStoreInventoryDetailsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<StoreInventoryDetailDTO>>(await this._uow.StoreInventories.GetStoreInventoryDetailsAsync(filter));
+            var result = _mapper.Map<PagedEntity<StoreInventoryDetailDTO>>(await this._uow.StoreInventories.GetStoreInventoryDetailsAsync(filter));
             return result;
         }
 
@@ -333,23 +335,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<TrackingStatusDTO>> GetTrackingStatussAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<TrackingStatusDTO>>(await this._uow.TrackingStatuss.GetTrackingStatussAsync(filter));
+            var result = _mapper.Map<PagedEntity<TrackingStatusDTO>>(await this._uow.TrackingStatuss.GetTrackingStatussAsync(filter));
             return result;
         }
 
         public async Task<TrackingStatusDTO> GetTrackingStatusByIdAsync(int id)
         {
-            return Mapper.Map<TrackingStatusDTO>(await this._uow.TrackingStatuss.GetByIdAsync(id));
+            return _mapper.Map<TrackingStatusDTO>(await this._uow.TrackingStatuss.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateTrackingStatusAsync(TrackingStatusDTO dto)
         {
-            return await this._uow.TrackingStatuss.CreateAsync(Mapper.Map<TrackingStatus>(dto));
+            return await this._uow.TrackingStatuss.CreateAsync(_mapper.Map<TrackingStatus>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateTrackingStatusAsync(TrackingStatusDTO dto)
         {
-            return await this._uow.TrackingStatuss.UpdateAsync(Mapper.Map<TrackingStatus>(dto));
+            return await this._uow.TrackingStatuss.UpdateAsync(_mapper.Map<TrackingStatus>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteTrackingStatusAsync(int id)
@@ -365,23 +367,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<StoreInfoDTO>> GetStoreInfosAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<StoreInfoDTO>>(await this._uow.StoreInfos.GetStoreInfosAsync(filter));
+            var result = _mapper.Map<PagedEntity<StoreInfoDTO>>(await this._uow.StoreInfos.GetStoreInfosAsync(filter));
             return result;
         }
 
         public async Task<StoreInfoDTO> GetStoreInfoByIdAsync(int id)
         {
-            return Mapper.Map<StoreInfoDTO>(await this._uow.StoreInfos.GetByIdAsync(id));
+            return _mapper.Map<StoreInfoDTO>(await this._uow.StoreInfos.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateStoreInfoAsync(StoreInfoDTO dto)
         {
-            return await this._uow.StoreInfos.CreateAsync(Mapper.Map<StoreInfo>(dto));
+            return await this._uow.StoreInfos.CreateAsync(_mapper.Map<StoreInfo>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateStoreInfoAsync(StoreInfoDTO dto)
         {
-            return await this._uow.StoreInfos.UpdateAsync(Mapper.Map<StoreInfo>(dto));
+            return await this._uow.StoreInfos.UpdateAsync(_mapper.Map<StoreInfo>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteStoreInfoAsync(int id)
@@ -398,23 +400,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<BentoAssetDTO>> GetBentoAssetsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<BentoAssetDTO>>(await this._uow.BentoAssets.GetBentoAssetsAsync(filter));
+            var result = _mapper.Map<PagedEntity<BentoAssetDTO>>(await this._uow.BentoAssets.GetBentoAssetsAsync(filter));
             return result;
         }
 
         public async Task<BentoAssetDTO> GetBentoAssetByIdAsync(int id)
         {
-            return Mapper.Map<BentoAssetDTO>(await this._uow.BentoAssets.GetByIdAsync(id));
+            return _mapper.Map<BentoAssetDTO>(await this._uow.BentoAssets.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateBentoAssetAsync(BentoAssetDTO dto)
         {
-            return await this._uow.BentoAssets.CreateAsync(Mapper.Map<BentoAsset>(dto));
+            return await this._uow.BentoAssets.CreateAsync(_mapper.Map<BentoAsset>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateBentoAssetAsync(BentoAssetDTO dto)
         {
-            return await this._uow.BentoAssets.UpdateAsync(Mapper.Map<BentoAsset>(dto));
+            return await this._uow.BentoAssets.UpdateAsync(_mapper.Map<BentoAsset>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteBentoAssetAsync(int id)
@@ -437,23 +439,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<CartonAssetDTO>>(await this._uow.CartonAssets.GetCartonAssetsAsync(filter));
+            var result = _mapper.Map<PagedEntity<CartonAssetDTO>>(await this._uow.CartonAssets.GetCartonAssetsAsync(filter));
             return result;
         }
 
         public async Task<CartonAssetDTO> GetCartonAssetByIdAsync(int id)
         {
-            return Mapper.Map<CartonAssetDTO>(await this._uow.CartonAssets.GetByIdAsync(id));
+            return _mapper.Map<CartonAssetDTO>(await this._uow.CartonAssets.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateCartonAssetAsync(CartonAssetDTO dto)
         {
-            return await this._uow.CartonAssets.CreateAsync(Mapper.Map<CartonAsset>(dto));
+            return await this._uow.CartonAssets.CreateAsync(_mapper.Map<CartonAsset>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateCartonAssetAsync(CartonAssetDTO dto)
         {
-            return await this._uow.CartonAssets.UpdateAsync(Mapper.Map<CartonAsset>(dto));
+            return await this._uow.CartonAssets.UpdateAsync(_mapper.Map<CartonAsset>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteCartonAssetAsync(int id)
@@ -476,23 +478,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<CartonDisposableBoxDTO>> GetDisposableBoxesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await this._uow.CartonDisposableBoxes.GetDisposableBoxesAsync(filter));
+            var result = _mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await this._uow.CartonDisposableBoxes.GetDisposableBoxesAsync(filter));
             return result;
         }
 
         public async Task<CartonDisposableBoxDTO> GetDisposableBoxByIdAsync(int id)
         {
-            return Mapper.Map<CartonDisposableBoxDTO>(await this._uow.CartonDisposableBoxes.GetByIdAsync(id));
+            return _mapper.Map<CartonDisposableBoxDTO>(await this._uow.CartonDisposableBoxes.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateDisposableBoxAsync(CartonDisposableBoxDTO dto)
         {
-            return await this._uow.CartonDisposableBoxes.CreateAsync(Mapper.Map<CartonDisposableBox>(dto));
+            return await this._uow.CartonDisposableBoxes.CreateAsync(_mapper.Map<CartonDisposableBox>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateDisposableAsync(CartonDisposableBoxDTO dto)
         {
-            return await this._uow.CartonDisposableBoxes.UpdateAsync(Mapper.Map<CartonDisposableBox>(dto));
+            return await this._uow.CartonDisposableBoxes.UpdateAsync(_mapper.Map<CartonDisposableBox>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteDisposableBoxAsync(int id)
@@ -512,7 +514,7 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> ResetDishDisposableBoxAsync(CartonDisposableBoxDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.CartonDisposableBoxes.ResetDishAsync(Mapper.Map<CartonDisposableBox>(dto));
+            result = await this._uow.CartonDisposableBoxes.ResetDishAsync(_mapper.Map<CartonDisposableBox>(dto));
             return result;
         }
 
@@ -522,35 +524,35 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<OutletSimpleDTO>> GetOutletsSimpleAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<OutletSimpleDTO>>(await this._uow.Outlets.GetOutletsAsync(filter));
+            var result = _mapper.Map<PagedEntity<OutletSimpleDTO>>(await this._uow.Outlets.GetOutletsAsync(filter));
             return result;
         }
 
         public async Task<PagedEntity<OutletDTO>> GetOutletsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<OutletDTO>>(await this._uow.Outlets.GetOutletsAsync(filter));
+            var result = _mapper.Map<PagedEntity<OutletDTO>>(await this._uow.Outlets.GetOutletsAsync(filter));
             return result;
         }
 
         public async Task<OutletSimpleDTO> GetOutletByIdSimpleAsync(int id)
         {
-            return Mapper.Map<OutletSimpleDTO>(await this._uow.Outlets.GetByIdAsync(id));
+            return _mapper.Map<OutletSimpleDTO>(await this._uow.Outlets.GetByIdAsync(id));
         }
 
 
         public async Task<OutletDTO> GetOutletByIdAsync(int id)
         {
-            return Mapper.Map<OutletDTO>(await this._uow.Outlets.GetByIdAsync(id));
+            return _mapper.Map<OutletDTO>(await this._uow.Outlets.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateOutletAsync(OutletSimpleDTO dto)
         {
-            return await this._uow.Outlets.CreateAsync(Mapper.Map<Outlet>(dto));
+            return await this._uow.Outlets.CreateAsync(_mapper.Map<Outlet>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateOutletAsync(OutletSimpleDTO dto)
         {
-            return await this._uow.Outlets.UpdateAsync(Mapper.Map<Outlet>(dto));
+            return await this._uow.Outlets.UpdateAsync(_mapper.Map<Outlet>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteOutletAsync(int id)
@@ -562,8 +564,8 @@ namespace BAL.Services.MealOrder
 
         public async Task<BaseOperationResponse> UpdateStoresAsync(OutletDTO dto)
         {
-            var outlet = Mapper.Map<Outlet>(dto);
-            var stores = Mapper.Map<List<StoreInfo>>(dto.Stores);
+            var outlet = _mapper.Map<Outlet>(dto);
+            var stores = _mapper.Map<List<StoreInfo>>(dto.Stores);
             return await this._uow.Outlets.UpdateStoresAsync(outlet, stores);
         }
 
@@ -573,23 +575,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<OutletProfileDTO>> GetOutletProfilesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<OutletProfileDTO>>(await this._uow.OutletProfiles.GetOutletProfilesAsync(filter));
+            var result = _mapper.Map<PagedEntity<OutletProfileDTO>>(await this._uow.OutletProfiles.GetOutletProfilesAsync(filter));
             return result;
         }
 
         public async Task<OutletProfileDTO> GetOutletProfileByIdAsync(int id)
         {
-            return Mapper.Map<OutletProfileDTO>(await this._uow.OutletProfiles.GetByIdAsync(id));
+            return _mapper.Map<OutletProfileDTO>(await this._uow.OutletProfiles.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateOutletProfileAsync(OutletProfileDTO dto)
         {
-            return await this._uow.OutletProfiles.CreateAsync(Mapper.Map<OutletProfile>(dto));
+            return await this._uow.OutletProfiles.CreateAsync(_mapper.Map<OutletProfile>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateOutletProfileAsync(OutletProfileDTO dto)
         {
-            return await this._uow.OutletProfiles.UpdateAsync(Mapper.Map<OutletProfile>(dto));
+            return await this._uow.OutletProfiles.UpdateAsync(_mapper.Map<OutletProfile>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteOutletProfileAsync(int id)
@@ -610,23 +612,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<DriverDTO>> GetDriversAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<DriverDTO>>(await this._uow.Drivers.GetDriversAsync(filter));
+            var result = _mapper.Map<PagedEntity<DriverDTO>>(await this._uow.Drivers.GetDriversAsync(filter));
             return result;
         }
 
         public async Task<DriverDTO> GetDriverByIdAsync(int id)
         {
-            return Mapper.Map<DriverDTO>(await this._uow.Drivers.GetByIdAsync(id));
+            return _mapper.Map<DriverDTO>(await this._uow.Drivers.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateDriverAsync(DriverDTO dto)
         {
-            return await this._uow.Drivers.CreateAsync(Mapper.Map<Driver>(dto));
+            return await this._uow.Drivers.CreateAsync(_mapper.Map<Driver>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateDriverAsync(DriverDTO dto)
         {
-            return await this._uow.Drivers.UpdateAsync(Mapper.Map<Driver>(dto));
+            return await this._uow.Drivers.UpdateAsync(_mapper.Map<Driver>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteDriverAsync(int id)
@@ -642,24 +644,24 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<RouteDTO>> GetRoutesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<RouteDTO>>(await this._uow.Routes.GetRoutesAsync(filter));
+            var result = _mapper.Map<PagedEntity<RouteDTO>>(await this._uow.Routes.GetRoutesAsync(filter));
             return result;
         }
 
         public async Task<RouteDTO> GetRouteByIdAsync(int id)
         {
-            return Mapper.Map<RouteDTO>(await this._uow.Routes.GetByIdAsync(id));
+            return _mapper.Map<RouteDTO>(await this._uow.Routes.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateRouteAsync(RouteDTO dto)
         {
-            return await this._uow.Routes.CreateAsync(Mapper.Map<Route>(dto));
+            return await this._uow.Routes.CreateAsync(_mapper.Map<Route>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateRouteAsync(RouteDTO dto)
         {
-            var route = Mapper.Map<Route>(dto);
-            var routeNodes = Mapper.Map<List<RouteNode>>(dto.Nodes);
+            var route = _mapper.Map<Route>(dto);
+            var routeNodes = _mapper.Map<List<RouteNode>>(dto.Nodes);
             return await this._uow.Routes.UpdateAsync(route,routeNodes);
         }
 
@@ -1214,9 +1216,9 @@ namespace BAL.Services.MealOrder
 
             filterDis.Filters = "(isActive)==True,(CartonAssetId)==" + cartonId;
 
-            var disposables = Mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await GetDisposableBoxesAsync(filterDis));
+            var disposables = _mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await GetDisposableBoxesAsync(filterDis));
 
-            var bentos = Mapper.Map<PagedEntity<BentoAssetDTO>>(await GetBentoAssetsAsync(filterDis));
+            var bentos = _mapper.Map<PagedEntity<BentoAssetDTO>>(await GetBentoAssetsAsync(filterDis));
 
             List<DoPrintDTO> DOReports = new List<DoPrintDTO>();
 
@@ -1535,23 +1537,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<OutletTermDTO>> GetOutletTermsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<OutletTermDTO>>(await this._uow.OutletTerms.GetOutletTermsAsync(filter));
+            var result = _mapper.Map<PagedEntity<OutletTermDTO>>(await this._uow.OutletTerms.GetOutletTermsAsync(filter));
             return result;
         }
 
         public async Task<OutletTermDTO> GetOutletTermByIdAsync(int id)
         {
-            return Mapper.Map<OutletTermDTO>(await this._uow.OutletTerms.GetByIdAsync(id));
+            return _mapper.Map<OutletTermDTO>(await this._uow.OutletTerms.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateOutletTermAsync(OutletTermDTO dto)
         {
-            return await this._uow.OutletTerms.CreateAsync(Mapper.Map<OutletTerm>(dto));
+            return await this._uow.OutletTerms.CreateAsync(_mapper.Map<OutletTerm>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateOutletTermAsync(OutletTermDTO dto)
         {
-            return await this._uow.OutletTerms.UpdateAsync(Mapper.Map<OutletTerm>(dto));
+            return await this._uow.OutletTerms.UpdateAsync(_mapper.Map<OutletTerm>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteOutletTermAsync(int id)

@@ -19,23 +19,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class ChannelInfoController : BaseController
     {
         private IChannelInfoService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public ChannelInfoController(IChannelInfoService service, ILogger<ChannelInfoController> logger)
+        public ChannelInfoController(IChannelInfoService service, ILogger<ChannelInfoController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Device Types
@@ -50,7 +52,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetChannelInfos(BaseFilter filter)
         {
             var results = await this._service.GetChannelInfosAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ChannelInfoDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<ChannelInfoDTO>>(results));
         }
 
         #endregion
@@ -70,7 +72,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateChannelInfoAsync(dto);
                 if (result.IsSuccess)
                 {
-                    ChannelInfoDTO vm = Mapper.Map<ChannelInfoDTO>(result.Data);
+                    ChannelInfoDTO vm = _mapper.Map<ChannelInfoDTO>(result.Data);
                     return CreatedAtAction("GetChannelInfoById", new { id = vm.Id }, vm);
                 }
 

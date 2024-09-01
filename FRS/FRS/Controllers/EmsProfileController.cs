@@ -12,24 +12,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class EmsProfileController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
         private IHubContext<FRSHub> _frsHub;
 
-        public EmsProfileController(IUnitOfWork unitOfWork, ILogger<EmsProfileController> logger, IHubContext<FRSHub> frsHub)
+        public EmsProfileController(IUnitOfWork unitOfWork, ILogger<EmsProfileController> logger, IHubContext<FRSHub> frsHub, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _frsHub = frsHub;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace FRS.Controllers
             var result = new BaseOperationResponse();
             if (ModelState.IsValid)
             {
-                var emsProfileInfo = Mapper.Map<EmsProfile>(emsProfile);
+                var emsProfileInfo = _mapper.Map<EmsProfile>(emsProfile);
 
                 result = await _unitOfWork.EmsProfiles.CreateAsync(emsProfileInfo);
             }
@@ -66,7 +68,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmsProfiles()
         {
             var results = await _unitOfWork.EmsProfiles.GetEmsProfilesLoadRelatedAsync(-1, -1);
-            return Ok(Mapper.Map<List<EmsProfileViewModel>>(results));
+            return Ok(_mapper.Map<List<EmsProfileViewModel>>(results));
         }
 
         [HttpPost("GetAllEmsProfiles")]
@@ -85,7 +87,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmsProfiles(int pageNumber, int pageSize)
         {
             var facilities = await _unitOfWork.EmsProfiles.GetEmsProfilesLoadRelatedAsync(pageNumber, pageSize);
-            return Ok(Mapper.Map<List<EmsProfileViewModel>>(facilities));
+            return Ok(_mapper.Map<List<EmsProfileViewModel>>(facilities));
         }
 
         [HttpPost("")]
@@ -101,12 +103,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(emsProfile)} cannot be null");
 
 
-                var emsProfileInfo = Mapper.Map<EmsProfile>(emsProfile);
+                var emsProfileInfo = _mapper.Map<EmsProfile>(emsProfile);
 
                 var result = await _unitOfWork.EmsProfiles.CreateAsync(emsProfileInfo);
                 if (result.IsSuccess)
                 {
-                    EmsProfileViewModel vm = Mapper.Map<EmsProfileViewModel>(result.Data);
+                    EmsProfileViewModel vm = _mapper.Map<EmsProfileViewModel>(result.Data);
                     return CreatedAtAction("GetEmsProfileById", new { id = vm.Id }, vm);
                 }
 
@@ -127,7 +129,7 @@ namespace FRS.Controllers
    
             var emsProfileType = await this._unitOfWork.EmsProfiles.GetByIdAsync(id);
 
-            EmsProfileViewModel emsProfileVM = Mapper.Map<EmsProfileViewModel>(emsProfileType);
+            EmsProfileViewModel emsProfileVM = _mapper.Map<EmsProfileViewModel>(emsProfileType);
             if (emsProfileVM == null)
                 return NotFound(id);
 
@@ -158,11 +160,11 @@ namespace FRS.Controllers
 
                 var emsProfileType = await this._unitOfWork.EmsProfiles.GetByIdAsync(model.Id);
 
-                EmsProfileViewModel emsProfileVM = Mapper.Map<EmsProfileViewModel>(emsProfileType);
+                EmsProfileViewModel emsProfileVM = _mapper.Map<EmsProfileViewModel>(emsProfileType);
                 if (emsProfileVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<EmsProfile>(model);
+                var updatedModel = _mapper.Map<EmsProfile>(model);
                 var result = await _unitOfWork.EmsProfiles.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                 {

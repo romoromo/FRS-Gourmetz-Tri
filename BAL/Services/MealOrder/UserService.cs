@@ -25,37 +25,39 @@ namespace BAL.Services.MealOrder
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public UserService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public UserService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         #region User Type
 
         public async Task<PagedEntity<StaffTypeDTO>> GetStaffTypesAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<StaffTypeDTO>>(await this._uow.StaffTypes.GetStaffTypesAsync(filter));
+            var result = _mapper.Map<PagedEntity<StaffTypeDTO>>(await this._uow.StaffTypes.GetStaffTypesAsync(filter));
             return result;
         }
 
         public async Task<StaffTypeDTO> GetStaffTypeByIdAsync(int id)
         {
-            return Mapper.Map<StaffTypeDTO>(await this._uow.StaffTypes.GetByIdAsync(id));
+            return _mapper.Map<StaffTypeDTO>(await this._uow.StaffTypes.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateStaffTypeAsync(StaffTypeDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.StaffTypes.CreateAsync(Mapper.Map<StaffType>(dto));
+            result = await this._uow.StaffTypes.CreateAsync(_mapper.Map<StaffType>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateStaffTypeAsync(StaffTypeDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.StaffTypes.UpdateAsync(Mapper.Map<StaffType>(dto));
+            result = await this._uow.StaffTypes.UpdateAsync(_mapper.Map<StaffType>(dto));
             return result;
         }
 

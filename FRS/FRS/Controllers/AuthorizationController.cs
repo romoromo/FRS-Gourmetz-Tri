@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using AspNet.Security.OpenIdConnect.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication;
-using AspNet.Security.OpenIdConnect.Server;
-using OpenIddict.Core;
-using AspNet.Security.OpenIdConnect.Primitives;
 using DAL.Models;
 using DAL.Core;
 using Microsoft.Extensions.Options;
@@ -32,6 +28,11 @@ using BAL.Services.Interfaces.MealOrder;
 using DAL.Models.MealOrder;
 using DAL.Core.Helpers;
 using DAL.Core.Interfaces;
+using Microsoft.AspNetCore;
+using OpenIddict.Server.AspNetCore;
+using System.Security.Principal;
+using static OpenIddict.Abstractions.OpenIddictConstants;
+using Twilio.TwiML.Voice;
 
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -49,7 +50,6 @@ namespace FRS.Controllers
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailSender _emailSender;
-        private readonly EmailController _emailController;
         private readonly IAuditLogService _auditLogService;
         private readonly IStudentService _studentService;
         private readonly IAccountManager _accountManager;
@@ -63,7 +63,6 @@ namespace FRS.Controllers
             IHttpContextAccessor httpAccessor,
             IConfiguration configuration,
             IEmailSender emailSender,
-            EmailController emailController,
             IAuditLogService auditLogService,
             IStudentService studentService,
             IAccountManager accountManager)
@@ -76,7 +75,6 @@ namespace FRS.Controllers
             _roleManager = roleManager;
             _configuration = configuration;
             _emailSender = emailSender;
-            _emailController = emailController;
             _auditLogService = auditLogService;
             _studentService = studentService;
             _accountManager = accountManager;
@@ -105,8 +103,10 @@ namespace FRS.Controllers
 
         [HttpPost("~/connect/token")]
         [Produces("application/json")]
-        public async Task<IActionResult> Exchange(OpenIdConnectRequest request = null, string institutionCode = null, bool isExternal = false, bool isExternalLogin = false, bool isAD = false, bool needConfirmationCode = false, string appId = null, bool mfa = false, bool mfaValidation = false)
+        public async Task<IActionResult> Exchange(string institutionCode = null, bool isExternal = false, bool isExternalLogin = false, bool isAD = false, bool needConfirmationCode = false, string appId = null, bool mfa = false, bool mfaValidation = false)
         {
+            var request = HttpContext.GetOpenIddictServerRequest();
+
             var uaParser = Parser.GetDefault();
             ClientInfo c = uaParser.Parse(_httpAccessor.HttpContext.Request.Headers["User-Agent"]);
             string message = string.Format(" sign in with access using {0}", isExternal ? "Mobile App" : isExternalLogin ? "Third party login" : "Web");
@@ -140,9 +140,9 @@ namespace FRS.Controllers
                     //someone tries to login
                     log.Message = "Failed " + message + " Error: You have entered an invalid user ID or password. Please note that your password is case-sensitive." + " Account was not found." + request.Username;
                     await _authLogService.CreateAsync(log);
-                    return BadRequest(new OpenIdConnectResponse
+                    return BadRequest(new OpenIddictResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        Error = OpenIddictConstants.Errors.InvalidGrant,
                         ErrorDescription = "You have entered an invalid user ID or password. Please note that your password is case-sensitive."
                     });
                 }
@@ -152,9 +152,9 @@ namespace FRS.Controllers
                 {
                     log.Message = "Failed " + message + " Error: Pending account activation from Admin.";
                     await _authLogService.CreateAsync(log);
-                    return BadRequest(new OpenIdConnectResponse
+                    return BadRequest(new OpenIddictResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        Error = OpenIddictConstants.Errors.InvalidGrant,
                         ErrorDescription = "Pending account activation from Admin."
                     });
                 }
@@ -165,9 +165,9 @@ namespace FRS.Controllers
                     log.Message = "Failed " + message + " Error: Account was not found or was deactivated in the system.";
                     await _authLogService.CreateAsync(log);
 
-                    return BadRequest(new OpenIdConnectResponse
+                    return BadRequest(new OpenIddictResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        Error = OpenIddictConstants.Errors.InvalidGrant,
                         ErrorDescription = "Account was not found or was deactivated in the system."
                     });
                 }
@@ -181,9 +181,9 @@ namespace FRS.Controllers
                         {
                             log.Message = "Failed " + message + " Error: You have entered an invalid user ID or password. Please note that your password is case-sensitive.";
                             await _authLogService.CreateAsync(log);
-                            return BadRequest(new OpenIdConnectResponse
+                            return BadRequest(new OpenIddictResponse
                             {
-                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                Error = OpenIddictConstants.Errors.InvalidGrant,
                                 ErrorDescription = "You have entered an invalid user ID or password. Please note that your password is case-sensitive."
                             });
                         }
@@ -199,9 +199,9 @@ namespace FRS.Controllers
                             log.Message = "Failed " + message + " Error: The specified user account has been suspended.";
                             await _authLogService.CreateAsync(log);
 
-                            return BadRequest(new OpenIdConnectResponse
+                            return BadRequest(new OpenIddictResponse
                             {
-                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                Error = OpenIddictConstants.Errors.InvalidGrant,
                                 ErrorDescription = "The specified user account has been suspended"
                             });
                         }
@@ -212,9 +212,9 @@ namespace FRS.Controllers
                             log.Message = "Failed " + message + " Error: Invalid login procedure.";
                             await _authLogService.CreateAsync(log);
 
-                            return BadRequest(new OpenIdConnectResponse
+                            return BadRequest(new OpenIddictResponse
                             {
-                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                Error = OpenIddictConstants.Errors.InvalidGrant,
                                 ErrorDescription = "Invalid login procedure"
                             });
                         }
@@ -224,9 +224,9 @@ namespace FRS.Controllers
                             log.Message = "Failed " + message + " Error: The specified user is not allowed to sign in.";
                             await _authLogService.CreateAsync(log);
 
-                            return BadRequest(new OpenIdConnectResponse
+                            return BadRequest(new OpenIddictResponse
                             {
-                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                Error = OpenIddictConstants.Errors.InvalidGrant,
                                 ErrorDescription = "The specified user is not allowed to sign in"
                             });
                         }
@@ -236,9 +236,9 @@ namespace FRS.Controllers
                             log.Message = "Failed " + message + " Error: You have entered an invalid user ID or password. Please note that your password is case-sensitive.";
                             await _authLogService.CreateAsync(log);
 
-                            return BadRequest(new OpenIdConnectResponse
+                            return BadRequest(new OpenIddictResponse
                             {
-                                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                                Error = OpenIddictConstants.Errors.InvalidGrant,
                                 ErrorDescription = "You have entered an invalid user ID or password. Please note that your password is case-sensitive."
                             });
                         }
@@ -250,16 +250,16 @@ namespace FRS.Controllers
                         log.Message = "Failed " + message + " Error: Please confirm your email first.";
                         await _authLogService.CreateAsync(log);
 
-                        return BadRequest(new OpenIdConnectResponse
+                        return BadRequest(new OpenIddictResponse
                         {
-                            Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                            Error = OpenIddictConstants.Errors.InvalidGrant,
                             ErrorDescription = "Please confirm your email first"
                         });
                     }
                 }
 
                 // Create a new authentication ticket.
-                var ticket = await CreateTicketAsync(request, user);
+                //var ticket = await CreateTicketAsync(request, user);
 
                 user.LastLoginTime = DateTime.Now;
                 await _userManager.UpdateAsync(user);
@@ -322,18 +322,20 @@ namespace FRS.Controllers
                         ConsentDataCollection = user.ConsentDataCollection,
                         ReceivePromotionalMaterials = user.ReceivePromotionalMaterials
                     });
-
-                    
                 }
 
-                var ticket2 = await CreateTicketAsync(request, user);
 
-                return SignIn(ticket2.Principal, ticket2.Properties, ticket2.AuthenticationScheme);
+                var principal = await CreatePrincipal(request, user);
+                return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+                //var ticket2 = await CreateTicketAsync(request, user);
+
+                //return SignIn(ticket2.Principal, ticket2.Properties, ticket2.AuthenticationScheme);
             }
             else if (request.IsRefreshTokenGrantType())
             {
                 // Retrieve the claims principal stored in the refresh token.
-                var info = await HttpContext.AuthenticateAsync(OpenIddictServerDefaults.AuthenticationScheme);
+                var info = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
                 // Retrieve the user profile corresponding to the refresh token.
                 // Note: if you want to automatically invalidate the refresh token
@@ -345,9 +347,9 @@ namespace FRS.Controllers
                     log.Message = "Failed " + message;
                     await _authLogService.CreateAsync(log);
 
-                    return BadRequest(new OpenIdConnectResponse
+                    return BadRequest(new OpenIddictResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        Error = OpenIddictConstants.Errors.InvalidGrant,
                         ErrorDescription = "The refresh token is no longer valid"
                     });
                 }
@@ -358,16 +360,16 @@ namespace FRS.Controllers
                     log.Message = "Failed " + message;
                     await _authLogService.CreateAsync(log);
 
-                    return BadRequest(new OpenIdConnectResponse
+                    return BadRequest(new OpenIddictResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        Error = OpenIddictConstants.Errors.InvalidGrant,
                         ErrorDescription = "The user is no longer allowed to sign in"
                     });
                 }
 
                 // Create a new authentication ticket, but reuse the properties stored
                 // in the refresh token, including the scopes originally granted.
-                var ticket = await CreateTicketAsync(request, user);
+                //var ticket = await CreateTicketAsync(request, user);
 
                 user.LastLoginTime = DateTime.Now;
                 await _userManager.UpdateAsync(user);
@@ -392,15 +394,18 @@ namespace FRS.Controllers
                     });
                 }
 
-                return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
+                var principal = await CreatePrincipal(request, user);
+                return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+                //return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
             }
 
             log.Message = "Failed " + message;
             await _authLogService.CreateAsync(log);
 
-            return BadRequest(new OpenIdConnectResponse
+            return BadRequest(new OpenIddictResponse
             {
-                Error = OpenIdConnectConstants.Errors.UnsupportedGrantType,
+                Error = OpenIddictConstants.Errors.UnsupportedGrantType,
                 ErrorDescription = "The specified grant type is not supported"
             });
         }
@@ -423,9 +428,9 @@ namespace FRS.Controllers
                 }
                 else
                 {
-                    return BadRequest(new OpenIdConnectResponse
+                    return BadRequest(new OpenIddictResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.InvalidToken,
+                        Error = OpenIddictConstants.Errors.InvalidToken,
                         ErrorDescription = "Invalid code."
                     });
                 }
@@ -469,9 +474,9 @@ namespace FRS.Controllers
 
             if(user == null)
             {
-                return BadRequest(new OpenIdConnectResponse
+                return BadRequest(new OpenIddictResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.RequestNotSupported,
+                    Error = OpenIddictConstants.Errors.RequestNotSupported,
                     ErrorDescription = "User not found."
                 });
             }
@@ -554,9 +559,9 @@ namespace FRS.Controllers
 
             if (user == null)
             {
-                return BadRequest(new OpenIdConnectResponse
+                return BadRequest(new OpenIddictResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    Error = OpenIddictConstants.Errors.InvalidGrant,
                     ErrorDescription = "Please make sure you have a correct link to confirm your email"
                 });
             }
@@ -574,9 +579,9 @@ namespace FRS.Controllers
                 //return View("ConfirmEmail");
             }
 
-            return BadRequest(new OpenIdConnectResponse
+            return BadRequest(new OpenIddictResponse
             {
-                Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                Error = OpenIddictConstants.Errors.InvalidGrant,
                 ErrorDescription = "Please make sure you have a correct link to confirm your email"
             });
         }
@@ -772,12 +777,12 @@ namespace FRS.Controllers
             return Ok(response);
         }
 
-        private async Task<AuthenticationTicket> CreateTicketAsync(OpenIdConnectRequest request, ApplicationUser user)
+        private async Task<AuthenticationTicket> CreateTicketAsync(OpenIddictRequest request, ApplicationUser user)
         {
             // Create a new ClaimsPrincipal containing the claims that
             // will be used to create an id_token, a token or a code.
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
-            var principalIdentity = principal.Identity as ClaimsIdentity;
+            //var principalIdentity = principal.Identity as ClaimsIdentity;
 
             //if (this._userManager.SupportsUserRole && user.Roles != null)
             //{
@@ -789,19 +794,19 @@ namespace FRS.Controllers
             //}
 
             // Create a new authentication ticket holding the user identity.
-            var ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), OpenIddictServerDefaults.AuthenticationScheme);
+            var ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             //if (!request.IsRefreshTokenGrantType())
             //{
             // Set the list of scopes granted to the client application.
             // Note: the offline_access scope must be granted
             // to allow OpenIddict to return a refresh token.
-            ticket.SetScopes(new[]
+            ticket.Principal.SetScopes(new[]
             {
-                    OpenIdConnectConstants.Scopes.OpenId,
-                    OpenIdConnectConstants.Scopes.Email,
-                    OpenIdConnectConstants.Scopes.Phone,
-                    OpenIdConnectConstants.Scopes.Profile,
-                    OpenIdConnectConstants.Scopes.OfflineAccess,
+                    OpenIddictConstants.Scopes.OpenId,
+                    OpenIddictConstants.Scopes.Email,
+                    OpenIddictConstants.Scopes.Phone,
+                    OpenIddictConstants.Scopes.Profile,
+                    OpenIddictConstants.Scopes.OfflineAccess,
                     OpenIddictConstants.Scopes.Roles
             }.Intersect(request.GetScopes()));
             //}
@@ -817,73 +822,313 @@ namespace FRS.Controllers
             foreach (var claim in ticket.Principal.Claims)
             {
                 // Never include the security stamp in the access and identity tokens, as it's a secret value.
-                if (claim.Type == _identityOptions.Value.ClaimsIdentity.SecurityStampClaimType)
+                if (claim.Type == _identityOptions.Value.ClaimsIdentity.SecurityStampClaimType || claim.Type == CustomClaimTypes.Permission)
                     continue;
 
+                var destinations = new List<string> { OpenIddictConstants.Destinations.AccessToken }; // Default to access_token
 
-                var destinations = new List<string> { OpenIdConnectConstants.Destinations.AccessToken, OpenIdConnectConstants.Destinations.IdentityToken };
+                // Handle specific claim types
+                if (claim.Type == OpenIddictConstants.Claims.Subject && ticket.Principal.HasScope(OpenIddictConstants.Scopes.OpenId))
+                {
+                    destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+                }
+                else if (claim.Type == OpenIddictConstants.Claims.Name && ticket.Principal.HasScope(OpenIddictConstants.Scopes.Profile))
+                {
+                    destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+                }
+                else if (claim.Type == OpenIddictConstants.Claims.Role && ticket.Principal.HasScope(OpenIddictConstants.Scopes.Roles))
+                {
+                    destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+                }
+                //else if (claim.Type == CustomClaimTypes.Permission)
+                //{
+                //    // Only add permission claims to identity token
+                //    //destinations.Clear(); // Remove any previously added destinations
+                //    destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+                //}
+                //else
+                //{
+                //    // Add other claims to access_token by default
+                //    destinations.Add(OpenIddictConstants.Destinations.AccessToken);
+                //}
 
-                // Only add the iterated claim to the id_token if the corresponding scope was granted to the client application.
-                // The other claims will only be added to the access_token, which is encrypted when using the default format.
-                if ((claim.Type == OpenIdConnectConstants.Claims.Subject && ticket.HasScope(OpenIdConnectConstants.Scopes.OpenId)) ||
-                    (claim.Type == OpenIdConnectConstants.Claims.Name && ticket.HasScope(OpenIdConnectConstants.Scopes.Profile)) ||
-                    (claim.Type == OpenIdConnectConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles)) ||
-                    (claim.Type == CustomClaimTypes.Permission && IsIncludedCustomClaim(claim.Value)))
-                    //(claim.Type == CustomClaimTypes.Permission && ticket.HasScope(OpenIddictConstants.Claims.Roles)))
-                {
-                    claim.SetDestinations(destinations);
-                }
-                else
-                {
-                    claim.SetDestinations(new List<string> { OpenIdConnectConstants.Destinations.IdentityToken });
-                    //destinations.Add(OpenIdConnectConstants.Destinations.IdentityToken);
-                }
+                // Set claim destinations
+                claim.SetDestinations(destinations.Distinct().ToList());
+
+                //var destinations = new List<string> { OpenIddictConstants.Destinations.AccessToken };
+
+                //// Only add the iterated claim to the id_token if the corresponding scope was granted to the client application.
+                //// The other claims will only be added to the access_token, which is encrypted when using the default format.
+                //if ((claim.Type == OpenIddictConstants.Claims.Subject && ticket.Principal.HasScope(OpenIddictConstants.Scopes.OpenId)) ||
+                //    (claim.Type == OpenIddictConstants.Claims.Name && ticket.Principal.HasScope(OpenIddictConstants.Scopes.Profile)) ||
+                //    (claim.Type == OpenIddictConstants.Claims.Role && ticket.Principal.HasScope(OpenIddictConstants.Scopes.Roles)) ||
+                //    (claim.Type == CustomClaimTypes.Permission && IsIncludedCustomClaim(claim.Value)))
+                //    //(claim.Type == CustomClaimTypes.Permission && ticket.HasScope(OpenIddictConstants.Claims.Roles)))
+                //{
+                //    //claim.SetDestinations(destinations);
+                //    destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+                //}
+                ////else
+                ////{
+                ////    claim.SetDestinations(new List<string> { OpenIddictConstants.Destinations.IdentityToken });
+                ////    //destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+                ////}
+
+                //claim.SetDestinations(destinations);
             }
 
 
-            var identity = principal.Identity as ClaimsIdentity;
+            var identity = ticket.Principal.Identity as ClaimsIdentity;
 
-            identity.AddClaim(OpenIdConnectConstants.Claims.Audience, _configuration.GetSection("Jwt:Audience").Get<string>(), OpenIdConnectConstants.Destinations.AccessToken);
-            identity.AddClaim(OpenIdConnectConstants.Claims.Audience, _configuration.GetSection("Jwt:Audience").Get<string>(), OpenIdConnectConstants.Destinations.IdentityToken);
+            identity.AddClaim(OpenIddictConstants.Claims.Audience, _configuration.GetSection("Jwt:Audience").Get<string>(), OpenIddictConstants.Destinations.AccessToken);
+            identity.AddClaim(OpenIddictConstants.Claims.Audience, _configuration.GetSection("Jwt:Audience").Get<string>(), OpenIddictConstants.Destinations.IdentityToken);
 
-            if (ticket.HasScope(OpenIdConnectConstants.Scopes.Profile))
+            if (ticket.Principal.HasScope(OpenIddictConstants.Scopes.Profile))
             {
                 
-                identity.AddClaim(CustomClaimTypes.UserId, user.Id + "", OpenIdConnectConstants.Destinations.IdentityToken);
+                identity.AddClaim(CustomClaimTypes.UserId, user.Id + "", OpenIddictConstants.Destinations.IdentityToken);
 
                 if (!string.IsNullOrWhiteSpace(user.ConfirmationCode))
-                    identity.AddClaim(CustomClaimTypes.ConfirmationCode, user.ConfirmationCode, OpenIdConnectConstants.Destinations.IdentityToken);
+                    identity.AddClaim(CustomClaimTypes.ConfirmationCode, user.ConfirmationCode, OpenIddictConstants.Destinations.IdentityToken);
 
                 
-                    identity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin + "", OpenIdConnectConstants.Destinations.IdentityToken);
+                    identity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin + "", OpenIddictConstants.Destinations.IdentityToken);
 
 
                 if (!string.IsNullOrWhiteSpace(user.JobTitle))
-                    identity.AddClaim(CustomClaimTypes.JobTitle, user.JobTitle, OpenIdConnectConstants.Destinations.IdentityToken);
+                    identity.AddClaim(CustomClaimTypes.JobTitle, user.JobTitle, OpenIddictConstants.Destinations.IdentityToken);
 
                 if (!string.IsNullOrWhiteSpace(user.FullName))
-                    identity.AddClaim(CustomClaimTypes.FullName, user.FullName, OpenIdConnectConstants.Destinations.IdentityToken);
+                    identity.AddClaim(CustomClaimTypes.FullName, user.FullName, OpenIddictConstants.Destinations.IdentityToken);
 
                 if (!string.IsNullOrWhiteSpace(user.Configuration))
-                    identity.AddClaim(CustomClaimTypes.Configuration, user.Configuration, OpenIdConnectConstants.Destinations.IdentityToken);
+                    identity.AddClaim(CustomClaimTypes.Configuration, user.Configuration, OpenIddictConstants.Destinations.IdentityToken);
 
                 if (user.InstitutionId.HasValue)
-                    identity.AddClaim(CustomClaimTypes.InstitutionId, user.InstitutionId.ToString(), OpenIdConnectConstants.Destinations.IdentityToken);
+                    identity.AddClaim(CustomClaimTypes.InstitutionId, user.InstitutionId.ToString(), OpenIddictConstants.Destinations.IdentityToken);
             }
 
-            if (ticket.HasScope(OpenIdConnectConstants.Scopes.Email))
+            if (ticket.Principal.HasScope(OpenIddictConstants.Scopes.Email))
             {
                 if (!string.IsNullOrWhiteSpace(user.Email))
-                    identity.AddClaim(CustomClaimTypes.Email, user.Email, OpenIdConnectConstants.Destinations.IdentityToken);
+                    identity.AddClaim(CustomClaimTypes.Email, user.Email, OpenIddictConstants.Destinations.IdentityToken);
             }
 
-            if (ticket.HasScope(OpenIdConnectConstants.Scopes.Phone))
+            if (ticket.Principal.HasScope(OpenIddictConstants.Scopes.Phone))
             {
                 if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
-                    identity.AddClaim(CustomClaimTypes.Phone, user.PhoneNumber, OpenIdConnectConstants.Destinations.IdentityToken);
+                    identity.AddClaim(CustomClaimTypes.Phone, user.PhoneNumber, OpenIddictConstants.Destinations.IdentityToken);
+            }
+
+            ticket.Principal.SetDestinations(claim =>
+            {
+                // Initialize the destinations with the default value
+                //var destinations = new[] { OpenIddictConstants.Destinations.AccessToken };
+
+                //// Check if the claim type matches specific criteria
+                //if (claim.Type == OpenIddictConstants.Claims.Audience)
+                //{
+                //    destinations = new[]
+                //    {
+                //            OpenIddictConstants.Destinations.AccessToken,
+                //            OpenIddictConstants.Destinations.IdentityToken
+                //        };
+                //}
+                //else if (claim.Type == "userId")
+                //{
+                //    destinations = new[]
+                //    {
+                //        OpenIddictConstants.Destinations.IdentityToken
+                //    };
+                //}
+
+                // Return the determined destinations
+                return claim.GetDestinations();
+            });
+
+            return ticket;
+        }
+
+        private async Task<AuthenticationTicket> CreateTicketAsync2(OpenIddictRequest request, ApplicationUser user)
+        {
+            var principal = await _signInManager.CreateUserPrincipalAsync(user);
+            var ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+            // Define scopes
+            var scopes = new[]
+            {
+                OpenIddictConstants.Scopes.OpenId,
+                OpenIddictConstants.Scopes.Email,
+                OpenIddictConstants.Scopes.Phone,
+                OpenIddictConstants.Scopes.Profile,
+                OpenIddictConstants.Scopes.OfflineAccess,
+                OpenIddictConstants.Scopes.Roles
+            };
+
+            // Set the list of scopes granted to the client application
+            ticket.Principal.SetScopes(scopes.Intersect(request.GetScopes()));
+
+            // Add custom claims
+            var identity = ticket.Principal.Identity as ClaimsIdentity;
+
+            if (identity != null)
+            {
+                // Add claims based on scopes
+                foreach (var claim in ticket.Principal.Claims)
+                {
+                    var destinations = new List<string> { OpenIddictConstants.Destinations.AccessToken };
+
+                    if (claim.Type == OpenIddictConstants.Claims.Subject && ticket.Principal.HasScope(OpenIddictConstants.Scopes.OpenId))
+                    {
+                        destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+                    }
+                    else if (claim.Type == OpenIddictConstants.Claims.Name && ticket.Principal.HasScope(OpenIddictConstants.Scopes.Profile))
+                    {
+                        destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+                    }
+                    else if (claim.Type == OpenIddictConstants.Claims.Role && ticket.Principal.HasScope(OpenIddictConstants.Scopes.Roles))
+                    {
+                        destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+                    }
+
+                    claim.SetDestinations(destinations.Distinct().ToList());
+                }
+
+                identity.AddClaim(OpenIddictConstants.Claims.Audience, _configuration.GetSection("Jwt:Audience").Get<string>(), OpenIddictConstants.Destinations.AccessToken);
+                identity.AddClaim(OpenIddictConstants.Claims.Audience, _configuration.GetSection("Jwt:Audience").Get<string>(), OpenIddictConstants.Destinations.IdentityToken);
+                identity.AddClaim(CustomClaimTypes.UserId, user.Id + "", OpenIddictConstants.Destinations.IdentityToken);
+
+                //ticket.Principal.SetResources(_configuration.GetSection("Jwt:Audience").Get<string>());
+            }
+
+            ticket.Principal.SetDestinations(claim =>
+            {
+                // Initialize the destinations with the default value
+                var destinations = new[] { OpenIddictConstants.Destinations.AccessToken };
+
+                // Check if the claim type matches specific criteria
+                if (claim.Type == OpenIddictConstants.Claims.Audience)
+                {
+                    destinations = new[]
+                    {
+                            OpenIddictConstants.Destinations.AccessToken,
+                            OpenIddictConstants.Destinations.IdentityToken
+                        };
+                }
+                else if (claim.Type == "userId")
+                {
+                    destinations = new[]
+                    {
+                        OpenIddictConstants.Destinations.IdentityToken
+                    };
+                }
+
+                // Return the determined destinations
+                return destinations;
+            });
+
+            foreach (var claim in identity.Claims)
+            {
+                Console.WriteLine($"Claim Type: {claim.Type}, Value: {claim.Value}");
             }
 
             return ticket;
+        }
+
+        private async Task<ClaimsPrincipal> CreatePrincipal(OpenIddictRequest request, ApplicationUser user)
+        {
+            var principalIdentity = await _signInManager.CreateUserPrincipalAsync(user);
+            var principal = new ClaimsPrincipal(principalIdentity.Identity);
+            principal.SetScopes(new[]
+            {
+                        OpenIddictConstants.Scopes.OpenId,
+                        OpenIddictConstants.Scopes.Email,
+                        OpenIddictConstants.Scopes.Phone,
+                        OpenIddictConstants.Scopes.Profile,
+                        OpenIddictConstants.Scopes.OfflineAccess,
+                        OpenIddictConstants.Scopes.Roles
+                }.Intersect(request.GetScopes()));
+
+            var audience = _configuration.GetSection("Jwt:Audience").Get<string>();
+            principalIdentity.AddClaim(OpenIddictConstants.Claims.Audience, audience, OpenIddictConstants.Destinations.AccessToken);
+            principalIdentity.AddClaim(OpenIddictConstants.Claims.Audience, audience, OpenIddictConstants.Destinations.IdentityToken);
+            //principalIdentity.AddClaim("userId", user.Id.ToString(), OpenIddictConstants.Destinations.IdentityToken);
+
+            if (principalIdentity.HasScope(OpenIddictConstants.Scopes.Profile))
+            {
+                principalIdentity.AddClaim(CustomClaimTypes.UserId, user.Id + "", OpenIddictConstants.Destinations.IdentityToken);
+
+                if (!string.IsNullOrWhiteSpace(user.ConfirmationCode))
+                    principalIdentity.AddClaim(CustomClaimTypes.ConfirmationCode, user.ConfirmationCode, OpenIddictConstants.Destinations.IdentityToken);
+
+
+                principalIdentity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin + "", OpenIddictConstants.Destinations.IdentityToken);
+
+
+                if (!string.IsNullOrWhiteSpace(user.JobTitle))
+                    principalIdentity.AddClaim(CustomClaimTypes.JobTitle, user.JobTitle, OpenIddictConstants.Destinations.IdentityToken);
+
+                if (!string.IsNullOrWhiteSpace(user.FullName))
+                    principalIdentity.AddClaim(CustomClaimTypes.FullName, user.FullName, OpenIddictConstants.Destinations.IdentityToken);
+
+                if (!string.IsNullOrWhiteSpace(user.Configuration))
+                    principalIdentity.AddClaim(CustomClaimTypes.Configuration, user.Configuration, OpenIddictConstants.Destinations.IdentityToken);
+
+                if (user.InstitutionId.HasValue)
+                    principalIdentity.AddClaim(CustomClaimTypes.InstitutionId, user.InstitutionId.ToString(), OpenIddictConstants.Destinations.IdentityToken);
+            }
+
+            if (principalIdentity.HasScope(OpenIddictConstants.Scopes.Email))
+            {
+                if (!string.IsNullOrWhiteSpace(user.Email))
+                    principalIdentity.AddClaim(CustomClaimTypes.Email, user.Email, OpenIddictConstants.Destinations.IdentityToken);
+            }
+
+            if (principalIdentity.HasScope(OpenIddictConstants.Scopes.Phone))
+            {
+                if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                    principalIdentity.AddClaim(CustomClaimTypes.Phone, user.PhoneNumber, OpenIddictConstants.Destinations.IdentityToken);
+            }
+
+            //principal.SetScopes(request.GetScopes());
+            //principal.SetResources("resource_server");
+
+            principal.SetDestinations(claim =>
+            {
+                // Initialize the destinations with the default value
+                var destinations = new[] { OpenIddictConstants.Destinations.AccessToken };
+
+                // Check if the claim type matches specific criteria
+                if (claim.Type == OpenIddictConstants.Claims.Audience || claim.Type == OpenIddictConstants.Claims.Subject && principal.HasScope(OpenIddictConstants.Scopes.OpenId) ||
+                    claim.Type == OpenIddictConstants.Claims.Name && principal.HasScope(OpenIddictConstants.Scopes.Profile) ||
+                    claim.Type == OpenIddictConstants.Claims.Role && principal.HasScope(OpenIddictConstants.Scopes.Roles))
+                {
+                    destinations = new[]
+                    {
+                            OpenIddictConstants.Destinations.AccessToken,
+                            OpenIddictConstants.Destinations.IdentityToken
+                        };
+                }
+                else if (claim.Type == CustomClaimTypes.UserId || claim.Type == CustomClaimTypes.ConfirmationCode ||
+                    claim.Type == CustomClaimTypes.NotFirstLogin ||
+                    claim.Type == CustomClaimTypes.JobTitle ||
+                    claim.Type == CustomClaimTypes.FullName ||
+                    claim.Type == CustomClaimTypes.Configuration ||
+                    claim.Type == CustomClaimTypes.InstitutionId ||
+                    claim.Type == CustomClaimTypes.Email ||
+                    claim.Type == CustomClaimTypes.Phone)
+                {
+                    destinations = new[]
+                    {
+                            OpenIddictConstants.Destinations.IdentityToken
+                        };
+                }
+
+                // Return the determined destinations
+                return destinations;
+            });
+
+            return principal;
         }
 
         private bool IsIncludedCustomClaim(string value)

@@ -10,23 +10,26 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using NPOI.SS.Formula.Functions;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class DirectoryListingCategoryController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public DirectoryListingCategoryController(IUnitOfWork unitOfWork, ILogger<DirectoryListingCategoryController> logger)
+        public DirectoryListingCategoryController(IUnitOfWork unitOfWork, ILogger<DirectoryListingCategoryController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -46,7 +49,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDirectoryListingCategorys(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.DirectoryListingCategorys.GetDirectoryListingCategorysLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<DirectoryListingCategoryViewModel>>(result));
+            return Ok(_mapper.Map<List<DirectoryListingCategoryViewModel>>(result));
         }
 
         [HttpPost("")]
@@ -61,12 +64,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(directoryListingCategory)} cannot be null");
 
 
-                var type = Mapper.Map<DirectoryListingCategory>(directoryListingCategory);
+                var type = _mapper.Map<DirectoryListingCategory>(directoryListingCategory);
 
                 var result = await _unitOfWork.DirectoryListingCategorys.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    DirectoryListingCategoryViewModel directoryListingCategoryVM = Mapper.Map<DirectoryListingCategoryViewModel>(result.Data);
+                    DirectoryListingCategoryViewModel directoryListingCategoryVM = _mapper.Map<DirectoryListingCategoryViewModel>(result.Data);
                     return CreatedAtAction("GetDirectoryListingCategoryById", new { id = directoryListingCategoryVM.Id }, directoryListingCategoryVM);
                 }
 
@@ -86,7 +89,7 @@ namespace FRS.Controllers
         {
             var directoryListingCategory = await this._unitOfWork.DirectoryListingCategorys.GetByIdAsync(id);
 
-            DirectoryListingCategoryViewModel directoryListingCategoryVM = Mapper.Map<DirectoryListingCategoryViewModel>(directoryListingCategory);
+            DirectoryListingCategoryViewModel directoryListingCategoryVM = _mapper.Map<DirectoryListingCategoryViewModel>(directoryListingCategory);
             if (directoryListingCategoryVM == null)
                 return NotFound(id);
 
@@ -117,11 +120,11 @@ namespace FRS.Controllers
 
                 var directoryListingCategory = await this._unitOfWork.DirectoryListingCategorys.GetByIdAsync(model.Id);
 
-                DirectoryListingCategoryViewModel directoryListingCategoryVM = Mapper.Map<DirectoryListingCategoryViewModel>(directoryListingCategory);
+                DirectoryListingCategoryViewModel directoryListingCategoryVM = _mapper.Map<DirectoryListingCategoryViewModel>(directoryListingCategory);
                 if (directoryListingCategoryVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<DirectoryListingCategory>(model);
+                var updatedModel = _mapper.Map<DirectoryListingCategory>(model);
                 var result = await _unitOfWork.DirectoryListingCategorys.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

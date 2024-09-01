@@ -28,12 +28,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class DeviceManagerController : BaseController
     {
@@ -45,11 +45,12 @@ namespace FRS.Controllers
         private IHttpContextAccessor _httpAccessor;
         private readonly IEmailSender _emailSender;
         private IConnectionService _connectionService;
+        private readonly IMapper _mapper;
 
         public DeviceManagerController(IUnitOfWork unitOfWork, ILogger<DeviceManagerController> logger, IHubContext<FRSHub> frsHub,
             IHubContext<FRSDeviceHub> frsDeviceHub,
             IHubContext<PIBDeviceHub> pibDeviceHub,
-            IHttpContextAccessor httpAccessor, IEmailSender emailSender, IConnectionService connectionService)
+            IHttpContextAccessor httpAccessor, IEmailSender emailSender, IConnectionService connectionService, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -59,6 +60,7 @@ namespace FRS.Controllers
             _pibDeviceHub = pibDeviceHub;
             _emailSender = emailSender;
             _connectionService = connectionService;
+            _mapper = mapper;
         }
 
         [HttpGet("getImage/{id}")]
@@ -143,7 +145,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetUsers(BaseFilter filter)
         {
             var devices = await _unitOfWork.Devices.GetDevicesAsync(filter).ConfigureAwait(false);
-            var deviceVMs = Mapper.Map<PagedEntityViewModel<DeviceViewModel>>(devices);
+            var deviceVMs = _mapper.Map<PagedEntityViewModel<DeviceViewModel>>(devices);
             foreach (var device in deviceVMs.PagedData)
             {
                 string status = "OFFLINE";
@@ -163,7 +165,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDevice(string identifier)
         {
             var result = await _unitOfWork.Devices.GetRegisteredDevice(identifier);
-            result.Data = Mapper.Map<DeviceViewModel>(result.Data);
+            result.Data = _mapper.Map<DeviceViewModel>(result.Data);
             return Ok(result);
         }
 
@@ -174,7 +176,7 @@ namespace FRS.Controllers
         //{
         //    if(mac_address == null) mac_address = _httpAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
         //    var result = await _unitOfWork.Devices.GetByDeviceIdentifier(mac_address);
-        //    result.Data = Mapper.Map<DeviceViewModel>(result.Data);
+        //    result.Data = _mapper.Map<DeviceViewModel>(result.Data);
 
         //    return Ok(result);
         //}
@@ -190,7 +192,7 @@ namespace FRS.Controllers
 
                 var result = await _unitOfWork.Devices.GetByDeviceIdentifier(identifier);
                 response.IsSuccess = true;
-                response.Data = Mapper.Map<DeviceViewModel>(result);
+                response.Data = _mapper.Map<DeviceViewModel>(result);
             }
             catch (Exception)
             {
@@ -214,7 +216,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetUnknownDevices(int pageNumber, int pageSize, int? institutionId = null)
         {
             var results = await _unitOfWork.Devices.GetDevicesLoadRelatedAsync(pageNumber, pageSize, new DeviceFilter { InstitutionId = institutionId, IsActive = true });
-            return Ok(Mapper.Map<List<DeviceViewModel>>(results));
+            return Ok(_mapper.Map<List<DeviceViewModel>>(results));
         }
 
         /// <summary>
@@ -277,7 +279,7 @@ namespace FRS.Controllers
             }
 
             var result = await _unitOfWork.Devices.GetApiPIBDevices(deviceId, mac_address);
-            var data = Mapper.Map<List<DeviceViewModel>>(result.Data);
+            var data = _mapper.Map<List<DeviceViewModel>>(result.Data);
 
             if (deviceId.HasValue || !string.IsNullOrEmpty(mac_address))
             {
@@ -323,7 +325,7 @@ namespace FRS.Controllers
             var result = new BaseOperationResponse();
             if (ModelState.IsValid)
             {
-                var deviceInfo = Mapper.Map<Device>(device);
+                var deviceInfo = _mapper.Map<Device>(device);
 
                 result = await _unitOfWork.Devices.CreateAsync(deviceInfo);
             }
@@ -349,12 +351,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(device)} cannot be null");
 
 
-                var deviceInfo = Mapper.Map<Device>(device);
+                var deviceInfo = _mapper.Map<Device>(device);
 
                 var result = await _unitOfWork.Devices.CreateAsync(deviceInfo);
                 if (result.IsSuccess)
                 {
-                    DeviceViewModel vm = Mapper.Map<DeviceViewModel>(result.Data);
+                    DeviceViewModel vm = _mapper.Map<DeviceViewModel>(result.Data);
                     return CreatedAtAction("GetDeviceById", new { id = vm.Id }, vm);
                 }
 
@@ -378,7 +380,7 @@ namespace FRS.Controllers
 
             var deviceType = await this._unitOfWork.Devices.GetByIdAsync(id);
 
-            DeviceViewModel deviceVM = Mapper.Map<DeviceViewModel>(deviceType);
+            DeviceViewModel deviceVM = _mapper.Map<DeviceViewModel>(deviceType);
             if (deviceVM == null)
                 return NotFound(id);
 
@@ -410,18 +412,18 @@ namespace FRS.Controllers
 
                 var deviceType = await this._unitOfWork.Devices.GetByIdAsync(model.Id);
 
-                DeviceViewModel deviceVM = Mapper.Map<DeviceViewModel>(deviceType);
+                DeviceViewModel deviceVM = _mapper.Map<DeviceViewModel>(deviceType);
                 if (deviceVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Device>(model);
+                var updatedModel = _mapper.Map<Device>(model);
                 var result = await _unitOfWork.Devices.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                 {
                     if (!deviceVM.IsApproved && updatedModel.IsApproved)
                     {
                         //alert the device that it is already approved
-                        await _frsHub.Clients.All.SendAsync("BroadcastDeviceData", Mapper.Map<DeviceViewModel>(result.Data));
+                        await _frsHub.Clients.All.SendAsync("BroadcastDeviceData", _mapper.Map<DeviceViewModel>(result.Data));
                     }
 
                     await _frsDeviceHub.Clients.Group(deviceVM.Id.ToString()).SendAsync("RefreshDeviceData", updatedModel);
@@ -463,7 +465,7 @@ namespace FRS.Controllers
             Utilities.CreateLogger<DeviceManagerController>().LogInformation(LoggingEvents.DEVICE_REBOOT, null, string.Format("Reboot called. ID:{0}", id));
             var device = await this._unitOfWork.Devices.GetByIdAsync(id).ConfigureAwait(false);
 
-            DeviceViewModel deviceVM = Mapper.Map<DeviceViewModel>(device);
+            DeviceViewModel deviceVM = _mapper.Map<DeviceViewModel>(device);
             await RestartDeviceAsync(deviceVM);
             await _frsDeviceHub.Clients.Group(deviceVM.Id.ToString()).SendAsync("Reboot", deviceVM).ConfigureAwait(false);
 
@@ -709,7 +711,7 @@ namespace FRS.Controllers
 
             try
             {
-                DeviceViewModel deviceVM = Mapper.Map<DeviceViewModel>(device);
+                DeviceViewModel deviceVM = _mapper.Map<DeviceViewModel>(device);
                 deviceVM.isScreenOn = false;
                 await UpdateDevice(deviceVM.Id + "", deviceVM);
 
@@ -733,7 +735,7 @@ namespace FRS.Controllers
 
             try
             {
-                DeviceViewModel deviceVM = Mapper.Map<DeviceViewModel>(device);
+                DeviceViewModel deviceVM = _mapper.Map<DeviceViewModel>(device);
                 deviceVM.isScreenOn = true;
                 await UpdateDevice(deviceVM.Id + "", deviceVM);
 
@@ -757,7 +759,7 @@ namespace FRS.Controllers
 
             var device = await this._unitOfWork.Devices.GetByIdAsync(id).ConfigureAwait(false);
 
-            DeviceViewModel deviceVM = Mapper.Map<DeviceViewModel>(device);
+            DeviceViewModel deviceVM = _mapper.Map<DeviceViewModel>(device);
             await _frsDeviceHub.Clients.Group(deviceVM.Id.ToString()).SendAsync("RefreshPanel", deviceVM);
             await _pibDeviceHub.Clients.Group(deviceVM.Id.ToString()).SendAsync("RefreshPanel", deviceVM);
             //await _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", deviceVM).ConfigureAwait(false);
@@ -774,7 +776,7 @@ namespace FRS.Controllers
 
             if (results.IsSuccess)
             {
-                var listOfDevices = Mapper.Map<List<DeviceViewModel>>(results.Data as List<Device>);
+                var listOfDevices = _mapper.Map<List<DeviceViewModel>>(results.Data as List<Device>);
 
                 foreach (var device in listOfDevices)
                 {
@@ -799,7 +801,7 @@ namespace FRS.Controllers
             var devices = await _unitOfWork.Devices.GetSignageDashboardDevices(filter);
             foreach (var device in devices)
             {
-                DeviceViewModel deviceVM = Mapper.Map<DeviceViewModel>(device);
+                DeviceViewModel deviceVM = _mapper.Map<DeviceViewModel>(device);
                 await RestartDeviceAsync(deviceVM);
                 await _frsDeviceHub.Clients.Group(deviceVM.Id.ToString()).SendAsync("Reboot", deviceVM).ConfigureAwait(false);
             }
@@ -816,7 +818,7 @@ namespace FRS.Controllers
             var devices = await _unitOfWork.Devices.GetSignageDashboardDevices(filter);
             foreach (var device in devices)
             {
-                DeviceViewModel deviceVM = Mapper.Map<DeviceViewModel>(device);
+                DeviceViewModel deviceVM = _mapper.Map<DeviceViewModel>(device);
                 await _frsDeviceHub.Clients.Group(deviceVM.Id.ToString()).SendAsync("RefreshPanel", deviceVM);
                 await _pibDeviceHub.Clients.Group(deviceVM.Id.ToString()).SendAsync("RefreshPanel", deviceVM);
                 await _frsHub.Clients.All.SendAsync("RefreshPIBDeviceList", deviceVM).ConfigureAwait(false);

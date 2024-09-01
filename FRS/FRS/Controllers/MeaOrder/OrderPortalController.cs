@@ -23,22 +23,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class OrderPortalController : BaseController
     {
         private IOrderPortalService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public OrderPortalController(IOrderPortalService service, ILogger<OrderPortalController> logger)
+        public OrderPortalController(IOrderPortalService service, ILogger<OrderPortalController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Contents
@@ -106,7 +108,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateOrderPortalContentAsync(dto);
                 if (result.IsSuccess)
                 {
-                    OrderPortalContentDTO vm = Mapper.Map<OrderPortalContentDTO>(result.Data);
+                    OrderPortalContentDTO vm = _mapper.Map<OrderPortalContentDTO>(result.Data);
                     return CreatedAtAction("GetOrderPortalContentById", new { id = vm.Id }, vm);
                 }
 

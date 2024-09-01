@@ -23,22 +23,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class DishController : BaseController
     {
         private IDishService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public DishController(IDishService service, ILogger<DishController> logger)
+        public DishController(IDishService service, ILogger<DishController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Dish Types
@@ -53,7 +55,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDishTypes(BaseFilter filter)
         {
             var results = await this._service.GetDishTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DishTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<DishTypeDTO>>(results));
         }
 
         #endregion
@@ -73,7 +75,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateDishTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    DishTypeDTO vm = Mapper.Map<DishTypeDTO>(result.Data);
+                    DishTypeDTO vm = _mapper.Map<DishTypeDTO>(result.Data);
                     return CreatedAtAction("GetDishTypeById", new { id = vm.Id }, vm);
                 }
 
@@ -148,7 +150,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDishes(BaseFilter filter)
         {
             var results = await this._service.GetDishesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DishDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<DishDTO>>(results));
         }
 
         #endregion
@@ -162,7 +164,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDishChanges(DateTime updatedAfter, DateTime? updatedBefore)
         {
             var results = await this._service.GetDishChangesAsync(updatedAfter, updatedBefore);
-            return Ok(Mapper.Map<List<DishSimple>>(results));
+            return Ok(_mapper.Map<List<DishSimple>>(results));
         }
 
 
@@ -211,7 +213,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateDishAsync(dto);
                 if (result.IsSuccess)
                 {
-                    DishDTO vm = Mapper.Map<DishDTO>(result.Data);
+                    DishDTO vm = _mapper.Map<DishDTO>(result.Data);
                     return CreatedAtAction("GetDishById", new { id = vm.Id }, vm);
                 }
 
@@ -299,7 +301,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetCuisines(BaseFilter filter)
         {
             var results = await this._service.GetCuisinesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<CuisineDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<CuisineDTO>>(results));
         }
 
         #endregion
@@ -319,7 +321,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateCuisineAsync(dto);
                 if (result.IsSuccess)
                 {
-                    CuisineDTO vm = Mapper.Map<CuisineDTO>(result.Data);
+                    CuisineDTO vm = _mapper.Map<CuisineDTO>(result.Data);
                     return CreatedAtAction("GetCuisineById", new { id = vm.Id }, vm);
                 }
 
@@ -390,7 +392,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDishCyclesSimple(BaseFilter filter)
         {
             var results = await this._service.GetDishCyclesSimpleAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DishCycleSimpleDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<DishCycleSimpleDTO>>(results));
         }
 
         #region Sieved
@@ -403,7 +405,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDishCycles(BaseFilter filter)
         {
             var results = await this._service.GetDishCyclesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DishCycleDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<DishCycleDTO>>(results));
         }
 
         #endregion
@@ -432,7 +434,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateDishCycleAsync(dto);
                 if (result.IsSuccess)
                 {
-                    DishCycleDTO vm = Mapper.Map<DishCycleDTO>(result.Data);
+                    DishCycleDTO vm = _mapper.Map<DishCycleDTO>(result.Data);
                     return CreatedAtAction("GetDishCycleById", new { id = vm.Id }, vm);
                 }
 
@@ -515,7 +517,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDishCycleCalendars(BaseFilter filter)
         {
             var results = await this._service.GetDishCycleCalendarsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<DishCycleCalendarDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<DishCycleCalendarDTO>>(results));
         }
 
         #endregion
@@ -554,7 +556,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDishCycleScheduleSetMenus(int dishCycleId, int day, int? outletId)
         {
             var results = await this._service.GetDishCycleScheduleSetMenus(dishCycleId, day, outletId);
-            return Ok(Mapper.Map<List<DishCycleScheduleSetDTO>>(results));
+            return Ok(_mapper.Map<List<DishCycleScheduleSetDTO>>(results));
         }
         #endregion
 
@@ -569,7 +571,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOutletDishCyclesAsync(int outletId, int catererId)
         {
             var results = await this._service.GetOutletDishCyclesAsync(outletId, catererId);
-            return Ok(Mapper.Map<List<DishCycleDTO>>(results));
+            return Ok(_mapper.Map<List<DishCycleDTO>>(results));
         }
 
         [ApiKeyAuthorize]
@@ -581,7 +583,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOutletDishCyclePeriodsAsync(int dishCycleId)
         {
             var results = await this._service.GetOutletDishCyclePeriodsAsync(dishCycleId);
-            return Ok(Mapper.Map<List<DishCyclePeriodDTO>>(results));
+            return Ok(_mapper.Map<List<DishCyclePeriodDTO>>(results));
         }
 
         [HttpPost("dishcycles/outlets/blockunblockdate")]

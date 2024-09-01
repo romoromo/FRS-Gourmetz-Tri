@@ -25,37 +25,39 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public ServiceContractService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public ServiceContractService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         #region Service Contracts
 
         public async Task<PagedEntity<ServiceContractDTO>> GetServiceContractsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<ServiceContractDTO>>(await this._uow.ServiceContracts.GetServiceContractsAsync(filter));
+            var result = _mapper.Map<PagedEntity<ServiceContractDTO>>(await this._uow.ServiceContracts.GetServiceContractsAsync(filter));
             return result;
         }
 
         public async Task<ServiceContractDTO> GetServiceContractByIdAsync(int id)
         {
-            return Mapper.Map<ServiceContractDTO>(await this._uow.ServiceContracts.GetByIdAsync(id));
+            return _mapper.Map<ServiceContractDTO>(await this._uow.ServiceContracts.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateServiceContractAsync(ServiceContractDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.ServiceContracts.CreateAsync(Mapper.Map<ServiceContract>(dto));
+            result = await this._uow.ServiceContracts.CreateAsync(_mapper.Map<ServiceContract>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateServiceContractsync(ServiceContractDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.ServiceContracts.UpdateAsync(Mapper.Map<ServiceContract>(dto));
+            result = await this._uow.ServiceContracts.UpdateAsync(_mapper.Map<ServiceContract>(dto));
             return result;
         }
 

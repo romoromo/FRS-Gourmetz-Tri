@@ -26,12 +26,12 @@ using Newtonsoft.Json;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class LocationController : BaseController
     {
@@ -43,10 +43,11 @@ namespace FRS.Controllers
         private IHubContext<MeetingRoomHub> _meetingRoomHub;
         private readonly IConfiguration _configuration;
         private readonly ISmartRoomService _smartRoomService;
+        private readonly IMapper _mapper;
 
         public LocationController(IUnitOfWork unitOfWork, ILogger<LocationController> logger, IHubContext<LocationHub> locationHub,
             IHubContext<FRSDeviceHub> frsDeviceHub, IHubContext<MeetingRoomHub> meetingRoomHub, IConfiguration configuration,
-            ISmartRoomService smartRoomService)
+            ISmartRoomService smartRoomService, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -55,6 +56,7 @@ namespace FRS.Controllers
             _meetingRoomHub = meetingRoomHub;
             _configuration = configuration;
             _smartRoomService = smartRoomService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -68,7 +70,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiLocations(int? locationId = null, int? institutionId = null)
         {
             var result = await _unitOfWork.Locations.GetApiLocations(locationId, institutionId);
-            var data = Mapper.Map<List<LocationViewModel>>(result.Data);
+            var data = _mapper.Map<List<LocationViewModel>>(result.Data);
 
             if (locationId.HasValue)
             {
@@ -89,7 +91,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetLocationById(int id)
         {
             var location = await _unitOfWork.Locations.GetByIdAsync(id);
-            return Ok(Mapper.Map<LocationViewModel>(location));
+            return Ok(_mapper.Map<LocationViewModel>(location));
         }
 
         [HttpGet("locations/list")]
@@ -108,7 +110,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetLocations(int pageNumber, int pageSize, int? institutionId = null, bool? isBooking = null)
         {
             var locations = await _unitOfWork.Locations.GetLocationsLoadRelatedAsync(pageNumber, pageSize, institutionId, isBooking);
-            return Ok(Mapper.Map<List<LocationViewModel>>(locations));
+            return Ok(_mapper.Map<List<LocationViewModel>>(locations));
         }
 
         [HttpPost("")]
@@ -123,12 +125,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(location)} cannot be null");
 
 
-                var loc = Mapper.Map<Location>(location);
+                var loc = _mapper.Map<Location>(location);
 
                 var result = await _unitOfWork.Locations.CreateAsync(loc, location.FacilityIds, location.FacilityTypeIds, location.InstitutionIds, location.FilePath, location.ImageReferences, location.LocationAssets);
                 if (result.IsSuccess)
                 {
-                    LocationViewModel locationVM = Mapper.Map<LocationViewModel>(result.Data);
+                    LocationViewModel locationVM = _mapper.Map<LocationViewModel>(result.Data);
                     return CreatedAtAction("GetLocationById", new { id = locationVM.Id }, locationVM);
                 }
 
@@ -152,7 +154,7 @@ namespace FRS.Controllers
 
             var locationType = await this._unitOfWork.Locations.GetByIdAsync(id);
 
-            LocationViewModel locationVM = Mapper.Map<LocationViewModel>(locationType);
+            LocationViewModel locationVM = _mapper.Map<LocationViewModel>(locationType);
             if (locationVM == null)
                 return NotFound(id);
 
@@ -183,22 +185,22 @@ namespace FRS.Controllers
 
                 var locationType = await this._unitOfWork.Locations.GetByIdAsync(model.Id);
 
-                LocationViewModel locationVM = Mapper.Map<LocationViewModel>(locationType);
+                LocationViewModel locationVM = _mapper.Map<LocationViewModel>(locationType);
                 if (locationVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Location>(model);
+                var updatedModel = _mapper.Map<Location>(model);
                 var result = await _unitOfWork.Locations.UpdateAsync(updatedModel, model.FacilityIds, model.FacilityTypeIds, model.InstitutionIds, model.FilePath, model.ImageReferences, model.LocationAssets);
                 if (result.IsSuccess)
                 {
-                    locationVM = Mapper.Map<LocationViewModel>(result.Data);
+                    locationVM = _mapper.Map<LocationViewModel>(result.Data);
                     await _locationHub.Clients.Group(locationVM.Id.ToString()).SendAsync("BroadcastLocationData", locationVM);
 
                     var deviceResult = await _unitOfWork.Devices.GetApiPIBDevices(location_id: locationVM.Id);
 
                     if (deviceResult != null && deviceResult.Data != null)
                     {
-                        var devices = Mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
+                        var devices = _mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
 
                         foreach (var device in devices)
                         {
@@ -224,8 +226,8 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetLocationsByUser(int userId, bool? isBooking = null)
         {
             var locations = await _unitOfWork.Locations.GetSignageLocationsByUser(userId, isBooking);
-            //var mapped = Mapper.Map<List<SimpleApiTreeResult>>(data);
-            return Ok(Mapper.Map<List<LocationViewModel>>(locations));
+            //var mapped = _mapper.Map<List<SimpleApiTreeResult>>(data);
+            return Ok(_mapper.Map<List<LocationViewModel>>(locations));
         }
 
         #region Available For Bookings
@@ -238,7 +240,7 @@ namespace FRS.Controllers
             filter.End = filter.End != null ? Convert.ToDateTime(filter.End).ToLocalTime() : filter.End;
 
             var locations = await _unitOfWork.Locations.GetAvailableLocations(filter);
-            return Ok(Mapper.Map<List<LocationTimeSlotViewModel>>(locations));
+            return Ok(_mapper.Map<List<LocationTimeSlotViewModel>>(locations));
         }
         #endregion
 
@@ -252,7 +254,7 @@ namespace FRS.Controllers
             filter.End = filter.End != null ? Convert.ToDateTime(filter.End).ToLocalTime() : filter.End;
 
             var reservations = await _unitOfWork.Locations.GetLocationsWithParent(filter);
-            return Ok(Mapper.Map<List<BookingGridLocation>>(reservations));
+            return Ok(_mapper.Map<List<BookingGridLocation>>(reservations));
         }
         #endregion
 

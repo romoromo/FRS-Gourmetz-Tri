@@ -1,4 +1,3 @@
-using AspNet.Security.OpenIdConnect.Primitives;
 using AutoMapper;
 using DAL;
 using DAL.Core;
@@ -20,21 +19,17 @@ using FRS.Helpers;
 using FRS.ViewModels;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
-using Microsoft.EntityFrameworkCore.Proxies;
 using AppPermissions = DAL.Core.ApplicationPermissionsTrees;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
-using FRS.Jobs;
 using FRS.Hubs;
 using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using DAL.Repositories.Interfaces;
 using DAL.Repositories;
 using Sieve.Models;
 using Sieve.Services;
 using DAL.Filters;
-using Microsoft.AspNetCore.StaticFiles;
 using BAL.Mapping;
 using BAL.Services.Interfaces;
 using BAL.Services;
@@ -47,21 +42,21 @@ using BAL.Utilities;
 using BAL.Services.MealOrder;
 using BAL.Services.Interfaces.MealOrder;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
-using System.Linq;
 using Microsoft.AspNetCore.Http.Features;
 using BAL.DTO;
 using FRS.Middleware;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Threading.Tasks;
-using System.Text.Json;
-using Microsoft.AspNetCore.DataProtection;
 using WebSocketOptions = Microsoft.AspNetCore.Builder.WebSocketOptions;
-using OpenIddict.Validation;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
-using FRS.ViewModels.MealOrder;
+using OpenIddict.Validation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using DAL.Core.Helpers;
+using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Net.Http;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FRS
 {
@@ -160,21 +155,21 @@ namespace FRS
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(365);
                 options.Lockout.MaxFailedAccessAttempts = maxFailedAttempt != null ? Int32.Parse(maxFailedAttempt) : 5;
 
-                options.ClaimsIdentity.UserNameClaimType = OpenIdConnectConstants.Claims.Name;
-                options.ClaimsIdentity.UserIdClaimType = OpenIdConnectConstants.Claims.Subject;
-                options.ClaimsIdentity.RoleClaimType = OpenIdConnectConstants.Claims.Role;
+                options.ClaimsIdentity.UserNameClaimType = OpenIddictConstants.Claims.Name;
+                options.ClaimsIdentity.UserIdClaimType = OpenIddictConstants.Claims.Subject;
+                options.ClaimsIdentity.RoleClaimType = OpenIddictConstants.Claims.Role;
             });
 
             services.AddProxies();
 
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = OpenIddictValidationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIddictValidationDefaults.AuthenticationScheme;
+                options.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
             })
             .AddCookie();
 
-            //services.AddAuthentication(OpenIddictValidationDefaults.AuthenticationScheme);
+            //services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
             //.AddJwtBearer(options =>
             //{
             //    //options.Authority = Configuration.GetSection("Jwt:Authority").Get<string>();
@@ -237,44 +232,104 @@ namespace FRS
                 {
                     options.UseEntityFrameworkCore().UseDbContext<ApplicationDbContext>();
                 })
+                .AddClient(options =>
+                {
+                    options.AddDevelopmentEncryptionCertificate()
+                           .AddDevelopmentSigningCertificate();
+                })
+                //.AddClient(options =>
+                //{
+                //    options.AddEphemeralEncryptionKey()
+                //           .AddEphemeralSigningKey();
+                //})
                 .AddServer(options =>
                 {
-                    options.UseMvc();
-                    options.EnableTokenEndpoint("/connect/token");
+                    //var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("RxnO9lDzsCP8vu4NFOvPbpVSkKHBMfzUjyqBv8bg"));
+                    //options.AddSigningKey(signingKey);
+
+                    //options.AddEphemeralEncryptionKey()
+                    //        .AddEphemeralSigningKey();
+
+                    //options.UseMvc();
+                    //options.AllowAuthorizationCodeFlow();
+                    options.SetTokenEndpointUris("/connect/token");
+                    options.SetIssuer(Configuration["AppSettings:baseUrl"]);
                     options.AllowPasswordFlow();
                     options.AllowRefreshTokenFlow();
                     options.AcceptAnonymousClients();
-                    options.DisableHttpsRequirement(); // Note: Comment this out in production
+                    options.AllowClientCredentialsFlow();
+                    //options.DisableHttpsRequirement(); // Note: Comment this out in production
                     options.RegisterScopes(
-                        OpenIdConnectConstants.Scopes.OpenId,
-                        OpenIdConnectConstants.Scopes.Email,
-                        OpenIdConnectConstants.Scopes.Phone,
-                        OpenIdConnectConstants.Scopes.Profile,
-                        OpenIdConnectConstants.Scopes.OfflineAccess,
+                        OpenIddictConstants.Scopes.OpenId,
+                        OpenIddictConstants.Scopes.Email,
+                        OpenIddictConstants.Scopes.Phone,
+                        OpenIddictConstants.Scopes.Profile,
+                        OpenIddictConstants.Scopes.OfflineAccess,
                         OpenIddictConstants.Scopes.Roles);
 
+                    // Register the signing and encryption credentials.
+                    options.AddDevelopmentEncryptionCertificate()
+                           .AddDevelopmentSigningCertificate();
+
+                    // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
+                    options.UseAspNetCore()
+                           .EnableTokenEndpointPassthrough()
+                           .DisableTransportSecurityRequirement();
+
+                   // options.UseDataProtection();
+                    options.DisableAccessTokenEncryption();
                     //options.UseRollingTokens(); //Uncomment to renew refresh tokens on every refreshToken request
                     // Note: to use JWT access tokens instead of the default encrypted format, the following lines are required:
                     //options.UseJsonWebTokens();
-                    //options.SetAccessTokenLifetime(TimeSpan.FromMinutes(30));
-                    //options.SetRefreshTokenLifetime(TimeSpan.FromMinutes(30));
-                    
+                    //options.SetAccessTokenLifetime(TimeSpan.FromHours(1));
+                    //options.SetRefreshTokenLifetime(TimeSpan.FromDays(30));
+
                 })
-                .AddValidation(); //Only compatible with the default token format. For JWT tokens, use the Microsoft JWT bearer handler.
-                /* Uncomment if cookie affinity doesn't fix the jwt issue
                 .AddValidation(options =>
                 {
-                    options.AddAudiences(Configuration.GetSection("Jwt:Audience").Get<string>());
-                    options.AddEventHandler<MyEventHandlerA>();
-                    options.AddEventHandler<MyEventHandlerB>();
-                    //options.AddEventHandler<OpenIddictValidationEvents.RetrieveToken>(
-                    //options.AddEventHandler<OpenIddictValidationEvents.RetrieveToken>(ev =>
+                    //var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("RxnO9lDzsCP8vu4NFOvPbpVSkKHBMfzUjyqBv8bg"));
+                    //options.AddSigningKey(signingKey);
+                    //options.UseDataProtection();
+                    options.UseLocalServer();
+                    //options.UseAspNetCore();
+                    //options.AddAudiences("frs");
+
+
+                    //options.SetIssuer(Configuration["AppSettings:baseUrl"]);
+                    //options.UseSystemNetHttp((config =>
                     //{
-                    //    ev.Context.Token = ev.Context.Request.Query["access_token"];
-                    //    return Task.CompletedTask;
-                    //});
-                });
-                */
+                    //    config.ConfigureHttpClientHandler(c =>
+                    //    {
+                    //        c.ServerCertificateCustomValidationCallback = (HttpRequestMessage requestMessage,
+                    //                                           X509Certificate2 certificate,
+                    //                                           X509Chain chain,
+                    //                                           SslPolicyErrors sslPolicyErrors) => true;
+                    //    });
+
+                    //}));
+                    options.UseAspNetCore();
+
+                }); //Only compatible with the default token format. For JWT tokens, use the Microsoft JWT bearer handler.
+            /* Uncomment if cookie affinity doesn't fix the jwt issue
+            .AddValidation(options =>
+            {
+                options.AddAudiences(Configuration.GetSection("Jwt:Audience").Get<string>());
+                options.AddEventHandler<MyEventHandlerA>();
+                options.AddEventHandler<MyEventHandlerB>();
+                //options.AddEventHandler<OpenIddictValidationEvents.RetrieveToken>(
+                //options.AddEventHandler<OpenIddictValidationEvents.RetrieveToken>(ev =>
+                //{
+                //    ev.Context.Token = ev.Context.Request.Query["access_token"];
+                //    return Task.CompletedTask;
+                //});
+            });
+            */
+
+            //services.AddAuthentication(options =>
+            //   {
+            //       options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+            //       options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+            //   }).AddCookie();
 
             // Add cors
             var origins = Configuration["AppSettings:corsOrigin"].Split(";");
@@ -298,17 +353,45 @@ namespace FRS
 
 
             // Add framework services.
-            services.AddMvc().AddControllersAsServices()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddJsonOptions(
-                    options => options.SerializerSettings.ReferenceLoopHandling =
-                    Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                );
+            //services.AddMvc().AddControllersAsServices()
+            //    .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            //    .AddJsonOptions(
+            //        options => options.SerializerSettings.ReferenceLoopHandling =
+            //        Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            //    );
 
-            services.Configure<MvcOptions>(options =>
+            services.AddMvc().AddControllersAsServices();
+
+            services.AddControllers()
+            .AddJsonOptions(options =>
             {
-                options.Filters.Add(new CorsAuthorizationFilterFactory(_corsPolicyname));
+                options.JsonSerializerOptions.IgnoreNullValues = true;
             });
+
+            // If you still need Newtonsoft.Json:
+            services.AddControllers()
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+
+            //services.AddControllers(options =>
+            //{
+            //    // Configure MVC options here if needed
+            //    options.EnableEndpointRouting = false;
+            //});
+
+
+            //services.AddControllers(options =>
+            //{
+            //    options.Filters.Add(new CorsAuthorizationFilterFactory("MyCorsPolicy"));
+            //});
+
+
+            //services.Configure<MvcOptions>(options =>
+            //{
+            //    options.Filters.Add(new CorsAuthorizationFilterFactory(_corsPolicyname));
+            //});
             //// Add cors
             //services.AddCors(options =>
             //{
@@ -370,27 +453,27 @@ namespace FRS
             //{
             //    opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             //});
-
-
-
+            var baseUrl = Configuration["AppSettings:baseUrl"];
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "FRS API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FRS API", Version = "v1" });
                 c.OperationFilter<AuthorizeCheckOperationFilter>();
-                c.AddSecurityDefinition("oauth2", new OAuth2Scheme
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
-                    Type = "oauth2",
-                    Flow = "password",
-                    TokenUrl = "/connect/token",
-                    Description = "Note: Leave client_id and client_secret blank"
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        Password = new OpenApiOAuthFlow
+                        {
+                            TokenUrl = new Uri($"{baseUrl}/connect/token"),
+                        }
+                    }
                 });
 
                 var filePath = Path.Combine(System.AppContext.BaseDirectory, "FRS.xml");
                 c.IncludeXmlComments(filePath);
-                //c.DescribeAllEnumsAsStrings();
-                //c.CustomSchemaIds(x => x.FullName);
-                //c.SchemaFilter<NamespaceSchemaFilter>();
             });
+
 
             services.AddAuthorization(options =>
             {
@@ -436,18 +519,66 @@ namespace FRS
                 //options.AddPolicy(Authorization.Policies.ManageAllPIBTemplatesPolicy, policy => policy.RequireClaim(CustomClaimTypes.Permission, AppPermissions.ManageUserPhonebooks));
             });
 
-            services.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.CallbackPath = new PathString("/google-callback");
-                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
-                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-            });
+            services.AddAuthenticationCore().AddOpenIddict();
+            services.AddAuthentication();
 
-            Mapper.Initialize(cfg =>
+            // TODO: Uncomment if required. SATS version doesn't have this
+            //services.AddAuthentication().AddGoogle(googleOptions =>
+            //{
+            //    googleOptions.CallbackPath = new PathString("/google-callback");
+            //    googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+            //    googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            //});
+
+            //services.AddAutoMapper(typeof(Startup));
+            //services.AddScoped<IMapper, Mapper>();
+            //services.AddAutoMapper(typeof(AutoMapperProfile), typeof(EntityToDTOAutoMapperProfile));
+            //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            //services.AddAuthentication()
+            //    .AddJwtBearer(options =>
+            //    {
+            //        // Configure JWT Bearer authentication
+            //        options.Authority = baseUrl;
+            //        options.Audience = "api";
+            //        options.TokenValidationParameters = new TokenValidationParameters
+            //        {
+            //            ValidateIssuer = true,
+            //            ValidateAudience = true,
+            //            ValidateLifetime = true,
+            //            ValidateIssuerSigningKey = true,
+            //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("frs-api")),
+            //            ValidIssuer = "frs-api",
+            //            ValidAudience = "frs-api"
+            //        };
+            //    });
+
+            services.AddAutoMapper(config =>
             {
-                cfg.AddProfile<AutoMapperProfile>();
-                cfg.AddProfile<EntityToDTOAutoMapperProfile>();
-            });
+                config.AddProfile<AutoMapperProfile>();
+                config.AddProfile<EntityToDTOAutoMapperProfile>();
+                config.AllowNullCollections = true;
+                config.AddGlobalIgnore("Item");
+            }, AppDomain.CurrentDomain.GetAssemblies());
+
+            //Auto Mapper Configurations
+            //var mappingConfig = new MapperConfiguration(config =>
+            //{
+            //    config.AddProfile(typeof(AutoMapperProfile));
+            //    config.AddProfile(typeof(EntityToDTOAutoMapperProfile));
+            //    config.AllowNullCollections = true;
+            //    config.AddGlobalIgnore("Item");
+            //});
+
+            //create and configure mapper
+            //IMapper mapper = mappingConfig.CreateMapper();
+            //services.AddSingleton(mapper);
+
+            //mapper.Initialize(config =>
+            //{
+            //    config.AddProfile(typeof(AutoMapperProfile));
+            //    config.AddProfile(typeof(EntityToDTOAutoMapperProfile));
+            //});
 
 
             // Configurations
@@ -532,26 +663,29 @@ namespace FRS
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ILogger<Startup> logger, IDatabaseInitializer databaseInitializer, IConfiguration configuration,
              IApplicationLifetime lifetime)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-
-            if (configuration["Logging:Default"] == "Trace")
-            {
-                loggerFactory.AddDebug(LogLevel.Trace);
-            }
-            else if (configuration["Logging:Default"] == "Debug")
-            {
-                loggerFactory.AddDebug(LogLevel.Trace);
-            }
-            else if (configuration["Logging:Default"] == "Error")
-            {
-                loggerFactory.AddDebug(LogLevel.Error);
-            }
-            else if (configuration["Logging:Default"] == "Information")
-            {
-                loggerFactory.AddDebug(LogLevel.Information);
-            }
-
+            // Add file logging if using a third-party provider
             loggerFactory.AddFile(Configuration.GetSection("Logging"));
+
+            //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+
+            //if (configuration["Logging:Default"] == "Trace")
+            //{
+            //    loggerFactory.AddDebug(LogLevel.Trace);
+            //}
+            //else if (configuration["Logging:Default"] == "Debug")
+            //{
+            //    loggerFactory.AddDebug(LogLevel.Trace);
+            //}
+            //else if (configuration["Logging:Default"] == "Error")
+            //{
+            //    loggerFactory.AddDebug(LogLevel.Error);
+            //}
+            //else if (configuration["Logging:Default"] == "Information")
+            //{
+            //    loggerFactory.AddDebug(LogLevel.Information);
+            //}
+
+            //loggerFactory.AddFile(Configuration.GetSection("Logging"));
 
             Utilities.ConfigureLogger(loggerFactory, configuration);
             Logger.ConfigureLogger(loggerFactory, configuration);
@@ -707,8 +841,11 @@ namespace FRS
                 RequestPath = new PathString("/Resources")
             });
             app.UseSpaStaticFiles();
-
+            app.UseRouting();
             app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseFileServer();
+
             //Sanitize models
             app.UseMiddleware<SanitizeMiddleware<Sanitizeable>>();
             //app.UseMiddleware<SanitizeMiddleware<OrderPortalContentViewModel>>();
@@ -735,13 +872,12 @@ namespace FRS
                 //    .GetManifestResourceStream("FRS.swagger.ui.index.html");
             });
 
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
-            });
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller}/{action=Index}/{id?}");
+            //});
 
             string enableSignalR = configuration["AppSettings:enableSignalR"];
             logger.LogInformation(LoggingEvents.SIGNALR_STATUS, string.Format("Signalr enabled: {0}", enableSignalR));
@@ -750,8 +886,12 @@ namespace FRS
                 logger.LogInformation(LoggingEvents.SIGNALR_STATUS, string.Format("UseSignalR"));
                 
                 app.UseWebSockets();
-                app.UseSignalR(routes =>
+                app.UseEndpoints(routes =>
                 {
+                    routes.MapControllerRoute(
+                        name: "default",
+                        pattern: "{controller=Home}/{action=Index}/{id?}");
+
                     HttpTransportType transportType = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
                     routes.MapHub<FRSHub>("/hub/frs", options =>
                     {
@@ -819,14 +959,6 @@ namespace FRS
                         options.WebSockets.CloseTimeout = TimeSpan.FromMinutes(6);
                     });
 
-                    routes.MapHub<UserHub>("/hub/user", options =>
-                    {
-                        options.Transports =
-                            HttpTransportType.WebSockets
-                            | HttpTransportType.LongPolling;
-                        options.WebSockets.CloseTimeout = TimeSpan.FromMinutes(6);
-                    });
-
                     routes.MapHub<MeetingRoomHub>("/hub/meetingroom", options =>
                     {
                         options.Transports =
@@ -851,7 +983,16 @@ namespace FRS
                 });
             }
 
-            app.UseSoapEndpoint<IQueueService>("/Service.asmx", new BasicHttpBinding(), SoapSerializer.XmlSerializer);
+            // TODO:
+            // Temporarily disblae for SATS version. This is not used
+            //app.UseSoapEndpoint<IQueueService>("/Service.asmx", new BasicHttpBinding(), SoapSerializer.XmlSerializer);
+            //app.UseEndpoints(endpoints => {
+            //            endpoints.UseSoapEndpoint<IQueueService>(opt =>
+            //            {
+            //                opt.Path = "/Service.asmx";
+            //                opt.SoapSerializer = SoapSerializer.DataContractSerializer;
+            //            });
+            //});
 
             app.UseSpa(spa =>
             {
@@ -871,45 +1012,58 @@ namespace FRS
 
         private StaticFileOptions GetStaticFileOptions()
         {
-            var p = new FileExtensionContentTypeProvider();
-            p.Mappings[".exe"] = "application/octet-stream";
-            return new StaticFileOptions { ContentTypeProvider = p };
-        }
-    }
-
-    public class NamespaceSchemaFilter : ISchemaFilter
-    {
-        public void Apply(Schema schema, SchemaFilterContext context)
-        {
-            if (schema is null)
+            //var p = new FileExtensionContentTypeProvider();
+            //p.Mappings[".exe"] = "application/octet-stream";
+            //return new StaticFileOptions { ContentTypeProvider = p };
+            var staticFileOptions = new StaticFileOptions
             {
-                throw new System.ArgumentNullException(nameof(schema));
-            }
+                // Configure options here if needed
+                OnPrepareResponse = ctx =>
+                {
+                    // For example, set caching headers
+                    ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=86400");
+                },
+                ServeUnknownFileTypes = true,
+                DefaultContentType = "application/octet-stream"
+            };
 
-            if (context is null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            schema.Title = context.SystemType.Name; // To replace the full name with namespace with the class name only
+            return staticFileOptions;
         }
     }
 
-    public class MyEventHandlerA : IOpenIddictValidationEventHandler<OpenIddictValidationEvents.ValidateToken>
-    {
-        async public Task<OpenIddictValidationEventState> HandleAsync(OpenIddictValidationEvents.ValidateToken notification)
-        {
-            return OpenIddictValidationEventState.Handled;
-        }
-    }
+    //public class NamespaceSchemaFilter : ISchemaFilter
+    //{
+    //    public void Apply(Schema schema, SchemaFilterContext context)
+    //    {
+    //        if (schema is null)
+    //        {
+    //            throw new System.ArgumentNullException(nameof(schema));
+    //        }
 
-    public class MyEventHandlerB : IOpenIddictValidationEventHandler<OpenIddictValidationEvents.RetrieveToken>
-    {
-        async public Task<OpenIddictValidationEventState> HandleAsync(OpenIddictValidationEvents.RetrieveToken notification)
-        {
-            return OpenIddictValidationEventState.Handled;
-        }
-    }
+    //        if (context is null)
+    //        {
+    //            throw new ArgumentNullException(nameof(context));
+    //        }
+
+    //        schema.Title = context.SystemType.Name; // To replace the full name with namespace with the class name only
+    //    }
+    //}
+
+    //public class MyEventHandlerA : IOpenIddictValidationEventHandler<OpenIddictValidationEvents.ValidateToken>
+    //{
+    //    async public Task<OpenIddictValidationEventState> HandleAsync(OpenIddictValidationEvents.ValidateToken notification)
+    //    {
+    //        return OpenIddictValidationEventState.Handled;
+    //    }
+    //}
+
+    //public class MyEventHandlerB : IOpenIddictValidationEventHandler<OpenIddictValidationEvents.RetrieveToken>
+    //{
+    //    async public Task<OpenIddictValidationEventState> HandleAsync(OpenIddictValidationEvents.RetrieveToken notification)
+    //    {
+    //        return OpenIddictValidationEventState.Handled;
+    //    }
+    //}
 
     public class SignalRCookieIdMiddleware
     {

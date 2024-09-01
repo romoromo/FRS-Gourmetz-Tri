@@ -22,13 +22,15 @@ namespace FRS.Controllers
         private readonly IAccountManager _accountManager;
         private readonly IEmailQueueService _emailService;
         private readonly ILogger _logger;
+        private readonly IMapper _mapper;
         public EmailController(IEmailSender emailSender, IUnitOfWork unitOfWork, IAccountManager accountManager, ILoggerFactory loggerFactory,
-            IEmailQueueService emailService)
+            IEmailQueueService emailService, IMapper mapper)
         {
             _emailSender = emailSender;
             _unitOfWork = unitOfWork;
             _accountManager = accountManager;
             _emailService = emailService;
+            _mapper = mapper;
             _logger = loggerFactory.CreateLogger<EmailController>();
         }
 
@@ -42,7 +44,7 @@ namespace FRS.Controllers
                 foreach(var email in emailQueues)
                 {
                     var response = await _emailSender.SendEmailAsync(email.FromName, email.FromEmail, email.ToName, email.ToEmail, email.Subject, email.Body);
-                    var eqDTO = Mapper.Map<EmailQueueDTO>(email);
+                    var eqDTO = _mapper.Map<EmailQueueDTO>(email);
                     eqDTO.IsSent = response.success;
                     eqDTO.IsFailed = !response.success;
                     if (!response.success)

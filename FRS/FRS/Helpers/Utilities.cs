@@ -1,6 +1,6 @@
-﻿using AspNet.Security.OpenIdConnect.Primitives;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using OpenIddict.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,7 +57,7 @@ namespace FRS.Helpers
 
         public static int GetUserId(ClaimsPrincipal user)
         {
-            return Convert.ToInt32(user.FindFirst(OpenIdConnectConstants.Claims.Subject)?.Value?.Trim());
+            return Convert.ToInt32(user.FindFirst(OpenIddictConstants.Claims.Subject)?.Value?.Trim());
         }
 
 
@@ -65,7 +65,7 @@ namespace FRS.Helpers
         public static string[] GetRoles(ClaimsPrincipal identity)
         {
             return identity.Claims
-                .Where(c => c.Type == OpenIdConnectConstants.Claims.Role)
+                .Where(c => c.Type == OpenIddictConstants.Claims.Role)
                 .Select(c => c.Value)
                 .ToArray();
         }

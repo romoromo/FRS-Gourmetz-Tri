@@ -54,9 +54,10 @@ namespace MealOrderPayments.Controllers
         private IPaymentService _paymentService;
         private IStudentService _studentService;
         private readonly IEmailSender _emailSender;
+        private readonly IMapper _mapper;
 
 
-        public OrderController(IConfiguration configuration, IUnitOfWork unitOfWork, ITokenOrderService service, IPaymentService paymentService, IEmailSender emailSender, IStudentService studentService)
+        public OrderController(IConfiguration configuration, IUnitOfWork unitOfWork, ITokenOrderService service, IPaymentService paymentService, IEmailSender emailSender, IStudentService studentService, IMapper mapper)
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
@@ -65,6 +66,7 @@ namespace MealOrderPayments.Controllers
             _paymentService = paymentService;
             _studentService = studentService;
             _emailSender = emailSender;
+            _mapper = mapper;
             _logger = Utilities.CreateLogger<OrderController>();
         }
 
@@ -475,7 +477,7 @@ namespace MealOrderPayments.Controllers
                 if (tokenPaymentResponse == null)
                     return BadRequest($"{nameof(tokenPaymentResponse)} cannot be null");
 
-                var type = Mapper.Map<TokenPaymentResponse>(tokenPaymentResponse);
+                var type = _mapper.Map<TokenPaymentResponse>(tokenPaymentResponse);
                 var result = await _unitOfWork.ProcessedPayments.CreateAsync(type);
 
                 newRecordID = Convert.ToInt64(result.Data);
@@ -510,7 +512,7 @@ namespace MealOrderPayments.Controllers
                 if (tokenPaymentRequest == null)
                     return BadRequest($"{nameof(tokenPaymentRequest)} cannot be null");
 
-                var type = Mapper.Map<TokenPaymentRequest>(tokenPaymentRequest);
+                var type = _mapper.Map<TokenPaymentRequest>(tokenPaymentRequest);
                 var result = await _unitOfWork.SubmittedPayments.CreateAsync(type);
 
                 long newRecordID = Convert.ToInt64(result.Data);

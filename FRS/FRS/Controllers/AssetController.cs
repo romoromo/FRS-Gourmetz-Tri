@@ -19,23 +19,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class AssetController : BaseController
     {
         private IAssetService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public AssetController(IAssetService service, ILogger<AssetController> logger)
+        public AssetController(IAssetService service, ILogger<AssetController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Asset Types
@@ -50,7 +52,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetAssetTypes(BaseFilter filter)
         {
             var results = await this._service.GetAssetTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<AssetTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<AssetTypeDTO>>(results));
         }
 
         #endregion
@@ -70,7 +72,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateAssetTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    AssetTypeDTO vm = Mapper.Map<AssetTypeDTO>(result.Data);
+                    AssetTypeDTO vm = _mapper.Map<AssetTypeDTO>(result.Data);
                     return CreatedAtAction("GetAssetTypeById", new { id = vm.Id }, vm);
                 }
 
@@ -145,7 +147,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetAssetModels(BaseFilter filter)
         {
             var results = await this._service.GetAssetModelsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<AssetModelDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<AssetModelDTO>>(results));
         }
 
         #endregion
@@ -165,7 +167,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateAssetModelAsync(dto);
                 if (result.IsSuccess)
                 {
-                    AssetModelDTO vm = Mapper.Map<AssetModelDTO>(result.Data);
+                    AssetModelDTO vm = _mapper.Map<AssetModelDTO>(result.Data);
                     return CreatedAtAction("GetAssetModelById", new { id = vm.Id }, vm);
                 }
 
@@ -240,7 +242,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetAssets(BaseFilter filter)
         {
             var results = await this._service.GetAssetsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<AssetDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<AssetDTO>>(results));
         }
 
         #endregion
@@ -260,7 +262,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateAssetAsync(dto);
                 if (result.IsSuccess)
                 {
-                    AssetDTO vm = Mapper.Map<AssetDTO>(result.Data);
+                    AssetDTO vm = _mapper.Map<AssetDTO>(result.Data);
                     return CreatedAtAction("GetAssetById", new { id = vm.Id }, vm);
                 }
 

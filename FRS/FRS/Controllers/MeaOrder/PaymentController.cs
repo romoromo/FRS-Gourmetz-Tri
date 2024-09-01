@@ -23,11 +23,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class PaymentController : BaseController
     {
@@ -36,14 +36,16 @@ namespace FRS.Controllers
         private ITokenOrderService _tokenService;
         readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IMapper _mapper;
 
-        public PaymentController(IPaymentService service, ILogger<PaymentController> logger, ITokenOrderService tokenService, IEmailSender emailSender, IStudentService studentservice)
+        public PaymentController(IPaymentService service, ILogger<PaymentController> logger, ITokenOrderService tokenService, IEmailSender emailSender, IStudentService studentservice, IMapper mapper)
         {
             _service = service;
             _logger = logger;
             _tokenService = tokenService;
             _emailSender = emailSender;
             _studentService = studentservice;
+            _mapper = mapper;
         }
 
         #region Payment Types
@@ -58,7 +60,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetPaymentTypes(BaseFilter filter)
         {
             var results = await this._service.GetPaymentTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<PaymentTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<PaymentTypeDTO>>(results));
         }
 
         #endregion
@@ -78,7 +80,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreatePaymentTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    PaymentTypeDTO vm = Mapper.Map<PaymentTypeDTO>(result.Data);
+                    PaymentTypeDTO vm = _mapper.Map<PaymentTypeDTO>(result.Data);
                     return CreatedAtAction("GetPaymentTypeById", new { id = vm.Id }, vm);
                 }
 
@@ -153,7 +155,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetPayments(BaseFilter filter)
         {
             var results = await this._service.GetPaymentsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<PaymentDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<PaymentDTO>>(results));
         }
 
         #endregion
@@ -182,7 +184,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreatePaymentAsync(dto);
                 if (result.IsSuccess)
                 {
-                    PaymentDTO vm = Mapper.Map<PaymentDTO>(result.Data);
+                    PaymentDTO vm = _mapper.Map<PaymentDTO>(result.Data);
 
                     foreach (var to in tos)
                     {
@@ -293,7 +295,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetTransactionFees(BaseFilter filter)
         {
             var results = await this._service.GetTransactionFeesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TransactionFeeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<TransactionFeeDTO>>(results));
         }
 
         #endregion
@@ -313,7 +315,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateTransactionFeeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    TransactionFeeDTO vm = Mapper.Map<TransactionFeeDTO>(result.Data);
+                    TransactionFeeDTO vm = _mapper.Map<TransactionFeeDTO>(result.Data);
                     return CreatedAtAction("GetTransactionFeeById", new { id = vm.Id }, vm);
                 }
 
@@ -388,7 +390,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetVoucherTypes(BaseFilter filter)
         {
             var results = await this._service.GetVoucherTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<VoucherTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<VoucherTypeDTO>>(results));
         }
 
         #endregion
@@ -408,7 +410,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateVoucherTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    VoucherTypeDTO vm = Mapper.Map<VoucherTypeDTO>(result.Data);
+                    VoucherTypeDTO vm = _mapper.Map<VoucherTypeDTO>(result.Data);
                     return CreatedAtAction("GetVoucherTypeById", new { id = vm.Id }, vm);
                 }
 
@@ -483,7 +485,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetVoucher(BaseFilter filter)
         {
             var results = await this._service.GetVouchersAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<VoucherDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<VoucherDTO>>(results));
         }
 
         #endregion
@@ -503,7 +505,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateVoucherAsync(dto);
                 if (result.IsSuccess)
                 {
-                    VoucherDTO vm = Mapper.Map<VoucherDTO>(result.Data);
+                    VoucherDTO vm = _mapper.Map<VoucherDTO>(result.Data);
                     return CreatedAtAction("GetVoucherById", new { id = vm.Id }, vm);
                 }
 
@@ -584,7 +586,7 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetAllValidVoucher(int studentId)
         {
-            return Ok(Mapper.Map<List<VoucherDTO>>(await this._service.GetAllValidVoucher(studentId)));
+            return Ok(_mapper.Map<List<VoucherDTO>>(await this._service.GetAllValidVoucher(studentId)));
         }
 
         #endregion
@@ -601,7 +603,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetWaivers(BaseFilter filter)
         {
             var results = await this._service.GetWaiversAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<WaiverDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<WaiverDTO>>(results));
         }
 
         #endregion
@@ -621,7 +623,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateWaiverAsync(dto);
                 if (result.IsSuccess)
                 {
-                    WaiverDTO vm = Mapper.Map<WaiverDTO>(result.Data);
+                    WaiverDTO vm = _mapper.Map<WaiverDTO>(result.Data);
                     return CreatedAtAction("GetWaiverById", new { id = vm.Id }, vm);
                 }
 

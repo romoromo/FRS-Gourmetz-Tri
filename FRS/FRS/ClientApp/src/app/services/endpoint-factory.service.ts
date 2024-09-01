@@ -17,12 +17,14 @@ export class EndpointFactory {
   private readonly _resend2FAUrl: string = "/login/multi-fa/resend";
   private readonly _forgotPasswordUrl: string = "/api/account/forgotpassword";
   private readonly _resetPasswordUrl: string = "/api/account/resetpassword";
+  private readonly _rolePermissionsUrl: string = "/api/account/roles/permissions";
 
   private get loginUrl() { return this.configurations.baseUrl + this._loginUrl; }
   private get forgotPasswordUrl() { return this.configurations.baseUrl + this._forgotPasswordUrl; }
   private get resetPasswordUrl() { return this.configurations.baseUrl + this._resetPasswordUrl; }
   private get login2FAUrl() { return this.configurations.baseUrl + this._login2FAUrl; }
   private get resend2FAUrl() { return this.configurations.baseUrl + this._resend2FAUrl; }
+  private get rolePermissionsUrl() { return this.configurations.baseUrl + this._rolePermissionsUrl; }
   
   private taskPauser: Subject<any>;
   private isRefreshingLogin: boolean;
@@ -40,6 +42,13 @@ export class EndpointFactory {
 
   constructor(protected http: HttpClient, protected configurations: ConfigurationService, private injector: Injector) {
 
+  }
+
+  getUserPermissions<T>(roleNames: string[]): Observable<T> {
+    return this.http.post<T>(`${this.rolePermissionsUrl}`, JSON.stringify(roleNames), this.getRequestHeaders()).pipe<T>(
+      catchError(error => {
+        return this.handleError(error, () => this.getUserPermissions(roleNames));
+      }));
   }
 
   getForgotPasswordEndpoint<T>(email: string, institutionCode?: string): Observable<T> {

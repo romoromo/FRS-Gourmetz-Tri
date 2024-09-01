@@ -13,23 +13,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class ServiceContractController : BaseController
     {
         private IServiceContractService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public ServiceContractController(IServiceContractService service, ILogger<ServiceContractController> logger)
+        public ServiceContractController(IServiceContractService service, ILogger<ServiceContractController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Service Contracts
@@ -44,7 +46,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetServiceContracts(BaseFilter filter)
         {
             var results = await this._service.GetServiceContractsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ServiceContractDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<ServiceContractDTO>>(results));
         }
 
         #endregion
@@ -64,7 +66,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateServiceContractAsync(dto);
                 if (result.IsSuccess)
                 {
-                    ServiceContractDTO vm = Mapper.Map<ServiceContractDTO>(result.Data);
+                    ServiceContractDTO vm = _mapper.Map<ServiceContractDTO>(result.Data);
                     return CreatedAtAction("GetServiceContractById", new { id = vm.Id }, vm);
                 }
 

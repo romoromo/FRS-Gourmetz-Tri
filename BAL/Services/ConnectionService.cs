@@ -25,16 +25,18 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public ConnectionService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public ConnectionService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         public async Task<ConnectionDTO> GetConnectionStatus(int deviceId)
         {
-            var result = Mapper.Map<ConnectionDTO>(await this._uow.Connections.GetFirstOrDefaultAsync(e => e.Identifier == deviceId.ToString()));
+            var result = _mapper.Map<ConnectionDTO>(await this._uow.Connections.GetFirstOrDefaultAsync(e => e.Identifier == deviceId.ToString()));
             return result;
         }
     }

@@ -11,23 +11,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class DashboardController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
         private IConnectionService _connectionService;
-        public DashboardController(IUnitOfWork unitOfWork, ILogger<DashboardController> logger, IConnectionService connectionService)
+        private readonly IMapper _mapper;
+        public DashboardController(IUnitOfWork unitOfWork, ILogger<DashboardController> logger, IConnectionService connectionService, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _connectionService = connectionService;
+            _mapper = mapper;
         }
 
         [HttpPost("upcomingevents/{pageSize:int}")]
@@ -45,7 +47,7 @@ namespace FRS.Controllers
             }
 
             var reservations = await _unitOfWork.Reservations.GetReservationsLoadRelatedAsync(1, pageSize, filter);
-            return Ok(Mapper.Map<List<ReservationViewModel>>(reservations));
+            return Ok(_mapper.Map<List<ReservationViewModel>>(reservations));
         }
 
         [HttpPost("inprogressevents/{pageSize:int}")]
@@ -64,7 +66,7 @@ namespace FRS.Controllers
 
             filter.IsForAttendance = true;
             var reservations = await _unitOfWork.Reservations.GetReservationsLoadRelatedAsync(1, pageSize, filter);
-            return Ok(Mapper.Map<List<ReservationViewModel>>(reservations));
+            return Ok(_mapper.Map<List<ReservationViewModel>>(reservations));
         }
 
         [HttpPost("devices/{pageNumber:int}/{pageSize:int}")]
@@ -73,7 +75,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDevices(int pageNumber, int pageSize, [FromBody] DeviceFilter filter)
         {
             var results = await _unitOfWork.Devices.GetDevicesLoadRelatedAsync(pageNumber, pageSize, filter);
-            return Ok(Mapper.Map<List<DeviceViewModel>>(results));
+            return Ok(_mapper.Map<List<DeviceViewModel>>(results));
         }
 
         [HttpPost("pibdevices/{pageNumber:int}/{pageSize:int}")]
@@ -82,7 +84,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetPIBDevices(int pageNumber, int pageSize, [FromBody] DeviceFilter filter)
         {
             var results = await _unitOfWork.PIBTemplates.GetApiPIBDevices();
-            return Ok(Mapper.Map<List<PIBDeviceViewModel>>(results.Data));
+            return Ok(_mapper.Map<List<PIBDeviceViewModel>>(results.Data));
         }
 
         [HttpPost("signage/dashboard")]
@@ -91,7 +93,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetActivityReportDashboard([FromBody] DashboardFilter filter)
         {
             var results = await _unitOfWork.Devices.GetSignageDashboard(filter);
-            var sgnDashboardVM = Mapper.Map<SignageDashboardViewModel>(results);
+            var sgnDashboardVM = _mapper.Map<SignageDashboardViewModel>(results);
             foreach (var device in sgnDashboardVM.PagedDevices.PagedData)
             {
                 string status = "OFFLINE";

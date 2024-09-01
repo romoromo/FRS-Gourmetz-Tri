@@ -16,36 +16,38 @@ namespace BAL.Services.MealOrder
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public ManagementService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public ManagementService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         #region Faq Subject
         public async Task<PagedEntity<FaqSubjectDTO>> GetFaqSubjectsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<FaqSubjectDTO>>(await this._uow.FaqSubjects.GetFaqSubjectsAsync(filter));
+            var result = _mapper.Map<PagedEntity<FaqSubjectDTO>>(await this._uow.FaqSubjects.GetFaqSubjectsAsync(filter));
             return result;
         }
 
         public async Task<FaqSubjectDTO> GetFaqSubjectByIdAsync(int id)
         {
-            return Mapper.Map<FaqSubjectDTO>(await this._uow.FaqSubjects.GetByIdAsync(id));
+            return _mapper.Map<FaqSubjectDTO>(await this._uow.FaqSubjects.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateFaqSubjectAsync(FaqSubjectDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.FaqSubjects.CreateAsync(Mapper.Map<FaqSubject>(dto));
+            result = await this._uow.FaqSubjects.CreateAsync(_mapper.Map<FaqSubject>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateFaqSubjectAsync(FaqSubjectDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.FaqSubjects.UpdateAsync(Mapper.Map<FaqSubject>(dto));
+            result = await this._uow.FaqSubjects.UpdateAsync(_mapper.Map<FaqSubject>(dto));
             return result;
         }
 
@@ -68,26 +70,26 @@ namespace BAL.Services.MealOrder
         #region Faq Detail
         public async Task<PagedEntity<FaqDetailDTO>> GetFaqDetailsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<FaqDetailDTO>>(await this._uow.FaqDetails.GetFaqDetailsAsync(filter));
+            var result = _mapper.Map<PagedEntity<FaqDetailDTO>>(await this._uow.FaqDetails.GetFaqDetailsAsync(filter));
             return result;
         }
 
         public async Task<FaqDetailDTO> GetFaqDetailByIdAsync(int id)
         {
-            return Mapper.Map<FaqDetailDTO>(await this._uow.FaqDetails.GetByIdAsync(id));
+            return _mapper.Map<FaqDetailDTO>(await this._uow.FaqDetails.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateFaqDetailAsync(FaqDetailDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.FaqDetails.CreateAsync(Mapper.Map<FaqDetail>(dto));
+            result = await this._uow.FaqDetails.CreateAsync(_mapper.Map<FaqDetail>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateFaqDetailAsync(FaqDetailDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.FaqDetails.UpdateAsync(Mapper.Map<FaqDetail>(dto));
+            result = await this._uow.FaqDetails.UpdateAsync(_mapper.Map<FaqDetail>(dto));
             return result;
         }
 

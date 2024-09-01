@@ -23,40 +23,42 @@ namespace BAL.Services.MealOrder
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
         private ILogger _logger;
+        private readonly IMapper _mapper;
 
-        public OrderPortalService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public OrderPortalService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
             _logger = Utilities.Logger.CreateLogger<OrderPortalService>();
+            _mapper = mapper;
         }
 
         public async Task<PagedEntity<OrderPortalContentDTO>> GetOrderPortalContentsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<OrderPortalContentDTO>>(await this._uow.OrderPortalContents.GetOrderPortalContentsAsync(filter));
+            var result = _mapper.Map<PagedEntity<OrderPortalContentDTO>>(await this._uow.OrderPortalContents.GetOrderPortalContentsAsync(filter));
             return result;
         }
 
         public async Task<OrderPortalContentDTO> GetOrderPortalContentByIdAsync(int id)
         {
-            return Mapper.Map<OrderPortalContentDTO>(await this._uow.OrderPortalContents.GetByIdAsync(id));
+            return _mapper.Map<OrderPortalContentDTO>(await this._uow.OrderPortalContents.GetByIdAsync(id));
         }
 
         public async Task<OrderPortalContentDTO> GetOrderPortalContentFirst(int outletId)
         {
-            return Mapper.Map<OrderPortalContentDTO>(await this._uow.OrderPortalContents.GetOrderPortalContentFirst(outletId));
+            return _mapper.Map<OrderPortalContentDTO>(await this._uow.OrderPortalContents.GetOrderPortalContentFirst(outletId));
         }
 
         public async Task<BaseOperationResponse> CreateOrderPortalContentAsync(OrderPortalContentDTO dto)
         {
             dto = GetOrderPortalContentWithFile(dto);
-            return await this._uow.OrderPortalContents.CreateAsync(Mapper.Map<OrderPortalContent>(dto));
+            return await this._uow.OrderPortalContents.CreateAsync(_mapper.Map<OrderPortalContent>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateOrderPortalContentAsync(OrderPortalContentDTO dto)
         {
             dto = GetOrderPortalContentWithFile(dto);
-            return await this._uow.OrderPortalContents.UpdateAsync(Mapper.Map<OrderPortalContent>(dto));
+            return await this._uow.OrderPortalContents.UpdateAsync(_mapper.Map<OrderPortalContent>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteOrderPortalContentAsync(int id)

@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FRS
 {
@@ -14,7 +11,7 @@ namespace FRS
     // If it does, we add the frs_api scope so IdentityServer can validate permission for that scope.
     internal class AuthorizeCheckOperationFilter : IOperationFilter
     {
-        public void Apply(Operation operation, OperationFilterContext context)
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             // Check for authorize attribute
             var hasAuthorize = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
@@ -24,13 +21,23 @@ namespace FRS
 
             if (hasAuthorize)
             {
-                operation.Responses.Add("401", new Response { Description = "Unauthorized" });
+                operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
 
-                operation.Security = new List<IDictionary<string, IEnumerable<string>>>
+                operation.Security = new List<OpenApiSecurityRequirement>
                 {
-                    new Dictionary<string, IEnumerable<string>>
+                    new OpenApiSecurityRequirement
                     {
-                        { "oauth2", new string [] { } }
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "oauth2" // The ID must match the security definition name
+                                }
+                            },
+                            Array.Empty<string>() // Add the appropriate scopes if required
+                        }
                     }
                 };
             }

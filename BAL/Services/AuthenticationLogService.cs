@@ -21,11 +21,13 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private ApplicationDbContext _appContext;
+        private readonly IMapper _mapper;
 
-        public AuthenticationLogService(ApplicationDbContext context, ISieveProcessor sieveProcessor)
+        public AuthenticationLogService(ApplicationDbContext context, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._appContext = context;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -40,7 +42,7 @@ namespace BAL.Services
             {
                 Filter = filter,
                 TotalCount = totalCount,
-                PagedData =  Mapper.Map<List<AuthenticationLogDTO>>(await query.ToListAsync())
+                PagedData =  _mapper.Map<List<AuthenticationLogDTO>>(await query.ToListAsync())
             };
 
             return result;
@@ -51,7 +53,7 @@ namespace BAL.Services
             IQueryable<AuthenticationLog> query = _appContext.AuthenticationLogs;
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var logs = Mapper.Map<List<AuthenticationLogDTO>>(await query.ToListAsync());
+            var logs = _mapper.Map<List<AuthenticationLogDTO>>(await query.ToListAsync());
 
             if (logs != null)
             {
@@ -137,7 +139,7 @@ namespace BAL.Services
         #endregion
         public async Task<AuthenticationLogDTO> GetByIdAsync(int id)
         {
-            return Mapper.Map<AuthenticationLogDTO>(await _appContext.AuthenticationLogs.FindAsync(id));
+            return _mapper.Map<AuthenticationLogDTO>(await _appContext.AuthenticationLogs.FindAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateAsync(AuthenticationLogDTO logDTO)
@@ -145,7 +147,7 @@ namespace BAL.Services
             var result = new BaseOperationResponse();
             try
             {
-                var log = Mapper.Map<AuthenticationLog>(logDTO);
+                var log = _mapper.Map<AuthenticationLog>(logDTO);
 
                 var f = await _appContext.AuthenticationLogs.AddAsync(log);
                 if (await _appContext.SaveChangesAsync() > 0)

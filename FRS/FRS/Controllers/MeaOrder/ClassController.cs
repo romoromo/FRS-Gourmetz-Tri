@@ -22,22 +22,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class ClassController : BaseController
     {
         private IClassService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public ClassController(IClassService service, ILogger<ClassController> logger)
+        public ClassController(IClassService service, ILogger<ClassController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
         #region Class Batches
 
@@ -51,7 +53,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetClassBatches(BaseFilter filter)
         {
             var results = await this._service.GetClassBatchesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ClassBatchDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<ClassBatchDTO>>(results));
         }
 
         #endregion
@@ -71,7 +73,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateClassBatchAsync(dto);
                 if (result.IsSuccess)
                 {
-                    ClassBatchDTO vm = Mapper.Map<ClassBatchDTO>(result.Data);
+                    ClassBatchDTO vm = _mapper.Map<ClassBatchDTO>(result.Data);
                     return CreatedAtAction("GetClassBatchById", new { id = vm.Id }, vm);
                 }
 
@@ -146,7 +148,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetClassLevels(BaseFilter filter)
         {
             var results = await this._service.GetClassLevelsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ClassLevelDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<ClassLevelDTO>>(results));
         }
 
         #endregion
@@ -166,7 +168,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateClassLevelAsync(dto);
                 if (result.IsSuccess)
                 {
-                    ClassLevelDTO vm = Mapper.Map<ClassLevelDTO>(result.Data);
+                    ClassLevelDTO vm = _mapper.Map<ClassLevelDTO>(result.Data);
                     return CreatedAtAction("GetClassLevelById", new { id = vm.Id }, vm);
                 }
 
@@ -241,7 +243,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetClasss(BaseFilter filter)
         {
             var results = await this._service.GetClassesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ClassDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<ClassDTO>>(results));
         }
 
         #endregion
@@ -261,7 +263,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateClassAsync(dto);
                 if (result.IsSuccess)
                 {
-                    ClassDTO vm = Mapper.Map<ClassDTO>(result.Data);
+                    ClassDTO vm = _mapper.Map<ClassDTO>(result.Data);
                     return CreatedAtAction("GetClassById", new { id = vm.Id }, vm);
                 }
 
@@ -335,7 +337,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetClassRosters(ClassRosterFilter rosterFilter)
         {
             var results = await this._service.GetOutletClassRostersAsync(rosterFilter);
-            return Ok(Mapper.Map<PagedEntityViewModel<OutletClassRosterDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<OutletClassRosterDTO>>(results));
         }
 
         #endregion
@@ -365,7 +367,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetClassRosterByCatererOutlet(int outletId, int catererId, int mealSessionId)
         {
             var results = await this._service.GetOutletClassRosterByIdAsync(outletId, catererId, mealSessionId);
-            return Ok(Mapper.Map<OutletClassRosterDTO>(results));
+            return Ok(_mapper.Map<OutletClassRosterDTO>(results));
         }
 
         [HttpPost("classrosters")]
@@ -500,7 +502,7 @@ namespace FRS.Controllers
         //public async Task<IActionResult> GetMenuCycleSchedulePeriods(int menuCycleId, int day)
         //{
         //    var results = await this._service.GetMenuCycleSchedulePeriods(menuCycleId, day);
-        //    return Ok(Mapper.Map<List<MenuCycleSchedulePeriodDTO>>(results));
+        //    return Ok(_mapper.Map<List<MenuCycleSchedulePeriodDTO>>(results));
         //}
 
         #endregion

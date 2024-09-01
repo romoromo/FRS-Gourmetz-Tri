@@ -33,11 +33,11 @@ using Newtonsoft.Json;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class TokenOrderController : BaseController
     {
@@ -51,10 +51,11 @@ namespace FRS.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IHubContext<UserHub> _userHub;
         private readonly IStudentService _studentService;
+        private readonly IMapper _mapper;
 
         public TokenOrderController(ITokenOrderService service, ILogger<TokenOrderController> logger, IAccountManager accountManager, OrderController orderController,
             IMenuService menuService, IConfiguration configuration, INotificationService notificationService, IHubContext<UserHub> userHub, IEmailSender emailSender,
-            IStudentService studentService)
+            IStudentService studentService, IMapper mapper)
         {
             _service = service;
             _logger = logger;
@@ -66,6 +67,7 @@ namespace FRS.Controllers
             _emailSender = emailSender;
             _userHub = userHub;
             _studentService = studentService;
+            _mapper = mapper;
         }
 
         #region Token Orders
@@ -82,7 +84,7 @@ namespace FRS.Controllers
             if (filter.isrequest) await _orderController.QueryAndUpdatePaymentStatus(filter.studentId);
 
             var results = await this._service.GetTokenOrdersAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(results));
         }
 
         //[ApiKeyAuthorize]
@@ -130,7 +132,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateTokenOrderAsync(dto);
                 if (result.IsSuccess)
                 {
-                    TokenOrderDTO vm = Mapper.Map<TokenOrderDTO>(result.Data);
+                    TokenOrderDTO vm = _mapper.Map<TokenOrderDTO>(result.Data);
                     return CreatedAtAction("GetTokenOrderById", new { id = vm.Id }, vm);
                 }
 
@@ -310,7 +312,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetCancelOrderRequests(BaseFilter filter)
         {
             var results = await this._service.GetCancelOrderRequestsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<CancelOrderRequestDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<CancelOrderRequestDTO>>(results));
         }
 
         #endregion
@@ -340,7 +342,7 @@ namespace FRS.Controllers
         {
             try
             {
-                var dto = Mapper.Map<CancelOrderRequestDTO>(model);
+                var dto = _mapper.Map<CancelOrderRequestDTO>(model);
                 _logger.LogDebug("CreateCancelOrderRequest: ", model == null ? "NULL" : JsonConvert.SerializeObject(model));
                 var folderName = Path.Combine("Resources", "Orders", "Cancellation", dto.OrderId.ToString());
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
@@ -626,7 +628,7 @@ namespace FRS.Controllers
             if (filter.isrequest) await _orderController.QueryAndUpdatePaymentStatus(filter.studentId);
 
             var results = await this._service.GetTokensOrderHistorysAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TokensOrderHistoryDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<TokensOrderHistoryDTO>>(results));
         }
 
         #endregion
@@ -662,7 +664,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateTokensOrderHistoryAsync(dto);
                 if (result.IsSuccess)
                 {
-                    TokensOrderHistoryDTO vm = Mapper.Map<TokensOrderHistoryDTO>(result.Data);
+                    TokensOrderHistoryDTO vm = _mapper.Map<TokensOrderHistoryDTO>(result.Data);
                     return CreatedAtAction("GetTokensOrderHistoryById", vm);
                 }
 
@@ -740,7 +742,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetTokenOrdereds(BaseFilter filter)
         {
             var results = await this._service.GetTokenOrderedsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderedDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<TokenOrderedDTO>>(results));
         }
 
         #endregion
@@ -775,7 +777,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateTokenOrderedAsync(dto);
                 if (result.IsSuccess)
                 {
-                    TokenOrderedDTO vm = Mapper.Map<TokenOrderedDTO>(result.Data);
+                    TokenOrderedDTO vm = _mapper.Map<TokenOrderedDTO>(result.Data);
                     return CreatedAtAction("GetTokenOrderedById", new { id = vm.Id }, vm);
                 }
 
@@ -852,7 +854,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetTokenLabels(BaseFilter filter)
         {
             var results = await this._service.GetTokenLabelsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TokenLabelDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<TokenLabelDTO>>(results));
         }
 
         #endregion
@@ -888,7 +890,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateTokenLabelAsync(dto);
                 if (result.IsSuccess)
                 {
-                    TokenLabelDTO vm = Mapper.Map<TokenLabelDTO>(result.Data);
+                    TokenLabelDTO vm = _mapper.Map<TokenLabelDTO>(result.Data);
                     return CreatedAtAction("GetTokenLabelById", new { id = vm.Id }, vm);
                 }
 
@@ -966,7 +968,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMealAllocations(BaseFilter filter)
         {
             var results = await this._service.GetMealAllocationsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MealAllocationDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MealAllocationDTO>>(results));
         }
 
         #endregion
@@ -1002,7 +1004,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateMealAllocationAsync(dto);
                 if (result.IsSuccess)
                 {
-                    MealAllocationDTO vm = Mapper.Map<MealAllocationDTO>(result.Data);
+                    MealAllocationDTO vm = _mapper.Map<MealAllocationDTO>(result.Data);
                     return CreatedAtAction("GetMealAllocationById", new { id = vm.Id }, vm);
                 }
 
@@ -1079,7 +1081,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetPackingAllocations(BaseFilter filter)
         {
             var results = await this._service.GetPackingAllocationsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<PackingAllocationDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<PackingAllocationDTO>>(results));
         }
 
         #endregion
@@ -1115,7 +1117,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreatePackingAllocationAsync(dto);
                 if (result.IsSuccess)
                 {
-                    PackingAllocationDTO vm = Mapper.Map<PackingAllocationDTO>(result.Data);
+                    PackingAllocationDTO vm = _mapper.Map<PackingAllocationDTO>(result.Data);
                     return CreatedAtAction("GetPAckingAllocationById", new { id = vm.Id }, vm);
                 }
 
@@ -1192,7 +1194,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMealPlanOrders(BaseFilter filter)
         {
             var results = await this._service.GetMealPlanOrdersAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MealPlanOrderDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MealPlanOrderDTO>>(results));
         }
 
         #endregion
@@ -1228,7 +1230,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateMealPlanOrderAsync(dto);
                 if (result.IsSuccess)
                 {
-                    MealPlanOrderDTO vm = Mapper.Map<MealPlanOrderDTO>(result.Data);
+                    MealPlanOrderDTO vm = _mapper.Map<MealPlanOrderDTO>(result.Data);
                     return CreatedAtAction("GetPAckingAllocationById", new { id = vm.Id }, vm);
                 }
 
@@ -1330,7 +1332,7 @@ namespace FRS.Controllers
         {
             var dtos = await this._service.RetrieveSalesData(filter);
 
-            return Ok(Mapper.Map<List<SalesDataDTO>>(dtos));
+            return Ok(_mapper.Map<List<SalesDataDTO>>(dtos));
         }
 
         [HttpGet("ordersession")]
@@ -1352,7 +1354,7 @@ namespace FRS.Controllers
             }
             var dtos = await this._service.GetTokenOrderWithCurrentSession(filter, Convert.ToInt32(mealAllocationId));
 
-            return Ok(Mapper.Map<List<TokenOrderDTO>>(dtos));
+            return Ok(_mapper.Map<List<TokenOrderDTO>>(dtos));
         }
 
         [HttpPost("orderreport")]
@@ -1450,7 +1452,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOrderLogs(OrderCancellationFilter filter)
         {
             var logs = await _service.GetTokenOrdersForCancellationAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
         }
 
         [HttpPost("cancellations/cancel")]
@@ -1474,7 +1476,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStudentOrders(StudentOrderFilter filter)
         {
             var logs = await _service.GetStudentOrdersAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
         }
 
         [HttpPost("students/amend")]

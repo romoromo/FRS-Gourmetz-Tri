@@ -21,23 +21,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class UserController : BaseController
     {
         private IUserService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public UserController(IUserService service, ILogger<UserController> logger)
+        public UserController(IUserService service, ILogger<UserController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region User Types
@@ -52,7 +55,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStaffTypes(BaseFilter filter)
         {
             var results = await this._service.GetStaffTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<StaffTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<StaffTypeDTO>>(results));
         }
 
         #endregion
@@ -72,7 +75,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateStaffTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    StaffTypeDTO vm = Mapper.Map<StaffTypeDTO>(result.Data);
+                    StaffTypeDTO vm = _mapper.Map<StaffTypeDTO>(result.Data);
                     return CreatedAtAction("GetStaffTypeById", new { id = vm.Id }, vm);
                 }
 

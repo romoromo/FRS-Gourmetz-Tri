@@ -15,7 +15,7 @@ namespace FRS
     {
         public ApplicationDbContext CreateDbContext(string[] args)
         {
-            Mapper.Reset();
+            //_mapper.Reset();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

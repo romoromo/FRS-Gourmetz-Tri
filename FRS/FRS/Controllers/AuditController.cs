@@ -15,11 +15,11 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiKeyAuthorize]
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -31,10 +31,11 @@ namespace FRS.Controllers
         private readonly IUpDownTimeLogService _upDownTimeLogService;
         private readonly IAuditLogService _auditLogService;
         private ITokenOrderService _tokenOrderService;
+        private readonly IMapper _mapper;
 
         public AuditController(IUnitOfWork unitOfWork, ILogger<AuditController> logger, IAuthenticationLogService authenticationLogService,
             IUpDownTimeLogService upDownTimeLogService,
-            IAuditLogService auditLogService, ITokenOrderService tokenOrderService)
+            IAuditLogService auditLogService, ITokenOrderService tokenOrderService, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -42,6 +43,7 @@ namespace FRS.Controllers
             _upDownTimeLogService = upDownTimeLogService;
             _auditLogService = auditLogService;
             _tokenOrderService = tokenOrderService;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -53,7 +55,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetAuthenticationLogs(BaseFilter filter)
         {
             var logs = await _authenticationLogService.GetAuthenticationLogsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<AuthenticationLogDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<AuthenticationLogDTO>>(logs));
         }
 
         [HttpGet("updowntimelogs/sieve/list")]
@@ -64,7 +66,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetUpDownTimeLogs(BaseFilter filter)
         {
             var logs = await _upDownTimeLogService.GetUpDownTimeLogsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<UpDownTimeLogDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<UpDownTimeLogDTO>>(logs));
         }
 
         [HttpGet("datalogs/sieve/list")]
@@ -75,7 +77,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetAuditLogs(BaseFilter filter)
         {
             var logs = await _auditLogService.GetDataLogsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<AuditLogDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<AuditLogDTO>>(logs));
         }
 
 
@@ -87,7 +89,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetAuditDetailLogs(BaseFilter filter)
         {
             var logs = await _auditLogService.GetDataLogDetailsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<AuditLogDetailDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<AuditLogDetailDTO>>(logs));
         }
 
         [HttpPost("exportauthlogs")]
@@ -168,7 +170,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetExternalLoginLogs(BaseFilter filter)
         {
             var logs = await _auditLogService.GetExternalLoginLogsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ExternalAppLoginLogDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<ExternalAppLoginLogDTO>>(logs));
         }
 
         [HttpPost("externalloginlogs")]
@@ -201,7 +203,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOrderLogs(SalesOrderReportFilter filter)
         {
             var logs = await _tokenOrderService.GetSalesOrdersAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<TokenOrderDTO>>(logs));
         }
 
         [HttpPost("exportorders")]
@@ -278,7 +280,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetUserActivityLogs(UserActivityLogReportFilter filter)
         {
             var logs = await _auditLogService.GetUserActivityLogs(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<UserActivityLogDTO>>(logs));
+            return Ok(_mapper.Map<PagedEntityViewModel<UserActivityLogDTO>>(logs));
         }
 
         [HttpPost("exportuseractivity/flatten")]

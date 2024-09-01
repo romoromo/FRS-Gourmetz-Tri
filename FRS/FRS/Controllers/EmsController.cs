@@ -10,23 +10,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class EmsController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public EmsController(IUnitOfWork unitOfWork, ILogger<EmsController> logger)
+        public EmsController(IUnitOfWork unitOfWork, ILogger<EmsController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiEmses(int? emsId = null)
         {
             var result = await _unitOfWork.Emses.GetApiEmses(emsId).ConfigureAwait(false);
-            var data = Mapper.Map<List<EmsViewModel>>(result.Data);
+            var data = _mapper.Map<List<EmsViewModel>>(result.Data);
 
             if (emsId.HasValue)
             {
@@ -70,7 +72,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmses(int pageNumber, int pageSize)
         {
             var results = await _unitOfWork.Emses.GetEmsesLoadRelatedAsync(pageNumber, pageSize).ConfigureAwait(false);
-            return Ok(Mapper.Map<List<EmsViewModel>>(results));
+            return Ok(_mapper.Map<List<EmsViewModel>>(results));
         }
 
         [HttpPost("")]
@@ -85,12 +87,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(ems)} cannot be null");
 
 
-                var type = Mapper.Map<Ems>(ems);
+                var type = _mapper.Map<Ems>(ems);
 
                 var result = await _unitOfWork.Emses.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    EmsViewModel emsVM = Mapper.Map<EmsViewModel>(result.Data);
+                    EmsViewModel emsVM = _mapper.Map<EmsViewModel>(result.Data);
                     return CreatedAtAction("GetEmsById", new { id = emsVM.Id }, emsVM);
                 }
 
@@ -114,7 +116,7 @@ namespace FRS.Controllers
 
             var ems = await this._unitOfWork.Emses.GetByIdAsync(id).ConfigureAwait(false);
 
-            EmsViewModel emsVM = Mapper.Map<EmsViewModel>(ems);
+            EmsViewModel emsVM = _mapper.Map<EmsViewModel>(ems);
             if (emsVM == null)
                 return NotFound(id);
 
@@ -145,11 +147,11 @@ namespace FRS.Controllers
 
                 var ems = await this._unitOfWork.Emses.GetByIdAsync(model.Id).ConfigureAwait(false);
 
-                EmsViewModel emsVM = Mapper.Map<EmsViewModel>(ems);
+                EmsViewModel emsVM = _mapper.Map<EmsViewModel>(ems);
                 if (emsVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Ems>(model);
+                var updatedModel = _mapper.Map<Ems>(model);
                 var result = await _unitOfWork.Emses.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

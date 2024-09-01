@@ -14,6 +14,7 @@ using static DAL.Core.Helpers.TreeExtensions;
 using SMV.FOMOPay.Model;
 using DAL.Models.StoredProcedures;
 using System.Data;
+using Microsoft.AspNetCore.Http;
 
 namespace BAL.Mapping
 {
@@ -22,6 +23,7 @@ namespace BAL.Mapping
         public EntityToDTOAutoMapperProfile()
         {
             CreateMap(typeof(PagedEntity<>), typeof(PagedEntityDTO<>));
+            CreateMap(typeof(PagedEntity<>), typeof(PagedEntity<>));
 
             CreateMap<ExternalAppLoginLog, ExternalAppLoginLogDTO>();
             CreateMap<ExternalAppLoginLogDTO, ExternalAppLoginLog>();
@@ -130,6 +132,7 @@ namespace BAL.Mapping
         private void MapMealOrderEntityProfile()
         {
             CreateMap<ClassBatchDTO, ClassBatch>();
+            CreateMap<ClassBatch, ClassBatchDTO>();
             CreateMap<ClassLevelDTO, ClassLevel>();
             CreateMap<ClassLevel, ClassLevelDTO>()
                 .ForMember(e => e.OutletName, map => map.MapFrom(f => f.Outlet.Name));
@@ -173,6 +176,8 @@ namespace BAL.Mapping
 
             CreateMap<UserCardIdDTO, UserCardId>();
             CreateMap<StudentCardDTO, StudentCard>();
+            CreateMap<StudentCard, StudentCardDTO>();
+
             CreateMap<StudentRestriction, StudentRestrictionDTO>()
                 .ForMember(d => d.RestrictionCode, map => map.MapFrom(s => s.Restriction != null ? s.Restriction.Code : string.Empty))
                 .ForMember(d => d.RestrictionTypeCode, map => map.MapFrom(s => s.Restriction != null && s.Restriction.RestrictionType != null ? s.Restriction.RestrictionType.Code : string.Empty));
@@ -240,7 +245,10 @@ namespace BAL.Mapping
                 .ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSessionDetailName))
                 .ForMember(e => e.MealDescription, map => map.MapFrom(e => e.DishLabel))
                 .ForMember(e => e.TransactionTime, map => map.MapFrom(e => e.OrderDate))
-                .ForMember(e => e.TotalAmount, map => map.MapFrom(e => e.DishPrice));
+                .ForMember(e => e.TotalAmount, map => map.MapFrom(e => e.DishPrice))
+                .ForMember(e => e.CancelledOn, map => map.MapFrom(e => string.IsNullOrEmpty(e.CancelledOn) ? DateTime.MinValue : DateTime.Parse(e.CancelledOn)))
+                .ForMember(e => e.CollectionTime, map => map.MapFrom(e => string.IsNullOrEmpty(e.CollectionTime) ? DateTime.MinValue : DateTime.Parse(e.CollectionTime)))
+                .ForMember(e => e.ReturnTime, map => map.MapFrom(e => string.IsNullOrEmpty(e.ReturnTime) ? DateTime.MinValue : DateTime.Parse(e.ReturnTime)));
                 //.ForMember(e => e.ProcessedBy, map => map.MapFrom(e => e.ProcessedBy));
 
             CreateMap<TokensOrderHistoryDTO, TokensOrderHistory>();

@@ -28,9 +28,10 @@ namespace FRS.Controllers
         private readonly IRewardService _rewardService;
         private readonly INotificationService _notificationService;
         private IHubContext<UserHub> _userHub;
+        private readonly IMapper _mapper;
 
         public TestController(IEmailSender emailSender, IUnitOfWork unitOfWork, IAccountManager accountManager, IWalletService walletService, IRewardService rewardService, IHubContext<UserHub> userHub,
-                INotificationService notificationService)
+                INotificationService notificationService, IMapper mapper)
         {
             _emailSender = emailSender;
             _unitOfWork = unitOfWork;
@@ -39,6 +40,7 @@ namespace FRS.Controllers
             _rewardService = rewardService;
             _notificationService = notificationService;
             _userHub = userHub;
+            _mapper = mapper;
         }
 
         #region Test Email
@@ -107,7 +109,7 @@ namespace FRS.Controllers
                     throw new Exception("Code already exists");
                 }
 
-                var newInstitution = Mapper.Map<InstitutionViewModel>((await _unitOfWork.Institutions.CreateAsync(institution)).Data);
+                var newInstitution = _mapper.Map<InstitutionViewModel>((await _unitOfWork.Institutions.CreateAsync(institution)).Data);
 
                 //2. Create default admin role
                 string role = institutionCode + " Default Admin";
@@ -121,7 +123,7 @@ namespace FRS.Controllers
                 }, DAL.Core.ApplicationPermissionsTrees.GetAllPermissionValues());
 
                 //3.Create default department
-                var newDepartment = Mapper.Map<DepartmentViewModel>((await _unitOfWork.Departments.CreateAsync(new Department
+                var newDepartment = _mapper.Map<DepartmentViewModel>((await _unitOfWork.Departments.CreateAsync(new Department
                 {
                     InstitutionId = newInstitution.Id,
                     Name = "Default Department",
@@ -160,7 +162,7 @@ namespace FRS.Controllers
                     LocationTypeId = locationType.FirstOrDefault(e => e.Name == "Hospital").Id
                 }, new List<int>(), new List<int>(), new List<int> { newInstitution.Id }, null);
 
-                var rootLocation = AutoMapper.Mapper.Map<LocationViewModel>(newLocationRoot.Data);
+                var rootLocation = _mapper.Map<LocationViewModel>(newLocationRoot.Data);
                 var newLocationBuilding = await _unitOfWork.Locations.CreateAsync(new Location
                 {
                     Capacity = 1,
@@ -279,7 +281,7 @@ namespace FRS.Controllers
                         {
                             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         });
-            return Ok(Mapper.Map<ApplicationPermissionsTreeDTO>(tree));
+            return Ok(_mapper.Map<ApplicationPermissionsTreeDTO>(tree));
         }
         #endregion
     }

@@ -423,9 +423,14 @@ namespace DAL
             //builder.Entity<spSalesOrderReport>().Property(m => m.CollectionTime).IsRequired(false);
             //builder.Entity<spSalesOrderReport>().Property(m => m.ReturnTime).IsRequired(false);
 
-            #region Audit Tables
+            builder.Entity<spSalesOrderReport>().ToTable("spSalesOrderReport");
+            builder.Entity<spGetUserActivityLogHeader>().ToTable("spGetUserActivityLog");
+            builder.Entity<spGetFasTokenOrderSummary>().ToTable("spGetFasTokenOrderSummary");
+            builder.Entity<spVoucherUtilisationReport>().ToTable("spVoucherUtilisationReport");
 
-            builder.Entity<Facility>().TrackAllProperties();
+        #region Audit Tables
+
+        builder.Entity<Facility>().TrackAllProperties();
             builder.Entity<FacilityType>().TrackAllProperties();
             builder.Entity<Reservation>().TrackAllProperties();
             builder.Entity<Device>().TrackAllProperties();

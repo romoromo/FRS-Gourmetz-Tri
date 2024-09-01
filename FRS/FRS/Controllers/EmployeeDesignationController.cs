@@ -10,23 +10,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class EmployeeDesignationController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public EmployeeDesignationController(IUnitOfWork unitOfWork, ILogger<EmployeeDesignationController> logger)
+        public EmployeeDesignationController(IUnitOfWork unitOfWork, ILogger<EmployeeDesignationController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -45,7 +47,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmployeeDesignations(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.EmployeeDesignations.GetEmployeeDesignationsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<EmployeeDesignationViewModel>>(result));
+            return Ok(_mapper.Map<List<EmployeeDesignationViewModel>>(result));
         }
 
         [HttpPost("")]
@@ -60,12 +62,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(employeeDesignation)} cannot be null");
 
 
-                var type = Mapper.Map<EmployeeDesignation>(employeeDesignation);
+                var type = _mapper.Map<EmployeeDesignation>(employeeDesignation);
 
                 var result = await _unitOfWork.EmployeeDesignations.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    EmployeeDesignationViewModel employeeDesignationVM = Mapper.Map<EmployeeDesignationViewModel>(result.Data);
+                    EmployeeDesignationViewModel employeeDesignationVM = _mapper.Map<EmployeeDesignationViewModel>(result.Data);
                     return CreatedAtAction("GetEmployeeDesignationById", new { id = employeeDesignationVM.Id }, employeeDesignationVM);
                 }
 
@@ -85,7 +87,7 @@ namespace FRS.Controllers
         {
             var employeeDesignation = await this._unitOfWork.EmployeeDesignations.GetByIdAsync(id);
 
-            EmployeeDesignationViewModel employeeDesignationVM = Mapper.Map<EmployeeDesignationViewModel>(employeeDesignation);
+            EmployeeDesignationViewModel employeeDesignationVM = _mapper.Map<EmployeeDesignationViewModel>(employeeDesignation);
             if (employeeDesignationVM == null)
                 return NotFound(id);
 
@@ -116,11 +118,11 @@ namespace FRS.Controllers
 
                 var employeeDesignation = await this._unitOfWork.EmployeeDesignations.GetByIdAsync(model.Id);
 
-                EmployeeDesignationViewModel employeeDesignationVM = Mapper.Map<EmployeeDesignationViewModel>(employeeDesignation);
+                EmployeeDesignationViewModel employeeDesignationVM = _mapper.Map<EmployeeDesignationViewModel>(employeeDesignation);
                 if (employeeDesignationVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<EmployeeDesignation>(model);
+                var updatedModel = _mapper.Map<EmployeeDesignation>(model);
                 var result = await _unitOfWork.EmployeeDesignations.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

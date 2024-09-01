@@ -12,23 +12,26 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using NPOI.SS.Formula.Functions;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class UserGroupController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
         private readonly string[] ACCEPTED_FILE_TYPES = new[] { ".jpg", ".jpeg", ".png" };
 
-        public UserGroupController(IUnitOfWork unitOfWork, ILogger<UserGroupController> logger)
+        public UserGroupController(IUnitOfWork unitOfWork, ILogger<UserGroupController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -41,7 +44,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetUserGroups(BaseFilter filter)
         {
             var userGroups = await _unitOfWork.UserGroups.GetUserGroupsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<UserGroupViewModel>>(userGroups));
+            return Ok(_mapper.Map<PagedEntityViewModel<UserGroupViewModel>>(userGroups));
         }
 
         #endregion
@@ -57,7 +60,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiUserGroups(int? userGroupId = null, int? institutionId = null)
         {
             var result = await _unitOfWork.UserGroups.GetApiUserGroups(userGroupId, institutionId);
-            var data = Mapper.Map<List<UserGroupViewModel>>(result.Data);
+            var data = _mapper.Map<List<UserGroupViewModel>>(result.Data);
 
             if (userGroupId.HasValue)
             {
@@ -82,12 +85,12 @@ namespace FRS.Controllers
                 if (model == null)
                     return BadRequest($"{nameof(model)} cannot be null");
 
-                var userGroup = Mapper.Map<UserGroup>(model);
+                var userGroup = _mapper.Map<UserGroup>(model);
 
                 var result = await _unitOfWork.UserGroups.CreateAsync(userGroup);
                 if (result.IsSuccess)
                 {
-                    UserGroupViewModel userGroupVM = Mapper.Map<UserGroupViewModel>(result.Data);
+                    UserGroupViewModel userGroupVM = _mapper.Map<UserGroupViewModel>(result.Data);
                     return CreatedAtAction("GetUserGroupById", new { id = userGroupVM.Id }, userGroupVM);
                 }
 
@@ -111,7 +114,7 @@ namespace FRS.Controllers
 
             var userGroupType = await this._unitOfWork.UserGroups.GetByIdAsync(id);
 
-            UserGroupViewModel userGroupVM = Mapper.Map<UserGroupViewModel>(userGroupType);
+            UserGroupViewModel userGroupVM = _mapper.Map<UserGroupViewModel>(userGroupType);
             if (userGroupVM == null)
                 return NotFound(id);
 
@@ -142,11 +145,11 @@ namespace FRS.Controllers
 
                 var userGroupType = await this._unitOfWork.UserGroups.GetByIdAsync(model.Id);
 
-                UserGroupViewModel userGroupVM = Mapper.Map<UserGroupViewModel>(userGroupType);
+                UserGroupViewModel userGroupVM = _mapper.Map<UserGroupViewModel>(userGroupType);
                 if (userGroupVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<UserGroup>(model);
+                var updatedModel = _mapper.Map<UserGroup>(model);
                 var result = await _unitOfWork.UserGroups.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

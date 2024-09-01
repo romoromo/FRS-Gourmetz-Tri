@@ -32,26 +32,29 @@ namespace BAL.Services.MealOrder
         private IUnitOfWork _uow;
         private IAccountManager _accountManager;
         private readonly IEmailSender _emailSender;
+        private readonly IMapper _mapper;
 
-        public StudentService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, IEmailSender emailSender)
+
+        public StudentService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, IEmailSender emailSender, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
             _accountManager = accountManager;
             _emailSender = emailSender;
+            _mapper = mapper;
         }
 
         #region Student
 
         public async Task<PagedEntity<StudentDTO>> GetStudentsAsync(BaseFilter filter, bool noAccount = false)
         {
-            var result = Mapper.Map<PagedEntity<StudentDTO>>(await this._uow.Students.GetStudentsAsync(filter, noAccount));
+            var result = _mapper.Map<PagedEntity<StudentDTO>>(await this._uow.Students.GetStudentsAsync(filter, noAccount));
             return result;
         }
 
         public async Task<List<StudentDTO>> GetStudentsByUserAsync(int userId)
         {
-            var result = Mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsByUserAsync(userId));
+            var result = _mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsByUserAsync(userId));
             return result;
         }
 
@@ -75,36 +78,36 @@ namespace BAL.Services.MealOrder
 
         public async Task<List<StudentDTO>> GetStudentsWithNoOrder(DateTime from, DateTime to)
         {
-            var result = Mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsWithNoOrder(from, to));
+            var result = _mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsWithNoOrder(from, to));
             return result;
         }
 
         public async Task<List<StudentDTO>> GetStudentsWithAbandonedCart1(int hoursLeft)
         {
-            var result = Mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsWithAbandonedCart1(hoursLeft));
+            var result = _mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsWithAbandonedCart1(hoursLeft));
             return result;
         }
 
         public async Task<List<StudentDTO>> GetStudentsWithAbandonedCart2(int daysBeforeCutOff)
         {
-            var result = Mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsWithAbandonedCart2(daysBeforeCutOff));
+            var result = _mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsWithAbandonedCart2(daysBeforeCutOff));
             return result;
         }
 
         public async Task<List<StudentOrderDTO>> GetStudentsWithOrdersNotCollected(int daysPassed)
         {
-            var result = Mapper.Map<List<StudentOrderDTO>>(await this._uow.Students.GetStudentsWithOrdersNotCollected(daysPassed));
+            var result = _mapper.Map<List<StudentOrderDTO>>(await this._uow.Students.GetStudentsWithOrdersNotCollected(daysPassed));
             return result;
         }
 
         public async Task<StudentDTO> GetStudentByIdAsync(int id)
         {
-            return Mapper.Map<StudentDTO>(await this._uow.Students.GetByIdAsync(id));
+            return _mapper.Map<StudentDTO>(await this._uow.Students.GetByIdAsync(id));
         }
 
         public async Task<StudentDTO> GetStudentByEmailAsync(string email)
         {
-            return Mapper.Map<StudentDTO>(await this._uow.Students.GetStudentByEmailAsync(email));
+            return _mapper.Map<StudentDTO>(await this._uow.Students.GetStudentByEmailAsync(email));
         }
 
         public async Task<BaseOperationResponse> UpdateStudentEmail(int id, string email)
@@ -115,10 +118,10 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> CreateStudentAsync(StudentDTO dto)
         {
             var result = new BaseOperationResponse();
-            var student = Mapper.Map<Student>(dto);
-            var user = Mapper.Map<ApplicationUser>(dto);
-            var cards = Mapper.Map<List<UserCardId>>(dto.Cards);
-            var studentCards = Mapper.Map<List<StudentCard>>(dto.StudentCards);
+            var student = _mapper.Map<Student>(dto);
+            var user = _mapper.Map<ApplicationUser>(dto);
+            var cards = _mapper.Map<List<UserCardId>>(dto.Cards);
+            var studentCards = _mapper.Map<List<StudentCard>>(dto.StudentCards);
             result = await this._uow.Students.CreateAsync(this._accountManager, student, user, dto.NewPassword, cards, studentCards);
             return result;
         }
@@ -126,12 +129,12 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> UpdateStudentAsync(StudentDTO dto)
         {
             var result = new BaseOperationResponse();
-            var student = Mapper.Map<Student>(dto);
-            var user = Mapper.Map<ApplicationUser>(dto);
-            var cards = Mapper.Map<List<UserCardId>>(dto.Cards);
-            var studentCards = Mapper.Map<List<StudentCard>>(dto.StudentCards);
-            var studentRestrictions = Mapper.Map<List<StudentRestriction>>(dto.Restrictions);
-            var studentInterestGroups = Mapper.Map<List<StudentInterestGroup>>(dto.InterestGroups);
+            var student = _mapper.Map<Student>(dto);
+            var user = _mapper.Map<ApplicationUser>(dto);
+            var cards = _mapper.Map<List<UserCardId>>(dto.Cards);
+            var studentCards = _mapper.Map<List<StudentCard>>(dto.StudentCards);
+            var studentRestrictions = _mapper.Map<List<StudentRestriction>>(dto.Restrictions);
+            var studentInterestGroups = _mapper.Map<List<StudentInterestGroup>>(dto.InterestGroups);
             result = await this._uow.Students.UpdateAsync(this._accountManager, student, user, dto.CurrentPassword, dto.NewPassword, cards, studentCards, studentRestrictions, studentInterestGroups);
             return result;
         }
@@ -420,18 +423,18 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<StudentCardDTO>> GetStudentCardsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<StudentCardDTO>>(await this._uow.StudentCards.GetStudentCardsAsync(filter));
+            var result = _mapper.Map<PagedEntity<StudentCardDTO>>(await this._uow.StudentCards.GetStudentCardsAsync(filter));
             return result;
         }
 
         public async Task<StudentCardDTO> GetStudentCardByIdAsync(int id, string cardId = null)
         {
-            return Mapper.Map<StudentCardDTO>(await this._uow.StudentCards.GetByIdAsync(id, cardId));
+            return _mapper.Map<StudentCardDTO>(await this._uow.StudentCards.GetByIdAsync(id, cardId));
         }
 
         public async Task<StudentDTO> GetStudentByCardIdAsync(string cardId)
         {
-            return Mapper.Map<StudentDTO>(await this._uow.StudentCards.GetStudentByCardIdAsync(cardId));
+            return _mapper.Map<StudentDTO>(await this._uow.StudentCards.GetStudentByCardIdAsync(cardId));
         }
 
         public async Task<BaseOperationResponse> ActivateStudentCardByIdAsync(string cardId)
@@ -441,13 +444,13 @@ namespace BAL.Services.MealOrder
 
         public async Task<BaseOperationResponse> CreateStudentCardAsync(StudentCardDTO dto)
         {
-            var result = await this._uow.StudentCards.CreateAsync(Mapper.Map<StudentCard>(dto));
+            var result = await this._uow.StudentCards.CreateAsync(_mapper.Map<StudentCard>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateStudentCardAsync(StudentCardDTO dto)
         {
-            var result = await this._uow.StudentCards.UpdateAsync(Mapper.Map<StudentCard>(dto));
+            var result = await this._uow.StudentCards.UpdateAsync(_mapper.Map<StudentCard>(dto));
             return result;
         }
 
@@ -462,23 +465,23 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<InterestGroupDTO>> GetInterestGroupsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<InterestGroupDTO>>(await this._uow.InterestGroups.GetInterestGroupsAsync(filter));
+            var result = _mapper.Map<PagedEntity<InterestGroupDTO>>(await this._uow.InterestGroups.GetInterestGroupsAsync(filter));
             return result;
         }
 
         public async Task<InterestGroupDTO> GetInterestGroupByIdAsync(int id)
         {
-            return Mapper.Map<InterestGroupDTO>(await this._uow.InterestGroups.GetByIdAsync(id));
+            return _mapper.Map<InterestGroupDTO>(await this._uow.InterestGroups.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateInterestGroupAsync(InterestGroupDTO dto)
         {
-            return await this._uow.InterestGroups.CreateAsync(Mapper.Map<InterestGroup>(dto));
+            return await this._uow.InterestGroups.CreateAsync(_mapper.Map<InterestGroup>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateInterestGroupAsync(InterestGroupDTO dto)
         {
-            return await this._uow.InterestGroups.UpdateAsync(Mapper.Map<InterestGroup>(dto));
+            return await this._uow.InterestGroups.UpdateAsync(_mapper.Map<InterestGroup>(dto));
         }
 
         public async Task<BaseOperationResponse> DeleteInterestGroupAsync(int id)
@@ -533,13 +536,13 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<StudentGroupDTO>> GetStudentGroupsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<StudentGroupDTO>>(await this._uow.StudentGroups.GetStudentGroupsAsync(filter));
+            var result = _mapper.Map<PagedEntity<StudentGroupDTO>>(await this._uow.StudentGroups.GetStudentGroupsAsync(filter));
             return result;
         }
 
         public async Task<List<GroupedTermStudentGroupDTO>> GetStudentMealPlanAsync(int outletId, DateTime? orderDate)
         {
-            var mealPlans = Mapper.Map<List<StudentGroupDTO>>(await _uow.StudentGroups.GetAllStudentGroupsAsync(outletId, orderDate));
+            var mealPlans = _mapper.Map<List<StudentGroupDTO>>(await _uow.StudentGroups.GetAllStudentGroupsAsync(outletId, orderDate));
 
             return mealPlans.GroupBy(e => e.OutletTermId).Select(e => new GroupedTermStudentGroupDTO
             {
@@ -572,15 +575,15 @@ namespace BAL.Services.MealOrder
 
         public async Task<StudentGroupDTO> GetStudentGroupByIdAsync(int id)
         {
-            return Mapper.Map<StudentGroupDTO>(await this._uow.StudentGroups.GetByIdAsync(id));
+            return _mapper.Map<StudentGroupDTO>(await this._uow.StudentGroups.GetByIdAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateStudentGroupAsync(StudentGroupDTO dto)
         {
             var result = new BaseOperationResponse();
-            var group = Mapper.Map<StudentGroup>(dto);
-            var details = Mapper.Map<List<StudentGroupDetail>>(dto.Sgdetails);
-            var sessions = Mapper.Map<List<StudentGroupSession>>(dto.Sessions);
+            var group = _mapper.Map<StudentGroup>(dto);
+            var details = _mapper.Map<List<StudentGroupDetail>>(dto.Sgdetails);
+            var sessions = _mapper.Map<List<StudentGroupSession>>(dto.Sessions);
             result = await this._uow.StudentGroups.CreateAsync(group, details, sessions);
             return result;
         }
@@ -588,9 +591,9 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> UpdateStudentGroupAsync(StudentGroupDTO dto)
         {
             var result = new BaseOperationResponse();
-            var group = Mapper.Map<StudentGroup>(dto);
-            var details = Mapper.Map<List<StudentGroupDetail>>(dto.Sgdetails);
-            var sessions = Mapper.Map<List<StudentGroupSession>>(dto.Sessions);
+            var group = _mapper.Map<StudentGroup>(dto);
+            var details = _mapper.Map<List<StudentGroupDetail>>(dto.Sgdetails);
+            var sessions = _mapper.Map<List<StudentGroupSession>>(dto.Sessions);
             result = await this._uow.StudentGroups.UpdateAsync(group, details, sessions);
             return result;
         }
@@ -619,14 +622,14 @@ namespace BAL.Services.MealOrder
 
         public async Task<List<StudentVoucherDTO>> GetStudentVouchersAsync(int studentId)
         {
-            return Mapper.Map< List<StudentVoucherDTO>>(await this._uow.StudentCards.GetStudentVouchersAsync(studentId));
+            return _mapper.Map< List<StudentVoucherDTO>>(await this._uow.StudentCards.GetStudentVouchersAsync(studentId));
         }
 
         public async Task<List<VoucherDTO>> GetVouchersAsync(int studentId)
         {
             var svs = await this._uow.StudentCards.GetStudentVouchersAsync(studentId);
 
-            return Mapper.Map<List<VoucherDTO>>(svs.Select(a => a.Voucher));
+            return _mapper.Map<List<VoucherDTO>>(svs.Select(a => a.Voucher));
         }
         #endregion
 
@@ -634,7 +637,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<OutletTermDTO>> GetOutletTermsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<OutletTermDTO>>(await this._uow.StudentGroups.GetOutletTermsAsync(filter));
+            var result = _mapper.Map<PagedEntity<OutletTermDTO>>(await this._uow.StudentGroups.GetOutletTermsAsync(filter));
             return result;
         }
 

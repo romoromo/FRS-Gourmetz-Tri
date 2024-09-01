@@ -14,7 +14,7 @@ using DAL.Models;
 using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
@@ -25,12 +25,14 @@ namespace FRS.Controllers
 
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public ImageFileController(IUnitOfWork unitOfWork, ILogger<DepartmentController> logger)
+        public ImageFileController(IUnitOfWork unitOfWork, ILogger<DepartmentController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpPost("upload"), DisableRequestSizeLimit]
@@ -109,14 +111,14 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(image)} cannot be null");
 
 
-                var type = Mapper.Map<ImageFile>(image);
+                var type = _mapper.Map<ImageFile>(image);
 
                 var appSetting = await _unitOfWork.ApplicationSettings.GetByKeyAsync("PATH_BASE_MEDIA_FOLDER_DIRECTORY").ConfigureAwait(false);
 
                 var result = await _unitOfWork.Images.CreateAsync(type, appSetting?.Value);
                 if (result.IsSuccess)
                 {
-                    ImageViewModel imageVM = Mapper.Map<ImageViewModel>(result.Data);
+                    ImageViewModel imageVM = _mapper.Map<ImageViewModel>(result.Data);
                     return CreatedAtAction("GetImageById", new { id = imageVM.Id }, imageVM);
                 }
 
@@ -138,11 +140,11 @@ namespace FRS.Controllers
 
                 var imageObj = await this._unitOfWork.Images.GetByIdAsync(image.Id);
 
-                ImageViewModel imageVM = Mapper.Map<ImageViewModel>(imageObj);
+                ImageViewModel imageVM = _mapper.Map<ImageViewModel>(imageObj);
                 if (imageVM == null)
                     return NotFound(id);
 
-                var type = Mapper.Map<ImageFile>(image);
+                var type = _mapper.Map<ImageFile>(image);
 
                 var appSetting = await _unitOfWork.ApplicationSettings.GetByKeyAsync("PATH_BASE_MEDIA_FOLDER_DIRECTORY").ConfigureAwait(false);
 
@@ -175,7 +177,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetImages(int pageNumber, int pageSize, int? institutionId = null, string institutionCode = null, int? userId = null)
         {
             var images = await _unitOfWork.Images.GetImagesLoadRelatedAsync(pageNumber, pageSize, institutionId, institutionCode, userId);
-            return Ok(Mapper.Map<List<ImageViewModel>>(images));
+            return Ok(_mapper.Map<List<ImageViewModel>>(images));
         }
 
         [HttpDelete("delete/{id}")]
@@ -186,7 +188,7 @@ namespace FRS.Controllers
         {
             var image = await this._unitOfWork.Images.GetByIdAsync(id);
 
-            ImageViewModel imageVM = Mapper.Map<ImageViewModel>(image);
+            ImageViewModel imageVM = _mapper.Map<ImageViewModel>(image);
             if (imageVM == null)
                 return NotFound(id);
 

@@ -10,23 +10,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class OccupancyLogController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public OccupancyLogController(IUnitOfWork unitOfWork, ILogger<OccupancyLogController> logger)
+        public OccupancyLogController(IUnitOfWork unitOfWork, ILogger<OccupancyLogController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -45,7 +47,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOccupancyLogs(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.OccupancyLogs.GetOccupancyLogsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<OccupancyLogViewModel>>(result));
+            return Ok(_mapper.Map<List<OccupancyLogViewModel>>(result));
         }
 
         [HttpGet("listfilter")]
@@ -55,7 +57,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOccupancyLogsFilter(DateTime? StartTime, DateTime? EndTime, string DeviceId, string SensorId, string Status)
         {
             var result = await _unitOfWork.OccupancyLogs.GetOccupancyLogsFilter(StartTime, EndTime, DeviceId, SensorId, Status);
-            return Ok(Mapper.Map<List<OccupancyLogViewModel>>(result));
+            return Ok(_mapper.Map<List<OccupancyLogViewModel>>(result));
         }
 
         [HttpGet("status")]
@@ -80,12 +82,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(occupancyLog)} cannot be null");
 
 
-                var type = Mapper.Map<OccupancyLog>(occupancyLog);
+                var type = _mapper.Map<OccupancyLog>(occupancyLog);
 
                 var result = await _unitOfWork.OccupancyLogs.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    OccupancyLogViewModel occupancyLogVM = Mapper.Map<OccupancyLogViewModel>(result.Data);
+                    OccupancyLogViewModel occupancyLogVM = _mapper.Map<OccupancyLogViewModel>(result.Data);
                     return CreatedAtAction("GetOccupancyLogById", new { id = occupancyLogVM.Id }, occupancyLogVM);
                 }
 
@@ -108,12 +110,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(occupancyLog)} cannot be null");
 
 
-                var type = Mapper.Map<OccupancyLog>(occupancyLog);
+                var type = _mapper.Map<OccupancyLog>(occupancyLog);
 
                 var result = await _unitOfWork.OccupancyLogs.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    OccupancyLogViewModel occupancyLogVM = Mapper.Map<OccupancyLogViewModel>(result.Data);
+                    OccupancyLogViewModel occupancyLogVM = _mapper.Map<OccupancyLogViewModel>(result.Data);
                     return CreatedAtAction("GetOccupancyLogById", new { id = occupancyLogVM.Id }, occupancyLogVM);
                 }
 
@@ -133,7 +135,7 @@ namespace FRS.Controllers
         {
             var occupancyLog = await this._unitOfWork.OccupancyLogs.GetByIdAsync(id);
 
-            OccupancyLogViewModel occupancyLogVM = Mapper.Map<OccupancyLogViewModel>(occupancyLog);
+            OccupancyLogViewModel occupancyLogVM = _mapper.Map<OccupancyLogViewModel>(occupancyLog);
             if (occupancyLogVM == null)
                 return NotFound(id);
 
@@ -164,11 +166,11 @@ namespace FRS.Controllers
 
                 var occupancyLog = await this._unitOfWork.OccupancyLogs.GetByIdAsync(model.Id);
 
-                OccupancyLogViewModel occupancyLogVM = Mapper.Map<OccupancyLogViewModel>(occupancyLog);
+                OccupancyLogViewModel occupancyLogVM = _mapper.Map<OccupancyLogViewModel>(occupancyLog);
                 if (occupancyLogVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<OccupancyLog>(model);
+                var updatedModel = _mapper.Map<OccupancyLog>(model);
                 var result = await _unitOfWork.OccupancyLogs.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

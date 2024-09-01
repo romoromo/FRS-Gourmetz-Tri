@@ -10,23 +10,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class FloorController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public FloorController(IUnitOfWork unitOfWork, ILogger<FloorController> logger)
+        public FloorController(IUnitOfWork unitOfWork, ILogger<FloorController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -45,7 +47,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetFloors(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.Floors.GetFloorsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<FloorViewModel>>(result));
+            return Ok(_mapper.Map<List<FloorViewModel>>(result));
         }
 
         [HttpPost("")]
@@ -60,12 +62,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(floor)} cannot be null");
 
 
-                var type = Mapper.Map<Floor>(floor);
+                var type = _mapper.Map<Floor>(floor);
 
                 var result = await _unitOfWork.Floors.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    FloorViewModel floorVM = Mapper.Map<FloorViewModel>(result.Data);
+                    FloorViewModel floorVM = _mapper.Map<FloorViewModel>(result.Data);
                     return CreatedAtAction("GetFloorById", new { id = floorVM.Id }, floorVM);
                 }
 
@@ -85,7 +87,7 @@ namespace FRS.Controllers
         {
             var floor = await this._unitOfWork.Floors.GetByIdAsync(id);
 
-            FloorViewModel floorVM = Mapper.Map<FloorViewModel>(floor);
+            FloorViewModel floorVM = _mapper.Map<FloorViewModel>(floor);
             if (floorVM == null)
                 return NotFound(id);
 
@@ -116,11 +118,11 @@ namespace FRS.Controllers
 
                 var floor = await this._unitOfWork.Floors.GetByIdAsync(model.Id);
 
-                FloorViewModel floorVM = Mapper.Map<FloorViewModel>(floor);
+                FloorViewModel floorVM = _mapper.Map<FloorViewModel>(floor);
                 if (floorVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Floor>(model);
+                var updatedModel = _mapper.Map<Floor>(model);
                 var result = await _unitOfWork.Floors.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

@@ -21,14 +21,14 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MimeKit;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class ReservationController : BaseController
     {
@@ -41,10 +41,12 @@ namespace FRS.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IConfiguration _configuration;
 
+        private readonly IMapper _mapper;
+
         public ReservationController(IUnitOfWork unitOfWork, ILogger<ReservationController> logger, IHubContext<FRSHub> frsHub, IHubContext<LocationHub> locationHub,
             IHubContext<FRSDeviceHub> frsDeviceHub, IHubContext<MeetingRoomHub> meetingRoomHub,
         IEmailSender emailSender,
-            IConfiguration configuration)
+            IConfiguration configuration, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -54,6 +56,7 @@ namespace FRS.Controllers
             _locationHub = locationHub;
             _frsDeviceHub = frsDeviceHub;
             _meetingRoomHub = meetingRoomHub;
+            _mapper = mapper;
         }
 
 
@@ -90,7 +93,7 @@ namespace FRS.Controllers
             }
 
             var reservations = await _unitOfWork.Reservations.GetReservationsLoadRelatedAsync(pageNumber, pageSize, filter);
-            return Ok(Mapper.Map<List<ReservationViewModel>>(reservations));
+            return Ok(_mapper.Map<List<ReservationViewModel>>(reservations));
         }
 
         [HttpPost("calendarevents")]
@@ -121,7 +124,7 @@ namespace FRS.Controllers
             filter.EndDate = filter.EndDate != null ? Convert.ToDateTime(filter.EndDate).ToLocalTime() : filter.EndDate;
 
             var times = _unitOfWork.Reservations.GetAllTimeIntervals(filter);
-            return Ok(Mapper.Map<List<TimeIntervalViewModel>>(times));
+            return Ok(_mapper.Map<List<TimeIntervalViewModel>>(times));
         }
 
         [HttpPost("GetBookingGridRows")]
@@ -136,7 +139,7 @@ namespace FRS.Controllers
             filter.EndTime = filter.EndTime != null ? Convert.ToDateTime(filter.EndTime).ToLocalTime() : filter.EndTime;
 
             var rows = _unitOfWork.Reservations.GetBookingGrid(filter);
-            return Ok(Mapper.Map<List<BookingGridRowViewModel>>(rows));
+            return Ok(_mapper.Map<List<BookingGridRowViewModel>>(rows));
         }
 
         [HttpPost("")]
@@ -165,7 +168,7 @@ namespace FRS.Controllers
                 //reservation.EndDateTime = new DateTime(reservation.StartDateTime.Year, reservation.StartDateTime.Month, reservation.StartDateTime.Day,
                 //                                        reservation.EndTime.Hour, reservation.EndTime.Minutes, 0);
 
-                var res = Mapper.Map<Reservation>(reservation);
+                var res = _mapper.Map<Reservation>(reservation);
 
                 //if there are contact groups, build invitees
                 if (reservation.ContactGroups != null)
@@ -219,7 +222,7 @@ namespace FRS.Controllers
                 var result = await _unitOfWork.Reservations.CreateAsync(res,reservation.FilePath);
                 if (result.IsSuccess)
                 {
-                    ReservationViewModel reservationVM = Mapper.Map<ReservationViewModel>(result.Data);
+                    ReservationViewModel reservationVM = _mapper.Map<ReservationViewModel>(result.Data);
 
                     CalendarFilter filter = new CalendarFilter();
                     filter.Start = filter.End = DateTime.Now.Date;
@@ -237,7 +240,7 @@ namespace FRS.Controllers
 
                         if (deviceResult != null && deviceResult.Data != null)
                         {
-                            var devices = Mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
+                            var devices = _mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
 
                             foreach (var device in devices)
                             {
@@ -292,7 +295,7 @@ namespace FRS.Controllers
 
                     }
 
-                    //ReservationViewModel reservationVM = Mapper.Map<ReservationViewModel>(result.Data);
+                    //ReservationViewModel reservationVM = _mapper.Map<ReservationViewModel>(result.Data);
                     return CreatedAtAction("GetReservationById", new { id = reservationVM.Id }, reservationVM);
                 }
 
@@ -317,7 +320,7 @@ namespace FRS.Controllers
 
             var reservation = await this._unitOfWork.Reservations.GetByIdAsync(id);
 
-            ReservationViewModel reservationVM = Mapper.Map<ReservationViewModel>(reservation);
+            ReservationViewModel reservationVM = _mapper.Map<ReservationViewModel>(reservation);
             if (reservationVM == null)
                 return NotFound(id);
 
@@ -331,7 +334,7 @@ namespace FRS.Controllers
 
                 if (deviceResult != null && deviceResult.Data != null)
                 {
-                    var devices = Mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
+                    var devices = _mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
 
                     foreach (var device in devices)
                     {
@@ -366,7 +369,7 @@ namespace FRS.Controllers
 
                 var reservationType = await this._unitOfWork.Reservations.GetByIdAsync(model.Id);
 
-                ReservationViewModel reservationVM = Mapper.Map<ReservationViewModel>(reservationType);
+                ReservationViewModel reservationVM = _mapper.Map<ReservationViewModel>(reservationType);
                 if (reservationVM == null)
                     return NotFound(id);
 
@@ -384,7 +387,7 @@ namespace FRS.Controllers
                 //model.EndDateTime = new DateTime(model.StartDateTime.Year, model.StartDateTime.Month, model.StartDateTime.Day,
                 //                                        model.EndTime.Hour, model.EndTime.Minutes, 0);
 
-                var updatedModel = Mapper.Map<Reservation>(model);
+                var updatedModel = _mapper.Map<Reservation>(model);
 
                 //if there are contact groups, build invitees
                 if (model.ContactGroups != null)
@@ -451,7 +454,7 @@ namespace FRS.Controllers
 
                             if (deviceResult != null && deviceResult.Data != null)
                             {
-                                var devices = Mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
+                                var devices = _mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
 
                                 foreach (var device in devices)
                                 {
@@ -465,7 +468,7 @@ namespace FRS.Controllers
                         ReservationUpdateResponseData data = (ReservationUpdateResponseData)(result.Data);
                         var updatedReservation = data.Reservation;
                         var addedInvitees = data.Invitees;
-                        result.Data = Mapper.Map<ReservationViewModel>(updatedReservation);
+                        result.Data = _mapper.Map<ReservationViewModel>(updatedReservation);
 
                         //send emails to participants
                         if (updatedModel.ReservationInvitees != null)
@@ -591,7 +594,7 @@ namespace FRS.Controllers
                 if (id.HasValue)
                 {
                     var reservation = await _unitOfWork.Reservations.GetByIdAsync(id.Value);
-                    result.Data = Mapper.Map<ReservationViewModel>(reservation);
+                    result.Data = _mapper.Map<ReservationViewModel>(reservation);
                 }
                 else
                 {
@@ -608,21 +611,21 @@ namespace FRS.Controllers
                     var data = await _unitOfWork.Reservations.GetReservationsLoadRelatedAsync(-1, -1, filter);
                     //if (locationId.HasValue)
                     //{
-                    //    result.Data = data.Any() ? Mapper.Map<ReservationViewModel>(data.First()) : null;
+                    //    result.Data = data.Any() ? _mapper.Map<ReservationViewModel>(data.First()) : null;
                     //}
                     //else
                     //{
-                    result.Data = Mapper.Map<List<ReservationViewModel>>(data);
+                    result.Data = _mapper.Map<List<ReservationViewModel>>(data);
                     //}
 
                     //var data = _unitOfWork.Reservations.GetBookingGrid(filter);
                     //if (locationId.HasValue)
                     //{
-                    //    result.Data = data.Any() ? Mapper.Map<BookingGridRowViewModel>(data.First()) : null;
+                    //    result.Data = data.Any() ? _mapper.Map<BookingGridRowViewModel>(data.First()) : null;
                     //}
                     //else
                     //{
-                    //    result.Data = Mapper.Map<List<BookingGridRowViewModel>>(data);
+                    //    result.Data = _mapper.Map<List<BookingGridRowViewModel>>(data);
                     //}
                 }
 
@@ -663,7 +666,7 @@ namespace FRS.Controllers
                     filter.End = filter.End != null ? Convert.ToDateTime(filter.End).ToLocalTime() : filter.End;
 
                 var data = await _unitOfWork.Reservations.GetReservationsLoadRelatedAsync(-1, -1, filter);
-                    result.Data = Mapper.Map<List<ReservationViewModel>>(data);
+                    result.Data = _mapper.Map<List<ReservationViewModel>>(data);
 
                 result.IsSuccess = true;
             }
@@ -796,7 +799,7 @@ namespace FRS.Controllers
 
                         if (deviceResult != null && deviceResult.Data != null)
                         {
-                            var devices = Mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
+                            var devices = _mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
 
                             foreach (var device in devices)
                             {
@@ -871,7 +874,7 @@ namespace FRS.Controllers
 
                         if (deviceResult != null && deviceResult.Data != null)
                         {
-                            var devices = Mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
+                            var devices = _mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
 
                             foreach (var device in devices)
                             {
@@ -957,7 +960,7 @@ namespace FRS.Controllers
 
                                 if (deviceResult != null && deviceResult.Data != null)
                                 {
-                                    var devices = Mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
+                                    var devices = _mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
 
                                     foreach (var device in devices)
                                     {
@@ -1006,7 +1009,7 @@ namespace FRS.Controllers
 
                                 if (deviceResult != null && deviceResult.Data != null)
                                 {
-                                    var devices = Mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
+                                    var devices = _mapper.Map<List<DeviceViewModel>>(deviceResult.Data);
 
                                     foreach (var device in devices)
                                     {
@@ -1095,7 +1098,7 @@ namespace FRS.Controllers
             }
 
             var logs = await _unitOfWork.Reservations.GetVehicleLogs(filter);
-            return Ok(Mapper.Map<List<VMSVehicleLog>>(logs));
+            return Ok(_mapper.Map<List<VMSVehicleLog>>(logs));
         }
         #endregion
 

@@ -10,22 +10,24 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class SignageController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
-        public SignageController(IUnitOfWork unitOfWork, ILogger<SignageController> logger)
+        public SignageController(IUnitOfWork unitOfWork, ILogger<SignageController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("sgnfacilities/list")]
@@ -42,7 +44,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetFacilities(int pageNumber, int pageSize, int? institutionId = null)
         {
             var facilities = await _unitOfWork.Facilities.GetFacilitiesLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<FacilityViewModel>>(facilities));
+            return Ok(_mapper.Map<List<FacilityViewModel>>(facilities));
         }
 
 

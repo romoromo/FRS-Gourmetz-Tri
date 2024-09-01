@@ -21,11 +21,13 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private ApplicationDbContext _appContext;
+        private readonly IMapper _mapper;
 
-        public UpDownTimeLogService(ApplicationDbContext context, ISieveProcessor sieveProcessor)
+        public UpDownTimeLogService(ApplicationDbContext context, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._appContext = context;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -40,7 +42,7 @@ namespace BAL.Services
             {
                 Filter = filter,
                 TotalCount = totalCount,
-                PagedData =  Mapper.Map<List<UpDownTimeLogDTO>>(await query.ToListAsync())
+                PagedData =  _mapper.Map<List<UpDownTimeLogDTO>>(await query.ToListAsync())
             };
 
             return result;
@@ -51,7 +53,7 @@ namespace BAL.Services
             IQueryable<UpDownTimeLog> query = _appContext.UpDownTimeLogs;
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var logs = Mapper.Map<List<UpDownTimeLogDTO>>(await query.ToListAsync());
+            var logs = _mapper.Map<List<UpDownTimeLogDTO>>(await query.ToListAsync());
 
             if (logs != null)
             {
@@ -137,13 +139,13 @@ namespace BAL.Services
         #endregion
         public async Task<UpDownTimeLogDTO> GetByIdAsync(int id)
         {
-            return Mapper.Map<UpDownTimeLogDTO>(await _appContext.UpDownTimeLogs.FindAsync(id));
+            return _mapper.Map<UpDownTimeLogDTO>(await _appContext.UpDownTimeLogs.FindAsync(id));
         }
 
         public async Task<BaseOperationResponse> CreateAsync(UpDownTimeLogDTO logDTO)
         {
             var result = new BaseOperationResponse();
-            var log = Mapper.Map<UpDownTimeLog>(logDTO);
+            var log = _mapper.Map<UpDownTimeLog>(logDTO);
 
             var f = await _appContext.UpDownTimeLogs.AddAsync(log);
             if (await _appContext.SaveChangesAsync() > 0)

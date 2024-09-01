@@ -24,9 +24,11 @@ public class QueueService : IQueueService
     //}
     private QueueTableMapController _queueController;
 
-    public QueueService(QueueTableMapController queueController)
+    private readonly IMapper _mapper;
+    public QueueService(QueueTableMapController queueController, IMapper mapper)
     {
         _queueController = queueController;
+        _mapper = mapper;
     }
 
     public GetTokenResponse GetToken(GetTokenParam tokenParam)
@@ -80,7 +82,7 @@ public class QueueService : IQueueService
     {
         Console.WriteLine(queueParam.ToString());
 
-        var model = Mapper.Map<QueueLogViewModel>(queueParam);
+        var model = _mapper.Map<QueueLogViewModel>(queueParam);
 
         model.Queueid = queueParam.ClinicId + queueParam.TerminalId;
         model.QueueNo = queueParam.QueueNumber;

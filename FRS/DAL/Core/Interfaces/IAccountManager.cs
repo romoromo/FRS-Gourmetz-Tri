@@ -79,5 +79,6 @@ namespace DAL.Core.Interfaces
         Task<byte[]> GenerateUserReportXls(BaseFilter filter);
         Task<PagedEntity<RoleReportDTO>> GetRoleReportAsync(RoleReportFilter filter);
         Task<byte[]> GenerateRoleReportXls(RoleReportFilter filter);
+        Task<IEnumerable<string>> GetRolePermissionsByRoleName(List<string> roleNames);
     }
 }

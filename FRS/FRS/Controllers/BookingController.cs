@@ -13,11 +13,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class BookingController : BaseController
@@ -25,12 +25,14 @@ namespace FRS.Controllers
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
         private IHubContext<ReservationHub> _reservationHub;
+        private readonly IMapper _mapper;
 
-        public BookingController(IUnitOfWork unitOfWork, ILogger<ReservationController> logger, IHubContext<ReservationHub> reservationHub)
+        public BookingController(IUnitOfWork unitOfWork, ILogger<ReservationController> logger, IHubContext<ReservationHub> reservationHub, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _reservationHub = reservationHub;
+            _mapper = mapper;
         }
 
 
@@ -64,7 +66,7 @@ namespace FRS.Controllers
             }
 
             var reservations = await _unitOfWork.Bookings.GetReservationsLoadRelatedAsync(pageNumber, pageSize, filter);
-            return Ok(Mapper.Map<List<ReservationViewModel>>(reservations));
+            return Ok(_mapper.Map<List<ReservationViewModel>>(reservations));
         }
 
         [HttpPost("GetAllTimeIntervals")]
@@ -75,7 +77,7 @@ namespace FRS.Controllers
             filter.StartDate = filter.StartDate != null ? Convert.ToDateTime(filter.StartDate).ToLocalTime() : filter.StartDate;
             filter.EndDate = filter.EndDate != null ? Convert.ToDateTime(filter.EndDate).ToLocalTime() : filter.EndDate;
             var times = _unitOfWork.Bookings.GetAllTimeIntervals(filter);
-            return Ok(Mapper.Map<List<TimeIntervalViewModel>>(times));
+            return Ok(_mapper.Map<List<TimeIntervalViewModel>>(times));
         }
 
         [HttpPost("GetBookingGridRows")]
@@ -86,7 +88,7 @@ namespace FRS.Controllers
             filter.Start = filter.Start != null ? Convert.ToDateTime(filter.Start).ToLocalTime() : filter.Start;
             filter.End = filter.End != null ? Convert.ToDateTime(filter.End).ToLocalTime() : filter.End;
             var rows = _unitOfWork.Bookings.GetBookingGrid(filter);
-            return Ok(Mapper.Map<List<BookingGridViewModel>>(rows));
+            return Ok(_mapper.Map<List<BookingGridViewModel>>(rows));
         }
 
         [HttpPost("")]
@@ -115,7 +117,7 @@ namespace FRS.Controllers
                 //reservation.EndDateTime = new DateTime(reservation.StartDateTime.Year, reservation.StartDateTime.Month, reservation.StartDateTime.Day,
                 //                                        reservation.EndTime.Hour, reservation.EndTime.Minutes, 0);
 
-                var res = Mapper.Map<Reservation>(reservation);
+                var res = _mapper.Map<Reservation>(reservation);
 
                 var result = await _unitOfWork.Bookings.CreateAsync(res);
                 if (result.IsSuccess)
@@ -125,7 +127,7 @@ namespace FRS.Controllers
                     var rows = _unitOfWork.Bookings.GetBookingGrid(filter);
                     await _reservationHub.Clients.All.SendAsync("refreshBookingGrid", rows);
 
-                    ReservationViewModel reservationVM = Mapper.Map<ReservationViewModel>(result.Data);
+                    ReservationViewModel reservationVM = _mapper.Map<ReservationViewModel>(result.Data);
                     return CreatedAtAction("GetReservationById", new { id = reservationVM.Id }, reservationVM);
                 }
 
@@ -149,7 +151,7 @@ namespace FRS.Controllers
 
             var reservationType = await this._unitOfWork.Bookings.GetByIdAsync(id);
 
-            ReservationViewModel reservationVM = Mapper.Map<ReservationViewModel>(reservationType);
+            ReservationViewModel reservationVM = _mapper.Map<ReservationViewModel>(reservationType);
             if (reservationVM == null)
                 return NotFound(id);
 
@@ -181,7 +183,7 @@ namespace FRS.Controllers
 
                 var reservationType = await this._unitOfWork.Reservations.GetByIdAsync(model.Id);
 
-                ReservationViewModel reservationVM = Mapper.Map<ReservationViewModel>(reservationType);
+                ReservationViewModel reservationVM = _mapper.Map<ReservationViewModel>(reservationType);
                 if (reservationVM == null)
                     return NotFound(id);
 
@@ -198,10 +200,10 @@ namespace FRS.Controllers
                 //model.EndDateTime = new DateTime(model.StartDateTime.Year, model.StartDateTime.Month, model.StartDateTime.Day,
                 //                                        model.EndTime.Hour, model.EndTime.Minutes, 0);
 
-                var updatedModel = Mapper.Map<Reservation>(model);
+                var updatedModel = _mapper.Map<Reservation>(model);
 
                 var result = await _unitOfWork.Reservations.UpdateAsync(updatedModel);
-                result.Data = Mapper.Map<ReservationViewModel>(result.Data);
+                result.Data = _mapper.Map<ReservationViewModel>(result.Data);
                 if (result.IsSuccess)
                     return Ok(result);
 
@@ -241,11 +243,11 @@ namespace FRS.Controllers
                 var data = _unitOfWork.Bookings.GetBookingGrid(filter);
                 if (locationId.HasValue)
                 {
-                    //result.Data = data.Any() ? Mapper.Map<BookingGridRowViewModel>(data.First()) : null;
+                    //result.Data = data.Any() ? _mapper.Map<BookingGridRowViewModel>(data.First()) : null;
                 }
                 else
                 {
-                    result.Data = Mapper.Map<List<BookingGridRowViewModel>>(data);
+                    result.Data = _mapper.Map<List<BookingGridRowViewModel>>(data);
                 }
 
                 result.IsSuccess = true;

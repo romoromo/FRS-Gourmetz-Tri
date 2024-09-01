@@ -153,7 +153,7 @@ namespace DAL.Repositories.MealOrder
         public async Task<BaseOperationResponse> ResetAsync()
         {
             var result = new BaseOperationResponse();
-            if (await _appContext.Database.ExecuteSqlCommandAsync("DELETE [dbo].[CartonDisposableBoxes]") > 0)
+            if (await _appContext.Database.ExecuteSqlRawAsync("DELETE [dbo].[CartonDisposableBoxes]") > 0)
             {
                 result.Message = "Successfully Delete!";
                 result.IsSuccess = true;
@@ -171,7 +171,7 @@ namespace DAL.Repositories.MealOrder
         public async Task<BaseOperationResponse> ResetDishAsync(CartonDisposableBox data)
         {
             var result = new BaseOperationResponse();
-            if (await _appContext.Database.ExecuteSqlCommandAsync("DELETE [dbo].[CartonDisposableBoxes] Where DishId = " + data.DishId) > 0)
+            if (await _appContext.Database.ExecuteSqlRawAsync("DELETE [dbo].[CartonDisposableBoxes] Where DishId = " + data.DishId) > 0)
             {
                 result.Message = "Successfully Delete!";
                 result.IsSuccess = true;

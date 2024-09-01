@@ -20,40 +20,42 @@ namespace BAL.Services
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public RewardService(IUnitOfWork uow, ISieveProcessor sieveProcessor)
+        public RewardService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IMapper mapper)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
+            _mapper = mapper;
         }
 
         public async Task<PagedEntity<RewardDTO>> GetRewardsAsync(BaseFilter filter)
         {
-            var result = Mapper.Map<PagedEntity<RewardDTO>>(await this._uow.Rewards.GetRewardsAsync(filter));
+            var result = _mapper.Map<PagedEntity<RewardDTO>>(await this._uow.Rewards.GetRewardsAsync(filter));
             return result;
         }
 
         public async Task<RewardDTO> GetByIdAsync(int id)
         {
-            return Mapper.Map<RewardDTO>(await this._uow.Rewards.GetByIdAsync(id));
+            return _mapper.Map<RewardDTO>(await this._uow.Rewards.GetByIdAsync(id));
         }
 
         public async Task<List<RewardDTO>> GetByUserIdAsync(int userId)
         {
-            return Mapper.Map<List<RewardDTO>>(await this._uow.Rewards.FindAsync(e => e.IsActive && e.UserId == userId));
+            return _mapper.Map<List<RewardDTO>>(await this._uow.Rewards.FindAsync(e => e.IsActive && e.UserId == userId));
         }
 
         public async Task<BaseOperationResponse> CreateAsync(RewardDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.Rewards.CreateAsync(Mapper.Map<Reward>(dto));
+            result = await this._uow.Rewards.CreateAsync(_mapper.Map<Reward>(dto));
             return result;
         }
 
         public async Task<BaseOperationResponse> UpdateAsync(RewardDTO dto)
         {
             var result = new BaseOperationResponse();
-            result = await this._uow.Rewards.UpdateAsync(Mapper.Map<Reward>(dto));
+            result = await this._uow.Rewards.UpdateAsync(_mapper.Map<Reward>(dto));
             return result;
         }
 
@@ -66,7 +68,7 @@ namespace BAL.Services
 
         public async Task<List<RewardTransactionDTO>> GetRewardTransactionByIdAsync(int id)
         {
-            return Mapper.Map<List<RewardTransactionDTO>>((await this._uow.RewardTransactions.FindAsync(e => e.RewardId == id)).ToList());
+            return _mapper.Map<List<RewardTransactionDTO>>((await this._uow.RewardTransactions.FindAsync(e => e.RewardId == id)).ToList());
         }
 
         public async Task<BaseOperationResponse> RewardOperationAsync(RewardOperationDTO dto)
@@ -124,7 +126,7 @@ namespace BAL.Services
                     await this._uow.RewardTransactions.CreateAsync(transaction);
                 }
 
-                var d = Mapper.Map<RewardDTO>(result.Data);
+                var d = _mapper.Map<RewardDTO>(result.Data);
                 result.Data = d;
             }
 

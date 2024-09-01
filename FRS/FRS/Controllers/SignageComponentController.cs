@@ -11,23 +11,25 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class SignageComponentController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public SignageComponentController(IUnitOfWork unitOfWork, ILogger<SignageComponentController> logger)
+        public SignageComponentController(IUnitOfWork unitOfWork, ILogger<SignageComponentController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -46,7 +48,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetSignageComponents(int pageNumber, int pageSize, int? institutionId = null)
         {
             var data = await _unitOfWork.SignageComponents.GetSignageComponentsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<SignageComponentViewModel>>(data));
+            return Ok(_mapper.Map<List<SignageComponentViewModel>>(data));
         }
 
         [HttpGet("signagecomponents/export")]
@@ -55,7 +57,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetSignageComponents(string ids)
         {
             var data = await _unitOfWork.SignageComponents.GetSignageComponents(ids);
-            return Ok(Mapper.Map<List<SignageComponentViewModel>>(data));
+            return Ok(_mapper.Map<List<SignageComponentViewModel>>(data));
         }
 
         [HttpGet("signagecomponents/import")]
@@ -114,12 +116,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(signageComponent)} cannot be null");
 
 
-                var type = Mapper.Map<SignageComponent>(signageComponent);
+                var type = _mapper.Map<SignageComponent>(signageComponent);
 
                 var result = await _unitOfWork.SignageComponents.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    SignageComponentViewModel signageComponentVM = Mapper.Map<SignageComponentViewModel>(result.Data);
+                    SignageComponentViewModel signageComponentVM = _mapper.Map<SignageComponentViewModel>(result.Data);
                     return CreatedAtAction("GetSignageComponentById", new { id = signageComponentVM.Id }, signageComponentVM);
                 }
 
@@ -139,7 +141,7 @@ namespace FRS.Controllers
         {
             var signageComponent = await this._unitOfWork.SignageComponents.GetByIdAsync(id);
 
-            SignageComponentViewModel signageComponentVM = Mapper.Map<SignageComponentViewModel>(signageComponent);
+            SignageComponentViewModel signageComponentVM = _mapper.Map<SignageComponentViewModel>(signageComponent);
             if (signageComponentVM == null)
                 return NotFound(id);
 
@@ -170,11 +172,11 @@ namespace FRS.Controllers
 
                 var signageComponent = await this._unitOfWork.SignageComponents.GetByIdAsync(model.Id);
 
-                SignageComponentViewModel signageComponentVM = Mapper.Map<SignageComponentViewModel>(signageComponent);
+                SignageComponentViewModel signageComponentVM = _mapper.Map<SignageComponentViewModel>(signageComponent);
                 if (signageComponentVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<SignageComponent>(model);
+                var updatedModel = _mapper.Map<SignageComponent>(model);
                 var result = await _unitOfWork.SignageComponents.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

@@ -104,14 +104,26 @@ namespace FRS.ViewModels
             //CreateMap<ApplicationPermission, PermissionViewModel>()
             //    .ReverseMap();
 
+            //CreateMap<UserRoleClaim, PermissionViewModel>()
+            //    .ConvertUsing(s => _mapper.Map<PermissionViewModel>(ApplicationPermissionsTrees.GetPermissionByValue(s.ClaimValue)));
+
+            //CreateMap<ApplicationPermissionsTree, PermissionTreeViewModel>()
+            //    .ReverseMap();
+
+            //CreateMap<UserRoleClaim, PermissionTreeViewModel>()
+            //    .ConvertUsing(s => _mapper.Map<PermissionTreeViewModel>(ApplicationPermissionsTrees.GetPermissionByValue(s.ClaimValue)));
+
             CreateMap<UserRoleClaim, PermissionViewModel>()
-                .ConvertUsing(s => Mapper.Map<PermissionViewModel>(ApplicationPermissionsTrees.GetPermissionByValue(s.ClaimValue)));
+                .ConvertUsing<UserRoleClaimToPermissionViewModelConverter>();
 
             CreateMap<ApplicationPermissionsTree, PermissionTreeViewModel>()
                 .ReverseMap();
 
+            CreateMap<ApplicationPermissionsTree, PermissionViewModel>()
+                .ReverseMap();
+
             CreateMap<UserRoleClaim, PermissionTreeViewModel>()
-                .ConvertUsing(s => Mapper.Map<PermissionTreeViewModel>(ApplicationPermissionsTrees.GetPermissionByValue(s.ClaimValue)));
+                .ConvertUsing<UserRoleClaimToPermissionTreeViewModelConverter>();
 
             CreateMap<Media, MediaViewModel>()
                 .ForMember(d => d.InstitutionName, map => map.MapFrom(s => s.Institution != null && s.Institution.IsActive ? s.Institution.Name : string.Empty))
@@ -677,6 +689,7 @@ namespace FRS.ViewModels
             #endregion
 
             CreateMap(typeof(PagedEntity<>), typeof(PagedEntityViewModel<>));
+            CreateMap(typeof(PagedEntityViewModel<>), typeof(PagedEntityViewModel<>));
 
             CreateMap<Location, SimpleApiTreeResult>()
                 .ForMember(d => d.Id, map => map.MapFrom(s => s.Id))
@@ -727,6 +740,32 @@ namespace FRS.ViewModels
 
             CreateMap<OrderPortalContentViewModel, OrderPortalContentDTO>();
             CreateMap<OrderPortalBannerViewModel, OrderPortalBannerDTO>();
+        }
+    }
+
+    public class UserRoleClaimToPermissionViewModelConverter : ITypeConverter<UserRoleClaim, PermissionViewModel>
+    {
+        public UserRoleClaimToPermissionViewModelConverter()
+        {
+        }
+
+        public PermissionViewModel Convert(UserRoleClaim source, PermissionViewModel destination, ResolutionContext context)
+        {
+            var permission = ApplicationPermissionsTrees.GetPermissionByValue(source.ClaimValue);
+            return context.Mapper.Map<PermissionViewModel>(permission);
+        }
+    }
+
+    public class UserRoleClaimToPermissionTreeViewModelConverter : ITypeConverter<UserRoleClaim, PermissionTreeViewModel>
+    {
+        public UserRoleClaimToPermissionTreeViewModelConverter()
+        {
+        }
+
+        public PermissionTreeViewModel Convert(UserRoleClaim source, PermissionTreeViewModel destination, ResolutionContext context)
+        {
+            var permission = ApplicationPermissionsTrees.GetPermissionByValue(source.ClaimValue);
+            return context.Mapper.Map<PermissionTreeViewModel>(permission);
         }
     }
 }

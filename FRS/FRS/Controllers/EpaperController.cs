@@ -26,11 +26,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class EpaperController : BaseController
@@ -39,13 +39,15 @@ namespace FRS.Controllers
         readonly ILogger _logger;
         private IHubContext<FRSHub> _frsHub;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public EpaperController(IUnitOfWork unitOfWork, ILogger<EpaperController> logger, IConfiguration configuration, IHubContext<FRSHub> frsHub)
+        public EpaperController(IUnitOfWork unitOfWork, ILogger<EpaperController> logger, IConfiguration configuration, IHubContext<FRSHub> frsHub, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _configuration = configuration;
             _frsHub = frsHub;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -59,7 +61,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiEpaperTemplates(int? templateId = null, string mac = null)
         {
             var result = await _unitOfWork.EpaperTemplates.GetApiEpaperTemplates(templateId, mac);
-            var data = Mapper.Map<List<EpaperTemplateViewModel>>(result.Data);
+            var data = _mapper.Map<List<EpaperTemplateViewModel>>(result.Data);
 
             if (templateId.HasValue || !string.IsNullOrEmpty(mac))
             {
@@ -89,7 +91,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEpaperTemplates(int pageNumber, int pageSize)
         {
             var results = await _unitOfWork.EpaperTemplates.GetEpaperTemplatesLoadRelatedAsync(pageNumber, pageSize);
-            return Ok(Mapper.Map<List<EpaperTemplateViewModel>>(results));
+            return Ok(_mapper.Map<List<EpaperTemplateViewModel>>(results));
         }
 
         [HttpPost("")]
@@ -109,12 +111,12 @@ namespace FRS.Controllers
                     epaperTemplate.DeviceAPIUrl = deviceAPIUrl;
                 }
 
-                var type = Mapper.Map<EpaperTemplate>(epaperTemplate);
+                var type = _mapper.Map<EpaperTemplate>(epaperTemplate);
 
                 var result = await _unitOfWork.EpaperTemplates.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    EpaperTemplateViewModel epaperTemplateVM = Mapper.Map<EpaperTemplateViewModel>(result.Data);
+                    EpaperTemplateViewModel epaperTemplateVM = _mapper.Map<EpaperTemplateViewModel>(result.Data);
                     return CreatedAtAction("GetEpaperTemplateById", new { id = epaperTemplateVM.Id }, epaperTemplateVM);
                 }
 
@@ -138,7 +140,7 @@ namespace FRS.Controllers
 
             var epaperTemplate = await this._unitOfWork.EpaperTemplates.GetByIdAsync(id);
 
-            EpaperTemplateViewModel epaperTemplateVM = Mapper.Map<EpaperTemplateViewModel>(epaperTemplate);
+            EpaperTemplateViewModel epaperTemplateVM = _mapper.Map<EpaperTemplateViewModel>(epaperTemplate);
             if (epaperTemplateVM == null)
                 return NotFound(id);
 
@@ -169,11 +171,11 @@ namespace FRS.Controllers
 
                 var epaperTemplate = await this._unitOfWork.EpaperTemplates.GetByIdAsync(model.Id);
 
-                EpaperTemplateViewModel epaperTemplateVM = Mapper.Map<EpaperTemplateViewModel>(epaperTemplate);
+                EpaperTemplateViewModel epaperTemplateVM = _mapper.Map<EpaperTemplateViewModel>(epaperTemplate);
                 if (epaperTemplateVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<EpaperTemplate>(model);
+                var updatedModel = _mapper.Map<EpaperTemplate>(model);
                 var result = await _unitOfWork.EpaperTemplates.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();
@@ -192,7 +194,7 @@ namespace FRS.Controllers
         //public async Task<IActionResult> GetLocations()
         //{
         //    var results = await _unitOfWork.EpaperTemplates.GetEpaperLocationsLoadRelatedAsync(-1, -1);
-        //    return Ok(Mapper.Map<List<EpaperTemplateLocationViewModel>>(results));
+        //    return Ok(_mapper.Map<List<EpaperTemplateLocationViewModel>>(results));
         //}
 
         //[HttpGet("get/epaperlocations/sync")]
@@ -297,7 +299,7 @@ namespace FRS.Controllers
             if (isNew)
             {
                 var objectData = data.GetType().GetProperty("data").GetValue(data, null);
-                await _frsHub.Clients.All.SendAsync("RefreshEpaperDeviceList", Mapper.Map<EpaperDeviceViewModel>(objectData as EpaperDevice));
+                await _frsHub.Clients.All.SendAsync("RefreshEpaperDeviceList", _mapper.Map<EpaperDeviceViewModel>(objectData as EpaperDevice));
             }
 
             return Ok(result);
@@ -311,13 +313,13 @@ namespace FRS.Controllers
             var result = await _unitOfWork.EpaperTemplates.GetApiEpaperDevices(macAddress: mac_address);
             if (!string.IsNullOrEmpty(mac_address))
             {
-                var deviceData = Mapper.Map<List<EpaperDeviceViewModel>>(result.Data);
+                var deviceData = _mapper.Map<List<EpaperDeviceViewModel>>(result.Data);
 
                 if (deviceData.Any())
                 {
                     var device = deviceData.First();
                     var templateResult = await _unitOfWork.EpaperTemplates.GetApiEpaperTemplates(macAddress: mac_address);
-                    var templateData = Mapper.Map<List<EpaperTemplateViewModel>>(templateResult.Data);
+                    var templateData = _mapper.Map<List<EpaperTemplateViewModel>>(templateResult.Data);
 
                     if (templateData.Any())
                     {
@@ -710,7 +712,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetApiEpaperDevices(int? deviceId = null)
         {
             var result = await _unitOfWork.EpaperTemplates.GetApiEpaperTemplates(deviceId);
-            var data = Mapper.Map<List<EpaperDeviceViewModel>>(result.Data);
+            var data = _mapper.Map<List<EpaperDeviceViewModel>>(result.Data);
 
             if (deviceId.HasValue)
             {
@@ -740,7 +742,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEpaperDevices(int pageNumber, int pageSize)
         {
             var results = await _unitOfWork.EpaperTemplates.GetEpaperDevicesLoadRelatedAsync(pageNumber, pageSize);
-            return Ok(Mapper.Map<List<EpaperDeviceViewModel>>(results));
+            return Ok(_mapper.Map<List<EpaperDeviceViewModel>>(results));
         }
 
         [HttpPost("device")]
@@ -754,12 +756,12 @@ namespace FRS.Controllers
                 if (epaperDevice == null)
                     return BadRequest($"{nameof(epaperDevice)} cannot be null");
 
-                var device = Mapper.Map<EpaperDevice>(epaperDevice);
+                var device = _mapper.Map<EpaperDevice>(epaperDevice);
 
                 var result = await _unitOfWork.EpaperTemplates.CreateDeviceAsync(device);
                 if (result.IsSuccess)
                 {
-                    EpaperDeviceViewModel epaperDeviceVM = Mapper.Map<EpaperDeviceViewModel>(result.Data);
+                    EpaperDeviceViewModel epaperDeviceVM = _mapper.Map<EpaperDeviceViewModel>(result.Data);
                     return CreatedAtAction("GetEpaperDeviceById", new { id = epaperDeviceVM.Id }, epaperDeviceVM);
                 }
 
@@ -783,7 +785,7 @@ namespace FRS.Controllers
 
             var epaperDevice = await this._unitOfWork.EpaperTemplates.GetByDeviceIdAsync(id);
 
-            EpaperDeviceViewModel epaperDeviceVM = Mapper.Map<EpaperDeviceViewModel>(epaperDevice);
+            EpaperDeviceViewModel epaperDeviceVM = _mapper.Map<EpaperDeviceViewModel>(epaperDevice);
             if (epaperDeviceVM == null)
                 return NotFound(id);
 
@@ -814,11 +816,11 @@ namespace FRS.Controllers
 
                 var epaperDevice = await this._unitOfWork.EpaperTemplates.GetByDeviceIdAsync(model.Id);
 
-                EpaperDeviceViewModel epaperDeviceVM = Mapper.Map<EpaperDeviceViewModel>(epaperDevice);
+                EpaperDeviceViewModel epaperDeviceVM = _mapper.Map<EpaperDeviceViewModel>(epaperDevice);
                 if (epaperDeviceVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<EpaperDevice>(model);
+                var updatedModel = _mapper.Map<EpaperDevice>(model);
                 var result = await _unitOfWork.EpaperTemplates.UpdateDeviceAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();
@@ -1175,7 +1177,7 @@ namespace FRS.Controllers
 
                     JArray jsonArray = JArray.Parse(content);
                     var patient_info = JObject.Parse(jsonArray[0].ToString());
-                    patient = Mapper.Map<PatientInfo>(patient_info);
+                    patient = _mapper.Map<PatientInfo>(patient_info);
                     //var epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
                     //patient = new PatientInfo
                     //{
@@ -1197,7 +1199,7 @@ namespace FRS.Controllers
                     //string restrictionContent = patient_info["restrictions"].Value<string>();
                     //JArray jsonRestrictions = JArray.Parse(restrictionContent);
 
-                    //CorporateRatesInfo dto = Mapper.Map<CorporateRatesInfo>(jsonRestrictions);
+                    //CorporateRatesInfo dto = _mapper.Map<CorporateRatesInfo>(jsonRestrictions);
                     //dummy restrictions
                     //patient.location_label = "SKCH Ward 710";
                     //patient.mode_of_feeding = "Oral";

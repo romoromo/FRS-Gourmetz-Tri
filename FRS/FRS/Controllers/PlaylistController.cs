@@ -10,24 +10,26 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 using System.Diagnostics;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class PlaylistController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public PlaylistController(IUnitOfWork unitOfWork, ILogger<PlaylistController> logger)
+        public PlaylistController(IUnitOfWork unitOfWork, ILogger<PlaylistController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("id/{id}")]
@@ -37,7 +39,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetLocationById(int id)
         {
             var playlist = await _unitOfWork.Playlists.GetByIdAsync(id);
-            return Ok(Mapper.Map<PlaylistViewModel>(playlist));
+            return Ok(_mapper.Map<PlaylistViewModel>(playlist));
         }
 
         [HttpGet("playlists/list")]
@@ -57,7 +59,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetPlaylists(int pageNumber, int pageSize, int? institutionId = null, int? userId = null, List<int> imageIds = null)
         {
             var results = await _unitOfWork.Playlists.GetPlaylistsLoadRelatedAsync(pageNumber, pageSize, institutionId, userId, imageIds);
-            return Ok(Mapper.Map<List<PlaylistViewModel>>(results));
+            return Ok(_mapper.Map<List<PlaylistViewModel>>(results));
         }
 
         [HttpPost("")]
@@ -72,13 +74,13 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(playlist)} cannot be null");
 
 
-                var type = Mapper.Map<Playlist>(playlist);
+                var type = _mapper.Map<Playlist>(playlist);
 
                 var result = await _unitOfWork.Playlists.CreateAsync(type);
                 if (result.IsSuccess && result.Data != null)
                 {
                     var Id = result.Data.GetType().GetProperty("Id").GetValue(result.Data, null);
-                    //ContactGroupViewModel contactGroupVM = Mapper.Map<ContactGroupViewModel>(result.Data);
+                    //ContactGroupViewModel contactGroupVM = _mapper.Map<ContactGroupViewModel>(result.Data);
                     return CreatedAtAction("GetPlaylistById", new { id = Id }, playlist);
                 }
 
@@ -103,7 +105,7 @@ namespace FRS.Controllers
 
             var playlist = await this._unitOfWork.Playlists.GetByIdAsync(id);
 
-            PlaylistViewModel playlistVM = Mapper.Map<PlaylistViewModel>(playlist);
+            PlaylistViewModel playlistVM = _mapper.Map<PlaylistViewModel>(playlist);
             if (playlistVM == null)
                 return NotFound(id);
 
@@ -135,11 +137,11 @@ namespace FRS.Controllers
 
                 var playlist = await this._unitOfWork.Playlists.GetByIdAsync(model.Id);
 
-                PlaylistViewModel playlistVM = Mapper.Map<PlaylistViewModel>(playlist);
+                PlaylistViewModel playlistVM = _mapper.Map<PlaylistViewModel>(playlist);
                 if (playlistVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<Playlist>(model);
+                var updatedModel = _mapper.Map<Playlist>(model);
                 Debug.WriteLine("Model to update: ", Newtonsoft.Json.JsonConvert.SerializeObject(updatedModel));
                 var result = await _unitOfWork.Playlists.UpdateAsync(updatedModel);
                 if (result.IsSuccess)

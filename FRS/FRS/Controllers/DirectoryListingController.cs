@@ -15,23 +15,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class DirectoryListingController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public DirectoryListingController(IUnitOfWork unitOfWork, ILogger<DirectoryListingController> logger)
+        public DirectoryListingController(IUnitOfWork unitOfWork, ILogger<DirectoryListingController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -51,7 +53,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDirectoryListingsExcludeInternal(int? institutionId = null)
         {
             var result = await _unitOfWork.DirectoryListings.GetDirectoryListingsExcludeInternal(institutionId);
-            return Ok(Mapper.Map<List<DirectoryListingViewModel>>(result));
+            return Ok(_mapper.Map<List<DirectoryListingViewModel>>(result));
         }
 
         [HttpGet("export")]
@@ -74,7 +76,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetDirectoryListings(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.DirectoryListings.GetDirectoryListingsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<DirectoryListingViewModel>>(result));
+            return Ok(_mapper.Map<List<DirectoryListingViewModel>>(result));
         }
 
         [HttpPost("")]
@@ -89,12 +91,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(directoryListing)} cannot be null");
 
 
-                var type = Mapper.Map<DirectoryListing>(directoryListing);
+                var type = _mapper.Map<DirectoryListing>(directoryListing);
 
                 var result = await _unitOfWork.DirectoryListings.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    DirectoryListingViewModel directoryListingVM = Mapper.Map<DirectoryListingViewModel>(result.Data);
+                    DirectoryListingViewModel directoryListingVM = _mapper.Map<DirectoryListingViewModel>(result.Data);
                     return CreatedAtAction("GetDirectoryListingById", new { id = directoryListingVM.Id }, directoryListingVM);
                 }
 
@@ -114,7 +116,7 @@ namespace FRS.Controllers
         {
             var directoryListing = await this._unitOfWork.DirectoryListings.GetByIdAsync(id);
 
-            DirectoryListingViewModel directoryListingVM = Mapper.Map<DirectoryListingViewModel>(directoryListing);
+            DirectoryListingViewModel directoryListingVM = _mapper.Map<DirectoryListingViewModel>(directoryListing);
             if (directoryListingVM == null)
                 return NotFound(id);
 
@@ -145,11 +147,11 @@ namespace FRS.Controllers
 
                 var directoryListing = await this._unitOfWork.DirectoryListings.GetByIdAsync(model.Id);
 
-                DirectoryListingViewModel directoryListingVM = Mapper.Map<DirectoryListingViewModel>(directoryListing);
+                DirectoryListingViewModel directoryListingVM = _mapper.Map<DirectoryListingViewModel>(directoryListing);
                 if (directoryListingVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<DirectoryListing>(model);
+                var updatedModel = _mapper.Map<DirectoryListing>(model);
                 var result = await _unitOfWork.DirectoryListings.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

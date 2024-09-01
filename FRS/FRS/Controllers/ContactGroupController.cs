@@ -11,24 +11,26 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class ContactGroupController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
         private readonly IAccountManager _accountManager;
+        private readonly IMapper _mapper;
 
-        public ContactGroupController(IUnitOfWork unitOfWork, ILogger<ContactGroupController> logger, IAccountManager accountManager)
+        public ContactGroupController(IUnitOfWork unitOfWork, ILogger<ContactGroupController> logger, IAccountManager accountManager, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _accountManager = accountManager;
+            _mapper = mapper;
         }
 
         [HttpGet("get/id/{id}")]
@@ -38,7 +40,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> ApiGetUserById(int id)
         {
             var results = await _unitOfWork.ContactGroups.GetByIdAsync(id, false);
-            return Ok(Mapper.Map<ContactGroupViewModel>(results));
+            return Ok(_mapper.Map<ContactGroupViewModel>(results));
         }
 
         [HttpGet("contactgroups/list")]
@@ -60,9 +62,9 @@ namespace FRS.Controllers
             var results = await _unitOfWork.ContactGroups.GetContactGroupsLoadRelatedAsync(pageNumber, pageSize, institutionId, userId, departmentIds, isSimple);
             if (isSimple)
             {
-                return Ok(Mapper.Map<List<ContactGroupSimpleViewModel>>(results));
+                return Ok(_mapper.Map<List<ContactGroupSimpleViewModel>>(results));
             }
-            return Ok(Mapper.Map<List<ContactGroupViewModel>>(results));
+            return Ok(_mapper.Map<List<ContactGroupViewModel>>(results));
         }
 
         [HttpGet("contactgroupmembers/list")]
@@ -81,7 +83,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetContactGroupMembers(int pageNumber, int pageSize, int? userId = null)
         {
             var results = await _unitOfWork.ContactGroups.GetContactGroupMembersAsync(pageNumber, pageSize, userId);
-            return Ok(Mapper.Map<List<ContactGroupMemberViewModel>>(results));
+            return Ok(_mapper.Map<List<ContactGroupMemberViewModel>>(results));
         }
 
         [HttpPost("")]
@@ -96,14 +98,14 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(contactGroup)} cannot be null");
 
 
-                var cg = Mapper.Map<ContactGroup>(contactGroup);
+                var cg = _mapper.Map<ContactGroup>(contactGroup);
 
 
                 var result = await _unitOfWork.ContactGroups.CreateAsync(cg);
                 if (result.IsSuccess && result.Data != null)
                 {
                     var Id = result.Data.GetType().GetProperty("Id").GetValue(result.Data, null);
-                    //ContactGroupViewModel contactGroupVM = Mapper.Map<ContactGroupViewModel>(result.Data);
+                    //ContactGroupViewModel contactGroupVM = _mapper.Map<ContactGroupViewModel>(result.Data);
                     return CreatedAtAction("GetContactGroupById", new { id = Id }, contactGroup);
                 }
 
@@ -128,7 +130,7 @@ namespace FRS.Controllers
 
             var contactGroup = await this._unitOfWork.ContactGroups.GetByIdAsync(id);
 
-            ContactGroupViewModel contactGroupVM = Mapper.Map<ContactGroupViewModel>(contactGroup);
+            ContactGroupViewModel contactGroupVM = _mapper.Map<ContactGroupViewModel>(contactGroup);
             if (contactGroupVM == null)
                 return NotFound(id);
 
@@ -159,11 +161,11 @@ namespace FRS.Controllers
 
                 var contactGroup = await this._unitOfWork.ContactGroups.GetByIdAsync(model.Id);
 
-                ContactGroupViewModel contactGroupVM = Mapper.Map<ContactGroupViewModel>(contactGroup);
+                ContactGroupViewModel contactGroupVM = _mapper.Map<ContactGroupViewModel>(contactGroup);
                 if (contactGroupVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<ContactGroup>(model);
+                var updatedModel = _mapper.Map<ContactGroup>(model);
                 var result = await _unitOfWork.ContactGroups.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

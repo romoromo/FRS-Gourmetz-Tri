@@ -22,22 +22,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class RestrictionController : BaseController
     {
         private IRestrictionService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public RestrictionController(IRestrictionService service, ILogger<RestrictionController> logger)
+        public RestrictionController(IRestrictionService service, ILogger<RestrictionController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Restriction Types
@@ -52,7 +54,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetRestrictionTypes(BaseFilter filter)
         {
             var results = await this._service.GetRestrictionTypesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<RestrictionTypeDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<RestrictionTypeDTO>>(results));
         }
 
         #endregion
@@ -72,7 +74,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateRestrictionTypeAsync(dto);
                 if (result.IsSuccess)
                 {
-                    RestrictionTypeDTO vm = Mapper.Map<RestrictionTypeDTO>(result.Data);
+                    RestrictionTypeDTO vm = _mapper.Map<RestrictionTypeDTO>(result.Data);
                     return CreatedAtAction("GetRestrictionTypeById", new { id = vm.Id }, vm);
                 }
 
@@ -147,7 +149,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetRestrictions(BaseFilter filter)
         {
             var results = await this._service.GetRestrictionsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<RestrictionDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<RestrictionDTO>>(results));
         }
 
         #endregion
@@ -167,7 +169,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateRestrictionAsync(dto);
                 if (result.IsSuccess)
                 {
-                    RestrictionDTO vm = Mapper.Map<RestrictionDTO>(result.Data);
+                    RestrictionDTO vm = _mapper.Map<RestrictionDTO>(result.Data);
                     return CreatedAtAction("GetRestrictionById", new { id = vm.Id }, vm);
                 }
 

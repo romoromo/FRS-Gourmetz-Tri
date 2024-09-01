@@ -10,23 +10,25 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class MediaExtensionController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public MediaExtensionController(IUnitOfWork unitOfWork, ILogger<MediaExtensionController> logger)
+        public MediaExtensionController(IUnitOfWork unitOfWork, ILogger<MediaExtensionController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -45,7 +47,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMediaExtensions(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.MediaExtensions.GetMediaExtensionsLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<MediaExtensionViewModel>>(result));
+            return Ok(_mapper.Map<List<MediaExtensionViewModel>>(result));
         }
 
         [HttpPost("")]
@@ -60,12 +62,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(mediaExtension)} cannot be null");
 
 
-                var type = Mapper.Map<MediaExtension>(mediaExtension);
+                var type = _mapper.Map<MediaExtension>(mediaExtension);
 
                 var result = await _unitOfWork.MediaExtensions.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    MediaExtensionViewModel mediaExtensionVM = Mapper.Map<MediaExtensionViewModel>(result.Data);
+                    MediaExtensionViewModel mediaExtensionVM = _mapper.Map<MediaExtensionViewModel>(result.Data);
                     return CreatedAtAction("GetMediaExtensionById", new { id = mediaExtensionVM.Id }, mediaExtensionVM);
                 }
 
@@ -85,7 +87,7 @@ namespace FRS.Controllers
         {
             var mediaExtension = await this._unitOfWork.MediaExtensions.GetByIdAsync(id);
 
-            MediaExtensionViewModel mediaExtensionVM = Mapper.Map<MediaExtensionViewModel>(mediaExtension);
+            MediaExtensionViewModel mediaExtensionVM = _mapper.Map<MediaExtensionViewModel>(mediaExtension);
             if (mediaExtensionVM == null)
                 return NotFound(id);
 
@@ -116,11 +118,11 @@ namespace FRS.Controllers
 
                 var mediaExtension = await this._unitOfWork.MediaExtensions.GetByIdAsync(model.Id);
 
-                MediaExtensionViewModel mediaExtensionVM = Mapper.Map<MediaExtensionViewModel>(mediaExtension);
+                MediaExtensionViewModel mediaExtensionVM = _mapper.Map<MediaExtensionViewModel>(mediaExtension);
                 if (mediaExtensionVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<MediaExtension>(model);
+                var updatedModel = _mapper.Map<MediaExtension>(model);
                 var result = await _unitOfWork.MediaExtensions.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

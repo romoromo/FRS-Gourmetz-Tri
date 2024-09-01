@@ -24,22 +24,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class MenuController : BaseController
     {
         private IMenuService _service;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public MenuController(IMenuService service, ILogger<MenuController> logger)
+        public MenuController(IMenuService service, ILogger<MenuController> logger, IMapper mapper)
         {
             _service = service;
             _logger = logger;
+            _mapper = mapper;
         }
 
         #region Menus
@@ -54,7 +56,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMenus(BaseFilter filter)
         {
             var results = await this._service.GetMenusAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MenuDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MenuDTO>>(results));
         }
 
         [ApiKeyAuthorize]
@@ -86,7 +88,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateMenuAsync(dto);
                 if (result.IsSuccess)
                 {
-                    MenuDTO vm = Mapper.Map<MenuDTO>(result.Data);
+                    MenuDTO vm = _mapper.Map<MenuDTO>(result.Data);
                     return CreatedAtAction("GetMenuById", new { id = vm.Id }, vm);
                 }
 
@@ -161,7 +163,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMenuCycles(BaseFilter filter)
         {
             var results = await this._service.GetMenuCyclesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MenuCycleDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MenuCycleDTO>>(results));
         }
 
         #endregion
@@ -275,7 +277,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMenuCycleSchedulePeriods(int menuCycleId, int day)
         {
             var results = await this._service.GetMenuCycleSchedulePeriods(menuCycleId, day);
-            return Ok(Mapper.Map<List<MenuCycleSchedulePeriodDTO>>(results));
+            return Ok(_mapper.Map<List<MenuCycleSchedulePeriodDTO>>(results));
         }
 
         [ApiKeyAuthorize]
@@ -302,7 +304,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOutletMenuCyclesAsync(int outletId, int catererId)
         {
             var results = await this._service.GetOutletMenuCyclesAsync(outletId, catererId);
-            return Ok(Mapper.Map<List<MenuCycleDTO>>(results));
+            return Ok(_mapper.Map<List<MenuCycleDTO>>(results));
         }
 
         [HttpPost("outlets/blockunblockdate")]
@@ -338,7 +340,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetOutletMenuCycleSchedulePeriods(int outletId, int catererId, int menuCycleId, int day)
         {
             var results = await this._service.GetOutletMenuCycleSchedulePeriods(outletId, catererId, menuCycleId, day);
-            return Ok(Mapper.Map<List<MenuCycleSchedulePeriodDTO>>(results));
+            return Ok(_mapper.Map<List<MenuCycleSchedulePeriodDTO>>(results));
         } 
 
         [ApiKeyAuthorize]
@@ -419,7 +421,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMenuCycleCalendars(BaseFilter filter)
         {
             var results = await this._service.GetMenuCycleCalendarsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MenuCycleCalendarDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MenuCycleCalendarDTO>>(results));
         }
 
         #endregion
@@ -439,7 +441,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateMenuCycleCalendarAsync(dto);
                 if (result.IsSuccess)
                 {
-                    MenuCycleCalendarDTO vm = Mapper.Map<MenuCycleCalendarDTO>(result.Data);
+                    MenuCycleCalendarDTO vm = _mapper.Map<MenuCycleCalendarDTO>(result.Data);
                     return CreatedAtAction("GetMenuCycleCalendarById", new { id = vm.Id }, vm);
                 }
 
@@ -513,7 +515,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMenuGroupsSimple(BaseFilter filter)
         {
             var results = await this._service.GetMenuGroupsSimpleAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MenuGroupSimpleDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MenuGroupSimpleDTO>>(results));
         }
 
         #region Sieved
@@ -526,7 +528,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMenuGroups(BaseFilter filter)
         {
             var results = await this._service.GetMenuGroupsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<MenuGroupDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<MenuGroupDTO>>(results));
         }
 
         #endregion
@@ -539,7 +541,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMenuGroupDishCyclesAsync(int studentId, DateTime orderDate)
         {
             var results = await this._service.GetMenuGroupDishCyclesAsync(studentId, orderDate);
-            return Ok(Mapper.Map<List<DishCycleDTO>>(results));
+            return Ok(_mapper.Map<List<DishCycleDTO>>(results));
         }
 
         [HttpGet("menugroups/activedishcycles")]
@@ -561,7 +563,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetMenuGroupDishesByDateAsync(int studentId, DateTime startDate, DateTime endDate)
         {
             var results = await this._service.GetMenuGroupDishesByDateAsync(studentId, startDate, endDate);
-            return Ok(Mapper.Map<List<DishByDateDTO>>(results));
+            return Ok(_mapper.Map<List<DishByDateDTO>>(results));
         }
 
         [HttpPost("menugroups")]
@@ -579,7 +581,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateMenuGroupAsync(dto);
                 if (result.IsSuccess)
                 {
-                    MenuGroupDTO vm = Mapper.Map<MenuGroupDTO>(result.Data);
+                    MenuGroupDTO vm = _mapper.Map<MenuGroupDTO>(result.Data);
                     return CreatedAtAction("GetMenuGroupById", new { id = vm.Id }, vm);
                 }
 

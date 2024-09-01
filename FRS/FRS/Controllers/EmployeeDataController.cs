@@ -10,23 +10,26 @@ using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using NPOI.SS.Formula.Functions;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class EmployeeDataController : BaseController
     {
         private IUnitOfWork _unitOfWork;
         readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
 
-        public EmployeeDataController(IUnitOfWork unitOfWork, ILogger<EmployeeDataController> logger)
+        public EmployeeDataController(IUnitOfWork unitOfWork, ILogger<EmployeeDataController> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -45,7 +48,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmployeeDatas(int pageNumber, int pageSize, int? institutionId = null)
         {
             var result = await _unitOfWork.EmployeeDatas.GetEmployeeDatasLoadRelatedAsync(pageNumber, pageSize, institutionId);
-            return Ok(Mapper.Map<List<EmployeeDataViewModel>>(result));
+            return Ok(_mapper.Map<List<EmployeeDataViewModel>>(result));
         }
 
         [HttpGet("getcurrentemployeebylocation")]
@@ -55,7 +58,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetCurrentEmployeesByLocation(int? locationId = null)
         {
             var result = await _unitOfWork.EmployeeDatas.GetCurrentEmployeesByLocation(locationId);
-            return Ok(Mapper.Map<List<EmployeeDataViewModel>>(result));
+            return Ok(_mapper.Map<List<EmployeeDataViewModel>>(result));
         }
 
         [HttpPost("")]
@@ -70,12 +73,12 @@ namespace FRS.Controllers
                     return BadRequest($"{nameof(employeeData)} cannot be null");
 
 
-                var type = Mapper.Map<EmployeeData>(employeeData);
+                var type = _mapper.Map<EmployeeData>(employeeData);
 
                 var result = await _unitOfWork.EmployeeDatas.CreateAsync(type);
                 if (result.IsSuccess)
                 {
-                    EmployeeDataViewModel employeeDataVM = Mapper.Map<EmployeeDataViewModel>(result.Data);
+                    EmployeeDataViewModel employeeDataVM = _mapper.Map<EmployeeDataViewModel>(result.Data);
                     return CreatedAtAction("GetEmployeeDataById", new { id = employeeDataVM.Id }, employeeDataVM);
                 }
 
@@ -95,7 +98,7 @@ namespace FRS.Controllers
         {
             var employeeData = await this._unitOfWork.EmployeeDatas.GetByIdAsync(id);
 
-            EmployeeDataViewModel employeeDataVM = Mapper.Map<EmployeeDataViewModel>(employeeData);
+            EmployeeDataViewModel employeeDataVM = _mapper.Map<EmployeeDataViewModel>(employeeData);
             if (employeeDataVM == null)
                 return NotFound(id);
 
@@ -126,11 +129,11 @@ namespace FRS.Controllers
 
                 var employeeData = await this._unitOfWork.EmployeeDatas.GetByIdAsync(model.Id);
 
-                EmployeeDataViewModel employeeDataVM = Mapper.Map<EmployeeDataViewModel>(employeeData);
+                EmployeeDataViewModel employeeDataVM = _mapper.Map<EmployeeDataViewModel>(employeeData);
                 if (employeeDataVM == null)
                     return NotFound(id);
 
-                var updatedModel = Mapper.Map<EmployeeData>(model);
+                var updatedModel = _mapper.Map<EmployeeData>(model);
                 var result = await _unitOfWork.EmployeeDatas.UpdateAsync(updatedModel);
                 if (result.IsSuccess)
                     return NoContent();

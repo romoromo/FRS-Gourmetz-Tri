@@ -20,12 +20,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using OpenIddict.Validation;
+using NPOI.SS.Formula.Functions;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/email")]
     public class EmailApiController : BaseController
     {
@@ -35,9 +36,10 @@ namespace FRS.Controllers
         private readonly IAccountManager _accountManager;
         private IApplicationSettingService _appSetting;
         private readonly IStudentService _studentService;
+        private readonly IMapper _mapper;
 
         public EmailApiController(IEmailQueueService service, ILogger<EmailApiController> logger, IEmailSender emailSender, IApplicationSettingService appSetting, IAccountManager accountManager,
-            IStudentService studentService)
+            IStudentService studentService, IMapper mapper)
         {
             _service = service;
             _logger = logger;
@@ -45,6 +47,7 @@ namespace FRS.Controllers
             _accountManager = accountManager;
             _appSetting = appSetting;
             _studentService = studentService;
+            _mapper = mapper;
         }
 
         #region Sieved
@@ -57,7 +60,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetContactUsSubjects(BaseFilter filter)
         {
             var results = await this._service.GetContactUsSubjectsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ContactUsSubjectDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<ContactUsSubjectDTO>>(results));
         }
 
         #endregion
@@ -77,7 +80,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateContactUsSubjectAsync(dto);
                 if (result.IsSuccess)
                 {
-                    ContactUsSubjectDTO vm = Mapper.Map<ContactUsSubjectDTO>(result.Data);
+                    ContactUsSubjectDTO vm = _mapper.Map<ContactUsSubjectDTO>(result.Data);
                     return CreatedAtAction("GetContactUsSubjectById", new { id = vm.Id }, vm);
                 }
 
@@ -185,7 +188,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetContactUsDetails(BaseFilter filter)
         {
             var results = await this._service.GetContactUsDetailsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<ContactUsDetailDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<ContactUsDetailDTO>>(results));
         }
 
         #endregion
@@ -205,7 +208,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateContactUsDetailAsync(dto);
                 if (result.IsSuccess)
                 {
-                    ContactUsDetailDTO vm = Mapper.Map<ContactUsDetailDTO>(result.Data);
+                    ContactUsDetailDTO vm = _mapper.Map<ContactUsDetailDTO>(result.Data);
                     return CreatedAtAction("GetContactUsDetailById", new { id = vm.Id }, vm);
                 }
 
@@ -278,7 +281,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetEmailTemplates(BaseFilter filter)
         {
             var results = await this._service.GetEmailTemplatesAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<EmailTemplateDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<EmailTemplateDTO>>(results));
         }
 
         #endregion
@@ -298,7 +301,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateEmailTemplateAsync(dto);
                 if (result.IsSuccess)
                 {
-                    EmailTemplateDTO vm = Mapper.Map<EmailTemplateDTO>(result.Data);
+                    EmailTemplateDTO vm = _mapper.Map<EmailTemplateDTO>(result.Data);
                     return CreatedAtAction("GetEmailTemplateById", new { id = vm.Id }, vm);
                 }
 

@@ -23,23 +23,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
-using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
 {
-    [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class StaffController : BaseController
     {
         private IStaffService _service;
         readonly ILogger _logger;
         private readonly IAccountManager _accountManager;
+        private readonly IMapper _mapper;
 
-        public StaffController(IStaffService service, ILogger<StaffController> logger, IAccountManager accountManager)
+        public StaffController(IStaffService service, ILogger<StaffController> logger, IAccountManager accountManager, IMapper mapper)
         {
             _service = service;
             _logger = logger;
             _accountManager = accountManager;
+            _mapper = mapper;
         }
 
         #region Staffs
@@ -54,7 +56,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetStaffs(BaseFilter filter)
         {
             var results = await this._service.GetStaffsAsync(filter);
-            return Ok(Mapper.Map<PagedEntityViewModel<StaffDTO>>(results));
+            return Ok(_mapper.Map<PagedEntityViewModel<StaffDTO>>(results));
         }
 
         #endregion
@@ -75,7 +77,7 @@ namespace FRS.Controllers
                 var result = await this._service.CreateStaffAsync(dto);
                 if (result.IsSuccess)
                 {
-                    StaffDTO vm = Mapper.Map<StaffDTO>(result.Data);
+                    StaffDTO vm = _mapper.Map<StaffDTO>(result.Data);
                     return CreatedAtAction("GetStaffById", new { id = vm.Id }, vm);
                 }
 
