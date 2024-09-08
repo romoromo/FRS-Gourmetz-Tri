@@ -192,9 +192,10 @@ public async Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<St
                 {
                     if (group.Type.Equals(StudentMealType.MEAL_PLAN, StringComparison.InvariantCultureIgnoreCase))
                     {
+                        var groupDetailStudentIds = groupDetails.Select(e => e.StudentId).ToList();
                         //delete orders for students removed
                         var orders = await _appContext.TokenOrders.Where(x => x.StudentGroupId == group.Id && x.IsActive && x.IsMealPlan &&
-                                        !groupDetails.Any(a => a.StudentId == x.ProfileId)).ToListAsync();
+                                        !groupDetailStudentIds.Any(a => a == x.ProfileId)).ToListAsync();
                         foreach (var order in orders)
                         {
                             order.IsActive = false;

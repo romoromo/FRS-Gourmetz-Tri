@@ -1651,14 +1651,15 @@ namespace DAL.Repositories.MealOrder
             //var outlet = await _appContext.Outlets.FindAsync(outletId);
             var studentGroup = await _appContext.StudentGroups.FirstOrDefaultAsync(e => e.Id == studentGroupId);
 
-            var students = studentGroup.Sgdetails.Where(e => e.IsActive).Select(e => e.Student).ToList();
+            var studentIds = studentGroup.Sgdetails.Where(e => e.IsActive).Select(e => e.Student.Id).ToList();
 
             var orders = _appContext.TokenOrders.Where(t => t.StoreId == storeId && t.StudentGroupId == studentGroupId && t.Status != "cancelled" &&
                                            (t.DeliveryDate.Date >= deliveryDate.Date && t.DeliveryDate.Date <= deliveryDateTo.Date)
-                                           && t.IsActive && t.IsMealPlan && students.Any(f => f.Id == t.ProfileId)).ToList();
+                                           && t.IsActive && t.IsMealPlan && studentIds.Any(f => f == t.ProfileId)).ToList();
 
             var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
-            var tokenOrderSelectedDishes = _appContext.TokenOrderDishes.Where(e => e.IsActive && orders.Any(f => f.Id == e.TokenOrdered.OrderId)).ToList();
+            var orderIds = orders.Select(e => e.Id).ToList();
+            var tokenOrderSelectedDishes = _appContext.TokenOrderDishes.Where(e => e.IsActive && orderIds.Any(f => f == e.TokenOrdered.OrderId)).ToList();
 
             var mealSessionIds = studentGroup.MealSessions.Select(e => e.MealSessionId).ToList();
             var mealSessions = _appContext.MealSessions.Where(e => mealSessionIds.Any(f => f == e.Id)).Select(e => e.Name).ToList();
@@ -1666,7 +1667,7 @@ namespace DAL.Repositories.MealOrder
             var mealPlans = _appContext.StudentGroupMealPlans.Where(e => e.IsActive && e.StudentGroupId == studentGroupId);
             summary.Cols.Add("Session");
             //var dishTypeIds = orders.SelectMany(e => e.Tokens.SelectMany(f => f.SelectedDishes).Select(x => x.Dish.DishTypeId)).Distinct();
-            var dishTypeIds = mealPlans.Select(e => e.Dish.DishTypeId).Distinct();
+            var dishTypeIds = mealPlans.Select(e => e.Dish.DishTypeId).Distinct().ToList();
             dishTypes = dishTypes.Where(e => dishTypeIds.Any(f => f == e.Id)).OrderBy(e => e.Name).ToList();
             foreach (var dishType in dishTypes)
             {
@@ -1987,46 +1988,143 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        //public async Task<StudentGroupTokenOrderSummaryDTO> GetStudentGroupOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails, string type)
+        //{
+        //    var summary = new StudentGroupTokenOrderSummaryDTO { Total = new StudentGroupTokenOrderRowDTO { Cells = new List<string>() } };
+        //    //var outlet = await _appContext.Outlets.FindAsync(outletId);
+        //    var studentGroup = await _appContext.StudentGroups.FirstOrDefaultAsync(e => e.Id == studentGroupId);
+
+        //    var students = studentGroup.Sgdetails.Where(e => e.IsActive).Select(e => e.Student).ToList();
+        //    bool isFas = type.ToLower() == "fas";
+        //    var orders = _appContext.TokenOrders.Where(t => t.StoreId == storeId && t.StudentGroupId == studentGroupId && t.Status != "cancelled" &&
+        //                                   (t.DeliveryDate.Date >= deliveryDate.Date && t.DeliveryDate.Date <= deliveryDateTo.Date)
+        //                                   && t.IsActive && 
+        //                                   ((!isFas && t.IsStudentGroupOrder) || (isFas && t.IsFAS))
+        //                                   && students.Any(f => f.Id == t.ProfileId)).ToList();
+
+        //    var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
+        //    var tokenOrderSelectedDishes = _appContext.TokenOrderDishes.Where(e => e.IsActive && orders.Any(f => f.Id == e.TokenOrdered.OrderId)).ToList();
+
+        //    var mealSessionIds = mealSessionDetails.Select(e => e.MealSessionId).ToList();
+        //    var mealSessions = _appContext.MealSessions.Where(e => mealSessionIds.Any(f => f == e.Id)).Select(e => e.Name).ToList();
+
+
+        //    summary.Cols.Add("Session");
+        //    var dishTypeIds = orders.SelectMany(e => e.Tokens.SelectMany(f => f.SelectedDishes).Select(x => x.Dish.DishTypeId)).Distinct();
+        //    dishTypes = dishTypes.Where(e => dishTypeIds.Any(f => f == e.Id)).OrderBy(e => e.Name).ToList();
+        //    foreach (var dishType in dishTypes)
+        //    {
+        //        summary.Cols.Add(dishType.Name);
+        //    }
+
+
+        //    foreach (var mealSession in mealSessions)
+        //    {
+        //        var row = new StudentGroupTokenOrderRowDTO();
+        //        row.Cells.Add(string.Format("{0}", mealSession));
+
+        //        foreach (var dishType in dishTypes)
+        //        {
+        //            //var tokens = fasOrders.Where(e => e.MealSessionDetailId == mealSessionDetail.Id).SelectMany(e => e.Tokens);
+        //            var totalByDishType = tokenOrderSelectedDishes.Where(e => e.TokenOrdered.Order.Session.MealSession.Name == mealSession &&
+        //                                                    e.Dish.DishTypeId == dishType.Id).Sum(f => (int)f.Qty);
+
+        //            row.Cells.Add(totalByDishType.ToString());
+        //        }
+
+        //        summary.Rows.Add(row);
+        //    }
+
+        //    summary.Total.Cells.Add("Total Quantity");
+        //    if (summary.Rows.Any() && summary.Rows.First().Cells.Any())
+        //    {
+        //        for (int i = 1; i < summary.Rows.First().Cells.Count; i++)
+        //        {
+        //            var totalByCol = summary.Rows.Select(e => int.Parse(e.Cells[i])).Sum();
+        //            summary.Total.Cells.Add(totalByCol.ToString());
+        //        }
+        //    }
+
+        //    return summary;
+        //}
+
         public async Task<StudentGroupTokenOrderSummaryDTO> GetStudentGroupOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails, string type)
         {
-            var summary = new StudentGroupTokenOrderSummaryDTO { Total = new StudentGroupTokenOrderRowDTO { Cells = new List<string>() } };
-            //var outlet = await _appContext.Outlets.FindAsync(outletId);
-            var studentGroup = await _appContext.StudentGroups.FirstOrDefaultAsync(e => e.Id == studentGroupId);
+            var summary = new StudentGroupTokenOrderSummaryDTO
+            {
+                Total = new StudentGroupTokenOrderRowDTO { Cells = new List<string>() },
+                Cols = new List<string>(),
+                Rows = new List<StudentGroupTokenOrderRowDTO>()
+            };
+
+            // Fetch student group and related students
+            var studentGroup = await _appContext.StudentGroups
+                .Include(e => e.Sgdetails)
+                .ThenInclude(sg => sg.Student)
+                .FirstOrDefaultAsync(e => e.Id == studentGroupId);
+
+            if (studentGroup == null)
+                return summary; // Return empty if no student group found
 
             var students = studentGroup.Sgdetails.Where(e => e.IsActive).Select(e => e.Student).ToList();
-            bool isFas = type.ToLower() == "fas";
-            var orders = _appContext.TokenOrders.Where(t => t.StoreId == storeId && t.StudentGroupId == studentGroupId && t.Status != "cancelled" &&
-                                           (t.DeliveryDate.Date >= deliveryDate.Date && t.DeliveryDate.Date <= deliveryDateTo.Date)
-                                           && t.IsActive && 
-                                           ((!isFas && t.IsStudentGroupOrder) || (isFas && t.IsFAS))
-                                           && students.Any(f => f.Id == t.ProfileId)).ToList();
+            var studentIds = studentGroup.Sgdetails.Where(e => e.IsActive).Select(e => e.Student.Id).ToList();
 
-            var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
-            var tokenOrderSelectedDishes = _appContext.TokenOrderDishes.Where(e => e.IsActive && orders.Any(f => f.Id == e.TokenOrdered.OrderId)).ToList();
+            bool isFas = type.ToLower() == "fas";
+
+            // Fetch orders matching the criteria
+            var orders = await _appContext.TokenOrders
+                .Where(t => t.StoreId == storeId
+                            && t.StudentGroupId == studentGroupId
+                            && t.Status != "cancelled"
+                            && t.DeliveryDate.Date >= deliveryDate.Date
+                            && t.DeliveryDate.Date <= deliveryDateTo.Date
+                            && t.IsActive
+                            && ((!isFas && t.IsStudentGroupOrder) || (isFas && t.IsFAS))
+                            && studentIds.Any(f => f == t.ProfileId)) // This condition is tricky for EF, so moving to memory evaluation
+                .ToListAsync();
+
+            var dishTypes = await _appContext.DishTypes
+                .Where(e => e.IsActive && e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId))
+                .OrderBy(e => e.Name)
+                .ToListAsync();
+
+            var tokenOrderSelectedDishes = await _appContext.TokenOrderDishes
+                .Where(e => e.IsActive && orders.Select(o => o.Id).Contains(e.TokenOrdered.OrderId))
+                .ToListAsync();
 
             var mealSessionIds = mealSessionDetails.Select(e => e.MealSessionId).ToList();
-            var mealSessions = _appContext.MealSessions.Where(e => mealSessionIds.Any(f => f == e.Id)).Select(e => e.Name).ToList();
-
+            var mealSessions = await _appContext.MealSessions
+                .Where(e => mealSessionIds.Contains(e.Id))
+                .Select(e => e.Name)
+                .ToListAsync();
 
             summary.Cols.Add("Session");
-            var dishTypeIds = orders.SelectMany(e => e.Tokens.SelectMany(f => f.SelectedDishes).Select(x => x.Dish.DishTypeId)).Distinct();
-            dishTypes = dishTypes.Where(e => dishTypeIds.Any(f => f == e.Id)).OrderBy(e => e.Name).ToList();
+
+            // Filter dish types based on orders
+            var dishTypeIds = orders
+                .SelectMany(e => e.Tokens.SelectMany(f => f.SelectedDishes).Select(x => x.Dish.DishTypeId))
+                .Distinct()
+                .ToList();
+
+            dishTypes = dishTypes.Where(e => dishTypeIds.Contains(e.Id)).OrderBy(e => e.Name).ToList();
+
             foreach (var dishType in dishTypes)
             {
                 summary.Cols.Add(dishType.Name);
             }
 
-
+            // Build the summary for each meal session
             foreach (var mealSession in mealSessions)
             {
                 var row = new StudentGroupTokenOrderRowDTO();
-                row.Cells.Add(string.Format("{0}", mealSession));
+                row.Cells = new List<string> { mealSession };
 
                 foreach (var dishType in dishTypes)
                 {
-                    //var tokens = fasOrders.Where(e => e.MealSessionDetailId == mealSessionDetail.Id).SelectMany(e => e.Tokens);
-                    var totalByDishType = tokenOrderSelectedDishes.Where(e => e.TokenOrdered.Order.Session.MealSession.Name == mealSession &&
-                                                            e.Dish.DishTypeId == dishType.Id).Sum(f => (int)f.Qty);
+                    // Filter token orders and sum quantities for the current dish type
+                    var totalByDishType = tokenOrderSelectedDishes
+                        .Where(e => e.TokenOrdered.Order.Session.MealSession.Name == mealSession && e.Dish.DishTypeId == dishType.Id)
+                        .Sum(f => (int)f.Qty);
 
                     row.Cells.Add(totalByDishType.ToString());
                 }
@@ -2034,7 +2132,9 @@ namespace DAL.Repositories.MealOrder
                 summary.Rows.Add(row);
             }
 
+            // Calculate the total for each column
             summary.Total.Cells.Add("Total Quantity");
+
             if (summary.Rows.Any() && summary.Rows.First().Cells.Any())
             {
                 for (int i = 1; i < summary.Rows.First().Cells.Count; i++)
@@ -2046,6 +2146,7 @@ namespace DAL.Repositories.MealOrder
 
             return summary;
         }
+
         #endregion
 
         private async Task<bool> CreateGeneratedCancelledOrder(TokenOrder order, string studentEmail, string invoiceNumber, int paymentTypeId, string message, bool isAdhoc, bool isFas, bool isMealPlan, int? userId)

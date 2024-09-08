@@ -41,7 +41,10 @@ export class StoreSelectorDetailsComponent implements OnInit {
     if (typeof (data.stores) != typeof (undefined)) {
       this.selectedStores = data.stores;
     }
-    this.selectedCaterers = data.outlet.catererOutlets;
+
+    if (typeof (data.outlet) != typeof (undefined) && data.outlet.catererOutlets) {
+      this.selectedCaterers = data.outlet.catererOutlets;
+    }
     console.log("selected caterers: ", this.selectedCaterers)
   }
 
@@ -82,14 +85,16 @@ export class StoreSelectorDetailsComponent implements OnInit {
 
   loadData(ev?: any) {
     let filterCaterer = "";
-    this.selectedCaterers.forEach((caterer, i) => {
-      if (caterer.status == "APPROVED") {
-        if (filterCaterer != "") {
-          filterCaterer += '|'
+    if (this.selectedCaterers) {
+      this.selectedCaterers.forEach((caterer, i) => {
+        if (caterer.status == "APPROVED") {
+          if (filterCaterer != "") {
+            filterCaterer += '|'
+          }
+          filterCaterer += caterer.catererInfoId
         }
-        filterCaterer += caterer.catererInfoId
-      }
-    });
+      });
+    }
     console.log("caterer filter = ", filterCaterer)
 
     this.filter.pageSize = 10;

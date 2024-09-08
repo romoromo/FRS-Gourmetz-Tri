@@ -132,7 +132,8 @@ namespace DAL.Repositories.MealOrder
                     var cycleSchedules = this._appContext.OutletClassRosterSchedules.Where(e => e.OutletClassRosterId == outletClassRoster.Id);
 
                     //remove deleted schedules
-                    var schedToDelete = cycleSchedules.Where(e => !outletClassRoster.Schedules.Any(x => x.Id == e.Id));
+                    var outletClassRosterIds = outletClassRoster.Schedules.Select(e => e.Id).ToList();
+                    var schedToDelete = cycleSchedules.Where(e => !outletClassRosterIds.Any(x => x == e.Id));
                     this._appContext.OutletClassRosterSchedules.RemoveRange(schedToDelete);
 
                     //add new schedules
@@ -174,8 +175,8 @@ namespace DAL.Repositories.MealOrder
                                 this._appContext.OutletClassRosterSchedulePeriodClasses.AddRange(classesToAdd);
                             }
 
-                        //update day
-                        x.Day = sched.Day;
+                            //update day
+                            x.Day = sched.Day;
                             this._appContext.OutletClassRosterSchedules.Update(x);
                         }
 

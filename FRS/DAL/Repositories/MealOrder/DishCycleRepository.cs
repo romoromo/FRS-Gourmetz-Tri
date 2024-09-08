@@ -82,58 +82,129 @@ namespace DAL.Repositories.MealOrder
             return records.FirstOrDefault();
         }
 
+        //public async Task<List<DishCycleScheduleSetMenuDTO>> GetDishCycleScheduleSetMenus(int cycleId, int day, int? outletId)
+        //{
+        //    var cycle = _appContext.DishCycles.FirstOrDefault(e => e.IsActive && e.Id == cycleId);
+        //    List<DishCycleScheduleSetMenuDTO> list = new List<DishCycleScheduleSetMenuDTO>();
+        //    if (cycle != null)
+        //    {
+        //        IQueryable<DishCycleScheduleSet> sets = _appContext.DishCycleScheduleSets.Where(e => e.IsActive &&
+        //                                                                e.DishCycleId == cycleId).OrderBy(e => e.Sequence);
+
+        //        foreach (var set in sets)
+        //        {
+        //            DishCycleScheduleSetMenuDTO s = new DishCycleScheduleSetMenuDTO();
+        //            s.CopyFrom(set);
+        //            s.DishCycleType = set.DishCycleType;
+
+        //            s.ExcludedMenus = _appContext.OutletDishCyclePeriodMenus.Where(e => !outletId.HasValue || (e.OutletId == outletId && e.DishCycleScheduleSetId == set.Id)).ToList();
+
+        //            if (cycle.CycleType == "Main Menu")
+        //            {
+        //                var c = _appContext.DishCycles.FirstOrDefault(e => e.IsActive && e.Id == set.CycleTypeId);
+        //                s.Label = c != null ? c.Label : s.Label;
+        //            }
+
+        //            var menus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive);
+
+        //            int? id = cycle.CycleType != "Main Menu" ? cycleId : set.CycleTypeId;
+        //            int d = cycle.CycleType != "Main Menu" ? day : ((day % set.DishCycleType.NumOfDays) == 0 ? set.DishCycleType.NumOfDays : (day % set.DishCycleType.NumOfDays));
+        //            var schedule = await _appContext.DishCycleSchedules.FirstOrDefaultAsync(e => e.IsActive &&
+        //                                                                     e.DishCycleId == id &&
+        //                                                                     e.Day == d);
+
+        //            if (schedule != null)
+        //            {
+        //                if (cycle.CycleType == "Main Menu")
+        //                {
+        //                    menus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive && schedule.Details.Any(f => f.Id == e.DishCycleScheduleDetailId && f.Sequence == set.CycleTypeSequence));
+        //                }
+        //                else
+        //                {
+        //                    menus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive && schedule.Details.Any(f => f.Id == e.DishCycleScheduleDetailId && f.Sequence == set.Sequence));
+        //                }
+
+        //                s.Menus = menus.ToList();
+        //            }
+
+
+        //            list.Add(s);
+        //        }
+        //    }
+
+        //    return list;
+        //}
+
         public async Task<List<DishCycleScheduleSetMenuDTO>> GetDishCycleScheduleSetMenus(int cycleId, int day, int? outletId)
         {
-            var cycle = _appContext.DishCycles.FirstOrDefault(e => e.IsActive && e.Id == cycleId);
+            var cycle = await _appContext.DishCycles.FirstOrDefaultAsync(e => e.IsActive && e.Id == cycleId);
             List<DishCycleScheduleSetMenuDTO> list = new List<DishCycleScheduleSetMenuDTO>();
+
             if (cycle != null)
             {
-                IQueryable<DishCycleScheduleSet> sets = _appContext.DishCycleScheduleSets.Where(e => e.IsActive &&
-                                                                        e.DishCycleId == cycleId).OrderBy(e => e.Sequence);
+                // Fetch sets first
+                var sets = await _appContext.DishCycleScheduleSets
+                    .Where(e => e.IsActive && e.DishCycleId == cycleId)
+                    .OrderBy(e => e.Sequence)
+                    .ToListAsync();
+
+                // Fetch menus in advance (and further filter in memory later)
+                var menus = await _appContext.DishCycleScheduleDetailMenus
+                    .Where(e => e.IsActive)
+                    .ToListAsync();
 
                 foreach (var set in sets)
                 {
-                    DishCycleScheduleSetMenuDTO s = new DishCycleScheduleSetMenuDTO();
+                    var s = new DishCycleScheduleSetMenuDTO();
                     s.CopyFrom(set);
                     s.DishCycleType = set.DishCycleType;
-                    
-                    s.ExcludedMenus = _appContext.OutletDishCyclePeriodMenus.Where(e => !outletId.HasValue || (e.OutletId == outletId && e.DishCycleScheduleSetId == set.Id)).ToList();
 
+                    // Retrieve excluded menus based on outletId
+                    s.ExcludedMenus = await _appContext.OutletDishCyclePeriodMenus
+                        .Where(e => !outletId.HasValue || (e.OutletId == outletId && e.DishCycleScheduleSetId == set.Id))
+                        .ToListAsync();
+
+                    // Handle Main Menu logic
                     if (cycle.CycleType == "Main Menu")
                     {
-                        var c = _appContext.DishCycles.FirstOrDefault(e => e.IsActive && e.Id == set.CycleTypeId);
+                        var c = await _appContext.DishCycles.FirstOrDefaultAsync(e => e.IsActive && e.Id == set.CycleTypeId);
                         s.Label = c != null ? c.Label : s.Label;
                     }
 
-                    var menus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive);
-
+                    // Calculate the proper day and cycle ID
                     int? id = cycle.CycleType != "Main Menu" ? cycleId : set.CycleTypeId;
                     int d = cycle.CycleType != "Main Menu" ? day : ((day % set.DishCycleType.NumOfDays) == 0 ? set.DishCycleType.NumOfDays : (day % set.DishCycleType.NumOfDays));
-                    var schedule = await _appContext.DishCycleSchedules.FirstOrDefaultAsync(e => e.IsActive &&
-                                                                             e.DishCycleId == id &&
-                                                                             e.Day == d);
+
+                    // Retrieve the appropriate schedule and include its details
+                    var schedule = await _appContext.DishCycleSchedules
+                        .Include(e => e.Details)
+                        .FirstOrDefaultAsync(e => e.IsActive && e.DishCycleId == id && e.Day == d);
 
                     if (schedule != null)
                     {
+                        // Move the complex filtering logic to memory after fetching the menus
                         if (cycle.CycleType == "Main Menu")
                         {
-                            menus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive && schedule.Details.Any(f => f.Id == e.DishCycleScheduleDetailId && f.Sequence == set.CycleTypeSequence));
+                            s.Menus = menus
+                                .Where(e => schedule.Details.Any(f => f.Id == e.DishCycleScheduleDetailId && f.Sequence == set.CycleTypeSequence))
+                                .ToList();
                         }
                         else
                         {
-                            menus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive && schedule.Details.Any(f => f.Id == e.DishCycleScheduleDetailId && f.Sequence == set.Sequence));
+                            s.Menus = menus
+                                .Where(e => schedule.Details.Any(f => f.Id == e.DishCycleScheduleDetailId && f.Sequence == set.Sequence))
+                                .ToList();
                         }
-
-                        s.Menus = menus.ToList();
                     }
-                    
 
                     list.Add(s);
                 }
             }
-            
+
             return list;
         }
+
+
 
         public async Task<List<MealCreditSetMenuDTO>> GetDishesByMealType(int outletId, int catererId, int mealTypeId, DateTime date, int? sessionId)
         {
@@ -257,10 +328,20 @@ namespace DAL.Repositories.MealOrder
             var f = await GetSingleOrDefaultAsync(e => e.Id == dishCycle.Id);
 
             //update periods
-            var periodsToDelete = this._appContext.DishCyclePeriods.Where(x => x.DishCycleId == f.Id &&
-                                    (dishCycle.DishCyclePeriods == null || !dishCycle.DishCyclePeriods.Any(a => a.MealPeriodId == x.MealPeriodId)));
+            //var periodsToDelete = this._appContext.DishCyclePeriods.Where(x => x.DishCycleId == f.Id &&
+            //                        (dishCycle.DishCyclePeriods == null || !dishCycle.DishCyclePeriods.Any(a => a.MealPeriodId == x.MealPeriodId)));
 
+            //this._appContext.DishCyclePeriods.RemoveRange(periodsToDelete);
+            var dishCyclePeriodIds = dishCycle.DishCyclePeriods?.Select(a => a.MealPeriodId).ToList() ?? new List<int>();
+
+            // Query the periods to delete
+            var periodsToDelete = this._appContext.DishCyclePeriods
+                .Where(x => x.DishCycleId == f.Id && !dishCyclePeriodIds.Contains(x.MealPeriodId))
+                .ToList(); // Fetch the data from the database
+
+            // Remove the records from the context
             this._appContext.DishCyclePeriods.RemoveRange(periodsToDelete);
+
 
             if (dishCycle.DishCyclePeriods != null)
             {
@@ -280,17 +361,19 @@ namespace DAL.Repositories.MealOrder
             }
 
             //remove schedules
-            var cycleSchedules = this._appContext.DishCycleSchedules.Where(e => e.DishCycleId == dishCycle.Id);
+            var cycleSchedules = this._appContext.DishCycleSchedules.Where(e => e.DishCycleId == dishCycle.Id).ToList();
+
+            //var dishCycleScheduleIds = dishCycle.Schedules?.Select(a => a.Id).ToList() ?? new List<int>();
 
             //remove deleted schedules
-            var schedToDelete = cycleSchedules.Where(e => !dishCycle.Schedules.Any(x => x.Id == e.Id));
+            var schedToDelete = cycleSchedules.Where(e => !cycleSchedules.Any(x => x.Id == e.Id));
             this._appContext.DishCycleSchedules.RemoveRange(schedToDelete);
 
             //add new schedules
             var schedToAdd = dishCycle.Schedules.Where(e => !cycleSchedules.Any(x => x.Id == e.Id));
             this._appContext.DishCycleSchedules.AddRange(schedToAdd);
 
-            var cycleSets = this._appContext.DishCycleScheduleSets.Where(e => e.DishCycleId == dishCycle.Id);
+            var cycleSets = this._appContext.DishCycleScheduleSets.Where(e => e.DishCycleId == dishCycle.Id).ToList();
 
             //remove deleted sets
             var setToDelete = cycleSets.Where(e => !dishCycle.Sets.Any(x => x.Id == e.Id && x.CycleTypeId == e.CycleTypeId));
@@ -312,29 +395,29 @@ namespace DAL.Repositories.MealOrder
             });
 
             //if cycle still exist, check the details
-            cycleSchedules.ToList().ForEach(x =>
+            cycleSchedules.ForEach(x =>
             {
                 var sched = dishCycle.Schedules.FirstOrDefault(e => e.Id == x.Id);
 
                 if (sched != null)
                 {
                     //remove deleted details
-                    var detToDelete = x.Details.Where(e => !sched.Details.Any(a => a.Id == e.Id));
+                    var detToDelete = x.Details.Where(e => !sched.Details.Any(a => a.Id == e.Id)).ToList();
                     this._appContext.DishCycleScheduleDetails.RemoveRange(detToDelete);
 
                     //add new details
-                    var detToAdd = sched.Details.Where(e => !x.Details.Any(a => a.Id == e.Id));
+                    var detToAdd = sched.Details.Where(e => !x.Details.Any(a => a.Id == e.Id)).ToList();
                     this._appContext.DishCycleScheduleDetails.AddRange(detToAdd);
 
-                    var menusToSave = sched?.Details.SelectMany(e => e.Menus);
+                    var menusToSave = sched?.Details.SelectMany(e => e.Menus).ToList();
                     if (menusToSave != null)
                     {
-                        var existingMenus = x.Details.SelectMany(e => e.Menus);
-                        var menusToDelete = existingMenus.Where(e => !menusToSave.Any(a => a.DishCycleScheduleDetailId == e.DishCycleScheduleDetailId && a.DishId == e.DishId));
+                        var existingMenus = x.Details.SelectMany(e => e.Menus).ToList();
+                        var menusToDelete = existingMenus.Where(e => !menusToSave.Any(a => a.DishCycleScheduleDetailId == e.DishCycleScheduleDetailId && a.DishId == e.DishId)).ToList();
                         this._appContext.DishCycleScheduleDetailMenus.RemoveRange(menusToDelete);
 
                         //add new classes
-                         var menusToAdd = menusToSave.Where(e => !x.Details.SelectMany(a => a.Menus).Any(a => a.DishCycleScheduleDetailId == e.DishCycleScheduleDetailId && a.DishId == e.DishId));
+                         var menusToAdd = menusToSave.Where(e => !existingMenus.Any(a => a.DishCycleScheduleDetailId == e.DishCycleScheduleDetailId && a.DishId == e.DishId)).ToList();
                         this._appContext.DishCycleScheduleDetailMenus.AddRange(menusToAdd);
                     }
 
