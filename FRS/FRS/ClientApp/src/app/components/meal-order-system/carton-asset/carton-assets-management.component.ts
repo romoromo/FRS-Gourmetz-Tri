@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, TemplateRef, ViewChild, Input, Inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SearchBoxComponent } from '../../controls/search-box.component';
 import { ModalDirective } from 'ngx-bootstrap/modal';
@@ -9,7 +9,7 @@ import { AccountService } from '../../../services/account.service';
 import { Utilities } from '../../../services/utilities';
 import { Filter, PagedResult } from '../../../models/sieve-filter.model';
 import { Permission } from '../../../models/permission.model';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { CartonAsset } from 'src/app/models/meal-order/carton-asset.model';
 import { CartonAssetEditorComponent } from './carton-asset-editor.component';
 import { DishService } from 'src/app/services/meal-order/dish.service';
@@ -63,6 +63,17 @@ export class CartonAssetsManagementComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (!result || !result.isCancel)
         this.loadData(null);
+    });
+  }
+
+  openQrDialog(asset: CartonAsset): void {
+    const dialogRef = this.dialog.open(CartonAssetQrCodeComponent, {
+      data: `${asset.code}`,
+      width: '90vw'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadData(null);
     });
   }
 
@@ -227,4 +238,22 @@ export class CartonAssetsManagementComponent implements OnInit, OnDestroy {
     ));
   }
 
+}
+
+@Component({
+  template: `<div [style.width]="100" [style.text-align]="'center'">
+          <qr-code [value]="data" [size] = "512" [level] = "'H'" > </qr-code> <br />
+
+          <button type="button" mat-button (click)="cancel()" ><i class='fa fa-times'></i> {{ 'Close' }}</button>
+    </div>`
+})
+export class CartonAssetQrCodeComponent {
+  constructor(
+    public dialogRef: MatDialogRef<CartonAssetQrCodeComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: string,
+  ) { }
+
+  private cancel() {
+    this.dialogRef.close();
+  }
 }

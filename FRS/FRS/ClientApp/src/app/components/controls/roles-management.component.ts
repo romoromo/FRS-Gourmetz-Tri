@@ -75,7 +75,7 @@ export class RolesManagementComponent implements OnInit, AfterViewInit, OnDestro
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
-      { prop: "index", name: '#', width: 50, cellTemplate: this.indexTemplate, canAutoResize: false, sortable: false },
+      /*{ prop: "index", name: '#', width: 50, cellTemplate: this.indexTemplate, canAutoResize: false, sortable: false },*/
       { prop: 'name', name: gT('roles.management.Name') },
       { prop: 'description', name: gT('roles.management.Description') },
       { prop: 'usersCount', name: gT('roles.management.Users'), sortable: false },

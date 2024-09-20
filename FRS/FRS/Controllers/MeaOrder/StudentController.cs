@@ -581,9 +581,10 @@ namespace FRS.Controllers
                 for (int x = 0; x < wb.NumberOfSheets; x++)
                 {
                     var sheet = (XSSFSheet)wb.GetSheetAt(x);
-                    int colCount = sheet.GetRow(startRow).PhysicalNumberOfCells;
+                    int reqNumCells = startRow - 1;
+                    int colCount = sheet.GetRow(reqNumCells).PhysicalNumberOfCells;
 
-                    if (colCount != 7) //number of columns required
+                    if (colCount < 7) //number of columns required
                     {
                         string errMsg = string.Format("There is a mismatch on the number of columns required. Please check the file. Sheet: {0}", x + 1);
                         return new Tuple<bool, string, List<StudentCardImportDTO>>(false, errMsg, null);

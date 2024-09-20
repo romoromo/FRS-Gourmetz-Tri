@@ -41,6 +41,7 @@ export class DishEditorComponent {
   private subdishes: Dish[] = [];
   public fileUploadResponse: { dbPath: '', fileId: null, fileName: '' };
   public catererId: string;
+  public totalWeight: number = 0;
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
   public changesCancelledCallback: () => void;
@@ -187,6 +188,16 @@ export class DishEditorComponent {
     }
   }
 
+  updateTotalWeight() {
+    let total = 0;
+    if (this.dishEdit && this.dishEdit.dishComponents && this.dishEdit.dishComponents.length > 0) {
+      this.dishEdit.dishComponents.forEach((d, dc, dcs) => {
+        total += d.weight || 0;
+      });
+    }
+
+    this.totalWeight = total;
+  }
 
   newDish() {
     this.isNewDish = true;
@@ -219,6 +230,7 @@ export class DishEditorComponent {
         this.getDishCode();
       }
 
+      this.updateTotalWeight();
       return this.dishEdit;
     }
     else {
@@ -389,6 +401,7 @@ export class DishEditorComponent {
     if (item && item.category && item.component
       && item.quantity && item.sapProductCode && item.weight) {
       item.editMode = false;
+      this.updateTotalWeight();
     }
     else {
       alert('Please enter required values for the component.');
@@ -405,6 +418,8 @@ export class DishEditorComponent {
     const indx = this.dishEdit.dishComponents.indexOf(compo);
     if (indx > -1)
       this.dishEdit.dishComponents.splice(indx, 1);
+
+    this.updateTotalWeight();
   }
 
   get canManageDishes() {

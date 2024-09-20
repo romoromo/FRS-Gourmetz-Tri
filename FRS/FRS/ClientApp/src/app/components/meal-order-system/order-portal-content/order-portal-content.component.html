@@ -49,7 +49,8 @@
                 <td>
                   <div>
                     <div>
-                      <file-upload showTxt="false" (onUploadFinished)="uploadBannerImageFinished($event, banner)" [useOriginalFilename]="false"></file-upload>
+                      <mat-icon matTooltip="Resolution (1280x800)">info</mat-icon>
+                      <file-upload showTxt="false" (onUploadFinished)="uploadBannerImageFinished($event, banner)" [useOriginalFilename]="false" fileTypes=".jpg,.jpeg,.png"></file-upload>
                     </div>
                   </div>
                   <div style="padding:10px; border: 1px dashed #808080;text-align:center;min-height:100px;min-width:100px">

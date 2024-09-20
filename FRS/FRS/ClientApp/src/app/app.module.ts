@@ -377,7 +377,7 @@ import { BentoUsageManagementComponent } from './components/meal-order-system/be
 import { CartonTypeEditorComponent } from './components/meal-order-system/carton-type/carton-type-editor.component';
 import { CartonTypesManagementComponent } from './components/meal-order-system/carton-type/carton-types-management.component';
 import { CartonAssetEditorComponent } from './components/meal-order-system/carton-asset/carton-asset-editor.component';
-import { CartonAssetsManagementComponent } from './components/meal-order-system/carton-asset/carton-assets-management.component';
+import { CartonAssetsManagementComponent, CartonAssetQrCodeComponent } from './components/meal-order-system/carton-asset/carton-assets-management.component';
 import { TrackingStatusEditorComponent } from './components/meal-order-system/tracking-status/tracking-status-editor.component';
 import { TrackingStatussManagementComponent } from './components/meal-order-system/tracking-status/tracking-statuss-management.component';
 import { DeliveryOrderEditorComponent } from './components/meal-order-system/delivery-order/delivery-order-editor.component';
@@ -687,7 +687,7 @@ export const configFactory = (configService: ConfigurationService) => {
     CatererInfoEditorComponent, CatererInfosManagementComponent,
     OutletEditorComponent, OutletsManagementComponent, OutletProfileEditorComponent, OutletProfilesManagementComponent,
     BentoAssetEditorComponent, BentoAssetsManagementComponent, DishingProcesssManagementComponent, PackingProcesssManagementComponent, DoProcesssManagementComponent,
-    CartonAssetEditorComponent, CartonAssetsManagementComponent, BentoUsageManagementComponent,
+    CartonAssetEditorComponent, CartonAssetsManagementComponent, BentoUsageManagementComponent, CartonAssetQrCodeComponent,
     BentoBoxTypeEditorComponent, BentoBoxTypesManagementComponent,
     CartonTypeEditorComponent, CartonTypesManagementComponent,
     DeliveryOrderEditorComponent, DeliveryOrdersManagementComponent,
@@ -886,7 +886,7 @@ export const configFactory = (configService: ConfigurationService) => {
     AssetTypeEditorComponent,
     AssetModelEditorComponent,
     AssetEditorComponent,
-    AssetQrCodeComponent,
+    AssetQrCodeComponent, CartonAssetQrCodeComponent,
     ServiceContractEditorComponent,
     DeviceTypeEditorComponent,
     ChannelInfoEditorComponent,
