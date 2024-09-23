@@ -470,6 +470,93 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<byte[]> GenerateCartonAssetLabel(int id)
+        {
+            var asset = await this._uow.CartonAssets.GetByIdAsync(id);
+            var tagId = asset?.Code ?? string.Empty;
+
+            var catererName = "SFS Commercial Catering";
+            var catererAddress = "234 Pandan Loop\nSingapore 128422";
+
+            if (asset.CartonType != null && asset.CartonType.CatererInfo != null)
+            {
+                var catererInfo = await this._uow.CatererInfos.GetByIdAsync(asset.CartonType.CatererInfoId.Value);
+                if (catererInfo != null)
+                {
+                    catererName = catererInfo.Name;
+                    catererAddress = catererInfo.Address;
+                }
+            }
+
+            using (var stream = new System.IO.MemoryStream())
+            {
+                var folderName = Path.Combine("Resources", "Font");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                var fullPath = Path.Combine(pathToSave, "Aller_Bd.ttf");
+
+                BaseFont allerfont = BaseFont.CreateFont(fullPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
+                Font aller = new Font(allerfont, 12);
+
+                var pgSize = new iTextSharp.text.Rectangle(225, 120); // Page size
+                Document document = new Document(pgSize, 5, 5, 5, 5);
+                PdfWriter writer = PdfWriter.GetInstance(document, stream);
+                document.Open();
+
+                // QR Code on the left half
+                BarcodeQRCode qrCode = new BarcodeQRCode(tagId, 100, 100, null);
+                iTextSharp.text.Image qrImage = qrCode.GetImage();
+                qrImage.ScaleToFit(80f, 80f);
+                qrImage.SetAbsolutePosition(30f, 30f);  // Positioned on the left side
+                document.Add(qrImage);
+
+                // Caterer name and address on the right half
+                Paragraph para1 = new Paragraph(catererName, new Font(allerfont, 8));
+                para1.Alignment = Element.ALIGN_LEFT;
+                para1.IndentationLeft = 110f; // Align to the right side
+                document.Add(para1);
+
+                Paragraph para2 = new Paragraph(catererAddress, new Font(allerfont, 6));
+                para2.Alignment = Element.ALIGN_LEFT;
+                para2.IndentationLeft = 110f; // Align to the right side
+                document.Add(para2);
+
+                // Add the rectangle around the tagId substring (para3) and make the text red
+                string tagIdSubstring = tagId.Substring(12, 4); // Extract substring
+                PdfContentByte cb = writer.DirectContent;
+
+                // Set the position and dimensions for the rectangle
+                float rectX = 110f;
+                float rectY = 40f;
+                float rectWidth = 80f;
+                float rectHeight = 30f;
+
+                // Draw rectangle
+                cb.Rectangle(rectX, rectY, rectWidth, rectHeight);
+                cb.Stroke();
+
+                // Add the text inside the rectangle in red
+                Font redFont = new Font(allerfont, 16, Font.NORMAL, BaseColor.RED);
+                ColumnText.ShowTextAligned(cb, Element.ALIGN_CENTER, new Phrase(tagIdSubstring, redFont), rectX + rectWidth / 2, rectY + rectHeight / 3, 0);
+
+                // Add the full tagId at the bottom, center-aligned across the entire page
+                var phrase = new Phrase();
+                phrase.Add(new Chunk(tagId, new Font(allerfont, 10, Font.NORMAL)));
+
+                Paragraph para7 = new Paragraph(phrase);
+                para7.Alignment = Element.ALIGN_CENTER;
+                para7.SpacingBefore = 40f; // Spacing before tagId
+                para7.SetLeading(0, 2); // Adjust line spacing
+                para7.IndentationLeft = 30f; // Ensure it spans across the page
+                document.Add(para7);
+
+                document.Close();
+                writer.Close();
+
+                return stream.ToArray();
+            }
+        }
+
+
         #endregion
 
         #region DisposableBox

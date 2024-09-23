@@ -16,6 +16,7 @@ import { DishService } from 'src/app/services/meal-order/dish.service';
 import { StaffService } from '../../../services/meal-order/staff.service';
 import { DeliveryService } from '../../../services/meal-order/delivery.service';
 import { saveAs } from 'file-saver';
+import * as moment from 'moment';
 
 
 @Component({
@@ -236,6 +237,21 @@ export class CartonAssetsManagementComponent implements OnInit, OnDestroy {
         console.error(err);
       }
     ));
+  }
+
+  downloadLabel(row) {
+    const fileName = moment().format('DDMMYYYY_hhmmss') + '_CartonAssetLabel.pdf';
+
+    this.deliveryService.downloadCartonAssetLabel(row.id).subscribe(
+      data => {
+        console.log(data);
+        saveAs(data, fileName);
+      },
+      err => {
+        alert("Problem while downloading the file.");
+        console.error(err);
+      }
+    );
   }
 
 }

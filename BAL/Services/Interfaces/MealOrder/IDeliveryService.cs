@@ -95,7 +95,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateCartonAssetAsync(CartonAssetDTO dto);
         Task<BaseOperationResponse> ResetCartonAssetAsync();
-
+        Task<byte[]> GenerateCartonAssetLabel(int id);
         Task<BaseOperationResponse> CreateDisposableBoxAsync(CartonDisposableBoxDTO dto);
         Task<BaseOperationResponse> DeleteDisposableBoxAsync(int id);
         Task<CartonDisposableBoxDTO> GetDisposableBoxByIdAsync(int id);

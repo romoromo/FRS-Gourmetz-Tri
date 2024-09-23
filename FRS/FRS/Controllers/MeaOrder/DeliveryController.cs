@@ -1431,6 +1431,25 @@ namespace FRS.Controllers
             return Ok(result);
         }
 
+        [HttpPost("cartonassets/label")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateCartonAssetLabel([FromQuery] int id)
+        {
+            var pdf = await this._service.GenerateCartonAssetLabel(id);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_CartonAssetLabel.pdf";
+
+            if (pdf == null || pdf.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: pdf,
+                contentType: "application/vnd",
+                fileDownloadName: reportName
+            );
+        }
+
         #endregion
 
         #region CartonDisposableBox
