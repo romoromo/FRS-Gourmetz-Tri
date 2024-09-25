@@ -44,9 +44,15 @@
         </mat-form-field>
 
         <div class="col-md-12">
-          Picture <mat-icon matTooltip="Resolution (1280x800)">info</mat-icon>
+          <div>
+            <span class="upload-title">Image</span>
+            <span class="upload-hint-filetype">Accepts: </span>
+            <span class="upload-hint-filetype-values">(*.jpg,*.png)</span>
+            <span class="upload-hint-resolution">Resolution: </span>
+            <span class="upload-hint-resolution-values">(1200x800)</span>
+          </div>
           <file-upload (onUploadFinished)="uploadFinished($event)" fileTypes=".jpg,.jpeg,.png"></file-upload>
-          <div *ngIf="bentoBoxTypeEdit.picture" class="col-md-6" style="padding:10px; border: 1px dashed #808080;text-align:center">
+          <div *ngIf="bentoBoxTypeEdit.picture" style="padding:10px; border: 1px dashed #808080;text-align:center">
             <img [src]="getFileImage(bentoBoxTypeEdit.picture)" alt="icon" style="max-width: 300px; max-height: 300px; padding: 2px" />
           </div>
         </div>

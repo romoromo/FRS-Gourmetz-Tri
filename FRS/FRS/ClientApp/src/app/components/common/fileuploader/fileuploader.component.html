@@ -1,6 +1,6 @@
 <div class="row" style="margin-bottom:15px;">
   <div [ngClass]="btnClassContainer ? btnClassContainer : 'col-md-2 '">
-    <input type="file" #file id="file" placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;" accept="{{fileTypes}}">
+    <input type="file" #file id="file" placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;" [accept]="fileTypes">
     <button mat-stroked-button type="button" [ngClass]="btnClass ? btnClass : 'btn btn-sm'" (click)="file.click()">{{(btnText ? btnText : 'Upload File')}}</button>
     <span class="upload" *ngIf="showFilename">
       {{filename}}
