@@ -184,8 +184,9 @@ export class CartonTypeEditorComponent implements OnInit, OnDestroy {
 
   getCatererInfos() {
     let filter = new Filter();
+    filter.sorts = 'name';
     filter.filters = '(IsActive)==true';
-    this.subscription.add(this.deliveryService.getCatererInfosByFilter(filter)
+    this.subscription.add(this.deliveryService.getCatererInfosSimpleByFilter(filter)
       .subscribe(results => {
         this.catererInfos = results.pagedData;
       },

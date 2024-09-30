@@ -6,15 +6,20 @@
     <div mat-dialog-content>
       <div class="row">
         <mat-form-field class="col-md-12">
-          <input matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoCode" name="catererInfoCode" placeholder="Enter code" [(ngModel)]="catererInfoEdit.code" #catererInfoCode="ngModel" required minlength="2" maxlength="200" />
+          <input matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoCode" name="catererInfoCode" placeholder="Code" [(ngModel)]="catererInfoEdit.code" #catererInfoCode="ngModel" required minlength="2" maxlength="200" />
         </mat-form-field>
 
         <mat-form-field class="col-md-12">
-          <input matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoName" name="catererInfoName" placeholder="Enter name" [(ngModel)]="catererInfoEdit.name" #catererInfoName="ngModel" required minlength="2" maxlength="200" />
+          <input matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoName" name="catererInfoName" placeholder="Name (Max: 24 characters)" [(ngModel)]="catererInfoEdit.name" #catererInfoName="ngModel" required minlength="2" maxlength="24" />
         </mat-form-field>
 
         <mat-form-field class="col-md-12">
-          <input matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoAddress" name="catererInfoAddress" placeholder="Address" [(ngModel)]="catererInfoEdit.address" #catererInfoAddress="ngModel" />
+          <div style="margin-bottom:10px">
+            <span class="upload-hint-filetype" style="margin-left:0px">Note: </span>
+            <span class="upload-hint-filetype-values">This address is used in labels. Max no. of characters per line is 24 before it gets trimmed.</span>
+          </div>
+          <textarea rows="4" cols="24" matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoAddress" name="catererInfoAddress" placeholder="Address" [(ngModel)]="catererInfoEdit.address" #catererInfoAddress="ngModel">
+          </textarea>
         </mat-form-field>
 
       </div>

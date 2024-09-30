@@ -483,8 +483,10 @@ namespace BAL.Services.MealOrder
                 var catererInfo = await this._uow.CatererInfos.GetByIdAsync(asset.CartonType.CatererInfoId.Value);
                 if (catererInfo != null)
                 {
-                    catererName = catererInfo.Name;
-                    catererAddress = catererInfo.Address;
+                    catererName = catererInfo.Name.Length > 24 ? catererInfo.Name.Substring(0, 24) : catererInfo.Name;
+                    var addresses = catererInfo.Address.Split('\n');
+
+                    catererAddress = string.Join("\n", addresses.Select(e => e.Length > 16 ? e.Substring(0, 16) : e));
                 }
             }
 
@@ -492,7 +494,11 @@ namespace BAL.Services.MealOrder
             {
                 var folderName = Path.Combine("Resources", "Font");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                var imageFolderName = Path.Combine("Resources", "Images", "Default");
+                var logoImagePath = Path.Combine(Directory.GetCurrentDirectory(), imageFolderName);
+
                 var fullPath = Path.Combine(pathToSave, "Aller_Bd.ttf");
+                var fullImagePath = Path.Combine(logoImagePath, "sats_logo.png");
 
                 BaseFont allerfont = BaseFont.CreateFont(fullPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
                 Font aller = new Font(allerfont, 12);
@@ -503,21 +509,27 @@ namespace BAL.Services.MealOrder
                 document.Open();
 
                 // QR Code on the left half
-                BarcodeQRCode qrCode = new BarcodeQRCode(tagId, 100, 100, null);
+                BarcodeQRCode qrCode = new BarcodeQRCode(tagId, 110, 110, null);
                 iTextSharp.text.Image qrImage = qrCode.GetImage();
-                qrImage.ScaleToFit(80f, 80f);
-                qrImage.SetAbsolutePosition(30f, 30f);  // Positioned on the left side
+                //qrImage.ScaleToFit(80f, 80f);
+                qrImage.SetAbsolutePosition(0f, 15f);  // Positioned on the left side
                 document.Add(qrImage);
 
                 // Caterer name and address on the right half
-                Paragraph para1 = new Paragraph(catererName, new Font(allerfont, 8));
-                para1.Alignment = Element.ALIGN_LEFT;
-                para1.IndentationLeft = 110f; // Align to the right side
+                Paragraph para1 = new Paragraph(catererName, new Font(allerfont, 10));
+                para1.Alignment = Element.ALIGN_RIGHT;
+                para1.IndentationLeft = 5f; // Align to the right side
+                para1.PaddingTop = 0f;
                 document.Add(para1);
 
-                Paragraph para2 = new Paragraph(catererAddress, new Font(allerfont, 6));
-                para2.Alignment = Element.ALIGN_LEFT;
-                para2.IndentationLeft = 110f; // Align to the right side
+                Image png = Image.GetInstance(fullImagePath);
+                png.ScaleToFit(25f, 25f);
+                png.SetAbsolutePosition(105f, 70f);
+                document.Add(png);
+
+                Paragraph para2 = new Paragraph(catererAddress, new Font(allerfont, 9));
+                para2.Alignment = Element.ALIGN_RIGHT;
+                para2.IndentationLeft = 5f; // Align to the right side
                 document.Add(para2);
 
                 // Add the rectangle around the tagId substring (para3) and make the text red
@@ -525,8 +537,8 @@ namespace BAL.Services.MealOrder
                 PdfContentByte cb = writer.DirectContent;
 
                 // Set the position and dimensions for the rectangle
-                float rectX = 110f;
-                float rectY = 40f;
+                float rectX = 125f;
+                float rectY = 35f;
                 float rectWidth = 80f;
                 float rectHeight = 30f;
 
@@ -535,19 +547,31 @@ namespace BAL.Services.MealOrder
                 cb.Stroke();
 
                 // Add the text inside the rectangle in red
-                Font redFont = new Font(allerfont, 16, Font.NORMAL, BaseColor.RED);
-                ColumnText.ShowTextAligned(cb, Element.ALIGN_CENTER, new Phrase(tagIdSubstring, redFont), rectX + rectWidth / 2, rectY + rectHeight / 3, 0);
+                Font redFont = new Font(allerfont, 26, Font.NORMAL, BaseColor.RED);
+                ColumnText.ShowTextAligned(cb, Element.ALIGN_CENTER, new Phrase(tagIdSubstring, redFont), rectX + rectWidth / 2, rectY + rectHeight / 4, 0);
 
                 // Add the full tagId at the bottom, center-aligned across the entire page
                 var phrase = new Phrase();
                 phrase.Add(new Chunk(tagId, new Font(allerfont, 10, Font.NORMAL)));
 
-                Paragraph para7 = new Paragraph(phrase);
-                para7.Alignment = Element.ALIGN_CENTER;
-                para7.SpacingBefore = 40f; // Spacing before tagId
-                para7.SetLeading(0, 2); // Adjust line spacing
-                para7.IndentationLeft = 30f; // Ensure it spans across the page
-                document.Add(para7);
+                //Paragraph para7 = new Paragraph(phrase);
+
+                //float paragraphHeight = para7.GetCalculatedHeight();
+
+                //// Set the bottom position
+                //float yPosition = document.PageSize.Bottom + 10; // Adjust this to set a margin from the bottom
+
+                //// Calculate the center position
+                //float xPosition = (document.PageSize.Width - para7.GetCalculatedWidth()) / 2;
+
+                // Add the paragraph to the document
+                ColumnText.ShowTextAligned(cb, Element.ALIGN_CENTER, new Phrase(phrase), 115f, 10f, 0);
+
+                //para7.Alignment = Element.ALIGN_CENTER;
+                //para7.SpacingBefore = 35f; // Spacing before tagId
+                //para7.SetLeading(0, 2); // Adjust line spacing
+                //para7.IndentationLeft = 15f; // Ensure it spans across the page
+                //document.Add(para7);
 
                 document.Close();
                 writer.Close();

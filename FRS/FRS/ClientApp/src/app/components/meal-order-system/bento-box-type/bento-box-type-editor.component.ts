@@ -193,6 +193,8 @@ export class BentoBoxTypeEditorComponent implements OnInit, OnDestroy {
 
   getCatererInfos() {
     let filter = new Filter(-1, -1);
+
+    filter.sorts = 'name';
     filter.filters = '(IsActive)==true';
     this.subscription.add(this.deliveryService.getCatererInfosSimpleByFilter(filter)
       .subscribe(results => {
