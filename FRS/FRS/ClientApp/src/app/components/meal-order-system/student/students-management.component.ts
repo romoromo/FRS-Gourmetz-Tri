@@ -385,7 +385,7 @@ export class StudentsManagementComponent implements OnInit {
   }
 
   downloadTemplate() {
-    let path = '/Resources/Templates/YISS Student or Staff Import Template.xlsx';
+    let path = '/Resources/Templates/Student Import Template.xlsx';
     window.open(getBaseUrl() + '/gateway/Download/FileByPath?filePath=/' + encodeURIComponent(path), '_blank');
   }
 
