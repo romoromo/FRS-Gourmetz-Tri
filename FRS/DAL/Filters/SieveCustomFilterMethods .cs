@@ -416,7 +416,7 @@ namespace DAL.Filters
                 if (!string.IsNullOrEmpty(values[0]))
                 {
                     var outletId = Convert.ToInt32(values[0]);
-                    result = result.Where(c => c.OutletProfile.Caterer.CatererOutlets.Any(e => e.Id == outletId) || c.OutletProfile.Outlets.Any(e => e.Id == outletId));
+                    result = result.Where(c => c.OutletProfile.Caterer.CatererOutlets.Any(e => e.OutletId == outletId) || c.OutletProfile.Outlets.Any(e => e.Id == outletId));
                 }
             }
             return result; // Must return modified IQueryable<TEntity>
