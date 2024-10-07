@@ -81,7 +81,8 @@ export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
 
   getDishtTypes() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
+    let f = this.outletId ? '(DishTypeInOutletId)==' + this.outletId + ',' : '';
+    filter.filters = f + '(IsActive)==true';
     this.dishService.getDishTypesByFilter(filter)
       .subscribe(results => {
         this.allDishTypes = results.pagedData;
