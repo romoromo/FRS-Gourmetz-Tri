@@ -503,16 +503,16 @@ namespace BAL.Services.MealOrder
                 BaseFont allerfont = BaseFont.CreateFont(fullPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
                 Font aller = new Font(allerfont, 12);
 
-                var pgSize = new iTextSharp.text.Rectangle(225, 120); // Page size
+                var pgSize = new iTextSharp.text.Rectangle(227f, 114f); // Page size
                 Document document = new Document(pgSize, 5, 5, 5, 5);
                 PdfWriter writer = PdfWriter.GetInstance(document, stream);
                 document.Open();
 
                 // QR Code on the left half
-                BarcodeQRCode qrCode = new BarcodeQRCode(tagId, 110, 110, null);
+                BarcodeQRCode qrCode = new BarcodeQRCode(tagId, 110, 105, null);
                 iTextSharp.text.Image qrImage = qrCode.GetImage();
                 //qrImage.ScaleToFit(80f, 80f);
-                qrImage.SetAbsolutePosition(0f, 15f);  // Positioned on the left side
+                qrImage.SetAbsolutePosition(0f, 10f);  // Positioned on the left side
                 document.Add(qrImage);
 
                 // Caterer name and address on the right half
@@ -524,7 +524,7 @@ namespace BAL.Services.MealOrder
 
                 Image png = Image.GetInstance(fullImagePath);
                 png.ScaleToFit(25f, 25f);
-                png.SetAbsolutePosition(105f, 70f);
+                png.SetAbsolutePosition(105f, 65f);
                 document.Add(png);
 
                 Paragraph para2 = new Paragraph(catererAddress, new Font(allerfont, 9));
@@ -538,7 +538,7 @@ namespace BAL.Services.MealOrder
 
                 // Set the position and dimensions for the rectangle
                 float rectX = 125f;
-                float rectY = 35f;
+                float rectY = 30f;
                 float rectWidth = 80f;
                 float rectHeight = 30f;
 

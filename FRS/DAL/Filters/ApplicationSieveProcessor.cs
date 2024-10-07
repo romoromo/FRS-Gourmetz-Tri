@@ -788,6 +788,10 @@ namespace DAL.Filters
                 .CanFilter()
                 .CanSort();
 
+            mapper.Property<Student>(p => p.ClassBatchId)
+                .CanFilter()
+                .CanSort();
+
             mapper.Property<Student>(p => p.ClassBatch.Name)
                 .CanFilter()
                 .CanSort()

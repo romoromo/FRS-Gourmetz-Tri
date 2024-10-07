@@ -901,7 +901,7 @@ namespace DAL.Repositories.MealOrder
                                             (deliveryDate.Date >= e.StartDate.Date &&
                                             (!e.EndDate.HasValue || e.EndDate.Value.Date >= deliveryDate.Date)) &&
                                             //e.DishTypeId == dishTypeId &&
-                                            e.DishCyclePeriods.Any(d => d.MealPeriodId == sessionDetail.MealSession.MealPeriodId) &&
+                                            e.DishCyclePeriods.Any(d => d.IsActive && d.MealPeriodId == sessionDetail.MealSession.MealPeriodId) &&
                                             e.CycleType == "Main Menu");
 
                         if (activeDishCycles == null || !activeDishCycles.Any())
@@ -1024,7 +1024,7 @@ namespace DAL.Repositories.MealOrder
                                                 var subSchedule = subSchedules.FirstOrDefault(e => e.Day == subDay);
                                                 if (subSchedule != null && subSchedule.Details != null)
                                                 {
-                                                    var subScheduleDetail = subSchedule.Details.FirstOrDefault(e => e.Sequence == cycleSet.CycleTypeSequence);
+                                                    var subScheduleDetail = subSchedule.Details.FirstOrDefault(e => e.IsActive && e.Sequence == cycleSet.CycleTypeSequence);
                                                     if (subScheduleDetail != null)
                                                     {
                                                         detailMenus = subScheduleDetail.Menus.ToList();

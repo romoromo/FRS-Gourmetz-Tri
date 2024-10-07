@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ElementRef, Inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ElementRef, Inject, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -18,13 +18,17 @@ import { StudentNotificationDialogComponent } from './notification-dialog.compon
 import { getBaseUrl } from 'src/app/app.module';
 import * as moment from 'moment';
 import { saveAs } from 'file-saver';
+import { Subscription } from 'rxjs';
+import { ClassService } from '../../../services/meal-order/class.service';
 
 @Component({
   selector: 'students-management',
   templateUrl: './students-management.component.html',
   styleUrls: ['./students-management.component.css']
 })
-export class StudentsManagementComponent implements OnInit {
+export class StudentsManagementComponent implements OnInit, OnDestroy {
+
+  private subscription: Subscription = new Subscription();
   @ViewChild('studentsTable') table: any;
   expanded: any = {};
 
@@ -32,6 +36,10 @@ export class StudentsManagementComponent implements OnInit {
   rows: Student[] = [];
   rowsCache: Student[] = [];
   allPermissions: Permission[] = [];
+
+  public batches = [];
+  batchId: string;
+
   editedStudent: Student;
   sourceStudent: Student;
   loadingIndicator: boolean;
@@ -58,9 +66,8 @@ export class StudentsManagementComponent implements OnInit {
   @ViewChild('studentEditorComponent')
   studentEditorComponent: StudentEditorComponent;
   header: string;
-  constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
+  constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService, private classService: ClassService,
     private studentService: StudentService, public dialog: MatDialog, public cdr: ChangeDetectorRef) {
-
   }
 
   openDialog(student: Student): void {
@@ -115,6 +122,30 @@ export class StudentsManagementComponent implements OnInit {
     this.initializePagedResult();
     this.initializeTableDefinition();
     this.loadData();
+
+    this.getClassBatches();
+  }
+
+  ngOnDestroy() {
+    this.alertService.resetStickyMessage();
+    this.subscription.unsubscribe();
+  }
+
+  getClassBatches() {
+    let filter = new Filter();
+    let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
+    filter.filters = f + '(IsActive)==true';
+    filter.sorts = 'year';
+
+    this.subscription.add(this.classService.getClassBatchesByFilter(filter)
+      .subscribe(results => {
+        this.batches = results.pagedData;
+      },
+        error => {
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving batches.\r\n"`,
+            MessageSeverity.error);
+        }));
   }
 
 
@@ -136,9 +167,10 @@ export class StudentsManagementComponent implements OnInit {
       this.keyword = this.keyword.replace(',', '^^^').replace('|', '***').replace('(', '@@@').replace(')', '###');
     }
     let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
+    f += this.batchId ? '(ClassBatchId)==' + this.batchId + ',' : '';
     this.filter.filters = f + '(IsActive)==true,(StudentPostSearch)@=' + this.keyword;
 
-    this.studentService.getStudentsByFilter(this.filter)
+    this.subscription.add(this.studentService.getStudentsByFilter(this.filter)
       .subscribe(results => {
         console.log("Filter", this.filter)
 
@@ -164,7 +196,7 @@ export class StudentsManagementComponent implements OnInit {
 
           this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
-        });
+        }));
   }
 
 
@@ -259,7 +291,7 @@ export class StudentsManagementComponent implements OnInit {
 
     this.loadingIndicator = true;
     this.alertService.startLoadingMessage("Uploading...");
-    this.studentService.importFile<HttpEvent<Object>>(formData)
+    this.subscription.add(this.studentService.importFile<HttpEvent<Object>>(formData)
       .subscribe(event => {
         if (event.type === HttpEventType.UploadProgress) { }
         //this.progress = Math.round(100 * event.loaded / event.total);
@@ -282,7 +314,7 @@ export class StudentsManagementComponent implements OnInit {
 
           this.alertService.showStickyMessage("Import Error", `Unable to import the file to the server.`,
             MessageSeverity.error);
-        });
+        }));
   }
 
   onUploadFinished(response: any) {
@@ -390,6 +422,7 @@ export class StudentsManagementComponent implements OnInit {
   }
 
   downloadTemplateWithStudent() {
+    this.alertService.startLoadingMessage("Downloading...");
     const fileName = moment().format('DDMMYYYY_hhmmss') + '_Template with Student Information.xlsx';
 
     let f = new Filter(-1, -1);
@@ -400,8 +433,11 @@ export class StudentsManagementComponent implements OnInit {
       data => {
         console.log(data);
         saveAs(data, fileName);
+
+        this.alertService.stopLoadingMessage();
       },
       err => {
+        this.alertService.stopLoadingMessage();
         alert("Problem while downloading the file.");
         console.error(err);
       }
