@@ -296,6 +296,7 @@ export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.cancelPreviousRequests.next();
+    this.cancelPreviousDishTypeRequests.next();
   }
 
   getOutlet() {
