@@ -486,7 +486,7 @@ namespace BAL.Services.MealOrder
                     catererName = catererInfo.Name.Length > 24 ? catererInfo.Name.Substring(0, 24) : catererInfo.Name;
                     var addresses = catererInfo.Address.Split('\n');
 
-                    catererAddress = string.Join("\n", addresses.Select(e => e.Length > 16 ? e.Substring(0, 16) : e));
+                    catererAddress = string.Join("\n", addresses.Select(e => e.Length > 28 ? e.Substring(0, 28) : e));
                 }
             }
 
@@ -509,27 +509,27 @@ namespace BAL.Services.MealOrder
                 document.Open();
 
                 // QR Code on the left half
-                BarcodeQRCode qrCode = new BarcodeQRCode(tagId, 110, 105, null);
+                BarcodeQRCode qrCode = new BarcodeQRCode(tagId, 105, 105, null);
                 iTextSharp.text.Image qrImage = qrCode.GetImage();
                 //qrImage.ScaleToFit(80f, 80f);
-                qrImage.SetAbsolutePosition(0f, 10f);  // Positioned on the left side
+                qrImage.SetAbsolutePosition(0f, 12f);  // Positioned on the left side
                 document.Add(qrImage);
 
                 // Caterer name and address on the right half
                 Paragraph para1 = new Paragraph(catererName, new Font(allerfont, 10));
                 para1.Alignment = Element.ALIGN_RIGHT;
-                para1.IndentationLeft = 5f; // Align to the right side
+                para1.IndentationRight = 5f; // Align to the right side
                 para1.PaddingTop = 0f;
                 document.Add(para1);
 
                 Image png = Image.GetInstance(fullImagePath);
                 png.ScaleToFit(25f, 25f);
-                png.SetAbsolutePosition(105f, 65f);
+                png.SetAbsolutePosition(100f, 65f);
                 document.Add(png);
 
-                Paragraph para2 = new Paragraph(catererAddress, new Font(allerfont, 9));
+                Paragraph para2 = new Paragraph(catererAddress, new Font(allerfont, 6));
                 para2.Alignment = Element.ALIGN_RIGHT;
-                para2.IndentationLeft = 5f; // Align to the right side
+                para2.IndentationRight = 5f; // Align to the right side
                 document.Add(para2);
 
                 // Add the rectangle around the tagId substring (para3) and make the text red
@@ -537,7 +537,7 @@ namespace BAL.Services.MealOrder
                 PdfContentByte cb = writer.DirectContent;
 
                 // Set the position and dimensions for the rectangle
-                float rectX = 125f;
+                float rectX = 105f;
                 float rectY = 30f;
                 float rectWidth = 80f;
                 float rectHeight = 30f;

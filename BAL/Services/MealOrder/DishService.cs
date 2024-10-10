@@ -69,6 +69,11 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<IEnumerable<DishTypeDTO>> GetDishTypesByActiveDishCyclesAsync(int outletId, DateTime deliveryDate, DateTime deliveryDateTo)
+        {
+            return Mapper.Map<IEnumerable<DishTypeDTO>>(await this._uow.DishTypes.GetDishTypesByActiveDishCyclesAsync(outletId, deliveryDate, deliveryDateTo));
+        }
+
         #endregion
 
         #region Dish 

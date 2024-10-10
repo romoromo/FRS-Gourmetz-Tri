@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
 using DAL.Core;
 using DAL.Filters;
 using DAL.Models;
@@ -14,5 +16,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<DishType> GetByIdAsync(int id);
         Task<PagedEntity<DishType>> GetDishTypesAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateAsync(DishType dishType);
+        Task<IEnumerable<DishType>> GetDishTypesByActiveDishCyclesAsync(int outletId, DateTime deliveryDate, DateTime deliveryDateTo);
     }
 }

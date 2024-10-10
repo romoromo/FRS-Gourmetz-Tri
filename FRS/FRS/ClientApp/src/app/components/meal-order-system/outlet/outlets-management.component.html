@@ -67,6 +67,11 @@
                 <students-management [isHideHeader]="true" [outletId]="row.id"></students-management>
               </div>
             </mat-tab>
+            <mat-tab label="Menu Groups" *ngIf="canViewMenus">
+              <div class="container-fluid" style="padding-top:20px">
+                <menu-groups-management [isHideHeader]="true" [outletId]="row.id"></menu-groups-management>
+              </div>
+            </mat-tab>
             <mat-tab label="FAS Meal Ordering" *ngIf="canViewFas">
               <div class="container-fluid" style="padding-top:20px">
                 <fas-meal-order-summary [isHideHeader]="true" [outletId]="row.id"></fas-meal-order-summary>
@@ -75,11 +80,6 @@
             <mat-tab label="Student Groups" *ngIf="canViewStudentGroups">
               <div class="container-fluid" style="padding-top:20px">
                 <student-groups-management [isHideHeader]="true" [outletId]="row.id"></student-groups-management>
-              </div>
-            </mat-tab>
-            <mat-tab label="Menu Groups" *ngIf="canViewMenus">
-              <div class="container-fluid" style="padding-top:20px">
-                <menu-groups-management [isHideHeader]="true" [outletId]="row.id"></menu-groups-management>
               </div>
             </mat-tab>
             <mat-tab label="Order Cancellation" *ngIf="canViewCancellations">

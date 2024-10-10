@@ -70,6 +70,10 @@ export class DishService {
     return this.commonEndpoint.getSieve<PagedResult>(this.dishTypeUrl + '/sieve/list', filter);
   }
 
+  getDishTypesByActiveDishCycles(outletId, orderDate, orderDateTo?) {
+    return this.commonEndpoint.get<DishType[]>(`${this.dishTypeUrl}/by-active-dishcycles?outletId=${outletId}&deliveryDate=${orderDate}&deliveryDateTo=${orderDateTo}`);
+  }
+
   updateDishType(dishType: DishType) {
     if (dishType.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.dishTypeUrl, dishType, dishType.id);

@@ -237,6 +237,7 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   private loadUserCaterers() {
     let filter = new Filter(-1, -1);
     filter.filters = '(IsActive)==true';
+    filter.sorts = 'name';
 
     this.subscription.add(this.deliveryService.getCatererInfosSimpleByFilter(filter)
       .subscribe(results => {

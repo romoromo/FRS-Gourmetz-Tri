@@ -16,7 +16,7 @@
         <mat-form-field class="col-md-12">
           <div style="margin-bottom:10px">
             <span class="upload-hint-filetype" style="margin-left:0px">Note: </span>
-            <span class="upload-hint-filetype-values">This address is used in labels. Max no. of characters per line is 16 before it gets trimmed.</span>
+            <span class="upload-hint-filetype-values">The address will be used in the carton box label. It can only have 28 characters per line. Any extra characters will be cut off.</span>
           </div>
           <textarea rows="4" cols="24" matInput autocomplete="off" [disabled]="!canManageCatererInfos" type="text" id="catererInfoAddress" name="catererInfoAddress" placeholder="Address" [(ngModel)]="catererInfoEdit.address" #catererInfoAddress="ngModel">
           </textarea>
