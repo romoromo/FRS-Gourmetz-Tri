@@ -82,27 +82,40 @@ export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
   }
 
   getDishtTypes(d: Date, dTo: Date) {
-    this.cancelPreviousDishTypeRequests.next();
-    this.isLoadingDishTypes = true;
-    this.dishService.getDishTypesByActiveDishCycles(this.outletId, (d).toDateString(), (dTo).toDateString())
-      .pipe(
-        takeUntil(this.cancelPreviousDishTypeRequests),
-        switchMap(results => {
-          this.allDishTypes = results;
+    this.subscription.add(this.dishService.getDishTypesByActiveDishCycles(this.outletId, (d).toDateString(), (dTo).toDateString())
+      .subscribe(results => {
+        this.allDishTypes = results;
 
-          this.isLoadingDishTypes = false;
-          this.alertService.stopLoadingMessage();
-          return [];
-        })
-      )
-      .subscribe(
-        () => { this.isLoadingDishTypes = false; },
+        if (!this.allDishTypes)
+          this.allDishTypes = [];
+      },
         error => {
-          this.isLoadingDishTypes = false;
-          this.alertService.stopLoadingMessage();
-          this.alertService.showStickyMessage("Get Error", `An error occurred while retrieving records.\r\n"`, MessageSeverity.error);
-        }
-      );
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
+            MessageSeverity.error);
+        }));
+
+    //this.cancelPreviousDishTypeRequests.next();
+    //this.isLoadingDishTypes = true;
+    //this.dishService.getDishTypesByActiveDishCycles(this.outletId, (d).toDateString(), (dTo).toDateString())
+    //  .pipe(
+    //    takeUntil(this.cancelPreviousDishTypeRequests),
+    //    switchMap(results => {
+    //      this.allDishTypes = results;
+
+    //      this.isLoadingDishTypes = false;
+    //      this.alertService.stopLoadingMessage();
+    //      return [];
+    //    })
+    //  )
+    //  .subscribe(
+    //    () => { this.isLoadingDishTypes = false; },
+    //    error => {
+    //      this.isLoadingDishTypes = false;
+    //      this.alertService.stopLoadingMessage();
+    //      this.alertService.showStickyMessage("Get Error", `An error occurred while retrieving records.\r\n"`, MessageSeverity.error);
+    //    }
+    //  );
   }
 
 
