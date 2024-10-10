@@ -1143,7 +1143,14 @@ namespace DAL.Repositories.MealOrder
             var orders = await GetFasTokenOrders(outletId, storeId, deliveryDate, deliveryDateTo, mealSessionIds);
             var grpOrders = orders.GroupBy(e => new { e.DeliveryDate });
             //var colspan = grpOrders.Select(e => e.FirstOrDefault().DishTypeName).Count();
-            var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
+
+            var activeDishCycles = _appContext.DishCycles.Where(e => e.IsActive &&
+                    e.OutletProfile.Caterer.CatererOutlets.Any(o => o.IsActive && o.OutletId == outletId) &&
+                    (deliveryDate.Date >= e.StartDate.Date &&
+                    (!e.EndDate.HasValue || e.EndDate.Value.Date >= deliveryDate.Date)));
+            var dishTypes = activeDishCycles.Select(e => e.DishType).Where(e => e != null).Distinct().OrderBy(e => e.Name).ToList();
+
+            //var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
             var colspan = dishTypes.Count();
             string dateFormat = "dd/MM/yy";
 
