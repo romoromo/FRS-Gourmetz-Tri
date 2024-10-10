@@ -147,7 +147,7 @@ namespace DAL.Repositories.MealOrder
                     (deliveryDate.Date >= e.StartDate.Date &&
                     (!e.EndDate.HasValue || e.EndDate.Value.Date >= deliveryDate.Date)));
 
-            return activeDishCycles.Select(e => e.DishType).Distinct();
+            return activeDishCycles.Select(e => e.DishType).Where(e => e != null).Distinct();
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
