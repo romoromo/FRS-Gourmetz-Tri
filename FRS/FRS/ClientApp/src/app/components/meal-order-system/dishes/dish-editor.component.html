@@ -47,7 +47,7 @@
         </mat-form-field>
 
         <mat-form-field class="col-md-6 col-xs-12">
-          <input matInput autocomplete="off" [disabled]="!canManageDishes" type="text" id="dishCookedWeight" name="dishCookedWeight" placeholder="Cooked Weight (grams)" [(ngModel)]="dishEdit.cookedWeight" #dishCookedWeight="ngModel" required />
+          <input [disabled]="true" matInput autocomplete="off" type="text" id="dishCookedWeight" name="dishCookedWeight" placeholder="Cooked Weight (grams)" [(ngModel)]="totalWeight" #dishCookedWeight="ngModel" required />
         </mat-form-field>
 
         <mat-form-field class="col-md-6 col-xs-12">
@@ -100,12 +100,21 @@
           </mat-form-field>
         </div>
         <div class="col-md-6 col-xs-12">
-          <mat-label><h5>Icon</h5></mat-label>
+          <mat-label>
+            <span class="upload-title">Icon</span>
+            <span class="upload-hint-filetype">Accepts: </span>
+            <span class="upload-hint-filetype-values">(*.jpg,*.png)</span>
+            <span class="upload-hint-resolution">Resolution: </span>
+            <span class="upload-hint-resolution-values">(1200x800)</span>
+          </mat-label>
           <div *ngIf="canManageDishes">
-            <div>
-              <file-upload showTxt="false" (onUploadFinished)="uploadFinished($event)" [fileName]="dishEdit.code" [useOriginalFilename]="true"></file-upload>
+            <div style="float:left; margin-right: 10px;">
+              <file-upload showTxt="false" (onUploadFinished)="uploadFinished($event)" [fileName]="dishEdit.code" [useOriginalFilename]="true" fileTypes=".jpg, .jpeg, .png"></file-upload>
             </div>
+
+            <!--<span><mat-icon matTooltip="Resolution (1280x800)">info</mat-icon></span>-->
           </div>
+          <div class="clearfix"></div>
           <div *ngIf="dishEdit.filePath" class="col-md-6" style="padding:10px; border: 1px dashed #808080;text-align:center">
             <img [src]="getFileImage(dishEdit.filePath)" alt="icon" style="width:100px; height:100px;" />
           </div>
@@ -115,13 +124,21 @@
           </div>
         </div>
         <div class="col-md-6 col-xs-12">
-          <mat-label><h5>Production Picture</h5></mat-label>
+          <mat-label>
+            <span class="upload-title">Production Picture</span>
+            <span class="upload-hint-filetype">Accepts: </span>
+            <span class="upload-hint-filetype-values">(*.jpg,*.png)</span>
+            <span class="upload-hint-resolution">Resolution: </span>
+            <span class="upload-hint-resolution-values">(1200x800)</span>
+          </mat-label>
           <div *ngIf="canManageDishes">
-            <div>
-              <file-upload showTxt="false" (onUploadFinished)="productionPictureUploadFinished($event)"></file-upload>
+            <div style="float: left; margin-right: 10px;">
+              <file-upload showTxt="false" (onUploadFinished)="productionPictureUploadFinished($event)" fileTypes=".jpg, .jpeg, .png"></file-upload>
             </div>
+            <!--<span><mat-icon matTooltip="Resolution (1280x800)">info</mat-icon></span>-->
           </div>
-          <div *ngIf="dishEdit.productionPicturePath" class="col-md-3" style="padding:10px; border: 1px dashed #808080;text-align:center">
+          <div class="clearfix"></div>
+          <div *ngIf="dishEdit.productionPicturePath" class="col-md-6" style="padding:10px; border: 1px dashed #808080;text-align:center">
             <img [src]="getFileImage(dishEdit.productionPicturePath)" alt="icon" style="width:100px; height:100px;" />
           </div>
           <div class="clearfix"></div>

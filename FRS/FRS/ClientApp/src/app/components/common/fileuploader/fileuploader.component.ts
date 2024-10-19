@@ -22,7 +22,9 @@ export class FileUploadComponent implements OnInit {
   @Input() fileName: string;
   @Input() useOriginalFilename: string;
   @Input() showFilename: boolean;
+  @Input() showTooltips: boolean;
   @Input() subDir: string;
+  @Input() maxSize: number;
 
   constructor(private http: HttpClient, private fileService: FileService) { }
 
@@ -38,7 +40,25 @@ export class FileUploadComponent implements OnInit {
       return;
     }
 
+    const allowedFileTypes = this.fileTypes ? this.fileTypes.split(',').map(type => type.trim()) : [];
+
+
     let fileToUpload = <File>files[0];
+    const fileExtension = fileToUpload.name.split('.').pop().toLowerCase();
+
+    
+    const isValidFileType = allowedFileTypes.includes(`.${fileExtension}`) || this.fileTypes.includes('image/*');
+
+    if (!isValidFileType) {
+      alert(`Please upload a valid file type: ${this.fileTypes}`);
+      return;
+    }
+
+    if (this.maxSize > 0 && fileToUpload.size > this.maxSize) {
+      alert(`File size exceeds the maximum limit of ${this.maxSize / (1024 * 1024)} MB.`);
+      return; // Stop processing if the file size is invalid
+    }
+
     const formData = new FormData();
     let name = fileToUpload.name;
 

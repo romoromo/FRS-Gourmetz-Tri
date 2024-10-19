@@ -35,6 +35,7 @@ export class CatererSelectorComponent implements OnInit {
         this.selectedCaterers = results.catererOutlets;
 
         let filter = new Filter();
+        filter.sorts = 'name';
         //let f = this.catererId ? '(Id)==' + this.catererId + ',' : '';
         filter.filters = '(IsActive)==true';
 

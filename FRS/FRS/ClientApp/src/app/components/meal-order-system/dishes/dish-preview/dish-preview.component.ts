@@ -69,7 +69,17 @@ export class DishPreviewComponent implements OnInit {
         this.dish = results;
         if (this.dish.bentoBoxTypePicture)
           this.dish.bentoBoxTypePicture = this.dish.bentoBoxTypePicture.replace(/\\/g, '/');
-          this.totalWeight = this.dish.cookedWeight;
+
+        let total = 0;
+        if (this.dish && this.dish.dishComponents && this.dish.dishComponents.length > 0) {
+          this.dish.dishComponents.forEach((d, dc, dcs) => {
+            total += d.weight || 0;
+          });
+        }
+
+        this.totalWeight = total;
+
+          //this.totalWeight = this.dish.cookedWeight;
         //if (this.dish && this.dish.subDishes) {
         //  this.totalWeight += this.dish.subDishes.filter(item => item.dish.cookedWeight)
         //    .reduce((sum, current) => sum + current.dish.cookedWeight, 0);

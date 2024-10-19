@@ -4,9 +4,22 @@
   </header>
   <div class="row control-box">
     <div class="col-sm-8">
-      <div class="form-group search-box">
+      <div class="form-group search-box col-sm-8">
         <search-box (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()" placeholder="Type search keyword and press enter"></search-box>
       </div>
+      <mat-form-field class="col-sm-4">
+        <mat-label>Batch</mat-label>
+        <mat-select [disabled]="!canImportStudents" id="cb" name="cb" [(ngModel)]="batchId" #cb="ngModel" (selectionChange)="onSearch()">
+          <mat-option [value]="">
+            --
+          </mat-option>
+
+          <mat-option *ngFor="let c of batches" [value]="c.id">
+            {{c.name}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="showValidationErrors && f.submitted">Batch is required</mat-error>
+      </mat-form-field>
     </div>
     <div class="col-sm-4">
       <div class="navbar action-box">

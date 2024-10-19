@@ -901,7 +901,7 @@ namespace DAL.Repositories.MealOrder
                                             (deliveryDate.Date >= e.StartDate.Date &&
                                             (!e.EndDate.HasValue || e.EndDate.Value.Date >= deliveryDate.Date)) &&
                                             //e.DishTypeId == dishTypeId &&
-                                            e.DishCyclePeriods.Any(d => d.MealPeriodId == sessionDetail.MealSession.MealPeriodId) &&
+                                            e.DishCyclePeriods.Any(d => d.IsActive && d.MealPeriodId == sessionDetail.MealSession.MealPeriodId) &&
                                             e.CycleType == "Main Menu");
 
                         if (activeDishCycles == null || !activeDishCycles.Any())
@@ -1024,7 +1024,7 @@ namespace DAL.Repositories.MealOrder
                                                 var subSchedule = subSchedules.FirstOrDefault(e => e.Day == subDay);
                                                 if (subSchedule != null && subSchedule.Details != null)
                                                 {
-                                                    var subScheduleDetail = subSchedule.Details.FirstOrDefault(e => e.Sequence == cycleSet.CycleTypeSequence);
+                                                    var subScheduleDetail = subSchedule.Details.FirstOrDefault(e => e.IsActive && e.Sequence == cycleSet.CycleTypeSequence);
                                                     if (subScheduleDetail != null)
                                                     {
                                                         detailMenus = subScheduleDetail.Menus.ToList();
@@ -1143,7 +1143,14 @@ namespace DAL.Repositories.MealOrder
             var orders = await GetFasTokenOrders(outletId, storeId, deliveryDate, deliveryDateTo, mealSessionIds);
             var grpOrders = orders.GroupBy(e => new { e.DeliveryDate });
             //var colspan = grpOrders.Select(e => e.FirstOrDefault().DishTypeName).Count();
-            var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
+
+            var activeDishCycles = _appContext.DishCycles.Where(e => e.IsActive &&
+                    e.OutletProfile.Caterer.CatererOutlets.Any(o => o.IsActive && o.OutletId == outletId) &&
+                    (deliveryDate.Date >= e.StartDate.Date &&
+                    (!e.EndDate.HasValue || e.EndDate.Value.Date >= deliveryDate.Date)));
+            var dishTypes = activeDishCycles.Select(e => e.DishType).Where(e => e != null).Distinct().OrderBy(e => e.Name).ToList();
+
+            //var dishTypes = _appContext.DishTypes.Where(e => e.IsActive == e.Caterer.CatererOutlets.Any(f => f.OutletId == outletId)).OrderBy(e => e.Name).ToList();
             var colspan = dishTypes.Count();
             string dateFormat = "dd/MM/yy";
 

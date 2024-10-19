@@ -28,6 +28,7 @@ import { takeUntil, switchMap } from 'rxjs/operators';
 export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
   private cancelPreviousRequests = new Subject<void>();
+  private cancelPreviousDishTypeRequests = new Subject<void>();
 
   columns: any[] = [];
   rows: any[] = [];
@@ -44,6 +45,7 @@ export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
   isSaving: boolean;
   isShowSummary: boolean;
   isLoadingMealSessions: boolean;
+  isLoadingDishTypes: boolean;
 
   storeId: string;
   delvdate: Date = new Date();
@@ -79,9 +81,48 @@ export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
         }));
   }
 
-  getDishtTypes() {
+  getDishtTypes(d: Date, dTo: Date) {
+    this.subscription.add(this.dishService.getDishTypesByActiveDishCycles(this.outletId, (d).toDateString(), (dTo).toDateString())
+      .subscribe(results => {
+        this.allDishTypes = results;
+
+        if (!this.allDishTypes)
+          this.allDishTypes = [];
+      },
+        error => {
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
+            MessageSeverity.error);
+        }));
+
+    //this.cancelPreviousDishTypeRequests.next();
+    //this.isLoadingDishTypes = true;
+    //this.dishService.getDishTypesByActiveDishCycles(this.outletId, (d).toDateString(), (dTo).toDateString())
+    //  .pipe(
+    //    takeUntil(this.cancelPreviousDishTypeRequests),
+    //    switchMap(results => {
+    //      this.allDishTypes = results;
+
+    //      this.isLoadingDishTypes = false;
+    //      this.alertService.stopLoadingMessage();
+    //      return [];
+    //    })
+    //  )
+    //  .subscribe(
+    //    () => { this.isLoadingDishTypes = false; },
+    //    error => {
+    //      this.isLoadingDishTypes = false;
+    //      this.alertService.stopLoadingMessage();
+    //      this.alertService.showStickyMessage("Get Error", `An error occurred while retrieving records.\r\n"`, MessageSeverity.error);
+    //    }
+    //  );
+  }
+
+
+  getDishtTypesOld() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
+    let f = this.outletId ? '(DishTypeInOutletId)==' + this.outletId + ',' : '';
+    filter.filters = f + '(IsActive)==true';
     this.dishService.getDishTypesByFilter(filter)
       .subscribe(results => {
         this.allDishTypes = results.pagedData;
@@ -100,12 +141,14 @@ export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
     }
     
     this.getMealSessions(this.delvdate, this.delvdateTo);
+    this.getDishtTypes(this.delvdate, this.delvdateTo);
     //this.getFasTokenOrderSummary(this.delvdate, this.delvdateTo);
   }
 
   onChangeStore() {
     //this.getFasTokenOrderSummary(this.delvdate, this.delvdateTo);
     this.getMealSessions(this.delvdate, this.delvdateTo);
+    this.getDishtTypes(this.delvdate, this.delvdateTo);
   }
 
   onShowSummary() {
@@ -241,7 +284,7 @@ export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getDeliveryLocations();
-    this.getDishtTypes();
+    //this.getDishtTypes();
     this.onChangeDate();
 
     this.getOutlet()
@@ -266,6 +309,7 @@ export class FasMealOrderSummaryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.cancelPreviousRequests.next();
+    this.cancelPreviousDishTypeRequests.next();
   }
 
   getOutlet() {

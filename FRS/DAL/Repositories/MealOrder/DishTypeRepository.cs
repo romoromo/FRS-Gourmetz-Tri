@@ -140,6 +140,16 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        public async Task<IEnumerable<DishType>> GetDishTypesByActiveDishCyclesAsync(int outletId, DateTime deliveryDate, DateTime deliveryDateTo)
+        {
+            var activeDishCycles = _appContext.DishCycles.Where(e => e.IsActive &&
+                    e.OutletProfile.Caterer.CatererOutlets.Any(o => o.IsActive && o.OutletId == outletId) &&
+                    (deliveryDate.Date >= e.StartDate.Date &&
+                    (!e.EndDate.HasValue || e.EndDate.Value.Date >= deliveryDate.Date)));
+
+            return activeDishCycles.Select(e => e.DishType).Where(e => e != null).Distinct();
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }

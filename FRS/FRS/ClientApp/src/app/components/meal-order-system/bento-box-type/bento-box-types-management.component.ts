@@ -56,7 +56,7 @@ export class BentoBoxTypesManagementComponent implements OnInit, OnDestroy {
   openDialog(bentoBoxType: BentoBoxType): void {
     const dialogRef = this.dialog.open(BentoBoxTypeEditorComponent, {
       data: { header: this.header, bentoBoxType: bentoBoxType },
-      width: '400px',
+      width: '600px',
       disableClose: true
     });
 

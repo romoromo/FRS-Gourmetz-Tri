@@ -136,6 +136,15 @@ namespace FRS.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpGet("dishtypes/by-active-dishcycles")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<DishTypeDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetDishTypesByActiveDishCycles(int outletId, DateTime deliveryDate, DateTime deliveryDateTo)
+        {
+            var results = await this._service.GetDishTypesByActiveDishCyclesAsync(outletId, deliveryDate, deliveryDateTo);
+            return Ok(results);
+        }
+
         #endregion
 
         #region Dishes

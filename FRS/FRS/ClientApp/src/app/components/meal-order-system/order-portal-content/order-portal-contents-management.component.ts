@@ -53,7 +53,7 @@ export class OrderPortalContentsManagementComponent implements OnInit {
   openDialog(portalContent: OrderPortalContent): void {
     const dialogRef = this.dialog.open(OrderPortalContentEditorComponent, {
       data: { header: this.header, portalContent: portalContent, outletId: this.outletId },
-      width: '700px',
+      width: '800px',
       disableClose: true
     });
 

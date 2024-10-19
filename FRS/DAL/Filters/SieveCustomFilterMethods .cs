@@ -416,7 +416,22 @@ namespace DAL.Filters
                 if (!string.IsNullOrEmpty(values[0]))
                 {
                     var outletId = Convert.ToInt32(values[0]);
-                    result = result.Where(c => c.OutletProfile.Caterer.CatererOutlets.Any(e => e.Id == outletId) || c.OutletProfile.Outlets.Any(e => e.Id == outletId));
+                    result = result.Where(c => c.OutletProfile.Caterer.CatererOutlets.Any(e => e.OutletId == outletId) || c.OutletProfile.Outlets.Any(e => e.Id == outletId));
+                }
+            }
+            return result; // Must return modified IQueryable<TEntity>
+        }
+
+        public IQueryable<DishType> DishTypeInOutletId(IQueryable<DishType> source, string op, string[] values) // The method is given the {Operator} & {Value}
+        {
+            var result = source;
+
+            if (values != null && values.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(values[0]))
+                {
+                    var outletId = Convert.ToInt32(values[0]);
+                    result = result.Where(c => c.Caterer.CatererOutlets.Any(e => e.OutletId == outletId));
                 }
             }
             return result; // Must return modified IQueryable<TEntity>

@@ -54,29 +54,37 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var f = await AddAsync(data);
-            if (await _appContext.SaveChangesAsync() > 0)
+            if (await Exists(e => e.Name == data.Name && e.IsActive))
             {
-                result.Message = "Successfully saved!";
-                result.IsSuccess = true;
-
-                // assign it to the user who created it
-                if (data.CreatedBy.HasValue)
-                {
-                    var user = await _appContext.Users.FirstOrDefaultAsync(e => e.Id == data.CreatedBy);
-                    if(user != null)
-                    {
-                        user.UserOutlets.Add(new UserOutlet { UserId = user.Id, OutletId = f.Id });
-                        await _appContext.SaveChangesAsync();
-                    }
-                }
-
-                result.Data = f;
+                result.Message = "Outlet already exists!";
+                result.IsSuccess = false;
             }
             else
             {
-                result.Message = "Failed to save!";
-                result.IsSuccess = false;
+                var f = await AddAsync(data);
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+
+                    // assign it to the user who created it
+                    if (data.CreatedBy.HasValue)
+                    {
+                        var user = await _appContext.Users.FirstOrDefaultAsync(e => e.Id == data.CreatedBy);
+                        if (user != null)
+                        {
+                            user.UserOutlets.Add(new UserOutlet { UserId = user.Id, OutletId = f.Id });
+                            await _appContext.SaveChangesAsync();
+                        }
+                    }
+
+                    result.Data = f;
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+                    result.IsSuccess = false;
+                }
             }
 
             return result;
@@ -86,21 +94,30 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var f = await GetSingleOrDefaultAsync(e => e.Id == data.Id);
-
-            f.CopyFrom(data);
-
-            Update(f);
-            if (await _appContext.SaveChangesAsync() > 0)
+            if (await Exists(e => e.Name == data.Name && e.IsActive && e.Id != data.Id))
             {
-                result.Message = "Successfully saved!";
-                result.IsSuccess = true;
-                //result.Data = f;
+                result.Message = "Outlet already exists!";
+                result.IsSuccess = false;
             }
             else
             {
-                result.Message = "Failed to save!";
-                result.IsSuccess = false;
+                var f = await GetSingleOrDefaultAsync(e => e.Id == data.Id);
+
+                f.CopyFrom(data);
+
+                Update(f);
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    //result.Data = f;
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+                    result.IsSuccess = false;
+                }
+
             }
 
             return result;

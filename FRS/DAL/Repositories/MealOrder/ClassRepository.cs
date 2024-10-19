@@ -46,17 +46,26 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var f = await AddAsync(classModel);
-            if (await _appContext.SaveChangesAsync() > 0)
+            if (await Exists(e => e.Name == classModel.Name && e.IsActive && e.ClassLevelId == classModel.ClassLevelId))
             {
-                result.Message = "Successfully saved!";
-                result.IsSuccess = true;
-                result.Data = f;
+                result.Message = "Class already exists!";
+                result.IsSuccess = false;
             }
             else
             {
-                result.Message = "Failed to save!";
-                result.IsSuccess = false;
+                var f = await AddAsync(classModel);
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    result.Data = f;
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+                    result.IsSuccess = false;
+                }
+
             }
 
             return result;
@@ -66,21 +75,29 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var f = await GetSingleOrDefaultAsync(e => e.Id == classModel.Id);
-
-            f.CopyFrom(classModel);
-
-            Update(f);
-            if (await _appContext.SaveChangesAsync() > 0)
+            if (await Exists(e => e.Name == classModel.Name && e.IsActive && e.Id != classModel.Id && e.ClassLevelId == classModel.ClassLevelId))
             {
-                result.Message = "Successfully saved!";
-                result.IsSuccess = true;
-                result.Data = f;
+                result.Message = "Class already exists!";
+                result.IsSuccess = false;
             }
             else
             {
-                result.Message = "Failed to save!";
-                result.IsSuccess = false;
+                var f = await GetSingleOrDefaultAsync(e => e.Id == classModel.Id);
+
+                f.CopyFrom(classModel);
+
+                Update(f);
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    result.Data = f;
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+                    result.IsSuccess = false;
+                }
             }
 
             return result;

@@ -425,6 +425,10 @@ export class DeliveryService {
     return this.commonEndpoint.getDeleteEndpoint<CartonAsset>(this.cartonAssetUrl, <string>cartonAssetOrCartonAssetId);
   }
 
+  downloadCartonAssetLabel(id) {
+    return this.commonEndpoint.getFile<any>(this.cartonAssetUrl + '/label?id=' + id, {  });
+  }
+
   //driver
   getDriverById(driverId: string) {
 
