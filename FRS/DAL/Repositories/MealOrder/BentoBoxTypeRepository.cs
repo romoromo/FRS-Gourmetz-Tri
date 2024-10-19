@@ -86,20 +86,23 @@ namespace DAL.Repositories.MealOrder
 
             var f = await GetSingleOrDefaultAsync(e => e.Id == data.Id);
 
-            foreach (var detail in data.BentoAssets)
+            if (data.BentoAssets != null)
             {
-                if (detail.Id > 0 || detail.IsActive)
+                foreach (var detail in data.BentoAssets)
                 {
-                    var ddetail = _appContext.BentoAssets.FirstOrDefault(c => detail.Code == c.Code) ?? new BentoAsset();
-                    if (ddetail.Id > 0) detail.Id = ddetail.Id;
-                    ddetail.CopyFrom(detail);
-                    ddetail.Code = detail.Code;
-                    ddetail.BentoBoxTypeId = data.Id;
-                    ddetail.InstitutionId = f.InstitutionId;
-                    ddetail.IsActive = detail.IsActive;
-                    _appContext.BentoAssets.Update(ddetail);
-                    _appContext.SaveChanges();
+                    if (detail.Id > 0 || detail.IsActive)
+                    {
+                        var ddetail = _appContext.BentoAssets.FirstOrDefault(c => detail.Code == c.Code) ?? new BentoAsset();
+                        if (ddetail.Id > 0) detail.Id = ddetail.Id;
+                        ddetail.CopyFrom(detail);
+                        ddetail.Code = detail.Code;
+                        ddetail.BentoBoxTypeId = data.Id;
+                        ddetail.InstitutionId = f.InstitutionId;
+                        ddetail.IsActive = detail.IsActive;
+                        _appContext.BentoAssets.Update(ddetail);
+                        _appContext.SaveChanges();
 
+                    }
                 }
             }
 

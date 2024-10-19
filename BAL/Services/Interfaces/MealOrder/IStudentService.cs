@@ -42,6 +42,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> DeleteStudentGroupAsync(int id);
         Task<StudentGroupDTO> GetStudentGroupByIdAsync(int id);
         Task<PagedEntity<StudentGroupDTO>> GetStudentGroupsAsync(BaseFilter filter);
+        Task<PagedEntity<StudentGroupSimpleDTO>> GetSimpleStudentGroups(BaseFilter filter);
         Task<BaseOperationResponse> UpdateStudentGroupAsync(StudentGroupDTO dto);
 
         Task<BaseOperationResponse> ActivateStudentVoucher(int studentId, string code);

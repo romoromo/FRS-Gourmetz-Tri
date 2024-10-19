@@ -54,9 +54,10 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
             //validate if code already exists
-            var similarCode = await GetFirstOrDefaultAsync(e => e.IsActive
-                                    && e.Id != voucher.Id
-                                    && e.Code.Trim().Equals(voucher.Code.Trim(), StringComparison.OrdinalIgnoreCase));
+            var similarCode = await GetFirstOrDefaultAsync(e =>
+                                e.IsActive &&
+                                e.Id != voucher.Id &&
+                                e.Code.Trim().ToLower() == voucher.Code.Trim().ToLower());
 
             if (similarCode != null)
             {
@@ -86,11 +87,12 @@ namespace DAL.Repositories.MealOrder
             var result = new BaseOperationResponse();
 
             //validate if code already exists
-            var similarCode = await GetFirstOrDefaultAsync(e => e.IsActive
-                                    && e.Id != voucher.Id
-                                    && e.Code.Trim().Equals(voucher.Code.Trim(), StringComparison.OrdinalIgnoreCase));
+            var similarCode = await GetFirstOrDefaultAsync(e =>
+                                e.IsActive &&
+                                e.Id != voucher.Id &&
+                                e.Code.Trim().ToLower() == voucher.Code.Trim().ToLower());
 
-            if(similarCode != null)
+            if (similarCode != null)
             {
                 result.Message = "Failed to save voucher! Voucher code must be unique.";
                 result.IsSuccess = false;
@@ -99,9 +101,11 @@ namespace DAL.Repositories.MealOrder
 
             var f = await GetSingleOrDefaultAsync(e => e.Id == voucher.Id);
 
+            var mealPeriodIds = voucher.VoucherMealPeriods != null ? voucher.VoucherMealPeriods.Select(a => a.MealPeriodId) : new List<int>();
             //update periods
-            var periodsToDelete = this._appContext.VoucherMealPeriods.Where(x => x.VoucherId == f.Id &&
-                                    (voucher.VoucherMealPeriods == null || !voucher.VoucherMealPeriods.Any(a => a.MealPeriodId == x.MealPeriodId)));
+            var periodsToDelete = _appContext.VoucherMealPeriods.Where(x => x.VoucherId == f.Id &&
+                                    (!mealPeriodIds.Any() || !mealPeriodIds.Any(a => a == x.MealPeriodId)));
+
 
             this._appContext.VoucherMealPeriods.RemoveRange(periodsToDelete);
 
@@ -175,9 +179,17 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
             var now = DateTime.Now;
-            var voucher = _appContext.StudentVouchers.Where(r => r.IsActive && r.StudentId == studentId
-                                    && r.Voucher.Code.Trim().Equals(code.Trim(), StringComparison.OrdinalIgnoreCase)
-                                    && now >= r.Voucher.StartDateTime && now <= r.Voucher.EndDateTime && r.IsActive);
+            //var voucher = _appContext.StudentVouchers.Where(r => r.IsActive && r.StudentId == studentId
+            //                        && r.Voucher.Code.Trim().Equals(code.Trim(), StringComparison.OrdinalIgnoreCase)
+            //                        && now >= r.Voucher.StartDateTime && now <= r.Voucher.EndDateTime && r.IsActive);
+
+            var voucher = _appContext.StudentVouchers.Where(r =>
+                            r.IsActive &&
+                            r.StudentId == studentId &&
+                            r.Voucher.Code.Trim().ToLower() == code.Trim().ToLower() &&
+                            now >= r.Voucher.StartDateTime &&
+                            now <= r.Voucher.EndDateTime);
+
 
             result.IsSuccess = voucher != null;
             return result;

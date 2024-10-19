@@ -540,6 +540,12 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<PagedEntity<StudentGroupSimpleDTO>> GetSimpleStudentGroups(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<StudentGroupSimpleDTO>>(await this._uow.StudentGroups.GetStudentGroupsAsync(filter));
+            return result;
+        }
+
         public async Task<List<GroupedTermStudentGroupDTO>> GetStudentMealPlanAsync(int outletId, DateTime? orderDate)
         {
             var mealPlans = _mapper.Map<List<StudentGroupDTO>>(await _uow.StudentGroups.GetAllStudentGroupsAsync(outletId, orderDate));

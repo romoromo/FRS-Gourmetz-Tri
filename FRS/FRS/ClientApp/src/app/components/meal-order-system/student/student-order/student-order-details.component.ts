@@ -18,6 +18,13 @@ export class StudentOrderDetailComponent implements OnInit, OnDestroy{
     public dialogRef: MatDialogRef<StudentOrderDetailComponent>, public dialog: MatDialog, 
     @Inject(MAT_DIALOG_DATA) public data: any) {
     this.order = data.order;
+
+    if (this.order.tokens && this.order.tokens.length > 0) {
+      let meal = this.order.tokens[0];
+      if (meal.selectedDishes && meal.selectedDishes.length > 0) {
+        this.order.mealDescription = meal.selectedDishes[0].dishLabel;
+      }
+    }
   }
 
   ngOnInit() {

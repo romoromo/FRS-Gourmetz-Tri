@@ -52,7 +52,7 @@ namespace DAL.Repositories.MealOrder
             return await query.ToListAsync();
         }
 
-        public async Task<List<DishCycle>> GetOutletDishCyclesAsync(int studentId, DateTime date, int sessionId)
+        public async Task<List<DishCycle>> GetOutletStudentDishCyclesAsync(int studentId, DateTime date, int sessionId)
         {
             var student = await _appContext.Students.FirstOrDefaultAsync(e => e.Id == studentId);
             var session = await _appContext.MealSessionDetails.FirstOrDefaultAsync(e => e.Id == sessionId);
@@ -63,7 +63,19 @@ namespace DAL.Repositories.MealOrder
                                             .SelectMany(e => e.MenuGroupDishCycles)
                                             .Select(e => e.DishCycleId).ToList();
 
-            IQueryable<DishCycle> query = _appContext.DishCycles.Where(e => e.IsActive && e.DishCyclePeriods.Any(x => x.IsActive && x.MealPeriodId == session.MealSession.MealPeriodId && menuGroupDishCycleIds.Any(f => f == e.Id)));
+            var dishCycleIds = _appContext.DishCycleScheduleSets.Where(e => e.IsActive && menuGroupDishCycleIds.Any(f => f == e.DishCycleId) && e.CycleTypeId.HasValue).Select(e => e.CycleTypeId.Value).Distinct().ToList();
+
+            menuGroupDishCycleIds.AddRange(dishCycleIds);
+            IQueryable<DishCycle> query = _appContext.DishCycles
+                                            //.Include(e => e.OutletProfile)
+                                            //.Include(e => e.OutletProfile.Caterer)
+                                            //.Include(e => e.OutletProfile.Outlets)
+                                            //.Include(e => e.OutletProfile.Caterer.CatererOutlets)
+                                            //.Include(e => e.Schedules)
+                                            //.ThenInclude(e => e.Details)
+                                            //.ThenInclude(e => e.Menus)
+                                            //.ThenInclude(e => e.Dish)
+                                            .Where(e => e.IsActive && e.DishCyclePeriods.Any(x => x.IsActive && x.MealPeriodId == session.MealSession.MealPeriodId && menuGroupDishCycleIds.Any(f => f == e.Id)));
 
             return await query.ToListAsync();
         }

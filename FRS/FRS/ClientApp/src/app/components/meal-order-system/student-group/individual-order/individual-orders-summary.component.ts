@@ -98,17 +98,30 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
         }));
   }
 
-  getDishtTypes() {
-    let filter = new Filter();
-    filter.filters = '(IsActive)==true';
-    this.dishService.getDishTypesByFilter(filter)
+  getDishtTypes(d: Date, dTo: Date) {
+    this.subscription.add(this.dishService.getDishTypesByActiveDishCycles(this.outletId, (d).toDateString(), (dTo).toDateString())
       .subscribe(results => {
-        this.allDishTypes = results.pagedData;
+        this.allDishTypes = results;
+
+        if (!this.allDishTypes)
+          this.allDishTypes = [];
       },
         error => {
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
             MessageSeverity.error);
-        })
+        }));
+
+    //let filter = new Filter();
+    //filter.filters = '(IsActive)==true';
+    //this.dishService.getDishTypesByFilter(filter)
+    //  .subscribe(results => {
+    //    this.allDishTypes = results.pagedData;
+    //  },
+    //    error => {
+    //      this.alertService.showStickyMessage("Get Error", `An error occured while retrieving records.\r\n"`,
+    //        MessageSeverity.error);
+    //    })
   }
 
   onChangeDate(event?: MatDatepickerInputEvent<Date>, type?: string) {
@@ -119,12 +132,14 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
     }
     
     this.getMealSessions(this.delvdate, this.delvdateTo);
+    this.getDishtTypes(this.delvdate, this.delvdateTo);
     //this.getStudentGroupOrderSummary(this.delvdate, this.delvdateTo);
   }
 
   onChangeStore() {
     //this.getStudentGroupOrderSummary(this.delvdate, this.delvdateTo);
     this.getMealSessions(this.delvdate, this.delvdateTo);
+    this.getDishtTypes(this.delvdate, this.delvdateTo);
   }
 
   onShowSummary() {
@@ -211,7 +226,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getDeliveryLocations();
-    this.getDishtTypes();
+    //this.getDishtTypes();
     this.getOutlet()
       .subscribe(outlet => {
         console.log(outlet);

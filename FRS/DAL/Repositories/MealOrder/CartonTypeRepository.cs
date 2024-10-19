@@ -84,20 +84,23 @@ namespace DAL.Repositories.MealOrder
 
             var f = await GetSingleOrDefaultAsync(e => e.Id == data.Id);
 
-            foreach (var detail in data.CartonAssets)
+            if (data.CartonAssets != null)
             {
-                if (detail.Id > 0 || detail.IsActive)
+                foreach (var detail in data.CartonAssets)
                 {
-                    var ddetail = _appContext.CartonAssets.FirstOrDefault(c => detail.Code == c.Code) ?? new CartonAsset();
-                    if (ddetail.Id > 0) detail.Id = ddetail.Id;
-                    ddetail.CopyFrom(detail);
-                    ddetail.Code = detail.Code;
-                    ddetail.CartonTypeId = data.Id;
-                    ddetail.InstitutionId = f.InstitutionId;
-                    ddetail.IsActive = detail.IsActive;
-                    _appContext.CartonAssets.Update(ddetail);
-                    _appContext.SaveChanges();
+                    if (detail.Id > 0 || detail.IsActive)
+                    {
+                        var ddetail = _appContext.CartonAssets.FirstOrDefault(c => detail.Code == c.Code) ?? new CartonAsset();
+                        if (ddetail.Id > 0) detail.Id = ddetail.Id;
+                        ddetail.CopyFrom(detail);
+                        ddetail.Code = detail.Code;
+                        ddetail.CartonTypeId = data.Id;
+                        ddetail.InstitutionId = f.InstitutionId;
+                        ddetail.IsActive = detail.IsActive;
+                        _appContext.CartonAssets.Update(ddetail);
+                        _appContext.SaveChanges();
 
+                    }
                 }
             }
 

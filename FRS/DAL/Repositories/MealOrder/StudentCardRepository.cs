@@ -94,10 +94,11 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
             var f = await GetSingleOrDefaultAsync(e => e.Id == studentCard.Id);
-            var cardExists = _appContext.StudentCards.Any(e => e.IsActive && (e.Id != studentCard.Id
-                            && e.CardId.Equals(studentCard.CardId, StringComparison.OrdinalIgnoreCase)));
+            var cardExists = _appContext.StudentCards.Any(e =>
+                            e.IsActive && e.Id != studentCard.Id &&
+                            e.CardId.ToLower() == studentCard.CardId.ToLower());
 
-            if(cardExists)
+            if (cardExists)
             {
                 result.Message = "Failed to save! Duplicate card found.";
                 result.IsSuccess = false;
@@ -126,8 +127,7 @@ namespace DAL.Repositories.MealOrder
         public async Task<BaseOperationResponse> ActivateStudentCardByIdAsync(string cardId)
         {
             var result = new BaseOperationResponse();
-            var card = await _appContext.StudentCards.FirstOrDefaultAsync(e => e.IsActive && e.CardId.Equals(cardId, StringComparison.OrdinalIgnoreCase));
-
+            var card = await _appContext.StudentCards.FirstOrDefaultAsync(e => e.IsActive && e.CardId.ToLower() == cardId.ToLower());
             if (card != null)
             {
                 var otherStudentCards = _appContext.StudentCards.Where(e => e.IsActive && e.StudentId == card.StudentId);
@@ -202,10 +202,13 @@ namespace DAL.Repositories.MealOrder
                 
                 var outletProfiles = student.Outlet.CatererOutlets.Select(e => e.OutletProfileId);
                 var now = DateTime.Now;
-                var voucher = await _appContext.Vouchers.FirstOrDefaultAsync(r => r.Code.Trim().Equals(code.Trim(), StringComparison.OrdinalIgnoreCase)
-                            && now <= r.EndDateTime && r.IsActive && outletProfiles.Any(f => f == r.OutletProfileId));
+                var voucher = await _appContext.Vouchers.FirstOrDefaultAsync(r =>
+                                r.Code.Trim().ToLower() == code.Trim().ToLower() &&
+                                now <= r.EndDateTime &&
+                                r.IsActive &&
+                                outletProfiles.Any(f => f == r.OutletProfileId));
 
-                if(voucher == null)
+                if (voucher == null)
                 {
                     result.IsSuccess = false;
                     result.Message = "Voucher does not exist!";

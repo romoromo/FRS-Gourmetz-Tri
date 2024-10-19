@@ -26,6 +26,16 @@
           <mat-form-field class="col-md-6 col-xs-12">
             <input matInput autocomplete="off" [disabled]="!canManageDishCycles" type="text" id="dishCycleLabel" name="dishCycleLabel" placeholder="Enter label" [(ngModel)]="dishCycleEdit.label" #dishCycleLabel="ngModel" required minlength="2" maxlength="200" (change)="renameSetLabels()" />
           </mat-form-field>
+          <mat-form-field class="col-md-6" *ngIf="!isMeal()">
+            <mat-label>Dish Type</mat-label>
+            <mat-select [disabled]="!canManageDishCycles" id="dishType" name="dishType" [(ngModel)]="dishCycleEdit.dishTypeId" #dishType="ngModel" required (selectionChange)="dishTypeChange($event.value)">
+              <mat-option *ngFor="let dishType of dishTypes" [value]="dishType.id">
+                {{dishType.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="showValidationErrors && f.submitted">Dish Type is required</mat-error>
+          </mat-form-field>
+          <div class="clearfix"></div>
           <mat-form-field class="col-md-6 col-xs-12">
             <input matInput [matDatepicker]="startpicker" placeholder="Start Date" [value]="start"
                    (dateChange)="onChangeDate('start', $event)" required>
@@ -37,15 +47,6 @@
                    (dateChange)="onChangeDate('end', $event)" required>
             <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
             <mat-datepicker #endpicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field class="col-md-6" *ngIf="!isMeal()">
-            <mat-label>Dish Type</mat-label>
-            <mat-select [disabled]="!canManageDishCycles" id="dishType" name="dishType" [(ngModel)]="dishCycleEdit.dishTypeId" #dishType="ngModel" required (selectionChange)="dishTypeChange($event.value)">
-              <mat-option *ngFor="let dishType of dishTypes" [value]="dishType.id">
-                {{dishType.name}}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="showValidationErrors && f.submitted">Dish Type is required</mat-error>
           </mat-form-field>
           <mat-form-field class="col-md-3 col-xs-12">
             <input matInput autocomplete="off" [disabled]="!canManageDishCycles" type="number" id="numOfDays" name="numOfDays" placeholder="Number of Days" [(ngModel)]="dishCycleEdit.numOfDays" #numOfDays="ngModel" required min="1" (blur)="generateSchedule()" />
@@ -87,10 +88,10 @@
                           </mat-select>
 
                           <!--<mat-select *ngIf="dishCycleEdit.cycleType != 'Main Menu'" [disabled]="!canManageDishCycles" id="setType-{{i}}" name="setType-{{i}}" [(ngModel)]="set.cycleTypeId" #setType="ngModel" required (selectionChange)="getAlaCarteCols($event.value, set)">
-                            <mat-option *ngFor="let dishCycle of dishCycles" [value]="dishCycle.id">
-                              {{dishCycle.label}}
-                            </mat-option>
-                          </mat-select>-->
+                    <mat-option *ngFor="let dishCycle of dishCycles" [value]="dishCycle.id">
+                      {{dishCycle.label}}
+                    </mat-option>
+                  </mat-select>-->
                         </mat-form-field>
                         <mat-form-field *ngIf="isMeal()" class="col-xs-6">
                           <mat-select [disabled]="!canManageDishCycles" id="setTypeSequence-{{i}}" name="setTypeSequence-{{i}}" [(ngModel)]="set.cycleTypeSequence" #setTypeSequence="ngModel" required (selectionChange)="onMealCreditColChange(set.cycleTypeId, $event.value, set.sequence)">
@@ -99,10 +100,10 @@
                             </mat-option>
                           </mat-select>
                           <!--<mat-select *ngIf="dishCycleEdit.cycleType != 'Main Menu'"  [disabled]="!canManageDishCycles" id="setTypeSequence-{{i}}" name="setTypeSequence-{{i}}" [(ngModel)]="set.cycleTypeSequence" #setTypeSequence="ngModel" required (selectionChange)="onAlaCarteColChange(set.cycleTypeId, $event.value, set.sequence)">
-                            <mat-option *ngFor="let sequence of set.cycleSequences" [value]="sequence.sequence">
-                              {{sequence.label}}
-                            </mat-option>
-                          </mat-select>-->
+                    <mat-option *ngFor="let sequence of set.cycleSequences" [value]="sequence.sequence">
+                      {{sequence.label}}
+                    </mat-option>
+                  </mat-select>-->
                         </mat-form-field>
                         <mat-form-field [ngClass]="isMeal() ? 'col-xs-12 col-md-6' : 'col-xs-12'">
                           <mat-label>Price</mat-label>
@@ -110,12 +111,12 @@
                           <span matPrefix>$&nbsp;</span>
                         </mat-form-field>
                         <!--<mat-form-field class="col-xs-12">
-                          <mat-select [disabled]="!canManageDishCycles" id="setTypeMealType-{{i}}" name="setTypeMealType-{{i}}" [(ngModel)]="set.mealTypeId" #setTypeMealType="ngModel" required>
-                            <mat-option *ngFor="let mealType of mealTypes" [value]="mealType.id">
-                              {{mealType.name}} - ${{mealType.price}}
-                            </mat-option>
-                          </mat-select>
-                        </mat-form-field>-->
+                  <mat-select [disabled]="!canManageDishCycles" id="setTypeMealType-{{i}}" name="setTypeMealType-{{i}}" [(ngModel)]="set.mealTypeId" #setTypeMealType="ngModel" required>
+                    <mat-option *ngFor="let mealType of mealTypes" [value]="mealType.id">
+                      {{mealType.name}} - ${{mealType.price}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>-->
                       </th>
                     </tr>
                   </thead>
@@ -137,13 +138,13 @@
                           </mat-select>
                         </mat-form-field>
                         <!--<mat-form-field class="col-xs-10 filter" appearance="outline" floatLabel="always" *ngIf="isMeal() && dishCycleEdit.cycleType != 'Main Menu'">
-                          <mat-select [disabled]="!canManageDishCycles" id="detail-{{i}}-{{x}}" name="detail-{{i}}-{{x}}"
-                                      [(ngModel)]="detail.selectedDish">
-                            <mat-option *ngFor="let dish of getSetOptions(x, schedule.day)" [value]="dish">
-                              {{dish.dishLabel}} - {{dish.dishCode}}
-                            </mat-option>
-                          </mat-select>
-                        </mat-form-field>-->
+                  <mat-select [disabled]="!canManageDishCycles" id="detail-{{i}}-{{x}}" name="detail-{{i}}-{{x}}"
+                              [(ngModel)]="detail.selectedDish">
+                    <mat-option *ngFor="let dish of getSetOptions(x, schedule.day)" [value]="dish">
+                      {{dish.dishLabel}} - {{dish.dishCode}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>-->
                         <div class="col-xs-2">
                           <a *ngIf="!isMeal()" class="btn btn-link btn-xs" href="javascript:;" (click)="addDish(detail, detail.selectedDish, schedule, detail.selectedCycle, isMeal())">
                             <i class="fa fa-plus-square" aria-hidden="true"></i>

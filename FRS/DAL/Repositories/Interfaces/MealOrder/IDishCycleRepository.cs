@@ -24,7 +24,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateOutletDishCyclePeriodMenus(OutletDishViewMenu models);
         Task<List<DishCyclePeriod>> GetOutletDishCyclePeriodsAsync(int dishCyleId);
         Task<List<MealCreditSetMenuDTO>> GetDishesByMealType(int outletId, int catererId, int mealTypeId, DateTime date, int? sessionId);
-        Task<List<DishCycle>> GetOutletDishCyclesAsync(int studentId, DateTime date, int sessionId);
+        Task<List<DishCycle>> GetOutletStudentDishCyclesAsync(int studentId, DateTime date, int sessionId);
 
     }
 }

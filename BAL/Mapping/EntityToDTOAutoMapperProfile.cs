@@ -193,6 +193,7 @@ namespace BAL.Mapping
             CreateMap<StudentVoucherDTO, StudentVoucher>();
 
             CreateMap<StudentInterestGroupDTO, StudentInterestGroup>();
+            CreateMap<StudentInterestGroup, StudentInterestGroupDTO>();
 
             CreateMap<InterestGroup, InterestGroupDTO>();
             CreateMap<InterestGroupDTO, InterestGroup>();

@@ -412,6 +412,8 @@ export class DishEditorComponent {
     let dc = new DishComponent();
     dc.dishId = this.dishEdit.id;
     dc.editMode = true;
+
+    if (!this.dishEdit.dishComponents) this.dishEdit.dishComponents = [];
     this.dishEdit.dishComponents.push(dc);
   }
   removeComponent(compo) {

@@ -329,7 +329,9 @@ namespace DAL.Repositories.MealOrder
                 order.UpdatedDate = DateTime.Now;
                 order.AmendReason += "\n" + reason;
 
-                var selectedDishes = _appContext.TokenOrderDishes.Where(e => order.Tokens.Any(x => x.Id == e.TokenOrderedId));
+                var tokenIds = order.Tokens.Select(x => x.Id);
+
+                var selectedDishes = _appContext.TokenOrderDishes.Where(e => tokenIds.Any(x => x == e.TokenOrderedId));
                 foreach(var selectedDish in selectedDishes)
                 {
                     selectedDish.DishId = dishId;

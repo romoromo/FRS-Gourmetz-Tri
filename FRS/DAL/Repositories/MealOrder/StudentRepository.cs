@@ -520,8 +520,9 @@ namespace DAL.Repositories.MealOrder
 
                     }
 
+                    var studentCardIds = studentCards?.Select(e => e.Id).ToList();
                     var cardsToDelete = this._appContext.StudentCards.Where(x => x.StudentId == f.Id &&
-                                        (studentCards == null || !studentCards.Any(a => a.Id == x.Id)));
+                                        (studentCardIds == null || !studentCardIds.Any(a => a == x.Id)));
 
                     this._appContext.StudentCards.RemoveRange(cardsToDelete);
 
@@ -545,8 +546,9 @@ namespace DAL.Repositories.MealOrder
                         });
                     }
 
+                    var restrictionsIds = restrictions?.Select(e => e.RestrictionId).ToList();
                     var restrictionsToDelete = this._appContext.StudentRestrictions.Where(x => x.StudentId == f.Id &&
-                                        (restrictions == null || !restrictions.Any(a => a.RestrictionId == x.RestrictionId)));
+                                        (restrictionsIds == null || !restrictionsIds.Any(a => a == x.RestrictionId)));
 
                     this._appContext.StudentRestrictions.RemoveRange(restrictionsToDelete);
 
@@ -567,8 +569,9 @@ namespace DAL.Repositories.MealOrder
                         });
                     }
 
+                    var interestGroupsIds = interestGroups?.Select(e => e.InterestGroupId).ToList();
                     var interestGroupsToDelete = this._appContext.StudentInterestGroups.Where(x => x.StudentId == f.Id &&
-                                        (interestGroups == null || !interestGroups.Any(a => a.InterestGroupId == x.InterestGroupId)));
+                                        (interestGroupsIds == null || !interestGroupsIds.Any(a => a == x.InterestGroupId)));
 
                     this._appContext.StudentInterestGroups.RemoveRange(interestGroupsToDelete);
 

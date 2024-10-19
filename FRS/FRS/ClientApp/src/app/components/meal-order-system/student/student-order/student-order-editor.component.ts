@@ -419,7 +419,7 @@ export class StudentOrderEditorComponent implements OnInit, OnDestroy {
   }
 
   selectDish(dish, set) {
-    if (this.selectedDish !== dish) {
+    if (this.selectedDish !== dish || (this.selectedDish && this.selectedDish.dishId == dish.dishId && this.selectedDish.setPrice != set.price)) {
       dish.mealTypeId = set.mealTypeId;
       dish.tokenDesc = set.sequenceLabel;
       dish.setPrice = set.price;

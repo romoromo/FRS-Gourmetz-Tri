@@ -509,7 +509,7 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetDishCyclesByStudentId(int id, DateTime orderDate, int mealSessionId)
         {
-            var results = await this._service.GetOutletDishCyclesAsync(id, orderDate, mealSessionId);
+            var results = await this._service.GetOutletStudentDishCyclesAsync(id, orderDate, mealSessionId);
             return Ok(results);
         }
         #endregion

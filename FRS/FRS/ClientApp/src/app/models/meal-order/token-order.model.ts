@@ -35,6 +35,7 @@ export class TokenOrder {
   public fomoId: string;
   public paymentNumber: string;
   public invoiceNumber: string;
+  public mealDescription: string;
   public mealSessionDetailName: string;
 }
 

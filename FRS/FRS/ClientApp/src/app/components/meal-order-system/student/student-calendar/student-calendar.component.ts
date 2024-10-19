@@ -281,6 +281,7 @@ export class StudentMenuCycleCalendarComponent implements OnInit, AfterViewInit 
     this.studentService.getStudentById(id)
       .subscribe(student => {
         this.student = student;
+       
         console.log(this.student);
         let approvedStudent = false;
         let catererStudents = [];

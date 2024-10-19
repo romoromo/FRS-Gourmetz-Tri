@@ -50,7 +50,7 @@ namespace BAL.Services.Interfaces.MealOrder
 
         Task<BaseOperationResponse> CreateOutletDishCyclePeriodMenus(OutletDishViewMenuDTO model);
         Task<List<DishCyclePeriodDTO>> GetOutletDishCyclePeriodsAsync(int dishCyleId);
-        Task<List<DishCycleDTO>> GetOutletDishCyclesAsync(int studentId, DateTime date, int sessionId);
+        Task<List<DishCycleDTO>> GetOutletStudentDishCyclesAsync(int studentId, DateTime date, int sessionId);
         Task<IEnumerable<DishTypeDTO>> GetDishTypesByActiveDishCyclesAsync(int outletId, DateTime deliveryDate, DateTime deliveryDateTo);
     }
 }

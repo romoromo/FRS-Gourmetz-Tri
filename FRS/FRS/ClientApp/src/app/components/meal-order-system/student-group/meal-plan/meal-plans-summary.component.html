@@ -12,12 +12,12 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field class="col-md-3 col-sm-6 col-xs-12">
-      <input matInput [matDatepickerFilter]="dateFilter" [matDatepicker]="delvdatepicker" placeholder="Delivery Date From" [value]="delvdate" required (dateChange)="onChangeDate($event, 'from')">
+      <input matInput [matDatepicker]="delvdatepicker" placeholder="Delivery Date From" [value]="delvdate" required (dateChange)="onChangeDate($event, 'from')">
       <mat-datepicker-toggle matSuffix [for]="delvdatepicker"></mat-datepicker-toggle>
       <mat-datepicker #delvdatepicker></mat-datepicker>
     </mat-form-field>
     <mat-form-field class="col-md-3 col-sm-6 col-xs-12">
-      <input matInput [matDatepickerFilter]="dateFilter" [matDatepicker]="delvdateTopicker" placeholder="Delivery Date To" [value]="delvdateTo" required (dateChange)="onChangeDate($event)">
+      <input matInput [matDatepicker]="delvdateTopicker" placeholder="Delivery Date To" [value]="delvdateTo" required (dateChange)="onChangeDate($event)">
       <mat-datepicker-toggle matSuffix [for]="delvdateTopicker"></mat-datepicker-toggle>
       <mat-datepicker #delvdateTopicker></mat-datepicker>
     </mat-form-field>

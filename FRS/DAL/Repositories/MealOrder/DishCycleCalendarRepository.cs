@@ -44,8 +44,23 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var toRemove = _appContext.DishCycleBlockedDates.Where(e => blockedDates.Any(f => f.DishCycleId == e.DishCycleId && e.EffectiveDate == f.EffectiveDate));
-            _appContext.DishCycleBlockedDates.RemoveRange(toRemove);
+            // Create a list of pairs for blocked dates
+            var blockedDatePairs = blockedDates
+                .Select(f => new { f.DishCycleId, f.EffectiveDate })
+                .Distinct()
+                .ToList();
+
+            // Initialize a queryable for the items to remove
+            var toRemove = _appContext.DishCycleBlockedDates.AsQueryable();
+            var toRemoveList = new List<DishCycleBlockedDate>();
+            // Filter based on the pairs
+            foreach (var pair in blockedDatePairs)
+            {
+                toRemoveList.AddRange(toRemove.Where(e => e.DishCycleId == pair.DishCycleId && e.EffectiveDate == pair.EffectiveDate));
+            }
+
+            _appContext.DishCycleBlockedDates.RemoveRange(toRemoveList);
+
             if (await _appContext.SaveChangesAsync() > 0)
             {
                 result.Message = "Successfully unblocked the date!";

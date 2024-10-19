@@ -784,7 +784,7 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetSimpleStudentGroups(BaseFilter filter)
         {
-            var results = await this._service.GetStudentGroupsAsync(filter);
+            var results = await this._service.GetSimpleStudentGroups(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<StudentGroupSimpleDTO>>(results));
         }
 

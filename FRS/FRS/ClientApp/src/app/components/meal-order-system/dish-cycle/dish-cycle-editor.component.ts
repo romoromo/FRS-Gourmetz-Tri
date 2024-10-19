@@ -336,6 +336,7 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
         this.getDishCyles();
         this.getMealTypes();
         this.getPeriods(true);
+        this.getDishes();
       } else {
         this.initiliaseSet();
       }
@@ -514,7 +515,7 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
       let sets = [];
       if (!this.dishCycleEdit.sets) this.dishCycleEdit.sets = [];
       for (var i = 1; i <= this.dishCycleEdit.numOfSets; i++) {
-        var s = this.dishCycleEdit.sets.filter(e => e.sequence == i);
+        var s = this.dishCycleEdit.sets ? this.dishCycleEdit.sets.filter(e => e.sequence == i) : [];
         if (s && s.length > 0) {
           sets.push(s[0]);
         } else {
@@ -552,7 +553,7 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
       if (!this.dishCycleEdit.sets || this.dishCycleEdit.sets.length == 0 || this.dishCycleEdit.sets.length != this.dishCycleEdit.numOfSets) {
         let sets = [];
         for (var i = 1; i <= this.dishCycleEdit.numOfSets; i++) {
-          var s = this.dishCycleEdit.sets.filter(e => e.sequence == i);
+          var s = this.dishCycleEdit.sets ? this.dishCycleEdit.sets.filter(e => e.sequence == i) : [];
           if (s && s.length > 0) {
             sets.push(s[0]);
           } else {

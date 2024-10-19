@@ -73,7 +73,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<IEnumerable<DishTypeDTO>> GetDishTypesByActiveDishCyclesAsync(int outletId, DateTime deliveryDate, DateTime deliveryDateTo)
         {
-            return Mapper.Map<IEnumerable<DishTypeDTO>>(await this._uow.DishTypes.GetDishTypesByActiveDishCyclesAsync(outletId, deliveryDate, deliveryDateTo));
+            return _mapper.Map<IEnumerable<DishTypeDTO>>(await this._uow.DishTypes.GetDishTypesByActiveDishCyclesAsync(outletId, deliveryDate, deliveryDateTo));
         }
 
         #endregion
@@ -265,9 +265,9 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        public async Task<List<DishCycleDTO>> GetOutletDishCyclesAsync(int studentId, DateTime date, int sessionId)
+        public async Task<List<DishCycleDTO>> GetOutletStudentDishCyclesAsync(int studentId, DateTime date, int sessionId)
         {
-            var cycles = await this._uow.DishCycles.GetOutletDishCyclesAsync(studentId, date, sessionId);
+            var cycles = await this._uow.DishCycles.GetOutletStudentDishCyclesAsync(studentId, date, sessionId);
             var result = _mapper.Map<List<DishCycleDTO>>(cycles);
             return result;
         }
