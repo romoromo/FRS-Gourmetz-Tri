@@ -513,8 +513,30 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var toRemove = _appContext.OutletDishBlockedDates.Where(e => blockedDates.Any(f => f.OutletId == e.OutletId && f.DishCycleId == e.DishCycleId && e.EffectiveDate == f.EffectiveDate));
-            _appContext.OutletDishBlockedDates.RemoveRange(toRemove);
+            // Create a list of pairs for blocked dates
+            var blockedDatePairs = blockedDates
+                .Select(f => new { f.OutletId, f.DishCycleId, f.EffectiveDate })
+                .Distinct()
+                .ToList();
+
+            // Initialize a queryable for the items to remove
+            var toRemove = _appContext.OutletDishBlockedDates.AsQueryable();
+            var toRemoveList = new List<OutletDishBlockedDate>();
+            // Filter based on the pairs
+            foreach (var pair in blockedDatePairs)
+            {
+                toRemoveList.AddRange(toRemove.Where(e => e.OutletId == pair.OutletId && e.DishCycleId == pair.DishCycleId && e.EffectiveDate == pair.EffectiveDate));
+            }
+
+            _appContext.OutletDishBlockedDates.RemoveRange(toRemoveList);
+
+            //var allBlockedDates = _appContext.OutletDishBlockedDates.ToList();
+            //var toRemove = allBlockedDates
+            //    .Where(e => blockedDates.Any(f => f.OutletId == e.OutletId &&
+            //                                       f.DishCycleId == e.DishCycleId &&
+            //                                       e.EffectiveDate == f.EffectiveDate));
+
+            //_appContext.OutletDishBlockedDates.RemoveRange(toRemove);
             if (await _appContext.SaveChangesAsync() > 0)
             {
                 result.Message = "Successfully unblocked the date!";
