@@ -99,6 +99,7 @@ export class MealAllocation {
   public deliveryDate: Date;
   public mealSessionId: string;
   public outletId: string;
+  public kitchenId: string;
   public timePacked: Date;
   public tokens: TokenLabel[];
 }
