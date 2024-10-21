@@ -334,7 +334,7 @@ export class OutletMenuCycleCalendarComponent implements OnInit, AfterViewInit {
     let date = new Date(m.getFullYear(), m.getMonth(), m.getDate());
     let blockedDates = day.events.map(function (e) {
       let blockedDate = new OutletBlockedDate();
-      blockedDate.effectiveDate = date.toLocaleDateString();
+      blockedDate.effectiveDate = Utilities.toFormattedDateString(date);
       blockedDate.label = e.meta.label;
       blockedDate.menuCycleId = e.meta.id;
       blockedDate.outletId = e.outletId;
