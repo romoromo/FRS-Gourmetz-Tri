@@ -159,8 +159,25 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var toRemove = _appContext.MenuCycleBlockedDates.Where(e => blockedDates.Any(f => f.MenuCycleId == e.MenuCycleId && e.EffectiveDate == f.EffectiveDate)); 
-            _appContext.MenuCycleBlockedDates.RemoveRange(toRemove);
+            // Create a list of pairs for blocked dates
+            var blockedDatePairs = blockedDates
+                .Select(f => new { f.MenuCycleId, f.EffectiveDate })
+                .Distinct()
+                .ToList();
+
+            // Initialize a queryable for the items to remove
+            var toRemove = _appContext.MenuCycleBlockedDates.AsQueryable();
+            var toRemoveList = new List<MenuCycleBlockedDate>();
+            // Filter based on the pairs
+            foreach (var pair in blockedDatePairs)
+            {
+                toRemoveList.AddRange(toRemove.Where(e => e.MenuCycleId == pair.MenuCycleId && e.EffectiveDate == pair.EffectiveDate));
+            }
+
+            _appContext.MenuCycleBlockedDates.RemoveRange(toRemoveList);
+
+            //var toRemove = _appContext.MenuCycleBlockedDates.Where(e => blockedDates.Any(f => f.MenuCycleId == e.MenuCycleId && e.EffectiveDate == f.EffectiveDate)); 
+            //_appContext.MenuCycleBlockedDates.RemoveRange(toRemove);
             if (await _appContext.SaveChangesAsync() > 0)
             {
                 result.Message = "Successfully unblocked the date!";
@@ -263,8 +280,25 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var toRemove = _appContext.OutletBlockedDates.Where(e => blockedDates.Any(f => f.OutletId == e.OutletId && f.MenuCycleId == e.MenuCycleId && e.EffectiveDate == f.EffectiveDate));
-            _appContext.OutletBlockedDates.RemoveRange(toRemove);
+            // Create a list of pairs for blocked dates
+            var blockedDatePairs = blockedDates
+                .Select(f => new { f.OutletId, f.MenuCycleId, f.EffectiveDate })
+                .Distinct()
+                .ToList();
+
+            // Initialize a queryable for the items to remove
+            var toRemove = _appContext.OutletBlockedDates.AsQueryable();
+            var toRemoveList = new List<OutletBlockedDate>();
+            // Filter based on the pairs
+            foreach (var pair in blockedDatePairs)
+            {
+                toRemoveList.AddRange(toRemove.Where(e => e.OutletId == pair.OutletId && e.MenuCycleId == pair.MenuCycleId && e.EffectiveDate == pair.EffectiveDate));
+            }
+
+            _appContext.OutletBlockedDates.RemoveRange(toRemoveList);
+
+            //var toRemove = _appContext.OutletBlockedDates.Where(e => blockedDates.Any(f => f.OutletId == e.OutletId && f.MenuCycleId == e.MenuCycleId && e.EffectiveDate == f.EffectiveDate));
+            //_appContext.OutletBlockedDates.RemoveRange(toRemove);
             if (await _appContext.SaveChangesAsync() > 0)
             {
                 result.Message = "Successfully unblocked the date!";

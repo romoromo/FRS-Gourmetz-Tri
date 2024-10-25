@@ -315,7 +315,7 @@ export class DishCycleCalendarComponent implements OnInit, AfterViewInit {
     let date = new Date(m.getFullYear(), m.getMonth(), m.getDate());
     let blockedDates = day.events.map(function (e) {
       let blockedDate = new DishCycleBlockedDate();
-      blockedDate.effectiveDate = date.toLocaleDateString();
+      blockedDate.effectiveDate = Utilities.toFormattedDateString(date);
       blockedDate.label = e.meta.label;
       blockedDate.dishCycleId = e.meta.id;
       return blockedDate;

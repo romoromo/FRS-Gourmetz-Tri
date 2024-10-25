@@ -333,7 +333,7 @@ export class OutletDishCycleCalendarComponent implements OnInit, AfterViewInit {
     let date = new Date(m.getFullYear(), m.getMonth(), m.getDate());
     let blockedDates = day.events.map(function (e) {
       let blockedDate = new OutletDishBlockedDate();
-      blockedDate.effectiveDate = date.toLocaleDateString();
+      blockedDate.effectiveDate = Utilities.toFormattedDateString(date);
       blockedDate.label = e.meta.label;
       blockedDate.dishCycleId = e.meta.id;
       blockedDate.outletId = e.outletId;

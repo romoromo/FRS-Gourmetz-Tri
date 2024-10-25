@@ -404,6 +404,26 @@ export class Utilities {
 
   }
 
+  public static toFormattedDateString(d: Date, format: string = 'yyyy-MM-dd', locale: string = 'en-SG'): string {
+    // Set the hours to 0 to ignore the time portion
+    d.setHours(0, 0, 0, 0);
+
+    // Extract the year, month, and day
+    const year = d.getFullYear();
+    const month = (d.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
+    const day = d.getDate().toString().padStart(2, '0');
+
+    // Create a mapping of format tokens to values
+    const formatTokens: { [key: string]: string } = {
+      'yyyy': year.toString(),
+      'MM': month,
+      'dd': day
+    };
+
+    // Replace format tokens with their corresponding values
+    return format.replace(/yyyy|MM|dd/g, (matched) => formatTokens[matched]);
+  }
+
   public static getCurrentDate(withTime?: boolean) {
     return withTime ? new Date(new Date().setMilliseconds(0)) : new Date(new Date().setHours(0, 0, 0, 0));
 
