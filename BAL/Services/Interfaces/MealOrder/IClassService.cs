@@ -38,5 +38,11 @@ namespace BAL.Services.Interfaces.MealOrder
 
         Task<MealSessionDetailDTO> GetCurrentOrderMealSessionAsync(int? outletId, DateTime orderDate, int mealSessionId, int classId);
         Task<byte[]> GenerateClassRostersXls(ClassRosterFilter filter);
+
+        Task<BaseOperationResponse> CreateDispenserOutletAsync(DispenserOutletDTO dto);
+        Task<BaseOperationResponse> DeleteDispenserOutletAsync(int id);
+        Task<DispenserOutletDTO> GetDispenserOutletByIdAsync(int id);
+        Task<PagedEntity<DispenserOutletDTO>> GetDispenserOutletsAsync(BaseFilter filter);
+        Task<BaseOperationResponse> UpdateDispenserOutletAsync(DispenserOutletDTO dto);
     }
 }

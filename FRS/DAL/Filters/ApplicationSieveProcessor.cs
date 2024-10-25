@@ -56,6 +56,7 @@ namespace DAL.Filters
             ClassMapping(ref mapper);
             ClassBatchMapping(ref mapper);
             ClassLevelMapping(ref mapper);
+            DispenserOutletMapping(ref mapper);
             StudentMapping(ref mapper);
             StudentCardMapping(ref mapper);
             StudentRestrictionMapping(ref mapper);
@@ -735,6 +736,34 @@ namespace DAL.Filters
                 .CanSort();
 
             mapper.Property<ClassLevel>(p => p.Outlet.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("outletProfileName");
+        }
+
+        private void DispenserOutletMapping(ref SievePropertyMapper mapper)
+        {
+            mapper.Property<DispenserOutlet>(p => p.Id)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<DispenserOutlet>(p => p.InstitutionId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<DispenserOutlet>(p => p.DispenserCode)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<DispenserOutlet>(p => p.CounterName)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<DispenserOutlet>(p => p.OutletId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<DispenserOutlet>(p => p.Outlet.Name)
                 .CanFilter()
                 .CanSort()
                 .HasName("outletProfileName");

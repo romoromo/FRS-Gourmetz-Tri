@@ -321,5 +321,42 @@ namespace BAL.Services.MealOrder
         #endregion
 
         #endregion
+
+        #region Dispenser Outlet
+
+        public async Task<PagedEntity<DispenserOutletDTO>> GetDispenserOutletsAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<DispenserOutletDTO>>(await this._uow.DispenserOutlets.GetDispenserOutletsAsync(filter));
+            return result;
+        }
+
+        public async Task<DispenserOutletDTO> GetDispenserOutletByIdAsync(int id)
+        {
+            return _mapper.Map<DispenserOutletDTO>(await this._uow.DispenserOutlets.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreateDispenserOutletAsync(DispenserOutletDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.DispenserOutlets.CreateAsync(_mapper.Map<DispenserOutlet>(dto));
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateDispenserOutletAsync(DispenserOutletDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.DispenserOutlets.UpdateAsync(_mapper.Map<DispenserOutlet>(dto));
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> DeleteDispenserOutletAsync(int id)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.DispenserOutlets.DeleteAsync(id);
+            return result;
+        }
+
+        #endregion
+
     }
 }

@@ -82,6 +82,7 @@ namespace DAL
         private DeviceTypeRepository _deviceTypes;
         private ChannelInfoRepository _channelInfos;
         private ClassLevelRepository _classLevels;
+        private DispenserOutletRepository _dispenserOutlets;
         private ClassBatchRepository _classBatches;
         private ClassRepository _classes;
         private IStudentRepository _students;
@@ -855,6 +856,17 @@ namespace DAL
                     _classLevels = new ClassLevelRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
 
                 return _classLevels;
+            }
+        }
+
+        public IDispenserOutletRepository DispenserOutlets
+        {
+            get
+            {
+                if (_dispenserOutlets == null)
+                    _dispenserOutlets = new DispenserOutletRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+
+                return _dispenserOutlets;
             }
         }
 

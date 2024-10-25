@@ -84,6 +84,7 @@ import { UpDownTimeLogsManagementComponent } from './components/audit/updowntime
 import { KioskSettingsListComponent } from './components/kioskSettings/kiosk-settings-list.component';
 import { DeviceTypesManagementComponent } from './components/controls/device-type/device-types-management.component';
 import { ClassLevelsManagementComponent } from './components/meal-order-system/class-level/class-levels-management.component';
+import { DispenserOutletManagementComponent } from './components/meal-order-system/dispenser-outlet/dispenser-outlet-management.component';
 import { ClassesManagementComponent } from './components/meal-order-system/class/classes-management.component';
 import { StudentsManagementComponent } from './components/meal-order-system/student/students-management.component';
 import { StudentGroupsManagementComponent } from './components/meal-order-system/student-group/student-groups-management.component';
@@ -258,6 +259,7 @@ const routes: Routes = [
       { path: "channelinfos", component: ChannelInfosManagementComponent, canActivate: [AuthGuard], data: { title: "Channel Infos" } },
       { path: "classbatches", component: ClassBatchesManagementComponent, canActivate: [AuthGuard], data: { title: "Class Batches" } },
       { path: "classlevels", component: ClassLevelsManagementComponent, canActivate: [AuthGuard], data: { title: "Class Levels" } },
+      { path: "dispenseroutlets", component: DispenserOutletManagementComponent, canActivate: [AuthGuard], data: { title: "Dispensers" } },
       { path: "classes", component: ClassesManagementComponent, canActivate: [AuthGuard], data: { title: "Classes" } },
       { path: "students", component: StudentsManagementComponent, canActivate: [AuthGuard], data: { title: "Students" } },
       { path: "studentgroups", component: StudentGroupsManagementComponent, canActivate: [AuthGuard], data: { title: "Student Groups" } },

@@ -327,10 +327,12 @@ import { CreateAccountMultiple, StudentsManagementComponent } from './components
 import { StudentGroupsManagementComponent } from './components/meal-order-system/student-group/student-groups-management.component';
 import { ClassesManagementComponent } from './components/meal-order-system/class/classes-management.component';
 import { ClassLevelsManagementComponent } from './components/meal-order-system/class-level/class-levels-management.component';
+import { DispenserOutletManagementComponent } from './components/meal-order-system/dispenser-outlet/dispenser-outlet-management.component';
 import { StudentEditorComponent } from './components/meal-order-system/student/student-editor.component';
 import { StudentGroupEditorComponent } from './components/meal-order-system/student-group/student-group-editor.component';
 import { StudentSelectorComponent } from './components/meal-order-system/student-group/student-selector/student-selector.component';
 import { ClassLevelEditorComponent } from './components/meal-order-system/class-level/class-level-editor.component';
+import { DispenserOutletEditorComponent } from './components/meal-order-system/dispenser-outlet/dispenser-outlet-editor.component';
 import { ClassEditorComponent } from './components/meal-order-system/class/class-editor.component';
 import { UserService } from './services/meal-order/user.service';
 import { StaffService } from './services/meal-order/staff.service';
@@ -677,6 +679,7 @@ export const configFactory = (configService: ConfigurationService) => {
     StudentGroupsManagementComponent, StudentGroupEditorComponent, StudentSelectorComponent,
     ClassBatchesManagementComponent, ClassBatchEditorComponent,
     ClassLevelsManagementComponent, ClassLevelEditorComponent,
+    DispenserOutletManagementComponent, DispenserOutletEditorComponent,
     ClassesManagementComponent, ClassEditorComponent,
     StaffTypesManagementComponent, StaffTypeEditorComponent,
     StaffsManagementComponent, StaffEditorComponent,
@@ -890,7 +893,7 @@ export const configFactory = (configService: ConfigurationService) => {
     ServiceContractEditorComponent,
     DeviceTypeEditorComponent,
     ChannelInfoEditorComponent,
-    ClassBatchEditorComponent, ClassLevelEditorComponent, ClassEditorComponent, StudentEditorComponent, StaffTypeEditorComponent, StaffEditorComponent,
+    ClassBatchEditorComponent, ClassLevelEditorComponent, ClassEditorComponent, StudentEditorComponent, StaffTypeEditorComponent, StaffEditorComponent, DispenserOutletEditorComponent,
     RestrictionTypeEditorComponent, RestrictionEditorComponent, StudentGroupEditorComponent, StudentSelectorComponent, BentoUsageManagementComponent,
     MealTypeEditorComponent, DishTypeEditorComponent, CatererInfoEditorComponent, BentoBoxTypeEditorComponent, CartonTypeEditorComponent, DeliveryOrderEditorComponent, DeliveryOrderNewEditorComponent, TrackingStatusEditorComponent, StoreInfoEditorComponent, BentoAssetEditorComponent, CartonAssetEditorComponent, MealPeriodEditorComponent,
     DishEditorComponent, DishSelectorComponent, MenuEditorComponent, MenuCycleEditorComponent, TokenOrderEditorComponent, TokenOrdersManagementComponent, TokenOrderBulkEditorComponent, TokenOrdersBulkManagementComponent, MealAllocationssManagementComponent, PrintAllocationComponent,

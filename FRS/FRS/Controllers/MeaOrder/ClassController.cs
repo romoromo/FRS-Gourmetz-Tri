@@ -506,5 +506,100 @@ namespace FRS.Controllers
         //}
 
         #endregion
+
+        #region Dispenser Outlets
+
+        #region Sieved
+        [ApiKeyAuthorize]
+        [HttpGet("dispenseroutlets/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllClassLevelsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetDispenserOutlets(BaseFilter filter)
+        {
+            var results = await this._service.GetDispenserOutletsAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<DispenserOutletDTO>>(results));
+        }
+
+        #endregion
+
+        [HttpPost("dispenseroutlets")]
+        //[Authorize(Authorization.Policies.ManageAllClassLevelsPolicy)]
+        [ProducesResponseType(201, Type = typeof(DispenserOutletDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateDispenserOutlet([FromBody] DispenserOutletDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                var result = await this._service.CreateDispenserOutletAsync(dto);
+                if (result.IsSuccess)
+                {
+                    DispenserOutletDTO vm = _mapper.Map<DispenserOutletDTO>(result.Data);
+                    return CreatedAtAction("GetDispenserOutletById", new { id = vm.Id }, vm);
+                }
+
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
+        [HttpDelete("dispenseroutlets/delete/{id}")]
+        //[Authorize(Authorization.Policies.ManageAllClassLevelsPolicy)]
+        [ProducesResponseType(200, Type = typeof(DispenserOutletDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteDispenserOutlet(int id)
+        {
+            var dto = await this._service.GetDispenserOutletByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            var result = await this._service.DeleteDispenserOutletAsync(id);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while deleting: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+        [HttpPut("dispenseroutlets/update/{id}")]
+        //[Authorize(Authorization.Policies.ManageAllClassLevelsPolicy)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateDispenserOutlet(string id, [FromBody] DispenserOutletDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model == null)
+                    return BadRequest($"{nameof(model)} cannot be null");
+
+                if (model.Id == 0)
+                    return BadRequest("Conflicting type id in parameter and model data");
+
+
+                var dto = await this._service.GetDispenserOutletByIdAsync(model.Id);
+
+                if (dto == null)
+                    return NotFound(id);
+
+                var result = await this._service.UpdateDispenserOutletAsync(model);
+                if (result.IsSuccess)
+                    return NoContent();
+
+                AddErrors(new string[] { result.Message });
+
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        #endregion
     }
 }

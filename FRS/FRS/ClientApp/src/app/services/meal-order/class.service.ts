@@ -12,6 +12,7 @@ import { ClassLevel } from 'src/app/models/meal-order/class-level.model';
 import { Class } from 'src/app/models/meal-order/class.model';
 import { ClassBatch } from 'src/app/models/meal-order/class-batch.model';
 import { OutletClassRoster } from 'src/app/models/meal-order/outlet-class-roster.model';
+import { DispenserOutlet } from '../../models/meal-order/dispenser-outlet.model';
 
 @Injectable()
 export class ClassService {
@@ -27,6 +28,9 @@ export class ClassService {
 
   private readonly _classRosterUrl: string = "/api/class/classrosters";
   get classRosterUrl() { return this.configurations.baseUrl + this._classRosterUrl; }
+
+  private readonly _dispenserOutletUrl: string = "/api/class/dispenseroutlets";
+  get dispenserOutletUrl() { return this.configurations.baseUrl + this._dispenserOutletUrl; }
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
@@ -143,5 +147,31 @@ export class ClassService {
 
   downloadClassRoster(filter: Filter) {
     return this.commonEndpoint.getFile<any>(this.classRosterUrl + '/export', filter);
+  }
+
+  //class level
+  getDispenserOutletById(dispenserOutletId: string) {
+
+    return this.commonEndpoint.getById<any>(this.dispenserOutletUrl + '/get', dispenserOutletId);
+  }
+
+  getDispenserOutletsByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.dispenserOutletUrl + '/sieve/list', filter);
+  }
+
+  updateDispenserOutlet(dispenserOutlet: DispenserOutlet) {
+    if (dispenserOutlet.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.dispenserOutletUrl, dispenserOutlet, dispenserOutlet.id);
+    }
+  }
+
+
+  newDispenserOutlet(dispenserOutlet: DispenserOutlet) {
+    return this.commonEndpoint.getNewEndpoint<DispenserOutlet>(this.dispenserOutletUrl, dispenserOutlet);
+  }
+
+
+  deleteDispenserOutlet(dispenserOutletOrDispneserOutletId: string | DispenserOutlet): Observable<DispenserOutlet> {
+    return this.commonEndpoint.getDeleteEndpoint<DispenserOutlet>(this.dispenserOutletUrl, <string>dispenserOutletOrDispneserOutletId);
   }
 }

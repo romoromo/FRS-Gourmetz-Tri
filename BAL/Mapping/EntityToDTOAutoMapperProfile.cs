@@ -137,6 +137,10 @@ namespace BAL.Mapping
             CreateMap<ClassLevel, ClassLevelDTO>()
                 .ForMember(e => e.OutletName, map => map.MapFrom(f => f.Outlet.Name));
 
+            CreateMap<DispenserOutletDTO, DispenserOutlet>();
+            CreateMap<DispenserOutlet, DispenserOutletDTO>()
+                .ForMember(e => e.OutletName, map => map.MapFrom(f => f.Outlet.Name));
+
             CreateMap<ClassDTO, Class>();
             CreateMap<StudentDTO, Student>();
             CreateMap<StudentDTO, ApplicationUser>()

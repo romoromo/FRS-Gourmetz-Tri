@@ -134,6 +134,7 @@ namespace DAL
         public DbSet<DeviceType> DeviceTypes { get; set; }
         public DbSet<ChannelInfo> ChannelInfos { get; set; }
 
+        public DbSet<DispenserOutlet> DispenserOutlets { get; set; }
         public DbSet<ClassLevel> ClassLevels { get; set; }
         public DbSet<ClassBatch> ClassBatches { get; set; } 
         public DbSet<Class> Classes { get; set; }
@@ -507,6 +508,7 @@ namespace DAL
             builder.Entity<RewardTransaction>().TrackAllProperties();
 
             builder.Entity<ClassLevel>().TrackAllProperties();
+            builder.Entity<DispenserOutlet>().TrackAllProperties();
             builder.Entity<Class>().TrackAllProperties();
             builder.Entity<Student>().TrackAllProperties();
 

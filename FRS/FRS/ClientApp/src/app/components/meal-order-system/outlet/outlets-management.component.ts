@@ -364,6 +364,10 @@ export class OutletsManagementComponent implements OnInit {
     window.open('/interestgroups');
   }
 
+  openDispenserOutlets() {
+    window.open('/dispenseroutlets');
+  }
+
   toggleExpandRow(row) {
     console.log('Toggled Expand Row!', row);
     this.table.rowDetail.toggleExpandRow(row);

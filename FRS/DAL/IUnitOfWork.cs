@@ -65,6 +65,8 @@ namespace DAL
         IChannelInfoRepository ChannelInfos { get; }
         IClassBatchRepository ClassBatches { get; }
         IClassLevelRepository ClassLevels { get; }
+
+        IDispenserOutletRepository DispenserOutlets { get; }
         IClassRepository Classes { get; }
         IStudentRepository Students { get; }
         IStudentCardRepository StudentCards { get; }
