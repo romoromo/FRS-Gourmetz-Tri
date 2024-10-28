@@ -46,6 +46,7 @@ export class PackingAllocationEditorComponent implements OnInit {
   allocation: PackingAllocation;
   isSaving = false;
   isLoading = false;
+  filterLoading = true;
   isNewAllocation = false;
   selectedPeriodName = "";
 
@@ -91,13 +92,15 @@ export class PackingAllocationEditorComponent implements OnInit {
   }
 
   onChangeDate(type: string, event: MatDatepickerInputEvent<Date>) {
+    this.filterLoading = true;
     console.log("event value: ", moment(event.value))
     this.orderDate = new Date(event.value);
     this.allocation.packingDate = this.orderDate;
     this.getSessions();
 
     if (this.allocation.routeId) {
-      this.getMealAllocation();
+      //this.getMealAllocation();
+      this.allocation.routeId = null;
     }
   }
 
@@ -124,7 +127,6 @@ export class PackingAllocationEditorComponent implements OnInit {
       .subscribe(results => {
         this.routes = results.pagedData;
         console.log("routes: ", this.routes)
-
       },
         error => {
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving routes.\r\n"`,
@@ -183,8 +185,10 @@ export class PackingAllocationEditorComponent implements OnInit {
       .subscribe(results => {
         this.dishes = results.pagedData;
         console.log("dishes: ", this.dishes)
+        this.filterLoading = false;
       },
         error => {
+          this.filterLoading = false;
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dishes.\r\n"`,
             MessageSeverity.error);
         })
@@ -208,8 +212,11 @@ export class PackingAllocationEditorComponent implements OnInit {
             }
 
           })
+
+          this.filterLoading = false;
         },
           error => {
+            this.filterLoading = false;
             //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
             this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
               MessageSeverity.error);
@@ -440,7 +447,7 @@ export class PackingAllocationEditorComponent implements OnInit {
     if (this.isNewAllocation)
       this.alertService.showMessage("Success", `Packing Allocation was created successfully`, MessageSeverity.success);
     else
-      this.alertService.showMessage("Success", `Changes to Meal Allocations was saved successfully`, MessageSeverity.success);
+      this.alertService.showMessage("Success", `Changes to Packing Allocations was saved successfully`, MessageSeverity.success);
 
 
     this.allocation = new PackingAllocation();
@@ -460,9 +467,9 @@ export class PackingAllocationEditorComponent implements OnInit {
     this.isNewAllocation = true;
 
     this.allocation = new PackingAllocation();
-    this.orderDate = moment().toDate();
-    this.orderDate.setHours(0, 0, 0, 0);
-    this.allocation.packingDate = this.orderDate;
+    //this.orderDate = moment().toDate();
+    //this.orderDate.setHours(0, 0, 0, 0);
+    //this.allocation.packingDate = this.orderDate;
 
     return this.allocation;
   }

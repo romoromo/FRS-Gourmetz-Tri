@@ -6,13 +6,13 @@
       <div class="row">
         <mat-form-field class="col-xs-6">
           <input matInput [matDatepicker]="orderDatePicker" placeholder="Order Date" [value]="orderDate"
-                 (dateChange)="onChangeDate('order', $event)" required>
+                 (dateChange)="onChangeDate('order', $event)" required [disabled]="isSaving || filterLoading || isLoading">
           <mat-datepicker-toggle matSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
           <mat-datepicker #orderDatePicker></mat-datepicker>
         </mat-form-field>
         <mat-form-field class="col-xs-6">
           <mat-label>Route</mat-label>
-          <mat-select (selectionChange)="onChangeRoute()" id="route" name="route" [(ngModel)]="allocation.routeId" #route="ngModel">
+          <mat-select (selectionChange)="onChangeRoute()" id="route" name="route" [(ngModel)]="allocation.routeId" #route="ngModel" [disabled]="isSaving || filterLoading || isLoading">
             <mat-option *ngFor="let route of newRoutes" [value]="route.id">
               {{route.label}}
             </mat-option>
@@ -71,8 +71,8 @@
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">
-      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving || isLoading"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
-      <button type="submit" mat-button [disabled]="isSaving || isLoading">
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button type="submit" mat-button [disabled]="isSaving || filterLoading || isLoading">
         <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
       </button>
     </div>

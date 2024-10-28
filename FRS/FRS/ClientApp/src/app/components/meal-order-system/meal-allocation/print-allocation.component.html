@@ -6,13 +6,13 @@
       <div class="row">
         <mat-form-field class="col-xs-6">
           <input matInput [matDatepicker]="orderDatePicker" placeholder="Order Date" [value]="orderDate"
-                 (dateChange)="onChangeDate('order', $event)" required>
+                 (dateChange)="onChangeDate('order', $event)" required [disabled]="isSaving || filterLoading || isLoading">
           <mat-datepicker-toggle matSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
           <mat-datepicker #orderDatePicker></mat-datepicker>
         </mat-form-field>
         <mat-form-field class="col-xs-6">
           <mat-label>Session</mat-label>
-          <mat-select (selectionChange)="onChangeSessions()" id="session" name="session" [(ngModel)]="allocation.mealSessionId" #session="ngModel">
+          <mat-select (selectionChange)="onChangeSessions()" id="session" name="session" [(ngModel)]="allocation.mealSessionId" #session="ngModel" [disabled]="isSaving || filterLoading || isLoading">
             <mat-option *ngFor="let session of sessions" [value]="session.id">
               {{session.name}}
             </mat-option>
@@ -134,10 +134,10 @@
     </div>
     <div mat-dialog-actions align="center">
       <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
-      <button type="submit" mat-button [disabled]="isSaving || isLoading">
+      <button type="submit" mat-button [disabled]="isSaving || isLoading || filterLoading">
         <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
       </button>
-      <button type="button" mat-button (click)="print()" [disabled]="isSaving || isLoading"><i class="fa fa-print"></i> Print</button>
+      <button type="button" mat-button (click)="print()" [disabled]="isSaving || isLoading || filterLoading"><i class="fa fa-print"></i> Print</button>
     </div>
   </form>
 </div>

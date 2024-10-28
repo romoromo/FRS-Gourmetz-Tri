@@ -34,7 +34,7 @@ export class PrintAllocationComponent implements OnInit {
   sessions: MealSessionDetail[] = [];
   allSessions: MealSession[] = [];
   selectedCaterers: CatererOutlet[];
-  orderDate = new Date();
+  orderDate;
   orders: TokenOrder[];
   token_count: TokenLabel[] = [];
   dishes: Dish[];
@@ -42,6 +42,7 @@ export class PrintAllocationComponent implements OnInit {
   allocation: MealAllocation;
   isSaving = false;
   isLoading = false;
+  filterLoading = true;
   isNewAllocation = false;
   selectedPeriodName = "";
 
@@ -86,6 +87,7 @@ export class PrintAllocationComponent implements OnInit {
   }
 
   onChangeDate(type: string, event: MatDatepickerInputEvent<Date>) {
+    this.filterLoading = true;
     console.log("event value: ", moment(event.value))
     this.orderDate = new Date(event.value);
     this.allocation.deliveryDate = this.orderDate;
@@ -93,7 +95,8 @@ export class PrintAllocationComponent implements OnInit {
 
     if (this.allocation.mealSessionId) {
       console.log("allocation Id: ", this.allocation)
-      this.getTokenOrder();
+      //this.getTokenOrder();
+      this.allocation.mealSessionId = null;
     }
   }
 
@@ -124,9 +127,13 @@ export class PrintAllocationComponent implements OnInit {
       .subscribe(results => {
         this.allSessions = results.pagedData;
         console.log("all sessions: ", this.allSessions);
-        this.sessionSelect();
+        if (this.allocation.mealSessionId) {
+          this.sessionSelect();
+        }
+        this.filterLoading = false;
       },
         error => {
+          this.filterLoading = false;
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal type.\r\n"`,
             MessageSeverity.error);
         })
@@ -194,8 +201,11 @@ export class PrintAllocationComponent implements OnInit {
 
             });
           }
+
+          this.filterLoading = false;
         },
           error => {
+            this.filterLoading = false;
             //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
             this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
               MessageSeverity.error);
@@ -407,9 +417,9 @@ export class PrintAllocationComponent implements OnInit {
     this.isNewAllocation = true;
 
     this.allocation = new MealAllocation();
-    this.orderDate = moment().toDate();
-    this.orderDate.setHours(0, 0, 0, 0);
-    this.allocation.deliveryDate = this.orderDate;
+    //this.orderDate = moment().toDate();
+    //this.orderDate.setHours(0, 0, 0, 0);
+    //this.allocation.deliveryDate = this.orderDate;
 
     return this.allocation;
   }
