@@ -46,6 +46,7 @@ export class MealSessionDetail {
   public calSourceTime?: Date;
   public routeId?: string;
   public routeName?: string;
+  public routeColor?: string;
   public checked: boolean;
   public sTime: string;
   public eTime: string;

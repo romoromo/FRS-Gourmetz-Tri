@@ -197,6 +197,7 @@ export class PrintAllocationComponent implements OnInit {
                 let sessionDetailSelected = this.sessions.find(x => x.id === this.allocation.mealSessionId);
 
                 t.timePacked = sessionDetailSelected.routeTime;
+                t.color = sessionDetailSelected.routeColor;
               }
 
             });

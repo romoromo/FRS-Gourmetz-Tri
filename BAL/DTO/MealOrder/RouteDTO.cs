@@ -14,6 +14,8 @@ namespace BAL.DTO.MealOrder
 
         public DateTime Pickup { get; set; }
 
+        public string Color { get; set; }
+
         public int? InstitutionId { get; set; }
 
         public string InstitutionName { get; set; }

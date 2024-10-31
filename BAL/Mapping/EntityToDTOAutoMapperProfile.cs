@@ -542,6 +542,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.MealPeriodId, map => map.MapFrom(f => f.MealSession.MealPeriodId))
                 .ForMember(e => e.MealPeriodName, map => map.MapFrom(f => f.MealSession.MealPeriod != null ? f.MealSession.MealPeriod.Name : string.Empty))
                 .ForMember(e => e.RouteName, map => map.MapFrom(f => f.Route.Label))
+                .ForMember(e => e.RouteColor, map => map.MapFrom(f => f.Route.Color))
                 .ForMember(e => e.RouteTime, map => map.MapFrom(f => f.Route.Pickup))
                 //.ForMember(e => e.STime, map => map.MapFrom(f => string.Format("{0:HH:mm}", f.StartDate)))
                 //.ForMember(e => e.RTime, map => map.MapFrom(f => string.Format("{0:HH:mm}", f.RouteTime)))

@@ -27,6 +27,7 @@ using NPOI.XSSF.UserModel;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using DAL.Models.StoredProcedures;
+using System.Drawing;
 
 namespace BAL.Services.MealOrder
 {
@@ -2135,7 +2136,7 @@ namespace BAL.Services.MealOrder
                     var fullImagePath = Path.Combine(pathToImageSave, "Halal.png");
 
                     BaseFont allerfont = BaseFont.CreateFont(fullPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
-                    Font aller = new Font(allerfont, 12);
+                    iTextSharp.text.Font aller = new iTextSharp.text.Font(allerfont, 12);
 
                     var pgSize = new iTextSharp.text.Rectangle(225, 120);
                     Document document = new Document(pgSize, 5, 5, 5, 5);
@@ -2150,38 +2151,43 @@ namespace BAL.Services.MealOrder
                             {
                                 document.NewPage();
 
-                                Image png = Image.GetInstance(fullImagePath);
+                                iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(fullImagePath);
                                 png.ScaleToFit(40f, 40f);
                                 png.SetAbsolutePosition(10f, 50f);
                                 document.Add(png);
 
-                                Paragraph para1 = new Paragraph("SATS Food Services Pte Ltd", new Font(allerfont, 10));
+                                Paragraph para1 = new Paragraph("SATS Food Services Pte Ltd", new iTextSharp.text.Font(allerfont, 10));
                                 para1.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para1);
 
-                                Paragraph para2 = new Paragraph("License No: C 95152C000", new Font(allerfont, 8));
+                                Paragraph para2 = new Paragraph("License No: C 95152C000", new iTextSharp.text.Font(allerfont, 8));
                                 para2.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para2);
 
-                                Paragraph para3 = new Paragraph("Date Packed: " + dto[i].deliveryDate, new Font(allerfont, 8));
+                                Paragraph para3 = new Paragraph("Date Packed: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 8));
                                 para3.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para3);
 
-                                Paragraph para4 = new Paragraph("Time Packed: " + dto[i].timePacked.Value.ToString("hh:mm tt"), new Font(allerfont, 8));
+                                Chunk c = new Chunk("Time Packed: " + dto[i].timePacked.Value.ToString("hh:mm tt"), new iTextSharp.text.Font(allerfont, 8));
+                                if (dto[i].color != null && dto[i].color != "")
+                                {
+                                    c.SetBackground(new BaseColor(ColorTranslator.FromHtml(dto[i].color)));
+                                }
+                                Paragraph para4 = new Paragraph(c);
                                 para4.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para4);
 
-                                Paragraph para5 = new Paragraph("Consume By: " + dto[i].deliveryDate, new Font(allerfont, 8));
+                                Paragraph para5 = new Paragraph("Consume By: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 8));
                                 para5.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para5);
 
-                                Paragraph para6 = new Paragraph("At: " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt"), new Font(allerfont, 8));
+                                Paragraph para6 = new Paragraph("At: " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt"), new iTextSharp.text.Font(allerfont, 8));
                                 para6.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para6);
 
                                 var phrase = new Phrase();
                                 //phrase.Add(new Chunk("(" + dto[i].dishes[j].dish_code + ") - ", new Font(Font.FontFamily.HELVETICA, 8)));
-                                phrase.Add(new Chunk(dto[i].dishes[j].dish_name, new Font(allerfont, 10, Font.BOLD)));
+                                phrase.Add(new Chunk(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 10, iTextSharp.text.Font.BOLD)));
 
                                 Paragraph para7 = new Paragraph(phrase);
                                 para7.Alignment = Element.ALIGN_CENTER;

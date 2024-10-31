@@ -69,7 +69,7 @@ namespace DAL.Repositories.MealOrder
 
             var f = await GetSingleOrDefaultAsync(e => e.Id == route.Id);
 
-            var nodesToDelete = this._appContext.RouteNodes.Where(x => x.RouteId == f.Id &&
+            var nodesToDelete = this._appContext.RouteNodes.AsEnumerable().Where(x => x.RouteId == f.Id &&
                                    (nodes == null || !nodes.Any(a => a.StoreId == x.StoreId)));
 
             this._appContext.RouteNodes.RemoveRange(nodesToDelete);

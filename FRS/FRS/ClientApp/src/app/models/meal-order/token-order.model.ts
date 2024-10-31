@@ -117,6 +117,7 @@ export class TokenLabel {
   public deliveryDate: string;
   public deliveryDate2: Date;
   public timePacked: Date;
+  public color: string;
   public dishes: TokenDishLabel[];
 }
 

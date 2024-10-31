@@ -19,6 +19,8 @@ namespace DAL.Models.MealOrder
 
         public DateTime Pickup { get; set; }
 
+        public string Color { get; set; }
+
         public int? InstitutionId { get; set; }
 
         [ForeignKey("InstitutionId")]

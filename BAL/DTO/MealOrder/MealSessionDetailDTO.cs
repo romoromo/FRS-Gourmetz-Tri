@@ -26,11 +26,11 @@ namespace BAL.DTO.MealOrder
         public DateTime? CalSourceTime { get; set; }
         public int? RouteId { get; set; }
         public string RouteName { get; set; }
+        public string RouteColor { get; set; }
         public string STime { get; set; }
         public string RTime { get; set; }
         public string OTime { get; set; }
         public string CTime { get; set; }
-
         public float RouteInterval { get; set; }
         public float OverheadInterval { get; set; }
         public int? MealPeriodId { get; set; }

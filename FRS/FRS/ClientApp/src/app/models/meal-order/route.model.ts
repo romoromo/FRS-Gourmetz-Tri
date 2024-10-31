@@ -11,6 +11,7 @@ export class Route {
   public label: string;
   public details: string;
   public pickup: Date;
+  public color: string;
   public institutionId: string;
 
   public nodes: RouteNode[];

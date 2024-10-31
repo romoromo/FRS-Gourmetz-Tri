@@ -308,6 +308,7 @@ namespace BAL.DTO.MealOrder
         public string deliveryDate { get; set; }
         public DateTime? deliveryDate2 { get; set; }
         public DateTime? timePacked { get; set; }
+        public string color { get; set; }
         public List<TokenDishLabelDTO> dishes { get; set; }
     }
 
