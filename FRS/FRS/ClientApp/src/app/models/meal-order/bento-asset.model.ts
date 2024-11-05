@@ -29,4 +29,8 @@ export class BentoAsset {
   public lastReturnTime: Date;
 
   public remarks: string;
+
+  public routeId: string;
+
+  public reouteLabel: string;
 }

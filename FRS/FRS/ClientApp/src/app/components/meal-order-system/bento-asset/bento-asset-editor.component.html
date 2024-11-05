@@ -47,15 +47,31 @@
         </mat-form-field>
 
         <mat-form-field class="col-md-12">
+          <mat-label>Route  (optional)</mat-label>
+          <mat-select [disabled]="!canManageBentoAssets" [(ngModel)]="bentoAssetEdit.routeId" [ngModelOptions]="{standalone: true}">
+            <mat-option *ngFor="let route of routes" [value]="route.id">
+              {{route.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput [matDatepicker]="packingPicker" placeholder="Packing Date (optional)" [value]="packing"
+                 (dateChange)="onChangeDate('packing', $event)">
+          <mat-datepicker-toggle matSuffix [for]="packingPicker"></mat-datepicker-toggle>
+          <mat-datepicker #packingPicker></mat-datepicker>
+        </mat-form-field>
+
+        <!--<mat-form-field class="col-md-12">
+    <input matInput type="text" id="bentoAssetPackingTime" name="bentoAssetPackingTime" placeholder="Last Packing Time" [(ngModel)]="bentoAssetEdit.lastPackingTime" #bentoAssetPackingTime="ngModel" />
+  </mat-form-field>-->
+
+        <mat-form-field class="col-md-12">
           <input matInput type="text" id="bentoAssetRemarks" name="bentoAssetRemarks" placeholder="Asset Remarks" [(ngModel)]="bentoAssetEdit.remarks" #bentoAssetRemarks="ngModel" />
         </mat-form-field>
 
         <mat-form-field class="col-md-12">
           <input matInput [disabled]="true" type="text" id="bentoAssetAssetRegistrationTime" name="bentoAssetAssetRegistrationTime" placeholder="Asset Registration Time" [(ngModel)]="bentoAssetEdit.assetRegistrationTime" #bentoAssetAssetRegistrationTime="ngModel" />
-        </mat-form-field>
-
-        <mat-form-field class="col-md-12">
-          <input matInput [disabled]="true" type="text" id="bentoAssetPackingTime" name="bentoAssetPackingTime" placeholder="Last Packing Time" [(ngModel)]="bentoAssetEdit.lastPackingTime" #bentoAssetPackingTime="ngModel" />
         </mat-form-field>
 
         <mat-form-field class="col-md-12">

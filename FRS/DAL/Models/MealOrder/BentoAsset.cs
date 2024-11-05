@@ -55,5 +55,10 @@ namespace DAL.Models.MealOrder
         public DateTime? LastReturnTime { get; set; }
 
         public string Remarks { get; set; }
+
+        public int? RouteId { get; set; }
+
+        [ForeignKey("RouteId")]
+        public virtual Route Route { get; set; }
     }
 }

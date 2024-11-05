@@ -49,5 +49,8 @@ namespace BAL.DTO.MealOrder
         public DateTime? LastReturnTime { get; set; }
 
         public string Remarks { get; set; }
+
+        public int? RouteId { get; set; }
+        public string RouteLabel { get; set; }
     }
 }

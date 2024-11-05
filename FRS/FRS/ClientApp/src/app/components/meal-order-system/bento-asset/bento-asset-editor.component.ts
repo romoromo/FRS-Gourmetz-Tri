@@ -1,9 +1,9 @@
 import { Component, ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AlertService, MessageSeverity } from '../../../services/alert.service';
+import { DateAdapter, MatDatepickerInputEvent, MatDialog, MatDialogRef, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_DIALOG_DATA } from '@angular/material';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { BentoAsset } from 'src/app/models/meal-order/bento-asset.model';
 import { MealService } from 'src/app/services/meal-order/meal.service';
 import { Filter } from 'src/app/models/sieve-filter.model';
@@ -31,6 +31,8 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
   public formResetToggle = true;
   private periods: MealPeriod[] = [];
 
+  packing = new Date();
+
   private bentoBoxTypes: BentoBoxType[] = [];
 
   public changesSavedCallback: () => void;
@@ -43,6 +45,7 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
 
   cartonAssets: any;
   dishs: any;
+  routes: any;
   storeInfos: any;
 
   constructor(private alertService: AlertService, private deliveryService: DeliveryService, private dishService: DishService,  private accountService: AccountService,
@@ -60,6 +63,7 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
     this.getCartonAssets();
     this.getDishs();
     this.getStoreInfos();
+    this.getRoutes();
   }
 
   ngOnInit() {
@@ -80,6 +84,7 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
     this.bentoAssetEdit.institutionId = this.accountService.currentUser.institutionId;
+    this.bentoAssetEdit.lastPackingTime = this.packing;
     console.log(this.periods);
     let selectedPeriods = this.periods.filter(f => f.checked);
     
@@ -179,6 +184,7 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
 
       this.editingBentoAssetCode = bentoAsset.code;
       this.selectedValues = {};
+      this.packing = this.bentoAssetEdit.lastPackingTime;
       this.bentoAssetEdit = new BentoAsset();
       Object.assign(this.bentoAssetEdit, bentoAsset);
 
@@ -243,6 +249,27 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dishs.\r\n"`,
             MessageSeverity.error);
         }));
+  }
+
+  getRoutes() {
+    let filter = new Filter();
+    filter.filters = '(IsActive)==true';
+    this.subscription.add(this.deliveryService.getRoutesByFilter(filter)
+      .subscribe(results => {
+        this.routes = results.pagedData;
+      },
+        error => {
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving routes.\r\n"`,
+            MessageSeverity.error);
+        }));
+  }
+
+  onChangeDate(type: string, event: MatDatepickerInputEvent<Date>) {
+    if (type == 'packing') {
+      this.packing = new Date(event.value);
+      this.bentoAssetEdit.lastPackingTime = new Date(event.value);
+    }
   }
 
 

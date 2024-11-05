@@ -487,7 +487,8 @@ namespace BAL.Mapping
                 .ForMember(e => e.CartonAssetCode, map => map.MapFrom(f => f.CartonAsset != null ? f.CartonAsset.Code : ""))
                 .ForMember(e => e.StoreInfoCode, map => map.MapFrom(f => f.StoreInfo != null ? f.StoreInfo.Code : ""))
                 .ForMember(e => e.DishCode, map => map.MapFrom(f => f.Dish != null ? f.Dish.Code : ""))
-                .ForMember(e => e.DishLabel, map => map.MapFrom(f => f.Dish != null ? f.Dish.Label : ""));
+                .ForMember(e => e.DishLabel, map => map.MapFrom(f => f.Dish != null ? f.Dish.Label : ""))
+                .ForMember(e => e.RouteLabel, map => map.MapFrom(f => f.Route != null ? f.Route.Label : ""));
             CreateMap<BentoAssetDTO, BentoAsset>();
 
             CreateMap<CartonAsset, CartonAssetDTO>()

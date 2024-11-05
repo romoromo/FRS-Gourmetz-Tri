@@ -1448,6 +1448,10 @@ namespace DAL.Filters
                 .CanFilter()
                 .CanSort();
 
+            mapper.Property<BentoAsset>(p => p.RouteId)
+                .CanFilter()
+                .CanSort();
+
             mapper.Property<BentoAsset>(p => p.Institution.Name)
                 .CanFilter()
                 .CanSort()
@@ -1477,6 +1481,11 @@ namespace DAL.Filters
                 .CanFilter()
                 .CanSort()
                 .HasName("storeInfoCode");
+
+            mapper.Property<BentoAsset>(p => p.Route.Label)
+               .CanFilter()
+               .CanSort()
+               .HasName("routeLabel");
         }
 
         private void CartonAssetMapping(ref SievePropertyMapper mapper)
