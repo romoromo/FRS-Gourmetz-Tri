@@ -92,6 +92,7 @@ export class DishAllocation {
   public packingId: string;
   public dishId: string;
   public qty: number;
+  public scannedQty: number;
 }
 
 export class MealAllocation {

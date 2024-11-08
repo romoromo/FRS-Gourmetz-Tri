@@ -19,14 +19,15 @@ import { MealService } from 'src/app/services/meal-order/meal.service';
 import { DishService } from 'src/app/services/meal-order/dish.service';
 import { MealSessionDetail, MealSession } from 'src/app/models/meal-order/meal-session.model';
 import { Route } from 'src/app/models/meal-order/route.model';
+import { ScanTagComponent } from './scan-tag/scan-tag.component'
 
 
 @Component({
-  selector: 'packing-allocation-editor',
-  templateUrl: './packing-allocation-editor.component.html',
-  styleUrls: ['./packing-allocation-editor.component.css']
+  selector: 'packing-tag-editor',
+  templateUrl: './packing-tag-editor.component.html',
+  styleUrls: ['./packing-tag-editor.component.css']
 })
-export class PackingAllocationEditorComponent implements OnInit {
+export class PackingTagEditorComponent implements OnInit {
   stores: StoreInfo[];
   storesCache: StoreInfo[];
   selectedStores: StoreInfo[] = [];
@@ -37,7 +38,7 @@ export class PackingAllocationEditorComponent implements OnInit {
   newRoutes: Route[] = [];
   allSessions: MealSession[] = [];
   selectedCaterers: CatererOutlet[];
-  orderDate;
+  orderDate = new Date();
   orders: MealAllocation[];
   token_count: TokenLabel[] = [];
   dish_count: DishAllocation[] = [];
@@ -49,11 +50,12 @@ export class PackingAllocationEditorComponent implements OnInit {
   filterLoading = true;
   isNewAllocation = false;
   selectedPeriodName = "";
+  scannedQty = 0;
 
   //dish_count: TokenDishLabel[] = [];
 
   constructor(private http: HttpClient, private alertService: AlertService, private deliveryService: DeliveryService, public dialog: MatDialog,
-    public dialogRef: MatDialogRef<PackingAllocationEditorComponent>, private menuService: MenuService, private mealService: MealService, private dishService: DishService,
+    public dialogRef: MatDialogRef<PackingTagEditorComponent>, private menuService: MenuService, private mealService: MealService, private dishService: DishService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.outletId) != typeof (undefined)) {
       this.outletId = data.outletId;
@@ -512,5 +514,25 @@ export class PackingAllocationEditorComponent implements OnInit {
         console.error(err);
       }
     );
+  }
+
+  
+
+  startScan(dc) {
+    let dishCode = this.getDishCode(dc.dishId);
+    const dialogRef = this.dialog.open(ScanTagComponent, {
+      data: { header: "Scan", outletId: this.outletId, packingDate: this.allocation.packingDate, routeId: this.allocation.routeId, dishId: dc.dishId, dishCode: dishCode, qty: dc.qty, scannedQty: dc.scannedQty},
+      width: '800px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result.isCancel) {
+        console.log("back qty: ", result.scannedQty);
+        dc.scannedQty = result.scannedQty;
+        console.log("scan qty after:", this.scannedQty);
+        //console.log("change selstore:", result.selectedStudents);
+      }
+    });
   }
 }

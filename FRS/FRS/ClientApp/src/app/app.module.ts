@@ -366,6 +366,9 @@ import { MealAllocationssManagementComponent } from './components/meal-order-sys
 import { PrintAllocationComponent } from './components/meal-order-system/meal-allocation/print-allocation.component';
 import { PackingAllocationssManagementComponent } from './components/meal-order-system/packing-allocation/packing-allocations-management.component';
 import { PackingAllocationEditorComponent } from './components/meal-order-system/packing-allocation/packing-allocation-editor.component';
+import { PackingTagsManagementComponent } from './components/meal-order-system/packing-tag/packing-tags-management.component';
+import { PackingTagEditorComponent } from './components/meal-order-system/packing-tag/packing-tag-editor.component';
+import { ScanTagComponent } from './components/meal-order-system/packing-tag/scan-tag/scan-tag.component';
 import { MenuCycleEditorComponent } from './components/meal-order-system/menu-cycle/menu-cycle-editor.component';
 import { MenuCyclesManagementComponent } from './components/meal-order-system/menu-cycle/menu-cycles-management.component';
 import { CatererInfosManagementComponent } from './components/meal-order-system/caterer-info/caterer-infos-management.component';
@@ -676,7 +679,7 @@ export const configFactory = (configService: ConfigurationService) => {
     DeviceTypesManagementComponent, DeviceTypeEditorComponent,
     ChannelInfosManagementComponent, ChannelInfoEditorComponent,
     StudentsManagementComponent, StudentEditorComponent,
-    StudentGroupsManagementComponent, StudentGroupEditorComponent, StudentSelectorComponent,
+    StudentGroupsManagementComponent, StudentGroupEditorComponent, StudentSelectorComponent, ScanTagComponent,
     ClassBatchesManagementComponent, ClassBatchEditorComponent,
     ClassLevelsManagementComponent, ClassLevelEditorComponent,
     DispenserOutletManagementComponent, DispenserOutletEditorComponent,
@@ -703,7 +706,7 @@ export const configFactory = (configService: ConfigurationService) => {
     MenuEditorComponent, MenusManagementComponent, TokenOrdersManagementComponent, MenuCycleEditorComponent, MenuCyclesManagementComponent, MealAllocationssManagementComponent, PrintAllocationComponent,
     CatererSelectorComponent, CatererApprovalComponent, DOSelectorComponent, ReceiveDOComponent, InventorySelectorComponent, InventoryDetailComponent, StoreSelectorComponent, StoreSelectorDetailsComponent,
     DriverEditorComponent, DriversManagementComponent, RouteEditorComponent, RoutesManagementComponent, OrderReportComponent, OrderMealSummaryComponent, PrintLabelComponent, PackingAllocationssManagementComponent, PackingAllocationEditorComponent,
-    InterestGroupEditorComponent, InterestGroupsManagementComponent, MealSessionEditorComponent, OrderDeliveryReportComponent,
+    InterestGroupEditorComponent, InterestGroupsManagementComponent, MealSessionEditorComponent, OrderDeliveryReportComponent, PackingTagsManagementComponent, PackingTagEditorComponent,
     MenuCycleCalendarComponent, ViewMenuCycleMenuComponent, OutletMenuCycleCalendarComponent, OutletViewMenuCycleMenuComponent,
     OutletClassRosterEditorComponent, MenuDishSelectorEditorComponent, OutletClassRostersManagementComponent, 
     StudentMenuCycleCalendarComponent, TokenOrderPaymentComponent, TokenOrderPaymentThankyouComponent ,
@@ -894,12 +897,12 @@ export const configFactory = (configService: ConfigurationService) => {
     DeviceTypeEditorComponent,
     ChannelInfoEditorComponent,
     ClassBatchEditorComponent, ClassLevelEditorComponent, ClassEditorComponent, StudentEditorComponent, StaffTypeEditorComponent, StaffEditorComponent, DispenserOutletEditorComponent,
-    RestrictionTypeEditorComponent, RestrictionEditorComponent, StudentGroupEditorComponent, StudentSelectorComponent, BentoUsageManagementComponent,
+    RestrictionTypeEditorComponent, RestrictionEditorComponent, StudentGroupEditorComponent, StudentSelectorComponent, BentoUsageManagementComponent, ScanTagComponent,
     MealTypeEditorComponent, DishTypeEditorComponent, CatererInfoEditorComponent, BentoBoxTypeEditorComponent, CartonTypeEditorComponent, DeliveryOrderEditorComponent, DeliveryOrderNewEditorComponent, TrackingStatusEditorComponent, StoreInfoEditorComponent, BentoAssetEditorComponent, CartonAssetEditorComponent, MealPeriodEditorComponent,
     DishEditorComponent, DishSelectorComponent, MenuEditorComponent, MenuCycleEditorComponent, TokenOrderEditorComponent, TokenOrdersManagementComponent, TokenOrderBulkEditorComponent, TokenOrdersBulkManagementComponent, MealAllocationssManagementComponent, PrintAllocationComponent,
     OutletEditorComponent, OutletProfileEditorComponent, CatererSelectorComponent, DOSelectorComponent, ReceiveDOComponent, InventorySelectorComponent, InventoryDetailComponent, CatererApprovalComponent, StoreSelectorComponent, DriverEditorComponent, RouteEditorComponent, StoreSelectorDetailsComponent,
     CuisineEditorComponent, InterestGroupEditorComponent, MealSessionEditorComponent, OrderReportComponent, OrderMealSummaryComponent, PrintLabelComponent, PackingAllocationssManagementComponent, PackingAllocationEditorComponent,
-    ViewMenuCycleMenuComponent, OutletViewMenuCycleMenuComponent, TokenOrderPaymentComponent, OrderDeliveryReportComponent,
+    ViewMenuCycleMenuComponent, OutletViewMenuCycleMenuComponent, TokenOrderPaymentComponent, OrderDeliveryReportComponent, PackingTagsManagementComponent, PackingTagEditorComponent,
     OutletClassRosterEditorComponent, MenuDishSelectorEditorComponent, StudentMenuCycleCalendarComponent, OutletClassRostersManagementComponent,
     DishCycleEditorComponent, ViewDishCycleMenuComponent, OutletDishCycleCalendarComponent, OutletViewDishCycleMenuComponent,
     PaymentTypeEditorComponent,

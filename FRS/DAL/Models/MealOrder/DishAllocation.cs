@@ -18,5 +18,6 @@ namespace DAL.Models.MealOrder
         [ForeignKey("DishId")]
         public virtual Dish Dish { get; set; }
         public int? Qty { get; set; }
+        public int? ScannedQty { get; set; }
     }
 }

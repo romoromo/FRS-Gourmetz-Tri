@@ -249,6 +249,7 @@ namespace BAL.DTO.MealOrder
         public int? PackingId { get; set; }
         public int? DishId { get; set; }
         public int? Qty { get; set; }
+        public int? ScannedQty { get; set; }
         public DishDTO Dish { get; set; }
     }
 

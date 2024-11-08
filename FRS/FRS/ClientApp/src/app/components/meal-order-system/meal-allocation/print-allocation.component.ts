@@ -376,6 +376,7 @@ export class PrintAllocationComponent implements OnInit {
     this.allocation.outletId = this.outletId;
     this.allocation.tokens = this.token_count;
     this.allocation.deliveryDate = (new Date(this.orderDate.getTime() - (this.orderDate.getTimezoneOffset() * 60000)));
+    this.allocation.deliveryDate.setHours(0, 0, 0, 0);
     console.log("saving: ", this.allocation)
 
     if (this.isNewAllocation) {

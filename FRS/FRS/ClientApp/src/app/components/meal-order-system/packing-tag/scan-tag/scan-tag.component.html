@@ -1,0 +1,33 @@
+
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+<form  class="form-horizontal" name="scanTagForm" #f="ngForm" novalidate
+      (ngSubmit)="save()">
+  <div mat-dialog-content>
+    <h5 *ngIf="step == 1">Please Scan Carton Id</h5>
+
+    <h5 *ngIf="step == 2">Packing for Dish {{dishCode}} into Carton {{scanCartonCode}}</h5>
+
+    <p> {{scannedQty}} / {{totalQty}}</p>
+
+    <div class="row">
+      <mat-form-field class="col-md-12" *ngIf="step==1">
+        <input [disabled]="isSaving" (change)="onChangeCarton()" matInput autocomplete="off" type="text" id="cartonCode" name="cartonCode" placeholder="Carton Code" [(ngModel)]="scanCartonCode" #cartonCode="ngModel" minlength="2" maxlength="200" />
+      </mat-form-field>
+      <mat-form-field class="col-md-12" *ngIf="step==2">
+        <input [disabled]="isSaving || scannedQty >= totalQty" (change)="onChangeBento()" matInput autocomplete="off" type="text" id="bentoCode" name="bentoCode" placeholder="Bento Code" [(ngModel)]="scanBentoCode" #bentoCode="ngModel" />
+      </mat-form-field>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <h5 *ngIf="savedBentoCode">Bento {{savedBentoCode}} is tagged</h5>
+  </div>
+  <div mat-dialog-actions align="center">
+    <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Close' | translate}}</button>
+    <!--<button type="submit" mat-button [disabled]="isSaving">
+      <i class='fa fa-save'></i>{{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+    </button>-->
+  </div>
+</form>
+</div>

@@ -108,6 +108,7 @@ namespace DAL.Repositories.MealOrder
                             {
                                 sc.DishId = e.DishId;
                                 sc.Qty = e.Qty;
+                                sc.ScannedQty = e.ScannedQty;
                                 this._appContext.DishAllocations.Update(sc);
                             }
                             else
