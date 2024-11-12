@@ -6,9 +6,9 @@
   <div mat-dialog-content>
     <h5 *ngIf="step == 1">Please Scan Carton Id</h5>
 
-    <h5 *ngIf="step == 2">Packing for Dish {{dishCode}} into Carton {{scanCartonCode}}</h5>
+    <h5 *ngIf="step == 2">Packing Count for {{dishCode}} : {{dishName}} into Carton {{scanCartonCode}}</h5>
 
-    <p> {{scannedQty}} / {{totalQty}}</p>
+    <p style="font-size:50px;font-weight: bold;color:red;"> {{scannedQty}} / {{totalQty}}</p>
 
     <div class="row">
       <mat-form-field class="col-md-12" *ngIf="step==1">

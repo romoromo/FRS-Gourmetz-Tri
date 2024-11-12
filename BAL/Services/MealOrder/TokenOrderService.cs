@@ -1468,7 +1468,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GenerateDeliveryOrderReport(BaseFilter filter)
         {
-            IQueryable<TokenOrder> query = _appContext.TokenOrders;
+            IQueryable<TokenOrder> query = _appContext.TokenOrders.AsNoTracking();
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
             var orders = _mapper.Map<List<TokenOrder>>(await query.ToListAsync());

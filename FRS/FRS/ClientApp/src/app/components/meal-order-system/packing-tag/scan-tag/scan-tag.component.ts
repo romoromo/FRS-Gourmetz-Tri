@@ -42,6 +42,7 @@ export class ScanTagComponent implements OnInit {
   bentoSaved: BentoAsset;
   step: number;
   dishCode: string;
+  dishName: string;
   savedBentoCode: string;
   scannedQty = 0;
   totalQty = 0;
@@ -60,6 +61,7 @@ export class ScanTagComponent implements OnInit {
     this.dishId = data.dishId;
     this.packingDate = data.packingDate;
     this.dishCode = data.dishCode;
+    this.dishName = data.dishName;
     this.scannedQty = data.scannedQty;
     this.totalQty = data.qty;
   }

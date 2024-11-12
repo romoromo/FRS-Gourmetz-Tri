@@ -520,8 +520,9 @@ export class PackingTagEditorComponent implements OnInit {
 
   startScan(dc) {
     let dishCode = this.getDishCode(dc.dishId);
+    let dishName = this.getDishName(dc.dishId)
     const dialogRef = this.dialog.open(ScanTagComponent, {
-      data: { header: "Scan", outletId: this.outletId, packingDate: this.allocation.packingDate, routeId: this.allocation.routeId, dishId: dc.dishId, dishCode: dishCode, qty: dc.qty, scannedQty: dc.scannedQty},
+      data: { header: "Scan", outletId: this.outletId, packingDate: this.allocation.packingDate, routeId: this.allocation.routeId, dishId: dc.dishId, dishCode: dishCode, qty: dc.qty, scannedQty: dc.scannedQty, dishName : dishName},
       width: '800px',
       disableClose: true
     });

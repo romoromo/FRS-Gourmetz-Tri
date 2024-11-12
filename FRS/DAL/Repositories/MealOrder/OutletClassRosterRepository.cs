@@ -321,7 +321,7 @@ namespace DAL.Repositories.MealOrder
         {
             try
             {
-                var classRoster = await _appContext.OutletClassRosters.FirstOrDefaultAsync(e => e.IsActive &&
+                var classRoster = await _appContext.OutletClassRosters.AsNoTracking().FirstOrDefaultAsync(e => e.IsActive &&
                                                 e.OutletProfile.Caterer.CatererOutlets.Any(o => o.IsActive && o.OutletId == outletId) && e.MealSessionId == mealSessionId &&
                                                 (orderDate.Date >= e.StartDate.Date &&
                                                 (!e.EndDate.HasValue || e.EndDate.Value.Date >= orderDate.Date)));
@@ -339,12 +339,12 @@ namespace DAL.Repositories.MealOrder
                     var sched = schedules.FirstOrDefault(e => e.Day == d);
 
                     //assuming order cannot be transferred from one period to another
-                    var mealSessionDetails = _appContext.MealSessionDetails.Where(e => e.IsActive && e.MealSessionId == mealSessionId).Select(e => e.Id).ToList();
-                    var periodIds = _appContext.OutletClassRosterSchedulePeriods.Where(e => e.IsActive &&
+                    var mealSessionDetails = _appContext.MealSessionDetails.AsNoTracking().Where(e => e.IsActive && e.MealSessionId == mealSessionId).Select(e => e.Id).ToList();
+                    var periodIds = _appContext.OutletClassRosterSchedulePeriods.AsNoTracking().Where(e => e.IsActive &&
                                 mealSessionDetails.Any(x=> x == e.MealSessionDetailId) &&
                                 e.OutletClassRosterScheduleId == sched.Id).Select(e => e.Id).ToList();
 
-                    var periodClass = await _appContext.OutletClassRosterSchedulePeriodClasses.FirstOrDefaultAsync(e => e.IsActive &&
+                    var periodClass = await _appContext.OutletClassRosterSchedulePeriodClasses.AsNoTracking().FirstOrDefaultAsync(e => e.IsActive &&
                                 periodIds.Any(x=> x == e.OutletClassRosterSchedulePeriodId) &&
                                 e.ClassId == classId);
 
