@@ -108,6 +108,7 @@ namespace DAL.Repositories.MealOrder
                                 sc.dish_id = e.dish_id;
                                 sc.dish_code = e.dish_code;
                                 sc.dish_name = e.dish_name;
+                                sc.token_label_id = order.Id;
                                 this._appContext.TokenDishLabels.Update(sc);
                             }
                             else
