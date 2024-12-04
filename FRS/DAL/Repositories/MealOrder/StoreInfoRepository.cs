@@ -32,6 +32,14 @@ namespace DAL.Repositories.MealOrder
             IQueryable<StoreInfo> query = _appContext.StoreInfos
                 .Include(e => e.Institution);
 
+            if (filter.Filters != "")
+            {
+                filter.Filters += ",(IsActive)==true";
+            } else
+            {
+                filter.Filters += "(IsActive)==true";
+            }
+
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
             //int totalCount = query.Count();
             //query = _sieveProcessor.Apply(filter, query, applyFiltering: false, applySorting: false, applyPagination: (filter.Page > 0 && filter.PageSize > 0));

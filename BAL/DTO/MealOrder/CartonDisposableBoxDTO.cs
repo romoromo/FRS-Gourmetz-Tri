@@ -31,6 +31,12 @@ namespace BAL.DTO.MealOrder
 
         public DateTime? TimeStamp { get; set; }
 
+        public int? RouteId { get; set; }
+
+        public string RouteLabel { get; set; }
+
+        public DateTime? LastPackingTime { get; set; }
+
         public bool reset { get; set; }
     }
 }

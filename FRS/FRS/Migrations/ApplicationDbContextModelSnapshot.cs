@@ -3466,7 +3466,13 @@ namespace FRS.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("LastPackingTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Qty")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RouteId")
                         .HasColumnType("int");
 
                     b.Property<int?>("StoreInfoId")
@@ -3493,6 +3499,8 @@ namespace FRS.Migrations
                     b.HasIndex("DishId");
 
                     b.HasIndex("InstitutionId");
+
+                    b.HasIndex("RouteId");
 
                     b.HasIndex("StoreInfoId");
 
@@ -14122,6 +14130,10 @@ namespace FRS.Migrations
                         .WithMany()
                         .HasForeignKey("InstitutionId");
 
+                    b.HasOne("DAL.Models.MealOrder.Route", "Route")
+                        .WithMany()
+                        .HasForeignKey("RouteId");
+
                     b.HasOne("DAL.Models.MealOrder.StoreInfo", "StoreInfo")
                         .WithMany()
                         .HasForeignKey("StoreInfoId");
@@ -14137,6 +14149,8 @@ namespace FRS.Migrations
                     b.Navigation("Dish");
 
                     b.Navigation("Institution");
+
+                    b.Navigation("Route");
 
                     b.Navigation("StoreInfo");
 

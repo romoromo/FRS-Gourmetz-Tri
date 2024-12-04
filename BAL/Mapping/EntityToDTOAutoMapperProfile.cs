@@ -504,7 +504,8 @@ namespace BAL.Mapping
             CreateMap<CartonDisposableBox, CartonDisposableBoxDTO>()
                 .ForMember(e => e.CartonAssetCode, map => map.MapFrom(f => f.CartonAsset != null ? f.CartonAsset.Code : ""))
                 .ForMember(e => e.DishCode, map => map.MapFrom(f => f.Dish != null ? f.Dish.Code : ""))
-                .ForMember(e => e.DishLabel, map => map.MapFrom(f => f.Dish != null ? f.Dish.Label : ""));
+                .ForMember(e => e.DishLabel, map => map.MapFrom(f => f.Dish != null ? f.Dish.Label : ""))
+                .ForMember(e => e.RouteLabel, map => map.MapFrom(f => f.Route != null ? f.Route.Label : ""));
             CreateMap<CartonDisposableBoxDTO, CartonDisposableBox>();
 
             CreateMap<DishTypePeriod, DishTypePeriodDTO>()

@@ -1527,6 +1527,10 @@ namespace DAL.Filters
                 .CanFilter()
                 .CanSort();
 
+            mapper.Property<CartonDisposableBox>(p => p.RouteId)
+                .CanFilter()
+                .CanSort();
+
             mapper.Property<CartonDisposableBox>(p => p.CartonAssetId)
                 .CanFilter()
                 .CanSort();
@@ -1545,6 +1549,11 @@ namespace DAL.Filters
                 .CanFilter()
                 .CanSort()
                 .HasName("dishCode");
+
+            mapper.Property<CartonDisposableBox>(p => p.Route.Label)
+                .CanFilter()
+                .CanSort()
+                .HasName("routeLabel");
         }
 
         private void MealTypeMapping(ref SievePropertyMapper mapper)
