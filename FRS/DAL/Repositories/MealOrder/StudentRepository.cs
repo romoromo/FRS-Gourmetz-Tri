@@ -1208,7 +1208,7 @@ namespace DAL.Repositories.MealOrder
                             new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted, Timeout = new System.TimeSpan(24, 0, 0) },
                             TransactionScopeAsyncFlowOption.Enabled))
                     {
-                        var hashedPassword = _passwordHasher.HashPassword(null, "We1come@YISS");
+                        var hashedPassword = _passwordHasher.HashPassword(null, "Tappee2025!");
 
                         if (rows.Count > 0)
                         {
