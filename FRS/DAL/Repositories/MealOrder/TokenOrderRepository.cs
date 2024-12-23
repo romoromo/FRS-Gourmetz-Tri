@@ -576,12 +576,12 @@ namespace DAL.Repositories.MealOrder
                             {
                                 this._appContext.TokenOrdereds.Add(e);
                             }
-                            var dishToDelete = this._appContext.TokenOrderDishes.Where(x => x.TokenOrderedId == e.Id &&
+                            var dishToDelete = this._appContext.TokenOrderDishes.AsEnumerable().Where(x => x.TokenOrderedId == e.Id &&
                                         (e.SelectedDishes == null || !e.SelectedDishes.Any(a => a.DishId == x.DishId)));
 
                             this._appContext.TokenOrderDishes.RemoveRange(dishToDelete);
 
-                            var altDishToDelete = this._appContext.TokenAltDishes.Where(x => x.TokenOrderedId == e.Id &&
+                            var altDishToDelete = this._appContext.TokenAltDishes.AsEnumerable().Where(x => x.TokenOrderedId == e.Id &&
                                         (e.TokenAltDishes == null || !e.TokenAltDishes.Any(a => a.DishId == x.DishId)));
 
                             this._appContext.TokenAltDishes.RemoveRange(altDishToDelete);
