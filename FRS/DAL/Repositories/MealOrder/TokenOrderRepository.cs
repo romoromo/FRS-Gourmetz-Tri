@@ -551,7 +551,7 @@ namespace DAL.Repositories.MealOrder
 
                 var f = await GetSingleOrDefaultAsync(e => e.Id == order.Id);
 
-                var tokensToDelete = this._appContext.TokenOrdereds.Where(x => x.OrderId == f.Id &&
+                var tokensToDelete = this._appContext.TokenOrdereds.AsEnumerable().Where(x => x.OrderId == f.Id &&
                                     (tokenOrders == null || !tokenOrders.Any(a => a.TokenId == x.TokenId)));
 
                 this._appContext.TokenOrdereds.RemoveRange(tokensToDelete);
