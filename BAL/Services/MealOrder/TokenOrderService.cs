@@ -1759,9 +1759,9 @@ namespace BAL.Services.MealOrder
                         cell.SetCellValue(ar.routeLabel);
                         cell.CellStyle = borderedHeaderStyle;
 
-                        sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount, i, i + 1 + (ar.sessions.Count)));
+                        sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount, i, i + (ar.sessions.Count)));
 
-                        i += (ar.sessions.Count) + 2;
+                        i += (ar.sessions.Count) + 1;
                     });
 
 
