@@ -934,20 +934,20 @@ namespace BAL.Services.MealOrder
                                         row = sheet.CreateRow(++rowCount);
 
                                         cell = row.CreateCell(c++);
-                                        cell.SetCellValue(o.TransactionTime.ToString("dd/MM/yy hh:mm:ss").Split(' ')[0]);
+                                        cell.SetCellValue(o.TransactionTime.ToLocalTime().ToString("dd/MM/yy HH:mm:ss").Split(' ')[0]);
                                         cell.CellStyle = contentStyle;
 
 
                                         cell = row.CreateCell(c++);
-                                        cell.SetCellValue(o.TransactionTime.ToString("dd/MM/yy hh:mm:ss").Split(' ')[1]);
+                                        cell.SetCellValue(o.TransactionTime.ToLocalTime().ToString("dd/MM/yy HH:mm:ss").Split(' ')[1]);
                                         cell.CellStyle = contentStyle;
 
                                         cell = row.CreateCell(c++);
-                                        cell.SetCellValue(o.DeliveryDate.ToString("dd/MM/yy hh:mm:ss").Split(' ')[0]);
+                                        cell.SetCellValue(o.DeliveryDate.ToString("dd/MM/yy HH:mm:ss").Split(' ')[0]);
                                         cell.CellStyle = contentStyle;
 
                                         cell = row.CreateCell(c++);
-                                        cell.SetCellValue(o.Session.Route.Pickup.ToString("dd/MM/yy hh:mm:ss").Split(' ')[1]);
+                                        cell.SetCellValue(o.Session.Route.Pickup.ToString("dd/MM/yy HH:mm:ss").Split(' ')[1]);
                                         cell.CellStyle = contentStyle;
 
                                         var activeCard = o.Student.StudentCards.FirstOrDefault(e => e.Status == "ACTIVE" && e.IsActive == true);
