@@ -551,8 +551,13 @@ namespace DAL.Repositories.MealOrder
 
                 var f = await GetSingleOrDefaultAsync(e => e.Id == order.Id);
 
-                var tokensToDelete = this._appContext.TokenOrdereds.AsEnumerable().Where(x => x.OrderId == f.Id &&
-                                    (tokenOrders == null || !tokenOrders.Any(a => a.TokenId == x.TokenId)));
+
+                var tokenOrdersId = tokenOrders.Select(t => t.TokenId).ToList();
+                    
+
+                var tokensToDelete = this._appContext.TokenOrdereds.Where(x => x.OrderId == f.Id &&
+                                    (tokenOrders == null || !tokenOrdersId.Contains(x.TokenId)));
+
 
                 this._appContext.TokenOrdereds.RemoveRange(tokensToDelete);
 
@@ -576,13 +581,18 @@ namespace DAL.Repositories.MealOrder
                             {
                                 this._appContext.TokenOrdereds.Add(e);
                             }
-                            var dishToDelete = this._appContext.TokenOrderDishes.AsEnumerable().Where(x => x.TokenOrderedId == e.Id &&
-                                        (e.SelectedDishes == null || !e.SelectedDishes.Any(a => a.DishId == x.DishId)));
+
+                            var selectedDishId = e.SelectedDishes.Select(t => t.DishId).ToList();
+
+                            var dishToDelete = this._appContext.TokenOrderDishes.Where(x => x.TokenOrderedId == e.Id &&
+                                        (e.SelectedDishes == null || !selectedDishId.Contains(x.DishId)));
 
                             this._appContext.TokenOrderDishes.RemoveRange(dishToDelete);
 
-                            var altDishToDelete = this._appContext.TokenAltDishes.AsEnumerable().Where(x => x.TokenOrderedId == e.Id &&
-                                        (e.TokenAltDishes == null || !e.TokenAltDishes.Any(a => a.DishId == x.DishId)));
+                            var altDishId = e.TokenAltDishes.Select(t => t.DishId).ToList();
+
+                            var altDishToDelete = this._appContext.TokenAltDishes.Where(x => x.TokenOrderedId == e.Id &&
+                                        (e.TokenAltDishes == null || !altDishId.Contains(x.DishId)));
 
                             this._appContext.TokenAltDishes.RemoveRange(altDishToDelete);
 
