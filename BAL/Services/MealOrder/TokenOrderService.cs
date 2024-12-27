@@ -3840,8 +3840,10 @@ namespace BAL.Services.MealOrder
             foreach (var mealSession in mealSessions)
             {
                 var orderByMealSession = orders.Where(e => e.Session.MealSessionId == mealSession.Id).ToList();
+                var orderByMealSessionId = orderByMealSession.Select(t => t.Id).ToList();
+
                 int returnables = orderByMealSession == null ? 0 : _appContext.TokenOrderDishes.Where(e => e.IsActive &&
-                                            orderByMealSession.Any(f => f.Id == e.TokenOrdered.OrderId) && e.Dish.BentoBoxType.isRFID).Count();
+                                            orderByMealSessionId.Contains(e.TokenOrdered.OrderId) && e.Dish.BentoBoxType.isRFID).Count();
 
                 var summary = new SalesOrderCollectionSummary
                 {
