@@ -2160,7 +2160,7 @@ namespace BAL.Services.MealOrder
                                 para1.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para1);
 
-                                Paragraph para2 = new Paragraph("License No: C 95152C000", new iTextSharp.text.Font(allerfont, 8));
+                                Paragraph para2 = new Paragraph("License No: PL82K1707", new iTextSharp.text.Font(allerfont, 8));
                                 para2.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para2);
 
