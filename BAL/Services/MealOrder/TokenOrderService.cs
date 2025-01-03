@@ -1977,7 +1977,7 @@ namespace BAL.Services.MealOrder
                     {
                         foreach (StudentCard sc in o.Student.StudentCards)
                         {
-                            if (sc.Status == "ACTIVE")
+                            if (sc.Status == "ACTIVE" && sc.IsActive)
                             {
                                 ActiveCard = sc.CardId;
                             }
