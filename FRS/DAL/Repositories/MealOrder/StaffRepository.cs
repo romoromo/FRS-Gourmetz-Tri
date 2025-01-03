@@ -182,7 +182,7 @@ namespace DAL.Repositories.MealOrder
                         //add/update cards here
                         foreach (var c in cards)
                         {
-                            var card = await _appContext.UserCardIds.SingleOrDefaultAsync(e => e.Id == c.Id || (e.UserId == c.UserId && e.CardId.Equals(c.CardId, StringComparison.CurrentCultureIgnoreCase)));
+                            var card = await _appContext.UserCardIds.SingleOrDefaultAsync(e => e.Id == c.Id || (e.UserId == c.UserId && e.CardId.ToLower() == c.CardId.ToLower()));
                             if(card == null || card.Id == 0)
                             {
                                 c.IsActive = true;

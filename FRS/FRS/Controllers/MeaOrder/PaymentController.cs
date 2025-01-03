@@ -188,35 +188,41 @@ namespace FRS.Controllers
                     {
                         PaymentDTO vm = _mapper.Map<PaymentDTO>(result.Data);
 
-                        foreach (var to in tos)
+                        if (tos != null)
                         {
-
-                            var dt = await this._tokenService.GetTokenOrderByIdAsync(to.Id);
-
-
-
-                            if (dt != null)
+                            foreach (var to in tos)
                             {
-                                dt.PaymentId = vm.Id;
-                                if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
-                                var r = await this._tokenService.UpdateTokenOrderAsync(dt);
+
+                                var dt = await this._tokenService.GetTokenOrderByIdAsync(to.Id);
+
+
+
+                                if (dt != null)
+                                {
+                                    dt.PaymentId = vm.Id;
+                                    if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
+                                    var r = await this._tokenService.UpdateTokenOrderAsync(dt);
+                                }
                             }
                         }
 
-                        foreach (var to in mpos)
+                        if(mpos != null)
                         {
-
-                            var dt = await this._tokenService.GetMealPlanOrderByIdAsync(to.Id);
-
-
-
-                            if (dt != null)
+                            foreach (var to in mpos)
                             {
-                                dt.PaymentId = vm.Id;
-                                if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
-                                var r = await this._tokenService.UpdateMealPlanOrderAsync(dt);
 
-                                if (to.StudentGroupId.HasValue && to.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(to.StudentGroupId.Value, to.ProfileId.Value, true);
+                                var dt = await this._tokenService.GetMealPlanOrderByIdAsync(to.Id);
+
+
+
+                                if (dt != null)
+                                {
+                                    dt.PaymentId = vm.Id;
+                                    if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
+                                    var r = await this._tokenService.UpdateMealPlanOrderAsync(dt);
+
+                                    if (to.StudentGroupId.HasValue && to.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(to.StudentGroupId.Value, to.ProfileId.Value, true);
+                                }
                             }
                         }
 

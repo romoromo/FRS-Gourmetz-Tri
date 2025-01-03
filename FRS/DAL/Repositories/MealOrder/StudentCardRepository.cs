@@ -40,23 +40,25 @@ namespace DAL.Repositories.MealOrder
         public async Task<StudentCard> GetByIdAsync(int id, string cardId)
         {
             var studentCard = id > 0 ? await GetAsync(id) :
-                            await _appContext.StudentCards.FirstOrDefaultAsync(e => e.IsActive && e.CardId.Equals(cardId, StringComparison.OrdinalIgnoreCase));
+                            await _appContext.StudentCards.FirstOrDefaultAsync(e => e.IsActive && e.CardId.ToLower() == cardId.ToLower());
             return studentCard;
         }
 
         public async Task<Student> GetStudentByCardIdAsync(string cardId)
         {
-            var card = await _appContext.StudentCards.FirstOrDefaultAsync(e => e.IsActive && e.CardId.Equals(cardId, StringComparison.OrdinalIgnoreCase));
+            var card = await _appContext.StudentCards.FirstOrDefaultAsync(e => e.IsActive && e.CardId.ToLower() == cardId.ToLower());
             return card?.Student;
         }
 
         public async Task<BaseOperationResponse> CreateAsync(StudentCard studentCard)
         {
             var result = new BaseOperationResponse();
-            var cardExists = _appContext.StudentCards.Any(e => e.IsActive
-                            && e.CardId.Equals(studentCard.CardId, StringComparison.OrdinalIgnoreCase));
 
-            if (cardExists)
+            var cards = _appContext.StudentCards.Select(t => t.IsActive).ToList();
+            var cardExists = _appContext.StudentCards.Where(e => e.IsActive && e.CardId.ToLower() == studentCard.CardId.ToLower()).ToList();
+
+
+            if (cardExists != null && cardExists.Count > 0)
             {
                 result.Message = "Failed to save! Card Id already exists.";
                 result.IsSuccess = false;
@@ -94,11 +96,13 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
             var f = await GetSingleOrDefaultAsync(e => e.Id == studentCard.Id);
-            var cardExists = _appContext.StudentCards.Any(e =>
-                            e.IsActive && e.Id != studentCard.Id &&
-                            e.CardId.ToLower() == studentCard.CardId.ToLower());
+            //var cardExists = _appContext.StudentCards.Any(e =>
+            //                e.IsActive && e.Id != studentCard.Id &&
+            //                e.CardId.ToLower() == studentCard.CardId.ToLower());
 
-            if (cardExists)
+            var cardExists = _appContext.StudentCards.Where(e => e.IsActive && e.Id != studentCard.Id && e.CardId.ToLower() == studentCard.CardId.ToLower()).ToList();
+
+            if (cardExists != null && cardExists.Count > 0)
             {
                 result.Message = "Failed to save! Duplicate card found.";
                 result.IsSuccess = false;
@@ -200,13 +204,14 @@ namespace DAL.Repositories.MealOrder
             if (student != null)
             {
                 
-                var outletProfiles = student.Outlet.CatererOutlets.Select(e => e.OutletProfileId);
+                var outletProfiles = student.Outlet.CatererOutlets.Select(e => e.OutletProfileId).ToList();
                 var now = DateTime.Now;
+
                 var voucher = await _appContext.Vouchers.FirstOrDefaultAsync(r =>
                                 r.Code.Trim().ToLower() == code.Trim().ToLower() &&
                                 now <= r.EndDateTime &&
                                 r.IsActive &&
-                                outletProfiles.Any(f => f == r.OutletProfileId));
+                                outletProfiles.Contains(r.OutletProfileId));
 
                 if (voucher == null)
                 {
@@ -215,30 +220,35 @@ namespace DAL.Repositories.MealOrder
                     return result;
                 }
 
-                if (student.Vouchers != null && !student.Vouchers.Any(f => f.VoucherId == voucher.Id))
+                if(student.Vouchers != null)
                 {
-                    var studentVoucher = new StudentVoucher
-                    {
-                        StudentId = student.Id,
-                        VoucherId = voucher.Id,
-                        Status = "NEW"
-                    };
+                    var studentVoucherId = student.Vouchers.Select(t => t.VoucherId).ToList();
 
-                    await _appContext.StudentVouchers.AddAsync(studentVoucher);
-                    if (await _appContext.SaveChangesAsync() > 0)
+                    if (!studentVoucherId.Contains(voucher.Id))
                     {
-                        result.Message = "Successfully saved!";
-                        result.IsSuccess = true;
+                        var studentVoucher = new StudentVoucher
+                        {
+                            StudentId = student.Id,
+                            VoucherId = voucher.Id,
+                            Status = "NEW"
+                        };
+
+                        await _appContext.StudentVouchers.AddAsync(studentVoucher);
+                        if (await _appContext.SaveChangesAsync() > 0)
+                        {
+                            result.Message = "Successfully saved!";
+                            result.IsSuccess = true;
+                        }
+                        else
+                        {
+                            result.Message = "Failed to save!";
+                        }
                     }
                     else
                     {
-                        result.Message = "Failed to save!";
+                        result.IsSuccess = false;
+                        result.Message = "Voucher already applied to the student";
                     }
-                }
-                else
-                {
-                    result.IsSuccess = false;
-                    result.Message = "Voucher already applied to the student";
                 }
             }
             else

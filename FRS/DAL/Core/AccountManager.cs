@@ -1488,7 +1488,7 @@ namespace DAL.Core
             var result = new BaseOperationResponse();
             var existingCard = await _appContext.UserCardIds.FirstOrDefaultAsync(e => e.UserId == userCardId.UserId &&
                                 e.IsActive &&
-                                e.CardId.Equals(userCardId.CardId, StringComparison.CurrentCultureIgnoreCase));
+                                e.CardId.ToLower() == userCardId.CardId.ToLower());
 
             if (existingCard != null)
             {
@@ -1524,7 +1524,7 @@ namespace DAL.Core
             var result = new BaseOperationResponse();
             var existingCard = await _appContext.UserCardIds.FirstOrDefaultAsync(e => e.UserId == userCardId.UserId && 
                                 e.Status == CardIdStatus.ACTIVE.ToString() && 
-                                e.CardId.Equals(userCardId.CardId, StringComparison.CurrentCultureIgnoreCase));
+                                e.CardId.ToLower() == userCardId.CardId.ToLower());
 
             if (existingCard != null)
             {

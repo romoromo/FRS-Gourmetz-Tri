@@ -454,7 +454,7 @@ namespace DAL.Repositories.MealOrder
                                 }
                                 else
                                 {
-                                    card = await _appContext.UserCardIds.SingleOrDefaultAsync(e => e.UserId == c.UserId && e.CardId.Equals(c.CardId, StringComparison.CurrentCultureIgnoreCase));
+                                    card = await _appContext.UserCardIds.SingleOrDefaultAsync(e => e.UserId == c.UserId && e.CardId.ToLower() == c.CardId.ToLower());
                                 }
 
                                 if (card == null || card.Id == 0)
@@ -1070,7 +1070,7 @@ namespace DAL.Repositories.MealOrder
 
                                 var studentCards = allStudentCards.Where(e => e.IsActive && e.StudentId == student.Id);
                                 //disable existing cards
-                                var cardToDelete = studentCards.Where(e => !e.CardId.Equals(row.CardId, StringComparison.InvariantCultureIgnoreCase));
+                                var cardToDelete = studentCards.Where(e => !(e.CardId.ToLower() == row.CardId.ToLower()));
 
                                 foreach (var e in cardToDelete)
                                 {
@@ -1078,7 +1078,7 @@ namespace DAL.Repositories.MealOrder
                                     _appContext.StudentCards.Update(e);
                                 }
 
-                                var cardToInsert = allStudentCards.FirstOrDefault(e => e.CardId.Equals(row.CardId, StringComparison.InvariantCultureIgnoreCase));
+                                var cardToInsert = allStudentCards.FirstOrDefault(e => e.CardId.ToLower() == row.CardId.ToLower());
                                 if (cardToInsert == null)
                                 {
                                     _appContext.StudentCards.Add(new StudentCard
