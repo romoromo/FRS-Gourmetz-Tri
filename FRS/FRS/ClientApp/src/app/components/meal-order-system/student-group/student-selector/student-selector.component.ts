@@ -41,6 +41,7 @@ export class StudentSelectorComponent implements OnInit {
   public classes: Class[] = [];
   public interestGroups: InterestGroup[] = [];
   private selected: any[] = [];
+  isLoading = false;
   //private allRowsSelected = false;
 
   filterIsFas: boolean;
@@ -60,6 +61,7 @@ export class StudentSelectorComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any) {
     console.log("data inside: ", data);
     this.outletId = data.outletId;
+    this.isLoading = false;
     if (typeof (data.students) != typeof (undefined)) {
       this.selectedStudents = data.students;
       let selected = data.students;
@@ -186,6 +188,7 @@ export class StudentSelectorComponent implements OnInit {
     let fas = this.filterIsFas != null ? '(IsFAS)==' + this.filterIsFas + ',' : '';
     this.filter.filters = f + c + ig + fas + '(IsActive)==true,(Name)@=' + this.keyword;
     this.alertService.startLoadingMessage();
+    this.isLoading = true;
     this.studentService.getStudentsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
@@ -212,9 +215,11 @@ export class StudentSelectorComponent implements OnInit {
         this.rows = students;
         this.selectRowsOnInit();
         this.alertService.stopLoadingMessage();
+        this.isLoading = false;
       },
         error => {
           this.alertService.stopLoadingMessage();
+          this.isLoading = false;
 
           this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
@@ -246,6 +251,7 @@ export class StudentSelectorComponent implements OnInit {
       },
         error => {
           this.alertService.stopLoadingMessage();
+          this.isLoading = false;
 
           //this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
           //  MessageSeverity.error);

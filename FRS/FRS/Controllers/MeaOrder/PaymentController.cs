@@ -167,66 +167,74 @@ namespace FRS.Controllers
         //[AllowAnonymous]
         public async Task<IActionResult> CreatePayment([FromBody] PaymentDTO dto)
         {
-            if (ModelState.IsValid)
+            try
             {
-                if (dto == null)
-                    return BadRequest($"{nameof(dto)} cannot be null");
-
-                dto.InvoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmssffffff");
-
-                var tos = dto.TokenOrders;
-                dto.TokenOrders = null;
-
-                var mpos = dto.MealPlanOrders;
-                dto.MealPlanOrders = null;
-
-
-                var result = await this._service.CreatePaymentAsync(dto);
-                if (result.IsSuccess)
+                if (ModelState.IsValid)
                 {
-                    PaymentDTO vm = _mapper.Map<PaymentDTO>(result.Data);
+                    if (dto == null)
+                        return BadRequest($"{nameof(dto)} cannot be null");
 
-                    foreach (var to in tos)
+                    dto.InvoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmssffffff");
+
+                    var tos = dto.TokenOrders;
+                    dto.TokenOrders = null;
+
+                    var mpos = dto.MealPlanOrders;
+                    dto.MealPlanOrders = null;
+
+
+                    var result = await this._service.CreatePaymentAsync(dto);
+                    if (result.IsSuccess)
                     {
-                        
-                        var dt = await this._tokenService.GetTokenOrderByIdAsync(to.Id);
+                        PaymentDTO vm = _mapper.Map<PaymentDTO>(result.Data);
 
-                        
-
-                        if (dt != null)
+                        foreach (var to in tos)
                         {
-                            dt.PaymentId = vm.Id;
-                            if(vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
-                            var r = await this._tokenService.UpdateTokenOrderAsync(dt);
+
+                            var dt = await this._tokenService.GetTokenOrderByIdAsync(to.Id);
+
+
+
+                            if (dt != null)
+                            {
+                                dt.PaymentId = vm.Id;
+                                if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
+                                var r = await this._tokenService.UpdateTokenOrderAsync(dt);
+                            }
                         }
+
+                        foreach (var to in mpos)
+                        {
+
+                            var dt = await this._tokenService.GetMealPlanOrderByIdAsync(to.Id);
+
+
+
+                            if (dt != null)
+                            {
+                                dt.PaymentId = vm.Id;
+                                if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
+                                var r = await this._tokenService.UpdateMealPlanOrderAsync(dt);
+
+                                if (to.StudentGroupId.HasValue && to.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(to.StudentGroupId.Value, to.ProfileId.Value, true);
+                            }
+                        }
+
+
+
+                        return CreatedAtAction("GetPaymentById", new { id = vm.Id }, vm);
                     }
 
-                    foreach (var to in mpos)
-                    {
-
-                        var dt = await this._tokenService.GetMealPlanOrderByIdAsync(to.Id);
-
-
-
-                        if (dt != null)
-                        {
-                            dt.PaymentId = vm.Id;
-                            if (vm.Status == "SUCCESS") dt.Status = dt.Status == "cancelled" ? dt.Status : "paid";
-                            var r = await this._tokenService.UpdateMealPlanOrderAsync(dt);
-
-                            if (to.StudentGroupId.HasValue && to.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(to.StudentGroupId.Value, to.ProfileId.Value, true);
-                        }
-                    }
-
-
-
-                    return CreatedAtAction("GetPaymentById", new { id = vm.Id }, vm);
+                    AddErrors(new string[] { result.Message + "- errorPayment" });
                 }
 
-                AddErrors(new string[] { result.Message });
-            }
+                return BadRequest(ModelState);
 
-            return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error -- " + ex.ToString());
+            }
         }
 
 

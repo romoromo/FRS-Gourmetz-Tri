@@ -80,7 +80,7 @@ export class OrderReportComponent implements OnInit {
 
     var strStartDate = this.startDate.format().split('T');
     var strEndDate = this.endDate.format().split('T');
-    insideFilter.filters = '(IsActive)==true,(TokenOrderDateRange)==' + strStartDate[0] + '|' + strEndDate[0];
+    insideFilter.filters = '(IsActive)==true,(TokenOrderDateRange)==' + strStartDate[0] + '|' + strEndDate[0] + ',(outletId)==' + this.editOutlet.id;
     insideFilter.filters += ',(Status)==paid';
     console.log("filters: ", insideFilter.filters)
     insideFilter.sorts = "DeliveryDate";

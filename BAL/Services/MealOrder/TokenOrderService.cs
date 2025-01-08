@@ -934,20 +934,20 @@ namespace BAL.Services.MealOrder
                                         row = sheet.CreateRow(++rowCount);
 
                                         cell = row.CreateCell(c++);
-                                        cell.SetCellValue(o.TransactionTime.ToString("dd/MM/yy hh:mm:ss").Split(' ')[0]);
+                                        cell.SetCellValue(o.TransactionTime.ToLocalTime().ToString("dd/MM/yy HH:mm:ss").Split(' ')[0]);
                                         cell.CellStyle = contentStyle;
 
 
                                         cell = row.CreateCell(c++);
-                                        cell.SetCellValue(o.TransactionTime.ToString("dd/MM/yy hh:mm:ss").Split(' ')[1]);
+                                        cell.SetCellValue(o.TransactionTime.ToLocalTime().ToString("dd/MM/yy HH:mm:ss").Split(' ')[1]);
                                         cell.CellStyle = contentStyle;
 
                                         cell = row.CreateCell(c++);
-                                        cell.SetCellValue(o.DeliveryDate.ToString("dd/MM/yy hh:mm:ss").Split(' ')[0]);
+                                        cell.SetCellValue(o.DeliveryDate.ToString("dd/MM/yy HH:mm:ss").Split(' ')[0]);
                                         cell.CellStyle = contentStyle;
 
                                         cell = row.CreateCell(c++);
-                                        cell.SetCellValue(o.Session.Route.Pickup.ToString("dd/MM/yy hh:mm:ss").Split(' ')[1]);
+                                        cell.SetCellValue(o.Session.Route.Pickup.ToString("dd/MM/yy HH:mm:ss").Split(' ')[1]);
                                         cell.CellStyle = contentStyle;
 
                                         var activeCard = o.Student.StudentCards.FirstOrDefault(e => e.Status == "ACTIVE" && e.IsActive == true);
@@ -1759,9 +1759,9 @@ namespace BAL.Services.MealOrder
                         cell.SetCellValue(ar.routeLabel);
                         cell.CellStyle = borderedHeaderStyle;
 
-                        sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount, i, i + 1 + (ar.sessions.Count)));
+                        sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount, i, i + (ar.sessions.Count)));
 
-                        i += (ar.sessions.Count) + 2;
+                        i += (ar.sessions.Count) + 1;
                     });
 
 
@@ -2160,7 +2160,7 @@ namespace BAL.Services.MealOrder
                                 para1.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para1);
 
-                                Paragraph para2 = new Paragraph("License No: C 95152C000", new iTextSharp.text.Font(allerfont, 8));
+                                Paragraph para2 = new Paragraph("License No: PL82K1707", new iTextSharp.text.Font(allerfont, 8));
                                 para2.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para2);
 
@@ -3840,8 +3840,10 @@ namespace BAL.Services.MealOrder
             foreach (var mealSession in mealSessions)
             {
                 var orderByMealSession = orders.Where(e => e.Session.MealSessionId == mealSession.Id).ToList();
+                var orderByMealSessionId = orderByMealSession.Select(t => t.Id).ToList();
+
                 int returnables = orderByMealSession == null ? 0 : _appContext.TokenOrderDishes.Where(e => e.IsActive &&
-                                            orderByMealSession.Any(f => f.Id == e.TokenOrdered.OrderId) && e.Dish.BentoBoxType.isRFID).Count();
+                                            orderByMealSessionId.Contains(e.TokenOrdered.OrderId) && e.Dish.BentoBoxType.isRFID).Count();
 
                 var summary = new SalesOrderCollectionSummary
                 {

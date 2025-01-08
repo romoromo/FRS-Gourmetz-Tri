@@ -1,12 +1,12 @@
 <div>
   <h1 mat-dialog-title>{{data.header}}</h1>
   <div mat-dialog-content>
-    <div class="form-group search-box">
+    <div *ngIf="!isLoading" class="form-group search-box">
       <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
     </div>
     <div class="form-group">
       <mat-label>Class Filter:</mat-label>
-      <mat-select id="cl" name="cl" (selectionChange)="onClassChanged($event)" [(ngModel)]="filterClassId" #cl="ngModel">
+      <mat-select [disabled]="isLoading" id="cl" name="cl" (selectionChange)="onClassChanged($event)" [(ngModel)]="filterClassId" #cl="ngModel">
         <mat-option *ngFor="let c of classes" [value]="c.id">
           {{c.name}}
         </mat-option>
@@ -14,7 +14,7 @@
     </div>
     <div class="form-group">
       <mat-label>Interest Group Filter:</mat-label>
-      <mat-select id="ig" name="ig" (selectionChange)="onGroupChanged($event)" [(ngModel)]="filterIGId" #ig="ngModel">
+      <mat-select [disabled]="isLoading" id="ig" name="ig" (selectionChange)="onGroupChanged($event)" [(ngModel)]="filterIGId" #ig="ngModel">
         <mat-option *ngFor="let ig of interestGroups" [value]="ig.id">
           {{ig.name}}
         </mat-option>
@@ -22,11 +22,11 @@
     </div>
     <div class="form-group">
       <mat-label>Is FAS:</mat-label>
-      <mat-radio-group id="fas" name="fas" (change)="onFASChange($event)" [(ngModel)]="filterIsFas" #fas="ngModel">
+      <mat-radio-group [disabled]="isLoading" id="fas" name="fas" (change)="onFASChange($event)" [(ngModel)]="filterIsFas" #fas="ngModel">
         <mat-radio-button [value]="true">Yes</mat-radio-button>&nbsp;
         <mat-radio-button [value]="false">No</mat-radio-button>&nbsp;
       </mat-radio-group>
-      <button type="button" mat-button (click)="clearFilter()">Clear Filters</button>
+      <button [disabled]="isLoading" type="button" mat-button (click)="clearFilter()">Clear Filters</button>
 
     </div>
     <div class="row">
