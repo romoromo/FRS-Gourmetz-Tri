@@ -281,9 +281,8 @@ namespace FRS
                     //options.UseRollingTokens(); //Uncomment to renew refresh tokens on every refreshToken request
                     // Note: to use JWT access tokens instead of the default encrypted format, the following lines are required:
                     //options.UseJsonWebTokens();
-                    //options.SetAccessTokenLifetime(TimeSpan.FromHours(1));
-                    //options.SetRefreshTokenLifetime(TimeSpan.FromDays(30));
-
+                    options.SetAccessTokenLifetime(TimeSpan.FromDays(1));
+                    options.SetRefreshTokenLifetime(TimeSpan.FromDays(30));
                 })
                 .AddValidation(options =>
                 {
@@ -1000,12 +999,12 @@ namespace FRS
                 // see https://go.microsoft.com/fwlink/?linkid=864501
                 spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
-                {
-                    spa.UseAngularCliServer(npmScript: "start");
-                    spa.Options.StartupTimeout = TimeSpan.FromSeconds(240); // Increase the timeout if angular app is taking longer to startup
-                                                                            //spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"); // Use this instead to use the angular cli server
-                }
+                //if (env.IsDevelopment())
+                //{
+                //    spa.UseAngularCliServer(npmScript: "start");
+                //    spa.Options.StartupTimeout = TimeSpan.FromSeconds(240); // Increase the timeout if angular app is taking longer to startup
+                //                                                            //spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"); // Use this instead to use the angular cli server
+                //}
             });
 
         }
