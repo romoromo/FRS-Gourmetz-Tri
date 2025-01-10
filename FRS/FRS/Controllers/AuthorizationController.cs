@@ -892,7 +892,7 @@ namespace FRS.Controllers
                     identity.AddClaim(CustomClaimTypes.ConfirmationCode, user.ConfirmationCode, OpenIddictConstants.Destinations.IdentityToken);
 
                 
-                    identity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin + "", OpenIddictConstants.Destinations.IdentityToken);
+                    identity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin ? "true" : "false" + "", OpenIddictConstants.Destinations.IdentityToken);
 
 
                 if (!string.IsNullOrWhiteSpace(user.JobTitle))
@@ -1062,7 +1062,7 @@ namespace FRS.Controllers
                     principalIdentity.AddClaim(CustomClaimTypes.ConfirmationCode, user.ConfirmationCode, OpenIddictConstants.Destinations.IdentityToken);
 
 
-                principalIdentity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin + "", OpenIddictConstants.Destinations.IdentityToken);
+                principalIdentity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin ? "true" : "false", OpenIddictConstants.Destinations.IdentityToken);
 
 
                 if (!string.IsNullOrWhiteSpace(user.JobTitle))
