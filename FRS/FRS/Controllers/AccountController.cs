@@ -592,6 +592,11 @@ namespace FRS.Controllers
 
                         var isSuccess = await _emailSender.SendEmailAsync("Tappee", "smv.notification@gmail.com", appUser.FullName, appUser.Email, title, content);
 
+                        //int uId = 0;
+                        //Int32.TryParse(appUser.Id, out uId);
+                        await this.UnblockUser(appUser.Id);
+
+
                         return Ok(new { Error = "", ErrorDescription = "" });
                     }
                     else
@@ -1238,6 +1243,11 @@ namespace FRS.Controllers
                     var resetResult = await _userManager.ResetPasswordAsync(user, HttpUtility.UrlDecode(model.Code), model.NewPassword);
                     if (resetResult.Succeeded)
                     {
+                        int uId = 0;
+                        Int32.TryParse(model.UserId, out uId);
+                        await this.UnblockUser(uId);
+
+
                         result.Message = "You have successfully reset your password";
 
                         result.IsSuccess = true;
