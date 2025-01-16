@@ -28,6 +28,9 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using DAL.Models.StoredProcedures;
 using System.Drawing;
+using NPOI.SS.Util;
+using NodaTime.Calendars;
+using NPOI.HSSF.Util;
 
 namespace BAL.Services.MealOrder
 {
@@ -1729,7 +1732,7 @@ namespace BAL.Services.MealOrder
                     #endregion
 
                     #region Headers
-
+                    var defaultColor = HSSFColor.Aqua.Index;
                     var headerStyle = wb.CreateCellStyle();
                     var headerFont = wb.CreateFont();
                     headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
@@ -1743,35 +1746,48 @@ namespace BAL.Services.MealOrder
                     borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
                     borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
                     borderedHeaderStyle.BorderRight = BorderStyle.Thin;
-                    var i = 0;
-                    for (i=0; i < 2; i++)
-                    {
-                        cell = row.CreateCell(i);
-                        cell.SetCellValue("ITEM");
-                        cell.CellStyle = borderedHeaderStyle;
+                    borderedHeaderStyle.FillBackgroundColor = defaultColor;
+                    borderedHeaderStyle.FillForegroundColor = defaultColor;
+                    borderedHeaderStyle.FillPattern = FillPattern.SolidForeground;
 
-                        sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount + 1, i, i));
-                    }
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue("DISH CATEGORY");
+                    cell.CellStyle = borderedHeaderStyle;
+                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount + 1, 0, 0));
+
+                    cell = row.CreateCell(1);
+                    cell.SetCellValue("Pick-Up Time");
+                    cell.CellStyle = borderedHeaderStyle;
+
+                    var i = 2;
 
                     AllRoutes.ForEach(ar =>
                     {
                         cell = row.CreateCell(i);
                         cell.SetCellValue(ar.routeLabel);
+                        int lengthColumn = i + ar.sessions.Count;
+                        lengthColumn = lengthColumn + 1;
+                        if (ar.isFas)
+                            lengthColumn = lengthColumn + 1;
+                        var cra = new CellRangeAddress(rowCount, rowCount, i, lengthColumn);
                         cell.CellStyle = borderedHeaderStyle;
-
-                        sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount, i, i + (ar.sessions.Count)));
-
-                        i += (ar.sessions.Count) + 1;
+                        GenerateBorderMergeCell(wb, sheet, cra);
+                        int isFasNumber = (ar.isFas ? 1 : 0);
+                        i += (ar.sessions.Count) + 2 + isFasNumber;
                     });
 
-
+                    var grandTotalStyle = wb.CreateCellStyle();
+                    var craGrandTotal = new CellRangeAddress(rowCount, rowCount + 1, i, i);
                     cell = row.CreateCell(i);
                     cell.SetCellValue("Grand Total");
                     cell.CellStyle = borderedHeaderStyle;
-
-                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount + 1, i, i));
+                    GenerateBorderMergeCell(wb, sheet, craGrandTotal);
 
                     row = sheet.CreateRow(++rowCount);
+
+                    cell = row.CreateCell(1);
+                    cell.SetCellValue("DISH NAME");
+                    cell.CellStyle = borderedHeaderStyle;
 
                     i = 2;
 
@@ -1797,19 +1813,23 @@ namespace BAL.Services.MealOrder
                         });
 
                         cell = row.CreateCell(i);
-                        cell.SetCellValue("Total Meal");
+                        cell.SetCellValue("Total Meal (Regular)");
                         cell.CellStyle = borderedHeaderStyle;
-
                         i += 1;
-                        
+
                         if (ar.isFas)
                         {
                             cell = row.CreateCell(i);
-                            cell.SetCellValue("Total Meal FAS");
+                            cell.SetCellValue("Total Meal (FAS)");
                             cell.CellStyle = borderedHeaderStyle;
-
                             i += 1;
                         }
+
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue("Total Meal (Regular & FAS)");
+                        cell.CellStyle = borderedHeaderStyle;
+
+                        i += 1;
 
                     });
 
@@ -1829,6 +1849,18 @@ namespace BAL.Services.MealOrder
                     contentStyle.Alignment = HorizontalAlignment.Left;
                     contentStyle.WrapText = true;
                     var dataFormatCustom = wb.CreateDataFormat();
+
+                    var contentBackgroundStyle = wb.CreateCellStyle();
+                    contentBackgroundStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentBackgroundStyle.Alignment = HorizontalAlignment.Left;
+                    contentBackgroundStyle.WrapText = true;
+                    contentBackgroundStyle.BorderTop = BorderStyle.Thin;
+                    contentBackgroundStyle.BorderBottom = BorderStyle.Thin;
+                    contentBackgroundStyle.BorderLeft = BorderStyle.Thin;
+                    contentBackgroundStyle.BorderRight = BorderStyle.Thin;
+                    contentBackgroundStyle.FillBackgroundColor = defaultColor;
+                    contentBackgroundStyle.FillForegroundColor = defaultColor;
+                    contentBackgroundStyle.FillPattern = FillPattern.SolidForeground;
 
                     DOReports.ForEach(dor =>
                     {
@@ -1892,6 +1924,7 @@ namespace BAL.Services.MealOrder
                             cell.CellStyle = contentStyle;
 
                             //fas qty
+                            int totalQtyFas = 0;
                             if (ar.isFas)
                             {
                                 cell = row.CreateCell(c++);
@@ -1899,6 +1932,7 @@ namespace BAL.Services.MealOrder
                                 if (qtyF != null)
                                 {
                                     cell.SetCellValue(qtyF.qty);
+                                    totalQtyFas = qtyF?.qty ?? 0;
                                 }
                                 else
                                 {
@@ -1906,6 +1940,10 @@ namespace BAL.Services.MealOrder
                                 }
                                 cell.CellStyle = contentStyle;
                             }
+
+                            cell = row.CreateCell(c++);
+                            cell.SetCellValue((qtyR?.qty ?? 0) + totalQtyFas);
+                            cell.CellStyle = contentBackgroundStyle;
                         });
 
                         cell = row.CreateCell(c++);
@@ -1929,6 +1967,15 @@ namespace BAL.Services.MealOrder
             {
                 return null;
             }
+        }
+
+        private void GenerateBorderMergeCell(XSSFWorkbook wb, XSSFSheet sheet, CellRangeAddress cra)
+        {
+            sheet.AddMergedRegion(cra);
+            RegionUtil.SetBorderTop(1, cra, sheet, wb);
+            RegionUtil.SetBorderBottom(1, cra, sheet, wb);
+            RegionUtil.SetBorderRight(1, cra, sheet, wb);
+            RegionUtil.SetBorderLeft(1, cra, sheet, wb);
         }
 
         public async Task<List<SalesDataDTO>> RetrieveSalesData(BaseFilter filter)
