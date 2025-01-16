@@ -713,7 +713,14 @@ namespace DAL.Repositories.MealOrder
             var student = await GetSingleOrDefaultAsync(r => r.Id == studentId);
 
             if (student != null)
+            {
+                if (student?.Users.Any() ?? false)
+                {
+                    foreach (var item in student.Users)
+                        item.IsActive = false;
+                }
                 return await Delete(student);
+            }
 
             result.IsSuccess = false;
             result.Message = "Student not found.";
