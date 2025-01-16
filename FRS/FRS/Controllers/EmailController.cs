@@ -14,7 +14,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace FRS.Controllers
-{
+{ 
+    [Route("[controller]")]
     public class EmailController : Controller
     {
         private readonly IEmailSender _emailSender;
@@ -35,6 +36,7 @@ namespace FRS.Controllers
         }
 
         #region Email
+        [HttpGet]
         public async Task<IActionResult> SendEmailFromQueue()
         {
             try
