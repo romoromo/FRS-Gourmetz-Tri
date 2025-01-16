@@ -89,8 +89,8 @@
 
   <div mat-dialog-actions align="center">
     <button type="button" mat-button (click)="cancel()"><i class='fa fa-times'></i>{{'reservations.editor.Cancel' | translate}}</button>
-    <button type="button" mat-button cdkFocusInitial (click)="save()">
-      <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> Choose
+    <button type="button" [disabled]="isLoading" mat-button cdkFocusInitial (click)="save()">
+      <i *ngIf="!isLoading" class='fa fa-save'></i><i *ngIf="isLoading" class='fa fa-circle-o-notch fa-spin'></i> Choose
     </button>
   </div>
 </div>
