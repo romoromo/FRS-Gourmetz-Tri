@@ -22,11 +22,13 @@ using Microsoft.AspNetCore.SignalR;
 using FRS.Hubs;
 using FRS.Attributes;
 using DAL.Filters;
-using System.Configuration;
 using BAL.Services.Interfaces;
 using BAL.DTO;
 using DAL.Core.Helpers;
 using BAL.Services.Interfaces.MealOrder;
+using Microsoft.Extensions.Logging;
+using DAL.Core.Logging;
+using Newtonsoft.Json;
 
 namespace FRS.Controllers
 {
@@ -48,6 +50,7 @@ namespace FRS.Controllers
         private IRewardService _rewardService;
         private readonly IStudentService _studentService;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
         public AccountController(IAccountManager accountManager, IAuthorizationService authorizationService, IUnitOfWork unitOfWork,
             ApplicationUserManager userManager, IEmailSender emailSender, IConfiguration configuration,
@@ -66,6 +69,7 @@ namespace FRS.Controllers
             _rewardService = rewardService;
             _studentService = studentService;
             _mapper = mapper;
+            _logger = Logger.CreateLogger<AccountController>();
         }
 
         #region Sieved
@@ -684,49 +688,61 @@ namespace FRS.Controllers
             if (!(await _authorizationService.AuthorizeAsync(this.User, Tuple.Create(user.Roles, new string[] { }), Authorization.Policies.AssignAllowedRolesPolicy)).Succeeded)
                 return new ChallengeResult();
 
+            string userRequest = JsonConvert.SerializeObject(user);
+            _logger.LogInformation($"UserEditViewModel requested by : {this.User.Identity.Name}");
+            _logger.LogInformation($"UserEditViewModel object : {userRequest}");
 
-            if (ModelState.IsValid)
+            try
             {
-                if (user == null)
-                    return BadRequest($"{nameof(user)} cannot be null");
-
-                if (string.IsNullOrEmpty(user.UserName)) user.UserName = user.Email;
-                ApplicationUser appUser = _mapper.Map<ApplicationUser>(user);
-
-                user.IsChangePassword = true;
-                var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
-                if (result.Item1)
+                if (ModelState.IsValid)
                 {
-                    appUser = await _userManager.FindByEmailAsync(user.Email);
-                    UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
+                    if (user == null)
+                        return BadRequest($"{nameof(user)} cannot be null");
 
-                    //broadcast newly added user
-                    await _userHub.Clients.All.SendAsync("BroadcastAddedUser", userVM);
+                    if (string.IsNullOrEmpty(user.UserName)) user.UserName = user.Email;
+                    ApplicationUser appUser = _mapper.Map<ApplicationUser>(user);
 
-                    if (!appUser.EmailConfirmed)
+                    user.IsChangePassword = true;
+                    var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
+                    if (result.Item1)
                     {
-                        //send email confirmation
-                        string enableOnboardingEmail = _configuration["AppSettings:ONBOARDING_EMAIL_ENABLED"];
-                        if(enableOnboardingEmail == "Y")
+                        appUser = await _userManager.FindByEmailAsync(user.Email);
+                        UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
+
+                        //broadcast newly added user
+                        await _userHub.Clients.All.SendAsync("BroadcastAddedUser", userVM);
+
+                        if (!appUser.EmailConfirmed)
                         {
-                            var code = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
-                            string baseUrl = _configuration["AppSettings:ONBOARDING_BASE_URL"];
-                            var callbackUrl = Url.Action("ConfirmEmail", "Authorization", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme, host: baseUrl);
-                            var portalUrl = _configuration["AppSettings:ORDER_PORTAL_URL"];
-                            var imgUrl = _configuration["AppSettings:ORDER_PORTAL_ONBOARDING_IMG_URL"];
-                            await _emailSender.SendEmailAsync(user.FullName, user.Email, "Confirm your account",
-                                EmailTemplates.GetConfirmationEmail(portalUrl, user.Email, callbackUrl, imgUrl));
+                            //send email confirmation
+                            string enableOnboardingEmail = _configuration["AppSettings:ONBOARDING_EMAIL_ENABLED"];
+                            if (enableOnboardingEmail == "Y")
+                            {
+                                var code = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                                string baseUrl = _configuration["AppSettings:ONBOARDING_BASE_URL"];
+                                var callbackUrl = Url.Action("ConfirmEmail", "Authorization", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme, host: baseUrl);
+                                var portalUrl = _configuration["AppSettings:ORDER_PORTAL_URL"];
+                                var imgUrl = _configuration["AppSettings:ORDER_PORTAL_ONBOARDING_IMG_URL"];
+                                await _emailSender.SendEmailAsync(user.FullName, user.Email, "Confirm your account",
+                                    EmailTemplates.GetConfirmationEmail(portalUrl, user.Email, callbackUrl, imgUrl));
+                            }
                         }
+
+                        _logger.LogInformation($"User Successfully created");
+                        return CreatedAtAction(GetUserByIdActionName, new { id = userVM.Id }, userVM);
                     }
 
-
-                    return CreatedAtAction(GetUserByIdActionName, new { id = userVM.Id }, userVM);
+                    AddErrors(result.Item2);
                 }
-
-                AddErrors(result.Item2);
+                _logger.LogInformation($"Error Model State");
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error Create a User : {ex.Message}", ex);
+                _logger.LogError($"Error Create a User : {ex.StackTrace}", ex);
+                return BadRequest(ex.Message);
+            }
         }
 
 
