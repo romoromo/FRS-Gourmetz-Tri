@@ -188,6 +188,7 @@ namespace BAL.Mapping
 
 
             CreateMap<StudentAccountLinkRequest, StudentAccountLinkRequestDTO>();
+            CreateMap<StudentAccountLinkRequestDTO, StudentAccountLinkRequest>();
 
             CreateMap<StudentRestrictionDTO, StudentRestriction>();
 
