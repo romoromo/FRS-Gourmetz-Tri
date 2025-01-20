@@ -291,89 +291,102 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserEditViewModel user)
         {
-            ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
-            bool sendEmail = appUser != null && !appUser.IsEnabled;//(!appUser.DepartmentId.HasValue || !appUser.Roles.Any() ||);
-            string[] currentRoles = appUser != null ? (await _accountManager.GetUserRolesAsync(appUser)).ToArray() : null;
+            string dataUserJson = JsonConvert.SerializeObject(user);
+            _logger.LogInformation($"UpdateUser UserEditViewModel : {dataUserJson}");
+            _logger.LogInformation($"UpdateUser Id : {id}");
 
-            var manageUsersPolicy = _authorizationService.AuthorizeAsync(this.User, id, AccountManagementOperations.Update);
-            var assignRolePolicy = _authorizationService.AuthorizeAsync(this.User, Tuple.Create(user.Roles, currentRoles), Authorization.Policies.AssignAllowedRolesPolicy);
-
-
-            if ((await Task.WhenAll(manageUsersPolicy, assignRolePolicy)).Any(r => !r.Succeeded))
-                return new ChallengeResult();
-
-
-            if (ModelState.IsValid)
+            try
             {
-                if (user == null)
-                    return BadRequest($"{nameof(user)} cannot be null");
+                ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
+                bool sendEmail = appUser != null && !appUser.IsEnabled;//(!appUser.DepartmentId.HasValue || !appUser.Roles.Any() ||);
+                string[] currentRoles = appUser != null ? (await _accountManager.GetUserRolesAsync(appUser)).ToArray() : null;
 
-                if (id != user.Id)
-                    return BadRequest("Conflicting user id in parameter and model data");
-
-                if (appUser == null)
-                    return NotFound(id);
+                var manageUsersPolicy = _authorizationService.AuthorizeAsync(this.User, id, AccountManagementOperations.Update);
+                var assignRolePolicy = _authorizationService.AuthorizeAsync(this.User, Tuple.Create(user.Roles, currentRoles), Authorization.Policies.AssignAllowedRolesPolicy);
 
 
-                if (Utilities.GetUserId(this.User) == id && string.IsNullOrWhiteSpace(user.CurrentPassword))
+                if ((await Task.WhenAll(manageUsersPolicy, assignRolePolicy)).Any(r => !r.Succeeded))
+                    return new ChallengeResult();
+
+
+                if (ModelState.IsValid)
                 {
-                    if (!string.IsNullOrWhiteSpace(user.NewPassword))
-                        return BadRequest("Current password is required when changing your own password");
+                    if (user == null)
+                        return BadRequest($"{nameof(user)} cannot be null");
 
-                    if (appUser.UserName != user.UserName)
-                        return BadRequest("Current password is required when changing your own username");
-                }
+                    if (id != user.Id)
+                        return BadRequest("Conflicting user id in parameter and model data");
+
+                    if (appUser == null)
+                        return NotFound(id);
 
 
-                bool isValid = true;
-
-                if (Utilities.GetUserId(this.User) == id && (appUser.UserName != user.UserName || !string.IsNullOrWhiteSpace(user.NewPassword)))
-                {
-                    if (!await _accountManager.CheckPasswordAsync(appUser, user.CurrentPassword))
+                    if (Utilities.GetUserId(this.User) == id && string.IsNullOrWhiteSpace(user.CurrentPassword))
                     {
-                        isValid = false;
-                        AddErrors(new string[] { "The username/password couple is invalid." });
-                    }
-                }
-
-                if (isValid)
-                {
-                    _mapper.Map<UserViewModel, ApplicationUser>(user, appUser);
-                    if (sendEmail) appUser.IsEnabled = true;
-
-                    var result = await _accountManager.UpdateUserAsync(appUser, user.Roles);
-                    if (result.Item1)
-                    {
-                        //broadcast newly updated user
-                        UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
-                        await _userHub.Clients.All.SendAsync("BroadcastUpdatedUser", userVM);
-
                         if (!string.IsNullOrWhiteSpace(user.NewPassword))
-                        {
-                            if (!string.IsNullOrWhiteSpace(user.CurrentPassword))
-                                result = await _accountManager.UpdatePasswordAsync(appUser, user.CurrentPassword, user.NewPassword);
-                            else
-                                result = await _accountManager.ResetPasswordAsync(appUser, user.NewPassword);
-                        }
+                            return BadRequest("Current password is required when changing your own password");
 
+                        if (appUser.UserName != user.UserName)
+                            return BadRequest("Current password is required when changing your own username");
+                    }
+
+
+                    bool isValid = true;
+
+                    if (Utilities.GetUserId(this.User) == id && (appUser.UserName != user.UserName || !string.IsNullOrWhiteSpace(user.NewPassword)))
+                    {
+                        if (!await _accountManager.CheckPasswordAsync(appUser, user.CurrentPassword))
+                        {
+                            isValid = false;
+                            AddErrors(new string[] { "The username/password couple is invalid." });
+                        }
+                    }
+
+                    if (isValid)
+                    {
+                        _mapper.Map<UserViewModel, ApplicationUser>(user, appUser);
+                        if (sendEmail) appUser.IsEnabled = true;
+
+                        var result = await _accountManager.UpdateUserAsync(appUser, user.Roles);
                         if (result.Item1)
                         {
-                            //send email
-                            //if (sendEmail)
-                            //{
-                            //    var url = _configuration["AppSettings:baseUrl"];
-                            //    await _emailSender.SendEmailAsync(user.FullName, user.Email, "FRS Account Ready",
-                            //        EmailTemplates.GetAccountReadyEmail(user.Email, url));
-                            //}
-                            return NoContent();
+                            //broadcast newly updated user
+                            UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
+                            await _userHub.Clients.All.SendAsync("BroadcastUpdatedUser", userVM);
+
+                            if (!string.IsNullOrWhiteSpace(user.NewPassword))
+                            {
+                                if (!string.IsNullOrWhiteSpace(user.CurrentPassword))
+                                    result = await _accountManager.UpdatePasswordAsync(appUser, user.CurrentPassword, user.NewPassword);
+                                else
+                                    result = await _accountManager.ResetPasswordAsync(appUser, user.NewPassword);
+                            }
+
+                            if (result.Item1)
+                            {
+                                //send email
+                                //if (sendEmail)
+                                //{
+                                //    var url = _configuration["AppSettings:baseUrl"];
+                                //    await _emailSender.SendEmailAsync(user.FullName, user.Email, "FRS Account Ready",
+                                //        EmailTemplates.GetAccountReadyEmail(user.Email, url));
+                                //}
+                                return NoContent();
+                            }
                         }
+
+                        AddErrors(result.Item2);
                     }
-
-                    AddErrors(result.Item2);
                 }
-            }
 
-            return BadRequest(ModelState);
+                return BadRequest(ModelState);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error UpdateUser : {ex.Message}", ex);
+                _logger.LogError($"Error UpdateUser : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         [HttpGet("users/report/sieve/list")]
@@ -443,6 +456,10 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> ChangePassword(int id, [FromBody] UserEditViewModel user)
         {
+            string dataUserJson = JsonConvert.SerializeObject(user);
+            _logger.LogInformation($"ChangePassword UserEditViewModel : {dataUserJson}");
+            _logger.LogInformation($"ChangePassword Id : {id}");
+
             try
             {
                 ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
@@ -469,6 +486,8 @@ namespace FRS.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error ChangePassword : {ex.Message}", ex);
+                _logger.LogError($"Error ChangePassword : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
         }
@@ -481,6 +500,9 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> ChangeEmail(int id, [FromBody] UserEditEmailViewModel user)
         {
+            string dataUserJson = JsonConvert.SerializeObject(user);
+            _logger.LogInformation($"ChangeEmail UserEditEmailViewModel : {dataUserJson}");
+            _logger.LogInformation($"ChangeEmail Id : {id}");
             try
             {
                 ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
@@ -501,6 +523,8 @@ namespace FRS.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error ChangeEmail : {ex.Message}", ex);
+                _logger.LogError($"Error ChangeEmail : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
         }
@@ -513,6 +537,9 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> ChangeStudentEmail(int id, [FromBody] StudentEditEmailViewModel student)
         {
+            string dataJSON = JsonConvert.SerializeObject(student);
+            _logger.LogInformation($"ChangeStudentEmail StudentEditEmailViewModel : {dataJSON}");
+            _logger.LogInformation($"ChangeStudentEmail Id : {id}");
             try
             {
                 if (string.IsNullOrWhiteSpace(student.NewEmail))
@@ -556,6 +583,8 @@ namespace FRS.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error ChangeStudentEmail : {ex.Message}", ex);
+                _logger.LogError($"Error ChangeStudentEmail : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
         }
@@ -569,6 +598,7 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> ResetPassword(string email)
         {
+            _logger.LogInformation($"ResetPassword Email : {email}");
             try
             {
                 ApplicationUser appUser = await _accountManager.GetUserByEmailAsync(email);
@@ -615,6 +645,8 @@ namespace FRS.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error ChangePassword : {ex.Message}", ex);
+                _logger.LogError($"Error ChangePassword : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
         }
@@ -636,45 +668,58 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] JsonPatchDocument<UserPatchViewModel> patch)
         {
-            if (!(await _authorizationService.AuthorizeAsync(this.User, id, AccountManagementOperations.Update)).Succeeded)
-                return new ChallengeResult();
+            string dataJSON = JsonConvert.SerializeObject(patch);
+            _logger.LogInformation($"UpdateUser patch : {dataJSON}");
+            _logger.LogInformation($"UpdateUser Id : {id}");
 
-
-            if (ModelState.IsValid)
+            try
             {
-                if (patch == null)
-                    return BadRequest($"{nameof(patch)} cannot be null");
-
-
-                ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
-
-                if (appUser == null)
-                    return NotFound(id);
-
-
-                UserPatchViewModel userPVM = _mapper.Map<UserPatchViewModel>(appUser);
-                patch.ApplyTo(userPVM, ModelState);
+                if (!(await _authorizationService.AuthorizeAsync(this.User, id, AccountManagementOperations.Update)).Succeeded)
+                    return new ChallengeResult();
 
 
                 if (ModelState.IsValid)
                 {
-                    _mapper.Map<UserPatchViewModel, ApplicationUser>(userPVM, appUser);
+                    if (patch == null)
+                        return BadRequest($"{nameof(patch)} cannot be null");
 
-                    var result = await _accountManager.UpdateUserAsync(appUser);
-                    if (result.Item1)
+
+                    ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
+
+                    if (appUser == null)
+                        return NotFound(id);
+
+
+                    UserPatchViewModel userPVM = _mapper.Map<UserPatchViewModel>(appUser);
+                    patch.ApplyTo(userPVM, ModelState);
+
+
+                    if (ModelState.IsValid)
                     {
-                        //broadcast newly updated user
-                        UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
-                        await _userHub.Clients.All.SendAsync("BroadcastUpdatedUser", userVM);
-                        return NoContent();
+                        _mapper.Map<UserPatchViewModel, ApplicationUser>(userPVM, appUser);
+
+                        var result = await _accountManager.UpdateUserAsync(appUser);
+                        if (result.Item1)
+                        {
+                            //broadcast newly updated user
+                            UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
+                            await _userHub.Clients.All.SendAsync("BroadcastUpdatedUser", userVM);
+                            return NoContent();
+                        }
+
+
+                        AddErrors(result.Item2);
                     }
-
-
-                    AddErrors(result.Item2);
                 }
-            }
 
-            return BadRequest(ModelState);
+                return BadRequest(ModelState);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error UpdateUser : {ex.Message}", ex);
+                _logger.LogError($"Error UpdateUser : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -739,9 +784,9 @@ namespace FRS.Controllers
             }
             catch(Exception ex)
             {
-                _logger.LogError($"Error Create a User : {ex.Message}", ex);
-                _logger.LogError($"Error Create a User : {ex.StackTrace}", ex);
-                return BadRequest(ex.Message);
+                _logger.LogError($"Error Register : {ex.Message}", ex);
+                _logger.LogError($"Error Register : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
         }
 
@@ -754,6 +799,7 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteUser(int id)
         {
+            _logger.LogInformation($"DeleteUser Id : {id}");
             //if (!(await _authorizationService.AuthorizeAsync(this.User, id, AccountManagementOperations.Delete)).Succeeded)
             //    return new ChallengeResult();
 
@@ -773,7 +819,11 @@ namespace FRS.Controllers
 
             var result = await this._accountManager.DeleteUserAsync(appUser);
             if (!result.Item1)
+            {
+                _logger.LogDebug($"Error DeleteUser : {string.Join(", ", result.Item2)}");
                 throw new Exception("The following errors occurred while deleting user: " + string.Join(", ", result.Item2));
+            }
+                
 
 
             //broadcast newly deleted user
@@ -985,6 +1035,7 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteRole(int id)
         {
+            _logger.LogInformation($"DeleteRole Id : {id}");
             if (!await _accountManager.TestCanDeleteRoleAsync(id))
                 return BadRequest("Role cannot be deleted. Remove all users from this role and try again");
 
@@ -1001,7 +1052,11 @@ namespace FRS.Controllers
 
             var result = await this._accountManager.DeleteRoleAsync(appRole);
             if (!result.Item1)
+            {
+                _logger.LogDebug($"Error DeleteRole : {string.Join(", ", result.Item2)}");
                 throw new Exception("The following errors occurred while deleting role: " + string.Join(", ", result.Item2));
+            }
+                
 
 
             return Ok(roleVM);
@@ -1047,75 +1102,89 @@ namespace FRS.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> ApiUpdateUser(int id, [FromBody] UserEditViewModel user)
         {
-            ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
-            string[] currentRoles = appUser != null ? (await _accountManager.GetUserRolesAsync(appUser)).ToArray() : null;
+            string dataJSON = JsonConvert.SerializeObject(user);
+            _logger.LogInformation($"ApiUpdateUser UserEditViewModel : {dataJSON}");
+            _logger.LogInformation($"ApiUpdateUser Id : {id}");
 
-            if (ModelState.IsValid)
+            try
             {
-                if (user == null)
-                    return BadRequest($"{nameof(user)} cannot be null");
+                ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
+                string[] currentRoles = appUser != null ? (await _accountManager.GetUserRolesAsync(appUser)).ToArray() : null;
 
-                if (id != user.Id)
-                    return BadRequest("Conflicting user id in parameter and model data");
-
-                if (appUser == null)
-                    return NotFound(id);
-
-
-                if (Utilities.GetUserId(this.User) == id && string.IsNullOrWhiteSpace(user.CurrentPassword))
+                if (ModelState.IsValid)
                 {
-                    if (!string.IsNullOrWhiteSpace(user.NewPassword))
-                        return BadRequest("Current password is required when changing your own password");
+                    if (user == null)
+                        return BadRequest($"{nameof(user)} cannot be null");
 
-                    if (appUser.UserName != user.UserName)
-                        return BadRequest("Current password is required when changing your own username");
-                }
+                    if (id != user.Id)
+                        return BadRequest("Conflicting user id in parameter and model data");
+
+                    if (appUser == null)
+                        return NotFound(id);
 
 
-                bool isValid = true;
-
-                if (Utilities.GetUserId(this.User) == id && (appUser.UserName != user.UserName || !string.IsNullOrWhiteSpace(user.NewPassword)))
-                {
-                    if (!await _accountManager.CheckPasswordAsync(appUser, user.CurrentPassword))
-                    {
-                        isValid = false;
-                        AddErrors(new string[] { "The username/password is invalid." });
-                    }
-                }
-
-                if (isValid)
-                {
-                    _mapper.Map<UserViewModel, ApplicationUser>(user, appUser);
-
-                    var result = await _accountManager.UpdateUserAsync(appUser, user.Roles);
-
-                    if (result.Item1)
+                    if (Utilities.GetUserId(this.User) == id && string.IsNullOrWhiteSpace(user.CurrentPassword))
                     {
                         if (!string.IsNullOrWhiteSpace(user.NewPassword))
+                            return BadRequest("Current password is required when changing your own password");
+
+                        if (appUser.UserName != user.UserName)
+                            return BadRequest("Current password is required when changing your own username");
+                    }
+
+
+                    bool isValid = true;
+
+                    if (Utilities.GetUserId(this.User) == id && (appUser.UserName != user.UserName || !string.IsNullOrWhiteSpace(user.NewPassword)))
+                    {
+                        if (!await _accountManager.CheckPasswordAsync(appUser, user.CurrentPassword))
                         {
-                            if (!string.IsNullOrWhiteSpace(user.CurrentPassword))
-                                result = await _accountManager.UpdatePasswordAsync(appUser, user.CurrentPassword, user.NewPassword);
-                            else
-                                result = await _accountManager.ResetPasswordAsync(appUser, user.NewPassword);
+                            isValid = false;
+                            AddErrors(new string[] { "The username/password is invalid." });
                         }
+                    }
+
+                    if (isValid)
+                    {
+                        _mapper.Map<UserViewModel, ApplicationUser>(user, appUser);
+
+                        var result = await _accountManager.UpdateUserAsync(appUser, user.Roles);
 
                         if (result.Item1)
                         {
-                            var response = new BaseOperationResponse();
-                            response.IsSuccess = result.Item1;
-                            response.Message = "Successfully updated the information!";
-                            return Ok(response);
+                            if (!string.IsNullOrWhiteSpace(user.NewPassword))
+                            {
+                                if (!string.IsNullOrWhiteSpace(user.CurrentPassword))
+                                    result = await _accountManager.UpdatePasswordAsync(appUser, user.CurrentPassword, user.NewPassword);
+                                else
+                                    result = await _accountManager.ResetPasswordAsync(appUser, user.NewPassword);
+                            }
+
+                            if (result.Item1)
+                            {
+                                var response = new BaseOperationResponse();
+                                response.IsSuccess = result.Item1;
+                                response.Message = "Successfully updated the information!";
+                                return Ok(response);
+                            }
                         }
+
+                        AddErrors(result.Item2);
                     }
-
-                    AddErrors(result.Item2);
                 }
+
+                //var errors = ModelState.Keys.SelectMany(k => ModelState[k].Errors)
+                //              .Select(m => m.ErrorMessage).ToArray();
+
+                return BadRequest(ModelState);
             }
-
-            //var errors = ModelState.Keys.SelectMany(k => ModelState[k].Errors)
-            //              .Select(m => m.ErrorMessage).ToArray();
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error DeleteUser : {ex.Message}", ex);
+                _logger.LogError($"Error DeleteUser : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+            
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -1125,90 +1194,102 @@ namespace FRS.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> ApiRegister([FromBody] UserEditViewModel user)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(user);
+            _logger.LogInformation($"ApiRegister UserEditViewModel : {dataJSON}");
+
+            try
             {
-                if (user == null)
-                    return BadRequest($"{nameof(user)} cannot be null");
-
-                var institution = await _unitOfWork.Institutions.GetByCodeAsync(user.InstitutionCode);
-                if (institution == null)
-                    return BadRequest($"Institution is incorrect.");
-
-                var department = await _unitOfWork.Departments.GetByCode(institution.Id, user.RegisteredDepartment);
-                if (department != null)
+                if (ModelState.IsValid)
                 {
-                    user.DepartmentId = department.Id;
-                }
+                    if (user == null)
+                        return BadRequest($"{nameof(user)} cannot be null");
 
-                if (string.IsNullOrEmpty(user.UserName)) user.UserName = user.Email;
-                ApplicationUser appUser = _mapper.Map<ApplicationUser>(user);
-                appUser.InstitutionId = institution.Id;
-                if (!string.IsNullOrEmpty(user.Provider) && !string.IsNullOrEmpty(user.Key))
-                {
-                    appUser.EmailConfirmed = true;
-                    var externalLoginResult = await _signInManager.ExternalLoginSignInAsync(user.Provider, user.Key, isPersistent: false);
-                    if (!externalLoginResult.Succeeded)
+                    var institution = await _unitOfWork.Institutions.GetByCodeAsync(user.InstitutionCode);
+                    if (institution == null)
+                        return BadRequest($"Institution is incorrect.");
+
+                    var department = await _unitOfWork.Departments.GetByCode(institution.Id, user.RegisteredDepartment);
+                    if (department != null)
                     {
-                        var createResult = await _userManager.CreateAsync(appUser);
-                        if (createResult.Succeeded)
+                        user.DepartmentId = department.Id;
+                    }
+
+                    if (string.IsNullOrEmpty(user.UserName)) user.UserName = user.Email;
+                    ApplicationUser appUser = _mapper.Map<ApplicationUser>(user);
+                    appUser.InstitutionId = institution.Id;
+                    if (!string.IsNullOrEmpty(user.Provider) && !string.IsNullOrEmpty(user.Key))
+                    {
+                        appUser.EmailConfirmed = true;
+                        var externalLoginResult = await _signInManager.ExternalLoginSignInAsync(user.Provider, user.Key, isPersistent: false);
+                        if (!externalLoginResult.Succeeded)
                         {
-                            await _userManager.AddLoginAsync(appUser, new UserLoginInfo(user.Provider, user.Key, user.Provider));
+                            var createResult = await _userManager.CreateAsync(appUser);
+                            if (createResult.Succeeded)
+                            {
+                                await _userManager.AddLoginAsync(appUser, new UserLoginInfo(user.Provider, user.Key, user.Provider));
 
-                            //await _signInManager.SignInAsync(newUser, isPersistent: false);
-                            //await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-                            ApplicationUser user1 = await _userManager.FindByLoginAsync(user.Provider, user.Key);
+                                //await _signInManager.SignInAsync(newUser, isPersistent: false);
+                                //await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+                                ApplicationUser user1 = await _userManager.FindByLoginAsync(user.Provider, user.Key);
 
-                            UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
-                            //broadcast newly added user
-                            await _userHub.Clients.All.SendAsync("BroadcastAddedUser", userVM);
+                                UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
+                                //broadcast newly added user
+                                await _userHub.Clients.All.SendAsync("BroadcastAddedUser", userVM);
 
-                            return CreatedAtAction(GetUserByIdActionName, new { id = userVM.Id }, userVM);
+                                return CreatedAtAction(GetUserByIdActionName, new { id = userVM.Id }, userVM);
+                            }
+                        }
+                        else
+                        {
+                            AddErrors(new string[] { "Cannot login using your external account. Provider-key combination is incorrect." });
                         }
                     }
                     else
                     {
-                        AddErrors(new string[] { "Cannot login using your external account. Provider-key combination is incorrect." });
-                    }
-                }
-                else
-                {
-                    //TODO:
-                    if (string.IsNullOrEmpty(user.NewPassword))
-                    {
-                        //generate dummy password
-                        user.NewPassword = user.Pin;
-                    }
-
-                    user.IsChangePassword = true;
-                    var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
-                    if (result.Item1)
-                    {
-                        UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
-                        //broadcast newly added user
-                        await _userHub.Clients.All.SendAsync("BroadcastAddedUser", userVM);
-                        string enableOnboardingEmail = _configuration["AppSettings:ONBOARDING_EMAIL_ENABLED"];
-                        if (enableOnboardingEmail == "Y")
+                        //TODO:
+                        if (string.IsNullOrEmpty(user.NewPassword))
                         {
-                            //send email confirmation
-                            var code = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
-                            string passwordSetCode = await _userManager.GeneratePasswordResetTokenAsync(appUser);
-                            string baseUrl = _configuration["AppSettings:ONBOARDING_BASE_URL"];
-                            var callbackUrl = Url.Action("ConfirmEmail", "Authorization", new { userId = appUser.Id, code = code, passwordSetCode = passwordSetCode }, protocol: HttpContext.Request.Scheme, host: baseUrl);
-                            var portalUrl = _configuration["AppSettings:ORDER_PORTAL_URL"];
-                            var imgUrl = _configuration["AppSettings:ORDER_PORTAL_ONBOARDING_IMG_URL"];
-                            await _emailSender.SendEmailAsync(user.FullName, user.Email, "Confirm your account",
-                                EmailTemplates.GetConfirmationEmail(portalUrl, user.Email, callbackUrl, imgUrl));
+                            //generate dummy password
+                            user.NewPassword = user.Pin;
                         }
 
-                        return CreatedAtAction(GetUserByIdActionName, new { id = userVM.Id }, userVM);
+                        user.IsChangePassword = true;
+                        var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
+                        if (result.Item1)
+                        {
+                            UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
+                            //broadcast newly added user
+                            await _userHub.Clients.All.SendAsync("BroadcastAddedUser", userVM);
+                            string enableOnboardingEmail = _configuration["AppSettings:ONBOARDING_EMAIL_ENABLED"];
+                            if (enableOnboardingEmail == "Y")
+                            {
+                                //send email confirmation
+                                var code = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                                string passwordSetCode = await _userManager.GeneratePasswordResetTokenAsync(appUser);
+                                string baseUrl = _configuration["AppSettings:ONBOARDING_BASE_URL"];
+                                var callbackUrl = Url.Action("ConfirmEmail", "Authorization", new { userId = appUser.Id, code = code, passwordSetCode = passwordSetCode }, protocol: HttpContext.Request.Scheme, host: baseUrl);
+                                var portalUrl = _configuration["AppSettings:ORDER_PORTAL_URL"];
+                                var imgUrl = _configuration["AppSettings:ORDER_PORTAL_ONBOARDING_IMG_URL"];
+                                await _emailSender.SendEmailAsync(user.FullName, user.Email, "Confirm your account",
+                                    EmailTemplates.GetConfirmationEmail(portalUrl, user.Email, callbackUrl, imgUrl));
+                            }
+
+                            return CreatedAtAction(GetUserByIdActionName, new { id = userVM.Id }, userVM);
+                        }
+
+                        AddErrors(result.Item2);
                     }
-
-                    AddErrors(result.Item2);
                 }
-            }
 
-            //var errors = ModelState.SelectMany(x => x.Value.Errors.Select(z => z.Exception));
-            return BadRequest(ModelState);
+                //var errors = ModelState.SelectMany(x => x.Value.Errors.Select(z => z.Exception));
+                return BadRequest(ModelState);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error ApiRegister : {ex.Message}", ex);
+                _logger.LogError($"Error ApiRegister : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -1217,6 +1298,7 @@ namespace FRS.Controllers
         [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
         public async Task<IActionResult> ApiForgotPassword(string email)
         {
+            _logger.LogInformation($"ApiForgotPassword email : {email}");
             var result = new BaseOperationResponse();
             try
             {
@@ -1235,6 +1317,8 @@ namespace FRS.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Create a User : {ex.Message}", ex);
+                _logger.LogError($"Error Create a User : {ex.StackTrace}", ex);
                 result.IsSuccess = false;
                 result.Message = "An error occurred: " + ex.Message;
             }
@@ -1248,6 +1332,8 @@ namespace FRS.Controllers
         [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
         public async Task<IActionResult> ApiResetPassword([FromBody] ResetPasswordViewModel model)
         {
+            string dataJson = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"ApiResetPassword ResetPasswordViewModel : {dataJson}");
             var result = new BaseOperationResponse();
             try
             {
@@ -1282,6 +1368,8 @@ namespace FRS.Controllers
             {
                 result.IsSuccess = false;
                 result.Message = "An error occurred: " + ex.Message;
+                _logger.LogError($"Error ApiResetPassword : {ex.Message}", ex);
+                _logger.LogError($"Error ApiResetPassword : {ex.StackTrace}", ex);
             }
 
             return Ok(result);
@@ -1295,6 +1383,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> UserForgotPassword([FromBody] string email)
         {
             var result = new BaseOperationResponse();
+            _logger.LogInformation($"UserForgotPassword email : {email}");
             try
             {
                 var user = await _userManager.FindByNameAsync(email) ?? await _userManager.FindByEmailAsync(email);
@@ -1317,6 +1406,8 @@ namespace FRS.Controllers
             {
                 result.IsSuccess = false;
                 result.Message = "An error occurred: " + ex.Message;
+                _logger.LogError($"Error ChangePassword : {ex.Message}", ex);
+                _logger.LogError($"Error ChangePassword : {ex.StackTrace}", ex);
             }
 
             return Ok(result);
@@ -1329,6 +1420,8 @@ namespace FRS.Controllers
         public async Task<IActionResult> UserStudentLinkInvite(int id, string email)
         {
             var result = new BaseOperationResponse();
+            _logger.LogInformation($"UserStudentLinkInvite Id : {id}");
+            _logger.LogInformation($"UserStudentLinkInvite Email : {email}");
             try
             {
                 var dto = await this._studentService.GetStudentByIdAsync(id);
@@ -1374,6 +1467,8 @@ namespace FRS.Controllers
             {
                 result.IsSuccess = false;
                 result.Message = "An error occurred: " + ex.Message;
+                _logger.LogError($"Error ChangePassword : {ex.Message}", ex);
+                _logger.LogError($"Error ChangePassword : {ex.StackTrace}", ex);
             }
 
             return Ok(result);
@@ -1446,25 +1541,36 @@ namespace FRS.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateUserPhonebook([FromBody] UserPhonebookViewModel userPhonebook)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(userPhonebook);
+            _logger.LogInformation($"CreateUserPhonebook UserPhonebookViewModel : {dataJSON}");
+            try
             {
-                if (userPhonebook == null)
-                    return BadRequest($"{nameof(userPhonebook)} cannot be null");
-
-
-                var pb = _mapper.Map<UserPhonebook>(userPhonebook);
-
-                var result = await _accountManager.CreateUserPhonebookAsync(pb, userPhonebook.FilePath);
-                if (result.IsSuccess)
+                if (ModelState.IsValid)
                 {
-                    UserPhonebookViewModel userPhonebookVM = _mapper.Map<UserPhonebookViewModel>(result.Data);
-                    return CreatedAtAction("GetUserPhonebookById", new { id = userPhonebookVM.Id }, userPhonebookVM);
+                    if (userPhonebook == null)
+                        return BadRequest($"{nameof(userPhonebook)} cannot be null");
+
+
+                    var pb = _mapper.Map<UserPhonebook>(userPhonebook);
+
+                    var result = await _accountManager.CreateUserPhonebookAsync(pb, userPhonebook.FilePath);
+                    if (result.IsSuccess)
+                    {
+                        UserPhonebookViewModel userPhonebookVM = _mapper.Map<UserPhonebookViewModel>(result.Data);
+                        return CreatedAtAction("GetUserPhonebookById", new { id = userPhonebookVM.Id }, userPhonebookVM);
+                    }
+
+                    AddErrors(new string[] { result.Message });
                 }
 
-                AddErrors(new string[] { result.Message });
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error CreateUserPhonebook : {ex.Message}", ex);
+                _logger.LogError($"Error CreateUserPhonebook : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -1476,6 +1582,7 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteUserPhonebook(int id)
         {
+            _logger.LogInformation($"DeleteUserPhonebook id : {id}");
             var testDeleteResult = await _accountManager.TestCanDeleteUserPhonebookAsync(id);
             if (!testDeleteResult.IsDeletable)
                 return BadRequest(string.Format("Contact cannot be deleted. {0}", testDeleteResult.Message));
@@ -1489,7 +1596,10 @@ namespace FRS.Controllers
 
             var result = await _accountManager.DeleteUserPhonebookAsync(id);
             if (!result.IsSuccess)
+            {
+                _logger.LogError($"Error DeleteUserPhonebook : {string.Join(", ", result.Message)}");
                 throw new Exception("The following errors occurred while deleting userPhonebook: " + string.Join(", ", result.Message));
+            }
 
 
             return Ok(userPhonebookVM);
@@ -1504,32 +1614,44 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateUserPhonebook(string id, [FromBody] UserPhonebookViewModel model)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"UpdateUserPhonebook UserEditViewModel : {dataJSON}");
+            _logger.LogInformation($"UpdateUserPhonebook Id : {id}");
+            try
             {
-                if (model == null)
-                    return BadRequest($"{nameof(model)} cannot be null");
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
 
-                if (model.Id == 0)
-                    return BadRequest("Conflicting type id in parameter and model data");
+                    if (model.Id == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
 
 
 
-                var userPhonebook = await _accountManager.GetUserPhonebookByIdAsync(model.Id);
+                    var userPhonebook = await _accountManager.GetUserPhonebookByIdAsync(model.Id);
 
-                UserPhonebookViewModel userPhonebookVM = _mapper.Map<UserPhonebookViewModel>(userPhonebook);
-                if (userPhonebookVM == null)
-                    return NotFound(id);
+                    UserPhonebookViewModel userPhonebookVM = _mapper.Map<UserPhonebookViewModel>(userPhonebook);
+                    if (userPhonebookVM == null)
+                        return NotFound(id);
 
-                var updatedModel = _mapper.Map<UserPhonebook>(model);
-                var result = await _accountManager.UpdateUserPhonebookAsync(updatedModel, model.FilePath);
-                if (result.IsSuccess)
-                    return NoContent();
+                    var updatedModel = _mapper.Map<UserPhonebook>(model);
+                    var result = await _accountManager.UpdateUserPhonebookAsync(updatedModel, model.FilePath);
+                    if (result.IsSuccess)
+                        return NoContent();
 
-                AddErrors(new string[] { result.Message });
+                    AddErrors(new string[] { result.Message });
 
+                }
+
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error UpdateUserPhonebook : {ex.Message}", ex);
+                _logger.LogError($"Error UpdateUserPhonebook : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         #endregion
@@ -1589,29 +1711,40 @@ namespace FRS.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateUserVehicle([FromBody] UserVehicleViewModel userVehicle)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(userVehicle);
+            _logger.LogInformation($"CreateUserVehicle userVehicle : {dataJSON}");
+            try
             {
-                if (userVehicle == null)
-                    return BadRequest($"{nameof(userVehicle)} cannot be null");
-
-
-                var pb = _mapper.Map<UserVehicle>(userVehicle);
-                if (string.IsNullOrEmpty(pb.VehicleStatus))
+                if (ModelState.IsValid)
                 {
-                    pb.VehicleStatus = VehicleStatus.PENDING.ToString();
+                    if (userVehicle == null)
+                        return BadRequest($"{nameof(userVehicle)} cannot be null");
+
+
+                    var pb = _mapper.Map<UserVehicle>(userVehicle);
+                    if (string.IsNullOrEmpty(pb.VehicleStatus))
+                    {
+                        pb.VehicleStatus = VehicleStatus.PENDING.ToString();
+                    }
+
+                    var result = await _accountManager.CreateUserVehicleAsync(pb);
+                    if (result.IsSuccess)
+                    {
+                        UserVehicleViewModel userVehicleVM = _mapper.Map<UserVehicleViewModel>(result.Data);
+                        return CreatedAtAction("GetUserVehicleById", new { id = userVehicleVM.Id }, userVehicleVM);
+                    }
+
+                    AddErrors(new string[] { result.Message });
                 }
 
-                var result = await _accountManager.CreateUserVehicleAsync(pb);
-                if (result.IsSuccess)
-                {
-                    UserVehicleViewModel userVehicleVM = _mapper.Map<UserVehicleViewModel>(result.Data);
-                    return CreatedAtAction("GetUserVehicleById", new { id = userVehicleVM.Id }, userVehicleVM);
-                }
-
-                AddErrors(new string[] { result.Message });
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error DeleteUser : {ex.Message}", ex);
+                _logger.LogError($"Error DeleteUser : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -1636,9 +1769,10 @@ namespace FRS.Controllers
 
             var result = await _accountManager.DeleteUserVehicleAsync(id);
             if (!result.IsSuccess)
+            {
+                _logger.LogInformation($"Error DeleteUserVehicle : {string.Join(", ", result.Message)}");
                 throw new Exception("The following errors occurred while deleting userVehicle: " + string.Join(", ", result.Message));
-
-
+            }
             return Ok(userVehicleVM);
         }
 
@@ -1651,44 +1785,56 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateUserVehicle(string id, [FromBody] UserVehicleViewModel model)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"UpdateUserVehicle UserVehicleViewModel : {dataJSON}");
+            _logger.LogInformation($"UpdateUserVehicle Id : {id}");
+            try
             {
-                if (model == null)
-                    return BadRequest($"{nameof(model)} cannot be null");
-
-                if (model.Id == 0)
-                    return BadRequest("Conflicting type id in parameter and model data");
-
-
-
-                var userVehicle = await _accountManager.GetUserVehicleByIdAsync(model.Id);
-
-                UserVehicleViewModel userVehicleVM = _mapper.Map<UserVehicleViewModel>(userVehicle);
-                if (userVehicleVM == null)
-                    return NotFound(id);
-
-                var updatedModel = _mapper.Map<UserVehicle>(model);
-                if (userVehicleVM.VehicleStatus != VehicleStatus.APPROVED.ToString() && model.IsApprove)
+                if (ModelState.IsValid)
                 {
-                    updatedModel.VehicleStatus = VehicleStatus.APPROVED.ToString();
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.Id == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+
+
+
+                    var userVehicle = await _accountManager.GetUserVehicleByIdAsync(model.Id);
+
+                    UserVehicleViewModel userVehicleVM = _mapper.Map<UserVehicleViewModel>(userVehicle);
+                    if (userVehicleVM == null)
+                        return NotFound(id);
+
+                    var updatedModel = _mapper.Map<UserVehicle>(model);
+                    if (userVehicleVM.VehicleStatus != VehicleStatus.APPROVED.ToString() && model.IsApprove)
+                    {
+                        updatedModel.VehicleStatus = VehicleStatus.APPROVED.ToString();
+                    }
+
+                    //if anything is changed, status will be back to PENDING
+                    if (userVehicle.PlateNumber != updatedModel.PlateNumber ||
+                        userVehicle.UserId != updatedModel.UserId)
+                    {
+                        updatedModel.VehicleStatus = VehicleStatus.PENDING.ToString();
+                    }
+
+                    var result = await _accountManager.UpdateUserVehicleAsync(updatedModel);
+                    if (result.IsSuccess)
+                        return NoContent();
+
+                    AddErrors(new string[] { result.Message });
+
                 }
 
-                //if anything is changed, status will be back to PENDING
-                if (userVehicle.PlateNumber != updatedModel.PlateNumber ||
-                    userVehicle.UserId != updatedModel.UserId)
-                {
-                    updatedModel.VehicleStatus = VehicleStatus.PENDING.ToString();
-                }
-
-                var result = await _accountManager.UpdateUserVehicleAsync(updatedModel);
-                if (result.IsSuccess)
-                    return NoContent();
-
-                AddErrors(new string[] { result.Message });
-
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error UpdateUserVehicle : {ex.Message}", ex);
+                _logger.LogError($"Error UpdateUserVehicle : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         #endregion
@@ -1780,26 +1926,38 @@ namespace FRS.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateUserCardIdActivate([FromBody] UserCardIdViewModel userCardId)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(userCardId);
+            _logger.LogInformation($"CreateUserCardIdActivate UserCardIdViewModel : {dataJSON}");
+
+            try
             {
-                if (userCardId == null)
-                    return BadRequest($"{nameof(userCardId)} cannot be null");
-
-
-                var pb = _mapper.Map<UserCardId>(userCardId);
-                pb.Status = CardIdStatus.ACTIVE.ToString();
-
-                var result = await _accountManager.CreateUserCardIdActivateAsync(pb);
-                if (result.IsSuccess)
+                if (ModelState.IsValid)
                 {
-                    UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(result.Data);
-                    return CreatedAtAction("GetUserCardIdById", new { id = userCardIdVM.Id }, userCardIdVM);
+                    if (userCardId == null)
+                        return BadRequest($"{nameof(userCardId)} cannot be null");
+
+
+                    var pb = _mapper.Map<UserCardId>(userCardId);
+                    pb.Status = CardIdStatus.ACTIVE.ToString();
+
+                    var result = await _accountManager.CreateUserCardIdActivateAsync(pb);
+                    if (result.IsSuccess)
+                    {
+                        UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(result.Data);
+                        return CreatedAtAction("GetUserCardIdById", new { id = userCardIdVM.Id }, userCardIdVM);
+                    }
+
+                    AddErrors(new string[] { result.Message });
                 }
 
-                AddErrors(new string[] { result.Message });
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error CreateUserCardIdActivate : {ex.Message}", ex);
+                _logger.LogError($"Error CreateUserCardIdActivate : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -1810,29 +1968,41 @@ namespace FRS.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateUserCardId([FromBody] UserCardIdViewModel userCardId)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(userCardId);
+            _logger.LogInformation($"UserCardIdViewModel UserEditViewModel : {dataJSON}");
+            try
             {
-                if (userCardId == null)
-                    return BadRequest($"{nameof(userCardId)} cannot be null");
-
-
-                var pb = _mapper.Map<UserCardId>(userCardId);
-                if (string.IsNullOrEmpty(pb.Status))
+                if (ModelState.IsValid)
                 {
-                    pb.Status = CardIdStatus.INACTIVE.ToString();
+                    if (userCardId == null)
+                        return BadRequest($"{nameof(userCardId)} cannot be null");
+
+
+                    var pb = _mapper.Map<UserCardId>(userCardId);
+                    if (string.IsNullOrEmpty(pb.Status))
+                    {
+                        pb.Status = CardIdStatus.INACTIVE.ToString();
+                    }
+
+                    var result = await _accountManager.CreateUserCardIdAsync(pb);
+                    if (result.IsSuccess)
+                    {
+                        UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(result.Data);
+                        return CreatedAtAction("GetUserCardIdById", new { id = userCardIdVM.Id }, userCardIdVM);
+                    }
+
+                    AddErrors(new string[] { result.Message });
                 }
 
-                var result = await _accountManager.CreateUserCardIdAsync(pb);
-                if (result.IsSuccess)
-                {
-                    UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(result.Data);
-                    return CreatedAtAction("GetUserCardIdById", new { id = userCardIdVM.Id }, userCardIdVM);
-                }
-
-                AddErrors(new string[] { result.Message });
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error CreateUserCardId : {ex.Message}", ex);
+                _logger.LogError($"Error CreateUserCardId : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+            
         }
 
 
@@ -1845,6 +2015,7 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteUserCardId(int id)
         {
+            _logger.LogInformation($"DeleteUserCardId Id : {id}");
             var testDeleteResult = await _accountManager.TestCanDeleteUserCardIdAsync(id);
             if (!testDeleteResult.IsDeletable)
                 return BadRequest(string.Format("Contact cannot be deleted. {0}", testDeleteResult.Message));
@@ -1858,7 +2029,11 @@ namespace FRS.Controllers
 
             var result = await _accountManager.DeleteUserCardIdAsync(id);
             if (!result.IsSuccess)
+            {
+                _logger.LogDebug($"Error DeleteUserCardId : {string.Join(", ", result.Message)}");
                 throw new Exception("The following errors occurred while deleting user Card Id: " + string.Join(", ", result.Message));
+            }
+                
 
 
             return Ok(userCardIdVM);
@@ -1873,37 +2048,50 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateUserCardId(string id, [FromBody] UserCardIdViewModel model)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"UpdateUserCardId UserCardIdViewModel : {dataJSON}");
+            _logger.LogInformation($"UpdateUserCardId Id : {id}");
+
+            try
             {
-                if (model == null)
-                    return BadRequest($"{nameof(model)} cannot be null");
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
 
-                if (model.Id == 0)
-                    return BadRequest("Conflicting type id in parameter and model data");
+                    if (model.Id == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
 
 
 
-                var userCardId = await _accountManager.GetUserCardIdByIdAsync(model.Id);
+                    var userCardId = await _accountManager.GetUserCardIdByIdAsync(model.Id);
 
-                UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(userCardId);
-                if (userCardIdVM == null)
-                    return NotFound(id);
+                    UserCardIdViewModel userCardIdVM = _mapper.Map<UserCardIdViewModel>(userCardId);
+                    if (userCardIdVM == null)
+                        return NotFound(id);
 
-                var updatedModel = _mapper.Map<UserCardId>(model);
-                //if (userCardIdVM.Status != CardIdStatus.INACTIVE.ToString())
-                //{
-                //    updatedModel.Status = CardIdStatus.INACTIVE.ToString();
-                //}
+                    var updatedModel = _mapper.Map<UserCardId>(model);
+                    //if (userCardIdVM.Status != CardIdStatus.INACTIVE.ToString())
+                    //{
+                    //    updatedModel.Status = CardIdStatus.INACTIVE.ToString();
+                    //}
 
-                var result = await _accountManager.UpdateUserCardIdAsync(updatedModel);
-                if (result.IsSuccess)
-                    return NoContent();
+                    var result = await _accountManager.UpdateUserCardIdAsync(updatedModel);
+                    if (result.IsSuccess)
+                        return NoContent();
 
-                AddErrors(new string[] { result.Message });
+                    AddErrors(new string[] { result.Message });
 
+                }
+
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error UpdateUserCardId : {ex.Message}", ex);
+                _logger.LogError($"Error UpdateUserCardId : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         #endregion
@@ -1998,26 +2186,39 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> TopUpWallet(string id, [FromBody] WalletTopUpDTO model)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"TopUpWallet WalletTopUpDTO : {dataJSON}");
+            _logger.LogInformation($"TopUpWallet Id : {id}");
+
+            try
             {
-                if (model == null)
-                    return BadRequest($"{nameof(model)} cannot be null");
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
 
-                if (model.WalletId == 0)
-                    return BadRequest("Conflicting type id in parameter and model data");
+                    if (model.WalletId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
 
 
-                var dto = await this._walletService.GetByIdAsync(model.WalletId);
+                    var dto = await this._walletService.GetByIdAsync(model.WalletId);
 
-                if (dto == null)
-                    return NotFound(id);
+                    if (dto == null)
+                        return NotFound(id);
 
-                var result = await this._walletService.TopUpAsync(model);
-                return Ok(result);
+                    var result = await this._walletService.TopUpAsync(model);
+                    return Ok(result);
 
+                }
+
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error TopUpWallet : {ex.Message}", ex);
+                _logger.LogError($"Error TopUpWallet : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -2030,26 +2231,39 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> WalletTransaction(string walletId, [FromBody] WalletOperationDTO model)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"WalletTransaction WalletOperationDTO : {dataJSON}");
+            _logger.LogInformation($"WalletTransaction walletId : {walletId}");
+
+            try
             {
-                if (model == null)
-                    return BadRequest($"{nameof(model)} cannot be null");
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
 
-                if (model.WalletId == 0)
-                    return BadRequest("Conflicting type id in parameter and model data");
+                    if (model.WalletId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
 
 
-                var dto = await this._walletService.GetByIdAsync(model.WalletId);
+                    var dto = await this._walletService.GetByIdAsync(model.WalletId);
 
-                if (dto == null)
-                    return NotFound(walletId);
+                    if (dto == null)
+                        return NotFound(walletId);
 
-                var result = await this._walletService.WalletOperationAsync(model);
-                return Ok(result);
+                    var result = await this._walletService.WalletOperationAsync(model);
+                    return Ok(result);
 
+                }
+
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error WalletTransaction : {ex.Message}", ex);
+                _logger.LogError($"Error WalletTransaction : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         #endregion
@@ -2118,26 +2332,39 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> RewardTransaction(string rewardId, [FromBody] RewardOperationDTO model)
         {
-            if (ModelState.IsValid)
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"RewardTransaction RewardOperationDTO : {dataJSON}");
+            _logger.LogInformation($"RewardTransaction Id : {rewardId}");
+
+            try
             {
-                if (model == null)
-                    return BadRequest($"{nameof(model)} cannot be null");
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
 
-                if (model.RewardId == 0)
-                    return BadRequest("Conflicting type id in parameter and model data");
+                    if (model.RewardId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
 
 
-                var dto = await this._rewardService.GetByIdAsync(model.RewardId);
+                    var dto = await this._rewardService.GetByIdAsync(model.RewardId);
 
-                if (dto == null)
-                    return NotFound(rewardId);
+                    if (dto == null)
+                        return NotFound(rewardId);
 
-                var result = await this._rewardService.RewardOperationAsync(model);
-                return Ok(result);
+                    var result = await this._rewardService.RewardOperationAsync(model);
+                    return Ok(result);
 
+                }
+
+                return BadRequest(ModelState);
             }
-
-            return BadRequest(ModelState);
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error RewardTransaction : {ex.Message}", ex);
+                _logger.LogError($"Error RewardTransaction : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         #endregion
