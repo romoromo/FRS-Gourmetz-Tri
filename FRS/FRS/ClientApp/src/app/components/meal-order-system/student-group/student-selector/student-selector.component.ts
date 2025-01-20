@@ -261,28 +261,32 @@ export class StudentSelectorComponent implements OnInit {
   onSearchChanged(value: string) {
     this.keyword = value;
     //this.selected = [];
-    this.loadData(null);
+    //this.loadData(null);
+  }
+
+  onEnterSearchPress() {
+    this.filterDataOnClientSide()
   }
 
   onClassChanged(value: any) {
     this.filterClassId = value.value;
     console.log("filterClassID: ", value)
     //this.selected = [];
-    this.loadData(null);
+    this.filterDataOnClientSide()
   }
 
   onGroupChanged(value: any) {
     this.filterIGId = value.value;
     console.log("filterInterestGroupID: ", value)
     //this.selected = [];
-    this.loadData(null);
+    this.filterDataOnClientSide()
   }
 
   onFASChange(value: any) {
     this.filterIsFas = value.value;
     console.log("filterFasID: ", value)
     //this.selected = [];
-    this.loadData(null);
+    this.filterDataOnClientSide()
   }
 
   clearFilter() {
@@ -290,13 +294,29 @@ export class StudentSelectorComponent implements OnInit {
     this.filterClassId = null;
     this.filterIGId = null;
     this.filterIsFas = null;
-    this.selected = [];
-    this.loadData(null);
+    this.rows = [...this.rowsCache]
   }
 
   toggleSelectAll() {
    // this.selected = this.allRowsSelected ? this.allRows : [];
   }
+
+  filterDataOnClientSide() {
+    const originalData = [...this.rowsCache];
+    const keyword = this.keyword.toLowerCase();
+    const isFas = this.filterIsFas;
+    const classId = this.filterClassId;
+    const interestGroupId = this.filterIGId;
+
+    this.rows = originalData.filter(item => {
+        const matchesName = item.name.toLowerCase().includes(keyword);
+        const matchesStatus = isFas == null || item.isFAS === isFas;
+        const matchesClass = classId == null || item.classId === classId;
+        const matchesIGId = interestGroupId == null || item.interestGroups.some(x => x.interestGroupId === interestGroupId);
+
+        return matchesName && matchesStatus && matchesClass && matchesIGId;
+    });
+}
 
   public save = () => {
     //let studentIds= this.selected.map((e) => { return e.id; });
