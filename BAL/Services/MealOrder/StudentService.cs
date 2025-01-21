@@ -110,6 +110,14 @@ namespace BAL.Services.MealOrder
             return _mapper.Map<StudentDTO>(await this._uow.Students.GetStudentByEmailAsync(email));
         }
 
+        public async Task<StudentDTO> GetStudentByEmailOrIdAsync(string email,int id)
+        {
+            if(string.IsNullOrEmpty(email))
+                return await GetStudentByIdAsync(id);
+            else
+                return await GetStudentByEmailAsync(email);
+        }
+
         public async Task<BaseOperationResponse> UpdateStudentEmail(int id, string email)
         {
             return await this._uow.Students.UpdateStudentEmail(id, email);

@@ -547,7 +547,7 @@ namespace FRS.Controllers
                     throw new Exception("Invalid email.");
                 }
 
-                var dto = await this._studentService.GetStudentByEmailAsync(student.CurrentEmail);
+                var dto = await this._studentService.GetStudentByEmailOrIdAsync(student.CurrentEmail,id);
                 if (dto == null)
                 {
                     var studentAccount = await _accountManager.GetUserByEmailAsync(student.CurrentEmail);

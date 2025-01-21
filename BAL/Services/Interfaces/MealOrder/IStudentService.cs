@@ -66,5 +66,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> AddStudentAccountLinkRequestAsync(int studentId, string email, bool emailSent);
         Task<BaseOperationResponse> UpdateStudentAccountLinkRequestAsync(int studentId, string email);
         Task<BaseOperationResponse> UpdateStudentEmail(int id, string email);
+        Task<StudentDTO> GetStudentByEmailOrIdAsync(string email, int id);
     }
 }
