@@ -1750,6 +1750,18 @@ namespace BAL.Services.MealOrder
                     borderedHeaderStyle.FillForegroundColor = defaultColor;
                     borderedHeaderStyle.FillPattern = FillPattern.SolidForeground;
 
+                    var borderedHeaderStyleWrapText = wb.CreateCellStyle();
+                    borderedHeaderStyleWrapText.SetFont(headerFont);
+                    borderedHeaderStyleWrapText.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    borderedHeaderStyleWrapText.BorderTop = BorderStyle.Thin;
+                    borderedHeaderStyleWrapText.BorderBottom = BorderStyle.Thin;
+                    borderedHeaderStyleWrapText.BorderLeft = BorderStyle.Thin;
+                    borderedHeaderStyleWrapText.BorderRight = BorderStyle.Thin;
+                    borderedHeaderStyleWrapText.FillBackgroundColor = defaultColor;
+                    borderedHeaderStyleWrapText.FillForegroundColor = defaultColor;
+                    borderedHeaderStyleWrapText.FillPattern = FillPattern.SolidForeground;
+                    borderedHeaderStyleWrapText.WrapText = true;
+
                     cell = row.CreateCell(0);
                     cell.SetCellValue("DISH CATEGORY");
                     cell.CellStyle = borderedHeaderStyle;
@@ -1790,7 +1802,7 @@ namespace BAL.Services.MealOrder
                     cell.CellStyle = borderedHeaderStyle;
 
                     i = 2;
-
+                    List<int> notAllowedAutoSize = new List<int>();
                     AllRoutes.ForEach(ar =>
                     {
                         ar.sessions = ar.sessions.OrderBy(o => o.startTime).ToList();
@@ -1799,16 +1811,17 @@ namespace BAL.Services.MealOrder
                             cell.SetCellValue(ars.name);
                             if (ars.isFas)
                             {
-                                cell.SetCellValue(ars.name + " FAS");
+                                notAllowedAutoSize.Add(i);
+                                sheet.SetColumnWidth(i, 25 * 256);
+                                cell.SetCellValue($"{ars.name}\n(FAS)");
                             }
-                            cell.CellStyle = borderedHeaderStyle;
+                            cell.CellStyle = ars.isFas ? borderedHeaderStyleWrapText :  borderedHeaderStyle;
 
                             i += 1;
 
                             //cell = row.CreateCell(i);
                             //cell.SetCellValue(ars.name + " FAS");
                             //cell.CellStyle = borderedHeaderStyle;
-
                             //i += 1;
                         });
 
@@ -1828,14 +1841,14 @@ namespace BAL.Services.MealOrder
                         cell = row.CreateCell(i);
                         cell.SetCellValue("Total Meal (Regular & FAS)");
                         cell.CellStyle = borderedHeaderStyle;
-
+                        row.Height = -1;
                         i += 1;
 
                     });
 
 
 
-                    sheet.AutoSizeColumn(0);
+                    //sheet.AutoSizeColumn(0);
 
                     #endregion
 
@@ -1862,7 +1875,7 @@ namespace BAL.Services.MealOrder
                     contentBackgroundStyle.FillForegroundColor = defaultColor;
                     contentBackgroundStyle.FillPattern = FillPattern.SolidForeground;
 
-                    DOReports.ForEach(dor =>
+                    DOReports.OrderByDescending(x => x.tokenLabel).ToList().ForEach(dor =>
                     {
                         int c = 0;
                         row = sheet.CreateRow(++rowCount);
@@ -1955,7 +1968,10 @@ namespace BAL.Services.MealOrder
 
                     for (var idx = 0; idx < 50; idx++)
                     {
-                        sheet.AutoSizeColumn(idx, true);
+                        if (!notAllowedAutoSize.Contains(idx))
+                        {
+                            sheet.AutoSizeColumn(idx, true);
+                        }
                     }
 
                     wb.Write(stream);
