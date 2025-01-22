@@ -127,7 +127,7 @@
                 <td>{{x + 1}}</td>
                 <td>{{details.name}}</td>
                 <td>
-                  <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteStudent(details)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+                  <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteStudent(details,x)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
                 </td>
               </tr>
             </tbody>
