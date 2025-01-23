@@ -53,6 +53,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
   private editingStudentName: string;
   public fileUploadResponse: { dbPath: '', fileId: null, fileName: '' };
   private groupEdit: StudentGroup = new StudentGroup();
+  private groupEditStudentList: StudentGroupDetail[] = [];
   private allPermissions: Permission[] = [];
   private selectedValues: { [key: string]: boolean; } = {};
   public formResetToggle = true;
@@ -227,6 +228,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
 
     });
 
+    this.groupEdit.sgdetails = [...this.groupEditStudentList]
     if (this.isNewGroup) {
       this.studentService.newStudentGroup(this.groupEdit).subscribe(group => this.saveSuccessHelper(group), error => this.saveFailedHelper(error));
     }
@@ -284,7 +286,6 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
 
     if (this.changesCancelledCallback)
       this.changesCancelledCallback();
-
     this.dialogRef.close(true);
   }
 
@@ -319,7 +320,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
 
   editGroup(group: StudentGroup) {
     if (group) {
-      this.isNewGroup = false;
+      this.isNewGroup = false;  
       this.showValidationErrors = true;
 
       this.selectedValues = {};
@@ -335,6 +336,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
       if (!this.groupEdit.code) {
         this.getDishCode();
       }
+      this.groupEditStudentList = [...this.groupEdit.sgdetails]
       return this.groupEdit;
     }
     else {
@@ -344,23 +346,23 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
 
   addStudentSel() {
     const dialogRef = this.dialog.open(StudentSelectorComponent, {
-      data: { header: "Students", outletId: this.outletId, students: this.groupEdit.sgdetails },
+      data: { header: "Students", outletId: this.outletId, students: this.groupEditStudentList },
       width: '800px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (!result.isCancel) {
-        console.log("early selstore:", this.groupEdit.sgdetails);
+        console.log("early selstore:", this.groupEditStudentList);
         console.log("change selstore:", result.selectedStudents);
-        this.groupEdit.sgdetails = [];
+        this.groupEditStudentList = []
         result.selectedStudents.forEach(student => {
           var detail = new StudentGroupDetail();
           detail.studentId = student.id;
           detail.studentGroupId = this.groupEdit.id ? this.groupEdit.id : '0';
           detail.name = student.name;
-          this.groupEdit.sgdetails.push(detail);
+          this.groupEditStudentList.push(detail)
         })
-        console.log("final sgdetails: ", this.groupEdit)
+        console.log("final sgdetails: ", this.groupEditStudentList)
       }
     });
   }
@@ -468,8 +470,8 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
 
 
   deleteStudentHelper(row: StudentGroupDetail, index: number) {
-    if (this.groupEdit.sgdetails)
-      this.groupEdit.sgdetails.splice(index, 1);
+    if (this.groupEditStudentList)
+      this.groupEditStudentList.splice(index, 1);
   }
 
   public uploadFinished = (event) => {
