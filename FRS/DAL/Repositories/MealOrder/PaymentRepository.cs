@@ -92,28 +92,33 @@ namespace DAL.Repositories.MealOrder
                         _appContext.SaveChanges();
                     }
 
-
-                    foreach (var t in f.TokenOrders)
+                    if(f?.TokenOrders?.Any() ?? false)
                     {
-                        var tOrder = _appContext.TokenOrders.FirstOrDefault(a => a.Id == t.Id);
-                        if (tOrder != null)
+                        foreach (var t in f.TokenOrders)
                         {
-                            tOrder.Status = tOrder.Status == "cancelled" ? tOrder.Status : "paid";
-                            _appContext.TokenOrders.Update(tOrder);
-                            _appContext.SaveChanges();
+                            var tOrder = _appContext.TokenOrders.FirstOrDefault(a => a.Id == t.Id);
+                            if (tOrder != null)
+                            {
+                                tOrder.Status = tOrder.Status == "cancelled" ? tOrder.Status : "paid";
+                                _appContext.TokenOrders.Update(tOrder);
+                                _appContext.SaveChanges();
+                            }
                         }
                     }
 
-                    foreach (var t in f.MealPlanOrders)
+                    if(f?.MealPlanOrders?.Any() ?? false)
                     {
-                        var tOrder = _appContext.MealPlanOrders.FirstOrDefault(a => a.Id == t.Id);
-                        if (tOrder != null)
+                        foreach (var t in f.MealPlanOrders)
                         {
-                            tOrder.Status = tOrder.Status == "cancelled" ? tOrder.Status : "paid";
-                            _appContext.MealPlanOrders.Update(tOrder);
-                            _appContext.SaveChanges();
+                            var tOrder = _appContext.MealPlanOrders.FirstOrDefault(a => a.Id == t.Id);
+                            if (tOrder != null)
+                            {
+                                tOrder.Status = tOrder.Status == "cancelled" ? tOrder.Status : "paid";
+                                _appContext.MealPlanOrders.Update(tOrder);
+                                _appContext.SaveChanges();
 
-                            if (t.StudentGroupId.HasValue && t.ProfileId.HasValue) await CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
+                                if (t.StudentGroupId.HasValue && t.ProfileId.HasValue) await CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
+                            }
                         }
                     }
                 }
