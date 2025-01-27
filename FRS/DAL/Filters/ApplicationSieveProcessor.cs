@@ -1280,6 +1280,10 @@ namespace DAL.Filters
                 .CanFilter()
                 .CanSort();
 
+            mapper.Property<DeliveryOrderNew>(p => p.CreatedDate)
+                .CanFilter()
+                .CanSort();
+
             mapper.Property<DeliveryOrderNew>(p => p.DeliveryAddress)
                 .CanFilter()
                 .CanSort();

@@ -72,7 +72,7 @@ export class DeliveryOrdersNewManagementComponent implements OnInit, OnDestroy {
 
   initializeFilter() {
     this.filter = new Filter(1, 10);
-    this.filter.sorts = 'doNumber';
+    this.filter.sorts = '-createdDate';
     this.filter.filters = '';
     this.filter.page = 1;
 
@@ -91,6 +91,7 @@ export class DeliveryOrdersNewManagementComponent implements OnInit, OnDestroy {
 
     this.columns = [
       { prop: 'doNumber', name: 'DO Number' },
+      { prop: 'createdDate', name: 'Created Date' },
       { prop: 'fromStoreName', name: 'From' },
       { prop: 'toStoreName', name: 'To' },
       { name: 'Status', cellTemplate: this.fasTemplate },
