@@ -20,5 +20,6 @@ namespace BAL.DTO.MealOrder
         public string DishTypePeriodNames { get { return DishTypePeriods != null ? string.Join(",", DishTypePeriods.Select(e => e.PeriodName)) : string.Empty; } }
 
         public List<DishTypePeriodDTO> DishTypePeriods { get; set; }
+        public int? OrderNumber { get; set; }
     }
 }

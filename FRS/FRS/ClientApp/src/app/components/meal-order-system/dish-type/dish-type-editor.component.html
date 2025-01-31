@@ -1,13 +1,15 @@
 <h1 mat-dialog-title>{{data.header}}</h1>
 <div>
   <form *ngIf="formResetToggle" class="form-horizontal" name="dishTypeEditorForm" #f="ngForm" novalidate
-        (ngSubmit)="f.form.valid ? save() :
-          (!dishTypeName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+        (ngSubmit)="save(f)">
     <div mat-dialog-content>
       <div class="row">
         <mat-label class="col-md-12"><h5>General Information</h5></mat-label>
         <mat-form-field class="col-md-12">
           <input matInput autocomplete="off" [disabled]="!canManageDishTypes" type="text" id="dishTypeName" name="dishTypeName" placeholder="Enter name" [(ngModel)]="dishTypeEdit.name" #dishTypeName="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageDishTypes" type="number" id="orderNumber" name="orderNumber" placeholder="Enter Order number" [(ngModel)]="dishTypeEdit.orderNumber" #dishTypeOrderNumber="ngModel" required />
         </mat-form-field>
         <!--<mat-label class="col-md-12"><h5>Meal Period</h5></mat-label>
         <div *ngFor="let period of periods; let i=index" class="col-md-6">

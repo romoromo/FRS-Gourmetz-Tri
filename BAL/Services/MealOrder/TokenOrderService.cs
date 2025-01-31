@@ -1592,6 +1592,7 @@ namespace BAL.Services.MealOrder
                                         repDish.dishLabel = tod.Dish.Label;
                                         repDish.tokenLabel = tod.Dish.DishType.Name;
                                         repDish.totalQty = tod.Qty ?? 0;
+                                        repDish.OrderNumber = tod?.Dish?.DishType?.OrderNumber;
                                         repDish.routes = new List<DOReportRouteDTO>();
                                         repDish.sessions = new List<DOReportSessionDTO>();
 
@@ -1875,7 +1876,7 @@ namespace BAL.Services.MealOrder
                     contentBackgroundStyle.FillForegroundColor = defaultColor;
                     contentBackgroundStyle.FillPattern = FillPattern.SolidForeground;
 
-                    DOReports.OrderByDescending(x => x.tokenLabel).ToList().ForEach(dor =>
+                    DOReports.OrderBy(x => x.OrderNumber).ThenBy(x => x.dishLabel).ToList().ForEach(dor =>
                     {
                         int c = 0;
                         row = sheet.CreateRow(++rowCount);

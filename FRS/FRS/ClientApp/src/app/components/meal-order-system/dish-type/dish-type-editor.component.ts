@@ -9,6 +9,7 @@ import { DishService } from 'src/app/services/meal-order/dish.service';
 import { MealService } from 'src/app/services/meal-order/meal.service';
 import { Filter } from 'src/app/models/sieve-filter.model';
 import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
+import { NgForm } from '@angular/forms';
 
 
 @Component({
@@ -34,7 +35,7 @@ export class DishTypeEditorComponent {
 
 
   @ViewChild('f')
-  private form;
+  private form: NgForm;
 
   constructor(private alertService: AlertService, private dishService: DishService, private accountService: AccountService,
     public dialogRef: MatDialogRef<DishTypeEditorComponent>, private mealService: MealService,
@@ -57,29 +58,36 @@ export class DishTypeEditorComponent {
   }
 
 
-  private save() {
-    this.isSaving = true;
-    this.alertService.startLoadingMessage("Saving changes...");
-    this.dishTypeEdit.institutionId = this.accountService.currentUser.institutionId;
-    console.log(this.periods);
-    let selectedPeriods = this.periods.filter(f => f.checked);
-    this.dishTypeEdit.dishTypePeriods = [];
-    this.periods.forEach((p, index, ps) => {
-      if (p.checked) {
-        let dtPeriod = new DishTypePeriod();
-        dtPeriod.dishTypeId = this.dishTypeEdit.id;
-        dtPeriod.periodId = p.id;
-        this.dishTypeEdit.dishTypePeriods.push(dtPeriod);
+  private save(formData: NgForm) {
+    if (formData.form.invalid) {
+      const dishTypeName = formData.form.value.dishTypeName;
+      const orderNumber = formData.form.value.orderNumber;
+      if (!dishTypeName) {
+        this.alertService.showMessage('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)', MessageSeverity.error);
+      } else if (!orderNumber) {
+        this.alertService.showMessage('Order Number is required', 'Please enter order number', MessageSeverity.error);
       }
-      
-    });
+    } else {
+      this.isSaving = true;
+      this.alertService.startLoadingMessage("Saving changes...");
+      this.dishTypeEdit.institutionId = this.accountService.currentUser.institutionId;
+      let selectedPeriods = this.periods.filter(f => f.checked);
+      this.dishTypeEdit.dishTypePeriods = [];
+      this.periods.forEach((p, index, ps) => {
+        if (p.checked) {
+          let dtPeriod = new DishTypePeriod();
+          dtPeriod.dishTypeId = this.dishTypeEdit.id;
+          dtPeriod.periodId = p.id;
+          this.dishTypeEdit.dishTypePeriods.push(dtPeriod);
+        }
 
-    console.log(this.dishTypeEdit.dishTypePeriods);
-    if (this.isNewDishType) {
-      this.dishService.newDishType(this.dishTypeEdit).subscribe(dishType => this.saveSuccessHelper(dishType), error => this.saveFailedHelper(error));
-    }
-    else {
-      this.dishService.updateDishType(this.dishTypeEdit).subscribe(response => this.saveSuccessHelper(), error => this.saveFailedHelper(error));
+      });
+      if (this.isNewDishType) {
+        this.dishService.newDishType(this.dishTypeEdit).subscribe(dishType => this.saveSuccessHelper(dishType), error => this.saveFailedHelper(error));
+      }
+      else {
+        this.dishService.updateDishType(this.dishTypeEdit).subscribe(response => this.saveSuccessHelper(), error => this.saveFailedHelper(error));
+      }
     }
   }
 
@@ -187,7 +195,7 @@ export class DishTypeEditorComponent {
       .subscribe(results => {
         this.periods = results.pagedData;
         this.periods.forEach((p, index, ps) => {
-          (<any>p).checked = this.dishTypeEdit.dishTypePeriods != null && this.dishTypeEdit.dishTypePeriods.findIndex(f=> f.periodId == p.id) > -1;
+          (<any>p).checked = this.dishTypeEdit.dishTypePeriods != null && this.dishTypeEdit.dishTypePeriods.findIndex(f => f.periodId == p.id) > -1;
         });
       },
         error => {
