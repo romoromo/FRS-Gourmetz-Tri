@@ -185,7 +185,14 @@ namespace DAL.Core
 
         public async Task<Tuple<bool, string[]>> CreateUserAsync(ApplicationUser user, IEnumerable<string> roles, string password, bool findByEmail = true)
         {
-            var existingUser = findByEmail ? await _userManager.FindByEmailAsync(user.Email) : await _userManager.FindByNameAsync(user.UserName);
+            ApplicationUser existingUser = new ApplicationUser();
+            if (findByEmail)
+            {
+                var dataUser = await _userManager.FindByEmailAsync(user.Email);
+                existingUser = (dataUser?.IsActive ?? false) ? dataUser : null;
+            }
+            else
+                existingUser = await _userManager.FindByNameAsync(user.UserName);
 
             if (existingUser != null)
             {
@@ -210,7 +217,7 @@ namespace DAL.Core
             }
             else
             {
-                existingUser = await _appContext.Users.SingleOrDefaultAsync(e => e.Email == user.Email && e.InstitutionId == user.InstitutionId);
+                existingUser = await _appContext.Users.SingleOrDefaultAsync(e => e.Email == user.Email && e.InstitutionId == user.InstitutionId && user.IsActive);
             }
 
             if(existingUser == null)

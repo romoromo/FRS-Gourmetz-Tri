@@ -62,7 +62,7 @@ namespace DAL.Core
         public override async Task<IdentityResult> CreateAsync(ApplicationUser user)
         {
             var existingUser = await FindByEmailAsync(user.Email);
-            if (existingUser != null && !existingUser.IsActive)
+            if (existingUser != null && !existingUser.IsActive && existingUser.UserName?.ToLower() == user?.UserName.ToLower())
             {
                 existingUser.CopyFrom(user);
                 existingUser.IsActive = true;
