@@ -9,6 +9,7 @@ export class DishType {
 
   public id: string;
   public name: string;
+  public orderNumber: number;
   public institutionId: string;
   public catererId: string;
   public dishTypePeriods: DishTypePeriod[];

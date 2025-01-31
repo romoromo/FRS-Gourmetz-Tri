@@ -67,7 +67,7 @@ export class DishTypesManagementComponent implements OnInit {
     this.filter.filters = '';
     this.filter.page = 1;
 
-    
+
   }
 
   initializePagedResult() {
@@ -82,6 +82,7 @@ export class DishTypesManagementComponent implements OnInit {
 
     this.columns = [
       { prop: 'name', name: 'Name' },
+      { prop: 'orderNumber', name: 'Order', width: 150 },
       //{ prop: 'dishTypePeriodNames', name: 'Periods', sortable: false },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
@@ -114,7 +115,7 @@ export class DishTypesManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
     this.filter.filters = f + '(IsActive)==true,(Name)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
-    
+
     this.dishService.getDishTypesByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;

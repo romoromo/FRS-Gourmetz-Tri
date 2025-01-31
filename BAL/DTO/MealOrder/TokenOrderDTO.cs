@@ -270,6 +270,7 @@ namespace BAL.DTO.MealOrder
         public int dishID { get; set; }
         public string dishLabel { get; set; }
         public string tokenLabel { get; set; }
+        public int? OrderNumber { get; set; }
         public int totalQty { get; set; }
         public List<DOReportRouteDTO> routes { get; set; }
         public List<DOReportSessionDTO> sessions { get; set; }

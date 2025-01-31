@@ -25,5 +25,6 @@ namespace DAL.Models.MealOrder
         public virtual CatererInfo Caterer { get; set; }
 
         public virtual ICollection<DishTypePeriod> DishTypePeriods { get; set; }
+        public int? OrderNumber { get; set; }
     }
 }
