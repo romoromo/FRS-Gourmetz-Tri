@@ -751,7 +751,7 @@ namespace FRS.Controllers
                     var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
                     if (result.Item1)
                     {
-                        appUser = await _userManager.FindByEmailAsync(user.Email);
+                        appUser = await _userManager.FindByEmailActiveAsync(user.Email);
                         UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
 
                         //broadcast newly added user

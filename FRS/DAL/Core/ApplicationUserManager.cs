@@ -59,6 +59,18 @@ namespace DAL.Core
             return user ?? await base.Users.FirstOrDefaultAsync(e => e.Email.ToLower() == email.ToLower());
         }
 
+        public async Task<ApplicationUser> FindByEmailActiveAsync(string email)
+        {
+            var institution = await GetCurrentInstitution();
+            ApplicationUser user = null;
+            if (institution != null)
+            {
+                user = await base.Users.FirstOrDefaultAsync(e => e.InstitutionId == institution.Id && e.Email.ToLower() == email.ToLower() && e.IsActive);
+            }
+
+            return user ?? await base.Users.FirstOrDefaultAsync(e => e.Email.ToLower() == email.ToLower() && e.IsActive);
+        }
+
         public override async Task<IdentityResult> CreateAsync(ApplicationUser user)
         {
             var existingUser = await FindByEmailAsync(user.Email);

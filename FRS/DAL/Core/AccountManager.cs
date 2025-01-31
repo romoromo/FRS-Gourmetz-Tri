@@ -187,10 +187,7 @@ namespace DAL.Core
         {
             ApplicationUser existingUser = new ApplicationUser();
             if (findByEmail)
-            {
-                var dataUser = await _userManager.FindByEmailAsync(user.Email);
-                existingUser = (dataUser?.IsActive ?? false) ? dataUser : null;
-            }
+                existingUser = await _userManager.FindByEmailActiveAsync(user.Email);
             else
                 existingUser = await _userManager.FindByNameAsync(user.UserName);
 
