@@ -886,7 +886,7 @@ namespace DAL
             get
             {
                 if (_students == null)
-                    _students = new StudentRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+                    _students = new StudentRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_configuration);
 
                 return _students;
             }

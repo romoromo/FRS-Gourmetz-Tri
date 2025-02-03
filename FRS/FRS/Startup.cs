@@ -137,7 +137,7 @@ namespace FRS
             services.Configure<IdentityOptions>(options =>
             {
                 // User settings
-                options.User.RequireUniqueEmail = false;
+                options.User.RequireUniqueEmail = true;
 
                 string isBypassEmailConfirmation = Configuration["AppSettings:IsBypassEmailConfirmation"];
                 options.SignIn.RequireConfirmedEmail = !string.IsNullOrEmpty(isBypassEmailConfirmation) && isBypassEmailConfirmation == "N";

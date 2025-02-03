@@ -475,6 +475,7 @@ namespace FRS.Controllers
 
                 if (!string.IsNullOrWhiteSpace(user.NewPassword) && !string.IsNullOrWhiteSpace(user.CurrentPassword))
                 {
+                    appUser.IsPasswordMustChange = false;
                     await _accountManager.UpdatePasswordAsync(appUser, user.CurrentPassword, user.NewPassword);
                 }
                 else
@@ -645,8 +646,8 @@ namespace FRS.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error ChangePassword : {ex.Message}", ex);
-                _logger.LogError($"Error ChangePassword : {ex.StackTrace}", ex);
+                _logger.LogError($"Error ResetPassword : {ex.Message}", ex);
+                _logger.LogError($"Error ResetPassword : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
         }
@@ -748,10 +749,11 @@ namespace FRS.Controllers
                     ApplicationUser appUser = _mapper.Map<ApplicationUser>(user);
 
                     user.IsChangePassword = true;
+                    appUser.IsPasswordMustChange = false;
                     var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
                     if (result.Item1)
                     {
-                        appUser = await _userManager.FindByEmailActiveAsync(user.Email);
+                        appUser = await _userManager.FindByEmailAsync(user.Email);
                         UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
 
                         //broadcast newly added user
@@ -1254,6 +1256,7 @@ namespace FRS.Controllers
                         }
 
                         user.IsChangePassword = true;
+                        appUser.IsPasswordMustChange = false;
                         var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
                         if (result.Item1)
                         {
@@ -1406,8 +1409,8 @@ namespace FRS.Controllers
             {
                 result.IsSuccess = false;
                 result.Message = "An error occurred: " + ex.Message;
-                _logger.LogError($"Error ChangePassword : {ex.Message}", ex);
-                _logger.LogError($"Error ChangePassword : {ex.StackTrace}", ex);
+                _logger.LogError($"Error UserForgotPassword : {ex.Message}", ex);
+                _logger.LogError($"Error UserForgotPassword : {ex.StackTrace}", ex);
             }
 
             return Ok(result);
@@ -1467,8 +1470,8 @@ namespace FRS.Controllers
             {
                 result.IsSuccess = false;
                 result.Message = "An error occurred: " + ex.Message;
-                _logger.LogError($"Error ChangePassword : {ex.Message}", ex);
-                _logger.LogError($"Error ChangePassword : {ex.StackTrace}", ex);
+                _logger.LogError($"Error UserStudentLinkInvite : {ex.Message}", ex);
+                _logger.LogError($"Error UserStudentLinkInvite : {ex.StackTrace}", ex);
             }
 
             return Ok(result);

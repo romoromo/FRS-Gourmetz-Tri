@@ -185,11 +185,7 @@ namespace DAL.Core
 
         public async Task<Tuple<bool, string[]>> CreateUserAsync(ApplicationUser user, IEnumerable<string> roles, string password, bool findByEmail = true)
         {
-            ApplicationUser existingUser = new ApplicationUser();
-            if (findByEmail)
-                existingUser = await _userManager.FindByEmailActiveAsync(user.Email);
-            else
-                existingUser = await _userManager.FindByNameAsync(user.UserName);
+            var existingUser = findByEmail ? await _userManager.FindByEmailAsync(user.Email) : await _userManager.FindByNameAsync(user.UserName);
 
             if (existingUser != null)
             {
@@ -206,15 +202,22 @@ namespace DAL.Core
                 //existingUser.RfId = user.RfId;
                 //existingUser.TelNo = user.TelNo;
                 //existingUser.UnitNumber = user.UnitNumber;
-                //existingUser.UserName = user.UserName;
                 existingUser.CopyFrom(user);
-                existingUser.IsActive = true;
-                if (existingUser.IsAD) existingUser.EmailConfirmed = true;
-                return await UpdateUserAsync(existingUser, roles);
+                if (existingUser.IsActive)
+                {
+                    if (existingUser.IsAD) existingUser.EmailConfirmed = true;
+                    return await UpdateUserAsync(existingUser, roles);
+                }
+                else
+                {
+                    existingUser.UserName = user.UserName;
+                    existingUser.IsActive = true;
+                    return  await UpdateUserAsync(existingUser, roles);
+                }   
             }
             else
             {
-                existingUser = await _appContext.Users.SingleOrDefaultAsync(e => e.Email == user.Email && e.InstitutionId == user.InstitutionId && user.IsActive);
+                existingUser = await _appContext.Users.SingleOrDefaultAsync(e => e.Email == user.Email && e.InstitutionId == user.InstitutionId);
             }
 
             if(existingUser == null)
