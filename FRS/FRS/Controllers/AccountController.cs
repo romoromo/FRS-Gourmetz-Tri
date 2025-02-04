@@ -356,6 +356,7 @@ namespace FRS.Controllers
 
                             if (!string.IsNullOrWhiteSpace(user.NewPassword))
                             {
+                                appUser.IsPasswordMustChange = false;
                                 if (!string.IsNullOrWhiteSpace(user.CurrentPassword))
                                     result = await _accountManager.UpdatePasswordAsync(appUser, user.CurrentPassword, user.NewPassword);
                                 else
