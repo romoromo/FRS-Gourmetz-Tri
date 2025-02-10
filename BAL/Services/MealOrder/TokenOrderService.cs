@@ -571,8 +571,8 @@ namespace BAL.Services.MealOrder
             IQueryable<TokenOrder> query = _appContext.TokenOrders.AsNoTracking();
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var orders = _mapper.Map<List<TokenOrder>>(await query.ToListAsync());
-
+            var ordersMain = _mapper.Map<List<TokenOrder>>(await query.ToListAsync());
+            var orders = ordersMain.Where(x => x.Student.IsActive).ToList();
             if (orders != null)
             {
                 var mealSessionDetails = new List<MealSessionDetailByOrderAndClass>();
