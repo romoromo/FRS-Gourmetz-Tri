@@ -155,6 +155,9 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
 
   onSearchChanged(value: string) {
     this.keyword = value;
+  }
+
+  onEnterSearchPress() {
     this.clearFilterAndPagedResult();
     this.loadData(null);
   }
