@@ -18,6 +18,11 @@
         min-width: 100px;
     }
 
+.filter-wrapper{
+  display: flex;
+  gap: 30px;
+  justify-content: flex-end;
+}
 
 @media (max-width: 768px) {
     .action-box {

@@ -8,7 +8,7 @@
         <search-box (searchChange)="onSearchChanged($event)" (onEnter)="onEnterSearchPress($event)" placeholder="{{'common.Search' | translate}}"></search-box>
       </div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-6 filter-wrapper">
       <mat-form-field floatLabel="always" class="filter">
         <mat-label>Filter by Status</mat-label>
         <mat-select [(ngModel)]="fStatusVal" name="fStatus" id="fStatus" #fStatus="ngModel" (selectionChange)="loadData()">
@@ -19,6 +19,14 @@
 
         </mat-select>
       </mat-form-field>
+
+      <mat-form-field floatLabel="always" class="filter">
+        <mat-label>Items per page</mat-label>
+        <mat-select [(ngModel)]="limitPerPage" name="limitPerPage" id="limitPerPage" (selectionChange)="loadData()">
+          <mat-option *ngFor="let t of limitPerPagArr" [value]="t.value">{{t.label}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
     </div>
     <!--<div class="col-sm-4">
     <div class="navbar action-box">
