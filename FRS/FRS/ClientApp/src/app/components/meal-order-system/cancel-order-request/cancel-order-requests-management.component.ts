@@ -32,6 +32,23 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
   pagedResult: PagedResult;
   keyword: string = '';
   fStatusVal: string = '';
+  limitPerPagArr = [{
+    value: 10,
+    label: '10'
+  },
+  {
+    value: 20,
+    label: '20'
+  },
+  {
+    value: 50,
+    label: '50'
+  },
+  {
+    value: 100,
+    label: '100'
+  }];
+  limitPerPage: number = 10;
 
   @ViewChild('actionsTemplate')
   actionsTemplate: TemplateRef<any>;
@@ -69,7 +86,7 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
     this.filter.filters = '';
     this.filter.page = 1;
 
-    
+
   }
 
   initializePagedResult() {
@@ -107,7 +124,7 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
     this.loadingIndicator = true;
-    this.filter.pageSize = 10;
+    this.filter.pageSize = this.limitPerPage;
 
     if (ev) {
       this.filter.page = ev.offset + 1;
@@ -118,8 +135,8 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
 
     if (!this.keyword) this.keyword = '';
     //if (!this.fStatusVal) this.fStatusVal = '';
-    this.filter.filters = '(Status)==' + this.fStatusVal+',(IsActive)==true,(userName|studentName)@=' + this.keyword;
-    
+    this.filter.filters = '(Status)==' + this.fStatusVal + ',(IsActive)==true,(userName|studentName)@=' + this.keyword;
+
     this.paymentService.getCancelOrderRequestsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
@@ -155,6 +172,9 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
 
   onSearchChanged(value: string) {
     this.keyword = value;
+  }
+
+  onEnterSearchPress() {
     this.clearFilterAndPagedResult();
     this.loadData(null);
   }

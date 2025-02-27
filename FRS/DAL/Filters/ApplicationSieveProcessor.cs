@@ -2618,7 +2618,7 @@ namespace DAL.Filters
                 .CanSort()
                 .HasName("studentName");
 
-            mapper.Property<CancelOrderRequest>(p => p.User.FriendlyName)
+            mapper.Property<CancelOrderRequest>(p => p.User.UserName)
                 .CanFilter()
                 .CanSort()
                 .HasName("userName");

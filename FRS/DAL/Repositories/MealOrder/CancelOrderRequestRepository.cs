@@ -32,7 +32,8 @@ namespace DAL.Repositories.MealOrder
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
             int totalCount = query.Count();
-            query = _sieveProcessor.Apply(filter, query, applyFiltering: false, applySorting: false);
+            bool applyPaging = filter.PageSize == -1 ? false : true;
+            query = _sieveProcessor.Apply(filter, query, applyFiltering: false, applySorting: false,applyPagination: applyPaging);
             var result = new PagedEntity<CancelOrderRequest>
             {
                 Filter = filter,
