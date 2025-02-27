@@ -60,6 +60,7 @@ namespace DAL.Models
         public bool ConsentDataCollection { get; set; }
         public bool ReceivePromotionalMaterials { get; set; }
         public bool IsChangePassword { get; set; }
+        public bool IsPasswordMustChange { get; set; } = false;
 
         [SkipTracking]
         public bool IsConnected { get; set; }

@@ -202,11 +202,18 @@ namespace DAL.Core
                 //existingUser.RfId = user.RfId;
                 //existingUser.TelNo = user.TelNo;
                 //existingUser.UnitNumber = user.UnitNumber;
-                //existingUser.UserName = user.UserName;
                 existingUser.CopyFrom(user);
-                existingUser.IsActive = true;
-                if (existingUser.IsAD) existingUser.EmailConfirmed = true;
-                return await UpdateUserAsync(existingUser, roles);
+                if (existingUser.IsActive)
+                {
+                    if (existingUser.IsAD) existingUser.EmailConfirmed = true;
+                    return await UpdateUserAsync(existingUser, roles);
+                }
+                else
+                {
+                    existingUser.UserName = user.UserName;
+                    existingUser.IsActive = true;
+                    return  await UpdateUserAsync(existingUser, roles);
+                }   
             }
             else
             {
