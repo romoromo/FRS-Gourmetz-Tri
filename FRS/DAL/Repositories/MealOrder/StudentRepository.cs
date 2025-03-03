@@ -32,6 +32,7 @@ using System.Data;
 using IsolationLevel = System.Transactions.IsolationLevel;
 using Microsoft.Extensions.Logging;
 using DAL.Core.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -42,14 +43,16 @@ namespace DAL.Repositories.MealOrder
         private int? _currentInstitutionId;
         private IPasswordHasher<ApplicationUser> _passwordHasher;
         private ILogger _logger;
+        private IConfiguration _configuration;
 
-        public StudentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId) : base(context)
+        public StudentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId,IConfiguration configuration) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
             this._currentUserId = currentUserId;
             _passwordHasher = new PasswordHasher<ApplicationUser>();
             _logger = Logger.CreateLogger<DeviceRepository>();
+            _configuration = configuration;
         }
 
         public async Task<IQueryable<Student>> GetAllStudentsAsync()
@@ -1215,7 +1218,7 @@ namespace DAL.Repositories.MealOrder
                             new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted, Timeout = new System.TimeSpan(24, 0, 0) },
                             TransactionScopeAsyncFlowOption.Enabled))
                     {
-                        var hashedPassword = _passwordHasher.HashPassword(null, "Tappee2025!");
+                        var hashedPassword = _passwordHasher.HashPassword(null, _configuration["AppSettings:ONBOARDING_DEFAULT_PASSWORD"]);
 
                         if (rows.Count > 0)
                         {
