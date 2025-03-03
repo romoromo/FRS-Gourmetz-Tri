@@ -33,6 +33,8 @@ export class EmailQueuesManagementComponent implements OnInit {
   pagedResult: PagedResult;
   keyword: string = '';
 
+  subjects: string[] = [];
+
   @ViewChild('iconTemplate')
   iconTemplate: TemplateRef<any>;
 
@@ -49,9 +51,13 @@ export class EmailQueuesManagementComponent implements OnInit {
 
   initializeFilter() {
     this.filter = new Filter(1, 10);
-    this.filter.sorts = 'createdDate';
+    this.filter.sorts = '-createdDate';
     this.filter.filters = '';
     this.filter.page = 1;
+
+    this.subjects.push("Tappee Payment Invoice");
+    this.subjects.push("Contact Us");
+    this.subjects.push("Confirm your Account");
 
     
   }
@@ -132,6 +138,12 @@ export class EmailQueuesManagementComponent implements OnInit {
   onSearchChanged(value: string) {
     //this.rows = this.rowsCache.filter(r => Utilities.searchArray(value, false, r.name, r.description));
     this.keyword = value;
+    this.loadData(null);
+  }
+
+  onSubjectChanged(value: any) {
+    console.log(value);
+    this.keyword = value.value;
     this.loadData(null);
   }
   get canManageEmailQueues() {

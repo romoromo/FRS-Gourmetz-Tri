@@ -8,6 +8,16 @@
         <search-box (searchChange)="onSearchChanged($event)" placeholder="{{'common.Search' | translate}}"></search-box>
       </div>
     </div>
+    <div class="col-sm-4">
+      <div class="form-group">
+        <mat-label>Subject Filter:</mat-label>
+        <mat-select id="sj" name="sj" (selectionChange)="onSubjectChanged($event)">
+          <mat-option *ngFor="let s of subjects" [value]="s">
+            {{s}}
+          </mat-option>
+        </mat-select>
+      </div>
+    </div>
   </div>
 
   <ngx-datatable class="material colored-header"

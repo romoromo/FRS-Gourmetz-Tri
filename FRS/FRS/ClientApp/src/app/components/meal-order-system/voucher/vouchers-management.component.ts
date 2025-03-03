@@ -111,7 +111,7 @@ export class VouchersManagementComponent implements OnInit {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(IsActive)==true,(Name)@=' + this.keyword;
+    this.filter.filters = '(IsActive)==true,(Name|Code)@=' + this.keyword;
     
     this.paymentService.getVouchersByFilter(this.filter)
       .subscribe(results => {
