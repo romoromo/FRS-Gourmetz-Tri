@@ -1686,6 +1686,10 @@ namespace BAL.Services.MealOrder
 
                     //AllSessions = AllSessions.OrderBy(o => o.startTime).ToList();
                     AllRoutes.Sort((x, y) => TimeSpan.Compare(x.startTime, y.startTime));
+                    foreach (var item in AllRoutes)
+                    {
+                        item.sessions =  item.sessions.OrderBy(x => x.name).ThenBy(x => x.isFas).ToList();
+                    }
 
                     var wb = new XSSFWorkbook();
                     var rowCount = 0;
