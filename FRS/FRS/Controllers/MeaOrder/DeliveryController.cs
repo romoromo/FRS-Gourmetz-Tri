@@ -1305,7 +1305,7 @@ namespace FRS.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpGet("bentoassets/reset")]
+        [HttpGet("bentoassets/resetV2")]
         //[AllowAnonymous]
         //[Authorize(Authorization.Policies.ManageAllBentoAssetsPolicy)]
         [ProducesResponseType(204)]
