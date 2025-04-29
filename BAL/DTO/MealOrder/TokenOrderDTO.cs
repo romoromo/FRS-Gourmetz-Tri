@@ -339,6 +339,10 @@ namespace BAL.DTO.MealOrder
         public int? DishId { get; set; }
         public string DishCode { get; set; }
         public string DishName { get; set; }
+        public int? DishTypeID { get; set; }
+        public string DishType { get; set; }
+        public int? DishTypeOrder { get; set; }
+
         public string cardId { get; set; }
         public DateTime? collectionStart { get; set; }
         public DateTime? collectionEnd { get; set; }
@@ -346,6 +350,7 @@ namespace BAL.DTO.MealOrder
         public string sessionLabel { get; set; }
         public DateTime? orderDate { get; set; }
         public int? mealTypeId { get; set; }
+
     }
 
     public class MealSessionDetailByOrderAndClass

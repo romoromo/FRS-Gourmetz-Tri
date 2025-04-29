@@ -45,6 +45,8 @@ export class DishCyclesManagementComponent implements OnInit {
 
   header: string;
   @Input() catererId: string;
+
+  futureDate = false;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private dishService: DishService, public dialog: MatDialog) {
   }
@@ -108,6 +110,8 @@ export class DishCyclesManagementComponent implements OnInit {
     this.loadingIndicator = true;
     this.filter.pageSize = 10;
 
+    const now: Date = new Date();
+
     if (ev) {
       this.filter.page = ev.offset + 1;
       if (ev.sorts) {
@@ -117,6 +121,7 @@ export class DishCyclesManagementComponent implements OnInit {
 
     if (!this.keyword) this.keyword = '';
     let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
+    f = this.futureDate ? f + '(EndDate)>=' + now.toDateString() + ',' : f
     this.filter.filters = f + '(IsActive)==true,(Label)@=' + this.keyword;
     
     this.dishService.getDishCyclesSimpleByFilter(this.filter)
@@ -159,6 +164,11 @@ export class DishCyclesManagementComponent implements OnInit {
   }
 
   onSearch() {
+    this.loadData(null);
+  }
+
+  onFuturDate() {
+    console.log('change');
     this.loadData(null);
   }
 

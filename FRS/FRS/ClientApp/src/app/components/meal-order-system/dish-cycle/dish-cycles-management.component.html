@@ -8,7 +8,10 @@
         <search-box (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()" placeholder="{{'common.Search' | translate}}"></search-box>
       </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-sm-2">
+        <mat-checkbox [(ngModel)]="futureDate" (change)="onFuturDate($event)">Future Dates</mat-checkbox>
+    </div>
+    <div class="col-sm-2">
       <div class="navbar action-box">
         <ul class="nav navbar-nav navbar-right">
           <li *ngIf="canManageDishCycles" class="toolbaritem">

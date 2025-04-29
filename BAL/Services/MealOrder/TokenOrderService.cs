@@ -2067,6 +2067,9 @@ namespace BAL.Services.MealOrder
                                         dto.DishId = tod.DishId;
                                         dto.DishCode = tod.Dish.Code;
                                         dto.DishName = tod.Dish.Label;
+                                        dto.DishType = tod.Dish.DishType.Name;
+                                        dto.DishTypeID = tod.Dish.DishTypeId;
+                                        dto.DishTypeOrder = tod.Dish.DishType.OrderNumber;
                                         dto.orderId = o.Id;
                                         dto.studentId = o.Student.Id;
                                         dto.studentName = o.Student.Name;
