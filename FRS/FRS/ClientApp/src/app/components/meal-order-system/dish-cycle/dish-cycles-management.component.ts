@@ -164,11 +164,13 @@ export class DishCyclesManagementComponent implements OnInit {
   }
 
   onSearch() {
+    this.filter.page = 1;
     this.loadData(null);
   }
 
   onFuturDate() {
     console.log('change');
+    this.filter.page = 1;
     this.loadData(null);
   }
 
