@@ -2771,6 +2771,7 @@ namespace BAL.Services.MealOrder
                     var headers = new List<string>
                     {
                         "Invoice No.",
+                        "Student Id",
                         "Name",
                         "Outlet",
                         "Class/Department",
@@ -2927,6 +2928,10 @@ namespace BAL.Services.MealOrder
                             var studentDetails = o.First();
 
                             #region Payment 
+                            cell = row.CreateCell(col++);
+                            cell.SetCellValue(studentDetails.StudentId);
+                            cell.CellStyle = contentStyle;
+
                             cell = row.CreateCell(col++);
                             cell.SetCellValue(studentDetails.StudentName);
                             cell.CellStyle = contentStyle;
