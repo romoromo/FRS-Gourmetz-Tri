@@ -417,7 +417,7 @@ namespace FRS.Controllers
 
                 string userIdParam = Request.Form["userId"];
                 int userId = 0;
-                bool isValidUserId = int.TryParse(studentGroupParam, out userId);
+                bool isValidUserId = int.TryParse(userIdParam, out userId);
 
                 if (string.IsNullOrEmpty(studentGroupParam) && !isValidStudentGroupId)
                     return BadRequest("Student Group Id is missing.");
