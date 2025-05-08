@@ -31,6 +31,7 @@ using Microsoft.Extensions.Configuration;
 using DAL.Core.Helpers;
 using System.Globalization;
 using NPOI.SS.Formula.Functions;
+using DAL.Models.MealOrder;
 
 namespace FRS.Controllers
 {
@@ -288,6 +289,25 @@ namespace FRS.Controllers
             );
         }
 
+        [HttpPost("students/list/export/{outletId:int}/{studentGroupId:int}")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateStudentListXls([FromRoute] int outletId, [FromRoute] int studentGroupId)
+        {
+            var xls = await _service.GenerateStudentListXls(outletId, studentGroupId);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_StudentList.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
+
         [HttpPost("students/cards/import/template-with-details")]
         [ProducesResponseType(200)]
         public async Task<IActionResult> GenerateStudentReportForImportXls(BaseFilter filter)
@@ -381,6 +401,86 @@ namespace FRS.Controllers
             {
                 return new Tuple<bool, string, List<StudentImportDTO>>(false, e.Message, null);
             }
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpPost("students/import/studentgroup"), DisableRequestSizeLimit]
+        [AllowAnonymous]
+        public async Task<IActionResult> ImportStudentGroup()
+        {
+            try
+            {
+                var file = Request.Form.Files[0];
+                string studentGroupParam = Request.Form["studentGroupId"];
+                int studentGroupId = 0;
+                bool isValidStudentGroupId = int.TryParse(studentGroupParam, out studentGroupId);
+
+                string userIdParam = Request.Form["userId"];
+                int userId = 0;
+                bool isValidUserId = int.TryParse(studentGroupParam, out userId);
+
+                if (string.IsNullOrEmpty(studentGroupParam) && !isValidStudentGroupId)
+                    return BadRequest("Student Group Id is missing.");
+
+                if (string.IsNullOrEmpty(userIdParam) && !isValidUserId)
+                    return BadRequest("User Id is missing.");
+
+                var folderName = Path.Combine("Resources", "Excel");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                Directory.CreateDirectory(pathToSave);
+
+                if (file.Length > 0)
+                {
+                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    fileName = Guid.NewGuid().ToString() + fileName;
+                    var fullPath = Path.Combine(pathToSave, fileName);
+                    var dbPath = Path.Combine(folderName, fileName);
+
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                    IWorkbook wb = new XSSFWorkbook(new FileStream(fullPath, FileMode.Open));
+                    var studentIds = new List<int>();
+                    int startRow = 1;
+                    for (int x = 0; x < wb.NumberOfSheets; x++)
+                    {
+                        var sheet = (XSSFSheet)wb.GetSheetAt(x);
+                        int reqNumCells = startRow - 1;
+                        int colCount = sheet.GetRow(reqNumCells).PhysicalNumberOfCells;
+
+                        int rowCount = sheet.PhysicalNumberOfRows;
+                        for (int i = startRow; ExcelUtility.GetRowWithNonEmptyCell(sheet, i) != null; i++)
+                        {
+                            var fRow = sheet.GetRow(i);
+
+                            if (fRow != null)
+                            {
+                                int c = 0;
+                                var fname = fRow.GetCell(c++);
+                                if (fname != null && int.TryParse(fname.ToString(), out int idGroup))
+                                    studentIds.Add(idGroup);
+                            }
+
+                        }
+                    }
+                    bool isSuccess = await _service.ImportStudentGroupAsync(studentIds, studentGroupId,userId);
+                    return Ok(new { IsSuccess = isSuccess, Message = "File Imported!" });
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }catch(Exception ex)
+            {
+                _logger.LogError($"Error ImportStudentGroup Id : {Request.Form["studentGroupId"]}");
+                _logger.LogError($"Error ImportStudentGroup : {ex.Message}", ex);
+                _logger.LogError($"Error ImportStudentGroup : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+
         }
 
         #endregion

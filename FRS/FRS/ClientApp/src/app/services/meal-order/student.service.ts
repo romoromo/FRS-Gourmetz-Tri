@@ -160,4 +160,12 @@ export class StudentService {
   generateDishCode(catererId: string) {
     return this.commonEndpoint.get<any>(this.studentGroupUrl + '/generatecode?catererId=' + catererId);
   }
+
+  studentListExport(outletId:number,studentGroupId:number) {
+    return this.commonEndpoint.getFile<any>(this.studentUrl + `/list/export/${outletId}/${studentGroupId}`);
+  }
+
+  importFileStudentGroup<T>(data: any): Observable<T> {
+    return this.commonEndpoint.importFile(this.studentUrl + '/import/studentgroup', data);
+  }
 }

@@ -1311,6 +1311,34 @@ namespace DAL.Repositories.MealOrder
             return studentEmail;
         }
 
+        public async Task<List<Student>> GetStudentsLiteByIdsAsync(List<int> studentIds)
+        {
+            IQueryable<Student> query = _appContext.Students.AsNoTracking().Where(x => x.IsActive && studentIds.Contains(x.Id));
+            var result = await query.ToListAsync();
+            return result;
+        }
+
+        public async Task<bool> ImportStudentGroupAsync(List<int> studentIds,int studentGroupId,int userId)
+        {
+            var selectedStudentGroupDetail = await _appContext.StudentGroupDetails.AsNoTracking().Where(x => x.StudentGroupId == studentGroupId).ToListAsync();
+            _appContext.StudentGroupDetails.RemoveRange(selectedStudentGroupDetail);
+
+            var selectedStudents = await _appContext.Students.AsNoTracking().Where(x => studentIds.Contains(x.Id) && x.IsActive).ToListAsync();
+            foreach (var item in selectedStudents)
+            {
+                _appContext.StudentGroupDetails.Add(new StudentGroupDetail
+                {
+                    StudentGroupId = studentGroupId,
+                    StudentId = item.Id,
+                    CreatedBy = userId,
+                    UpdatedBy = userId
+                });
+            }
+
+            var affectedRows = await _appContext.SaveChangesAsync();
+            return affectedRows > 0;
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 

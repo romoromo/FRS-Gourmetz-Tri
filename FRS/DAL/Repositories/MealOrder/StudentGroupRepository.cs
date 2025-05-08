@@ -366,6 +366,12 @@ public async Task<BaseOperationResponse> UpdateAsync(StudentGroup group, List<St
             return result;
         }
 
+        public async Task<List<StudentGroupDetail>> GetAllStudentGroupDetailByIdAsync(int id)
+        {
+            var data = await _appContext.StudentGroupDetails.AsNoTracking().Where(x => x.StudentGroupId == id && x.IsActive).ToListAsync();
+            return data;
+        }
+
         #region Sieved Outlet terms
         public async Task<PagedEntity<OutletTerm>> GetOutletTermsAsync(BaseFilter filter)
         {

@@ -34,5 +34,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> AddStudentAccountLinkRequestAsync(int studentId, string email, bool emailSent);
         Task<BaseOperationResponse> UpdateStudentAccountLinkRequestAsync(int studentId, string email);
         Task<BaseOperationResponse> UpdateStudentEmail(int id, string email);
+        Task<List<Student>> GetStudentsLiteByIdsAsync(List<int> studentIds);
+        Task<bool> ImportStudentGroupAsync(List<int> studentIds, int studentGroupId, int userId);
     }
 }

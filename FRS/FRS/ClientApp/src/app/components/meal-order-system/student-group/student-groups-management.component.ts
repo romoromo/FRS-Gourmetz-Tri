@@ -16,6 +16,8 @@ import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { TokenOrdersBulkManagementComponent } from './../token-order-bulk/token-orders-bulk-management.component';
 import { MealPlanSummaryComponent } from './meal-plan/meal-plans-summary.component';
 import { StudentGroupOrderSummaryComponent } from './individual-order/individual-orders-summary.component';
+import * as moment from 'moment';
+import { saveAs } from 'file-saver';
 
 
 @Component({
@@ -34,6 +36,11 @@ export class StudentGroupsManagementComponent implements OnInit {
   filter: Filter;
   pagedResult: PagedResult;
   keyword: string = '';
+  selectedStudentGroupId: string = ''
+
+  public progress: number;
+  public message: string;
+  public filename: string;
 
   @Input() isHideHeader: boolean;
 
@@ -63,7 +70,7 @@ export class StudentGroupsManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(!result)
+      if (!result)
         this.loadData(null);
     });
   }
@@ -74,7 +81,7 @@ export class StudentGroupsManagementComponent implements OnInit {
     this.filter.filters = '';
     this.filter.page = 1;
 
-    
+
   }
 
   initializePagedResult() {
@@ -122,7 +129,7 @@ export class StudentGroupsManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
     this.filter.filters = f + '(IsActive)==true,(Name)@=' + this.keyword;
-    
+
     this.studentService.getStudentGroupsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
@@ -235,6 +242,79 @@ export class StudentGroupsManagementComponent implements OnInit {
 
   get canManageStudents() {
     return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentGroupsPermission)
+  }
+
+  exportListStudent(studentGroupId: number) {
+    const fileName = moment().format('DDMMYYYY_hhmmss') + '_StudentList.xlsx';
+    this.studentService.studentListExport(parseInt(this.outletId), studentGroupId).subscribe(
+      data => {
+        saveAs(data, fileName);
+      },
+      err => {
+        alert("Problem while downloading the file.");
+        console.error(err);
+      }
+    );
+  }
+
+  onImportClick(id: string, fileInput: HTMLInputElement) {
+    this.selectedStudentGroupId = id;
+    fileInput.click();
+  }
+
+  importedFile = (files) => {
+    if (files.length === 0) {
+      return;
+    }
+
+    if (!confirm(`Are you sure to import file '${files[0].name}'? \nImport cannot be undone after the file uploaded.`)) return;
+
+    let fileToUpload = <File>files[0];
+    const userId = this.accountService.currentUser.id;
+    const formData = new FormData();
+    formData.append('file', fileToUpload, fileToUpload.name);
+    formData.append('studentGroupId', this.selectedStudentGroupId.toString());
+    formData.append('userId', userId.toString());
+
+    this.loadingIndicator = true;
+    this.alertService.startLoadingMessage("Uploading...");
+    this.studentService.importFileStudentGroup<HttpEvent<Object>>(formData)
+      .subscribe(event => {
+        if (event.type === HttpEventType.UploadProgress)
+          this.progress = Math.round(100 * event.loaded / event.total);
+        else if (event.type === HttpEventType.Response) {
+          this.message = 'Upload success.';
+          this.onUploadFinished(event.body);
+          if (this.fileImport && this.fileImport.nativeElement) {
+            this.fileImport.nativeElement.value = "";
+          }
+        }
+
+        this.loadingIndicator = false;
+      },
+        error => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+
+          if (this.fileImport && this.fileImport.nativeElement) {
+            this.fileImport.nativeElement.value = "";
+          }
+
+          this.alertService.showStickyMessage("Import Error", `Unable to import the file to the server.`,
+            MessageSeverity.error);
+        });
+  }
+
+  onUploadFinished(response: any) {
+    this.alertService.stopLoadingMessage();
+    if (response.isSuccess) {
+      this.alertService.showMessage(response.message);
+      this.loadData();
+    } else {
+      this.alertService.showStickyMessage("Import Error", `Unable to import the file to the server.\r\nErrors: "${response.message}"`,
+        MessageSeverity.error);
+    }
+
   }
 
 }
