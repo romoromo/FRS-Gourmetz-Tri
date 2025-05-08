@@ -419,6 +419,87 @@ namespace BAL.Services.MealOrder
             }
         }
 
+        public async Task<byte[]> GenerateStudentListXls(int outletId,int studentGroupId)
+        {
+            var studentGroup = await _uow.StudentGroups.GetAllStudentGroupDetailByIdAsync(studentGroupId);
+            var studentIdLinked = studentGroup.Select(x => x.StudentId).Distinct().ToList();
+            var students = await _uow.Students.GetStudentsLiteByIdsAsync(studentIdLinked);
+
+            using (var stream = new System.IO.MemoryStream())
+            {
+                var wb = new XSSFWorkbook();
+                var rowCount = 0;
+                var sheet = (XSSFSheet)wb.CreateSheet("Students");
+                var headers = new string[] { "Student ID","Name"};
+
+                #region Headers
+
+                var headerStyle = wb.CreateCellStyle();
+                var headerFont = wb.CreateFont();
+                headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                headerStyle.SetFont(headerFont);
+                headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                var row = sheet.CreateRow(rowCount); var borderedHeaderStyle = wb.CreateCellStyle();
+                borderedHeaderStyle.SetFont(headerFont);
+                borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                ICell cell;
+                for (var i = 0; i < headers.Length; i++)
+                {
+                    cell = row.CreateCell(i);
+                    cell.SetCellValue(headers[i]);
+                    cell.CellStyle = borderedHeaderStyle;
+                }
+                sheet.AutoSizeColumn(0);
+
+                #endregion
+
+                #region Content
+                var contentStyle = wb.CreateCellStyle();
+                contentStyle.BorderTop = BorderStyle.Thin;
+                contentStyle.BorderBottom = BorderStyle.Thin;
+                contentStyle.BorderLeft = BorderStyle.Thin;
+                contentStyle.BorderRight = BorderStyle.Thin;
+                contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                contentStyle.Alignment = HorizontalAlignment.Left;
+                contentStyle.WrapText = true;
+                var dataFormatCustom = wb.CreateDataFormat();
+                students.ForEach(dt =>
+                {
+                    int i = 0;
+                    row = sheet.CreateRow(++rowCount);
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.Id);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.Name);
+                    cell.CellStyle = contentStyle;
+                });
+
+                #endregion
+
+                for (var i = 0; i < headers.Length; i++)
+                {
+                    sheet.AutoSizeColumn(i, true);
+                }
+
+                wb.Write(stream);
+
+                return stream.ToArray();
+            }
+        }
+
+        public async Task<bool> ImportStudentGroupAsync(List<int> studentids,int studentGroupId,int userId)
+        {
+            var result = await _uow.Students.ImportStudentGroupAsync(studentids, studentGroupId,userId);
+            return result;
+        }
+
         #endregion
 
         #region Student Card
