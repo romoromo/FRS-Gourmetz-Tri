@@ -600,7 +600,17 @@ namespace DAL
             builder.Entity<TransactionFee>().TrackAllProperties();
             builder.Entity<TransactionFeeDetail>().TrackAllProperties();
             builder.Entity<VoucherType>().TrackAllProperties();
+            
+            #region Voucher
             builder.Entity<Voucher>().TrackAllProperties();
+            builder.Entity<Voucher>().HasIndex(v => v.OutletProfileId);
+            builder.Entity<Voucher>().HasIndex(v => v.StartDateTime);
+            builder.Entity<Voucher>().HasIndex(v => v.EndDateTime);
+            builder.Entity<Voucher>().HasIndex(v => v.UsageQuantity);
+            builder.Entity<Voucher>().HasIndex(v => v.UsageQuantityUsed);
+            builder.Entity<Voucher>().HasIndex(v => new { v.StartDateTime, v.EndDateTime });
+            #endregion
+
             builder.Entity<VoucherMealPeriod>().TrackAllProperties();
             builder.Entity<Waiver>().TrackAllProperties();
             builder.Entity<ContactUsSubject>().TrackAllProperties();

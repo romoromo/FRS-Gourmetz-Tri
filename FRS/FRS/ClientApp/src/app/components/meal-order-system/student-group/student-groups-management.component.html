@@ -49,6 +49,7 @@
   </ng-template>
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addVoucher(row?.id)"><i class="fa fa-ticket" aria-hidden="true"></i> Add Voucher</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="onImportClick(row?.id,fileImport)"><i class="fa fa-upload" aria-hidden="true"></i> Import</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="exportListStudent(row?.id)"><i class="fa fa-download" aria-hidden="true"></i> Export</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="editGroup(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>

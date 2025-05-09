@@ -40,6 +40,9 @@ namespace DAL.Models.MealOrder
         public int UsageQuantity { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]
+        public int UsageQuantityUsed { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
         public int MaxDistribution { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]

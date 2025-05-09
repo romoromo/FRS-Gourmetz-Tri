@@ -220,7 +220,15 @@ namespace DAL.Repositories.MealOrder
                     return result;
                 }
 
-                if(student.Vouchers != null)
+                int voucherLeft = voucher.UsageQuantity - voucher.UsageQuantityUsed;
+                if (voucherLeft <= 0)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Insufficient vouchers for the number of students in the group!";
+                    return result;
+                }
+
+                if (student.Vouchers != null)
                 {
                     var studentVoucherId = student.Vouchers.Select(t => t.VoucherId).ToList();
 
@@ -234,6 +242,10 @@ namespace DAL.Repositories.MealOrder
                         };
 
                         await _appContext.StudentVouchers.AddAsync(studentVoucher);
+                        voucher.UsageQuantityUsed += 1;
+                        _appContext.Vouchers.Update(voucher);
+
+
                         if (await _appContext.SaveChangesAsync() > 0)
                         {
                             result.Message = "Successfully saved!";
@@ -266,6 +278,93 @@ namespace DAL.Repositories.MealOrder
             var vouchers = _appContext.StudentVouchers.Where(e => e.IsActive && e.StudentId == studentId
                                     && now <= e.Voucher.EndDateTime && e.Status != "USED");
             return vouchers.ToList();
+        }
+
+        public async Task<BaseOperationResponse> AssignVoucherByStudentGroup(int studentGroupId, string code)
+        {
+            var result = new BaseOperationResponse();
+
+            var studentIds = await _appContext.StudentGroupDetails.AsNoTracking()
+                .Where(e => e.IsActive && e.StudentGroupId == studentGroupId)
+                .Select(x => x.StudentId)
+                .Distinct()
+                .ToListAsync();
+
+            if (!studentIds.Any())
+            {
+                result.IsSuccess = false;
+                result.Message = "Students not found.";
+                return result;
+            }
+
+            var outletProfileIds = await _appContext.Students
+                .Where(e => e.IsActive && studentIds.Contains(e.Id))
+                .SelectMany(x => x.Outlet.CatererOutlets.Select(y => y.OutletProfileId))
+                .Distinct()
+                .ToListAsync();
+
+            if (!outletProfileIds.Any())
+            {
+                result.IsSuccess = false;
+                result.Message = "No outlet profiles found for the students.";
+                return result;
+            }
+
+            var now = DateTime.Now;
+            var voucher = await _appContext.Vouchers.AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Code.Trim().ToLower() == code.Trim().ToLower() &&
+                                          now <= r.EndDateTime &&
+                                          r.IsActive &&
+                                          outletProfileIds.Contains(r.OutletProfileId));
+
+            if (voucher == null)
+            {
+                result.IsSuccess = false;
+                result.Message = "Voucher does not exist!";
+                return result;
+            }
+
+            int voucherLeft = voucher.UsageQuantity - voucher.UsageQuantityUsed;
+
+            if (studentIds.Count() > voucherLeft)
+            {
+                result.IsSuccess = false;
+                result.Message = "Insufficient vouchers for the number of students in the group!";
+                return result;
+            }
+
+            var studentVoucherData = await _appContext.StudentVouchers.AsNoTracking()
+                .Where(x => x.IsActive && studentIds.Contains(x.StudentId))
+                .Select(x => new { x.StudentId, x.VoucherId })
+                .ToListAsync();
+
+            var existingVoucherIds = studentVoucherData
+                .Where(x => x.VoucherId == voucher.Id)
+                .Select(x => x.StudentId)
+                .ToHashSet();
+
+            var newStudentVouchers = studentIds
+                .Where(studentId => !existingVoucherIds.Contains(studentId))
+                .Select(studentId => new StudentVoucher
+                {
+                    StudentId = studentId,
+                    VoucherId = voucher.Id,
+                    Status = "NEW"
+                })
+                .ToList();
+
+            if (newStudentVouchers.Any())
+            {
+                await _appContext.StudentVouchers.AddRangeAsync(newStudentVouchers);
+                voucher.UsageQuantityUsed += newStudentVouchers.Count();
+                _appContext.Vouchers.Update(voucher);
+
+                await _appContext.SaveChangesAsync();
+            }
+
+            result.IsSuccess = true;
+            result.Message = "Vouchers assigned successfully.";
+            return result;
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

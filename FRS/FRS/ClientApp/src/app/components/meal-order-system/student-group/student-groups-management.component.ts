@@ -317,4 +317,25 @@ export class StudentGroupsManagementComponent implements OnInit {
 
   }
 
+  addVoucher(studentGroupId: string) {
+    this.alertService.showDialog('Enter Voucher Code:', DialogType.prompt, (val) => {
+      if (!val) return;
+      this.alertService.startLoadingMessage("Verifying...");
+      this.studentService.addStudentVoucherByStudentGroup(studentGroupId, val)
+        .subscribe(response => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+          this.alertService.showMessage(response.message);
+
+        },
+          error => {
+            this.alertService.stopLoadingMessage();
+            this.loadingIndicator = false;
+            this.alertService.showStickyMessage("Voucher Error", `Unable to add voucher.`,
+              MessageSeverity.error);
+          });
+    }, () => {
+    });
+  }
+
 }

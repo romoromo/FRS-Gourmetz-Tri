@@ -1030,6 +1030,27 @@ namespace FRS.Controllers
             var vouchers = await _service.GetVouchersAsync(studentId);
             return Ok(vouchers);
         }
+
+        [HttpGet("vouchers/addbystudentgroup/{studentGroupId:int}/{code}")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> AddVoucherByStudentGroup([FromRoute] int studentGroupId,[FromRoute] string code)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(code))
+                    return BadRequest("Invalid code.");
+
+                return Ok(await _service.AssignVoucherByStudentGroup(studentGroupId, code));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error AddVoucherByStudentGroup Id : {studentGroupId}");
+                _logger.LogError($"Error AddVoucherByStudentGroup : {ex.Message}", ex);
+                _logger.LogError($"Error AddVoucherByStudentGroup : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
         #endregion
 
         #region Outlet Terms
