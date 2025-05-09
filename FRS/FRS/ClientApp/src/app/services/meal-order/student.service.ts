@@ -168,4 +168,8 @@ export class StudentService {
   importFileStudentGroup<T>(data: any): Observable<T> {
     return this.commonEndpoint.importFile(this.studentUrl + '/import/studentgroup', data);
   }
+
+  addStudentVoucherByStudentGroup(studentGroupId: string, code: string) {
+    return this.commonEndpoint.get<any>(this.voucherUrl + `/addbystudentgroup/${studentGroupId}/${code}`);
+  }
 }

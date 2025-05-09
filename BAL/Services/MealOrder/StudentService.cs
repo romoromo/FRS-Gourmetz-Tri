@@ -726,6 +726,11 @@ namespace BAL.Services.MealOrder
 
             return _mapper.Map<List<VoucherDTO>>(svs.Select(a => a.Voucher));
         }
+
+        public async Task<BaseOperationResponse> AssignVoucherByStudentGroup(int studentGroupId, string code)
+        {
+            return await this._uow.StudentCards.AssignVoucherByStudentGroup(studentGroupId, code);
+        }
         #endregion
 
         #region Outlet Terms

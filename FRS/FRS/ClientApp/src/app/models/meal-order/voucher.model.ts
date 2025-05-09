@@ -18,6 +18,7 @@ export class Voucher {
   public discountAmount: number;
   public minimumBasketPrice: number;
   public usageQuantity: number;
+  public usageQuantityUsed: number;
   public maxDistribution: number;
   public isDisplayAllPages: boolean;
   public voucherMealPeriods: VoucherMealPeriod[];

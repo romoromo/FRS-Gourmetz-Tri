@@ -37,7 +37,7 @@ export class VoucherEditorComponent {
 
   @ViewChild('f')
   private form;
-    voucherTypes: any;
+  voucherTypes: any;
 
   constructor(private alertService: AlertService, private paymentService: PaymentService, private accountService: AccountService,
     public dialogRef: MatDialogRef<VoucherEditorComponent>, private mealService: MealService, private deliveryService: DeliveryService,
@@ -115,7 +115,7 @@ export class VoucherEditorComponent {
   private save() {
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
-    
+
     this.voucherEdit.voucherMealPeriods = [];
     this.periods.forEach((p, index, ps) => {
       if (p.checked) {
@@ -229,6 +229,10 @@ export class VoucherEditorComponent {
     else {
       return this.newVoucher();
     }
+  }
+
+  onUsageQuantityChange(newQty: number) {
+    this.voucherEdit.usageQuantityUsed = 0;
   }
 
 

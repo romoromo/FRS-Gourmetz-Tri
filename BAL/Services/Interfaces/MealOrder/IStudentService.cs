@@ -69,5 +69,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<StudentDTO> GetStudentByEmailOrIdAsync(string email, int id);
         Task<byte[]> GenerateStudentListXls(int outletId, int studentGroupId);
         Task<bool> ImportStudentGroupAsync(List<int> studentids, int studentGroupId, int userId);
+        Task<BaseOperationResponse> AssignVoucherByStudentGroup(int studentGroupId, string code);
     }
 }

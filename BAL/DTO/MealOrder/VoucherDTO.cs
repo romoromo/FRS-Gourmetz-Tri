@@ -22,6 +22,7 @@ namespace BAL.DTO.MealOrder
         public double DiscountAmount { get; set; }
         public double MinimumBasketPrice { get; set; }
         public int UsageQuantity { get; set; }
+        public int UsageQuantityUsed { get; set; }
         public int MaxDistribution { get; set; }
         public bool IsDisplayAllPages { get; set; }
         public List<VoucherMealPeriodDTO> VoucherMealPeriods { get; set; }
