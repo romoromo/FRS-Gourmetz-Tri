@@ -45,6 +45,7 @@ namespace BAL.DTO.MealOrder
         public float Calories { get; set; }
 
         public string DishTypeName { get; set; }
+        public string DishTypeOrder { get; set; }
         public string DishPeriodNames { get { return DishPeriods != null ? string.Join(",", DishPeriods.Select(e => e.PeriodName)) : string.Empty; } }
 
         public int? CuisineId { get; set; }

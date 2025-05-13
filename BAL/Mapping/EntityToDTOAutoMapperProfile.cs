@@ -561,6 +561,7 @@ namespace BAL.Mapping
 
             CreateMap<Dish, DishDTO>()
                 .ForMember(e => e.DishTypeName, map => map.MapFrom(f => f.DishType.Name))
+                .ForMember(e => e.DishTypeOrder, map => map.MapFrom(f => f.DishType.OrderNumber))
                 .ForMember(e => e.CuisineName, map => map.MapFrom(f => f.Cuisine.Name))
                 .ForMember(e => e.StoreInfoCode, map => map.MapFrom(f => f.StoreInfo.Code))
                 .ForMember(e => e.StoreInfoName, map => map.MapFrom(f => f.StoreInfo.Name))

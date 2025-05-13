@@ -60,11 +60,6 @@ namespace BAL.Services
             if (config == null)
                 config = _config;
 
-            //var from = new MailboxAddress(_config.Name, _config.EmailAddress);
-            //var to = new MailboxAddress(recepientName, recepientEmail);
-
-            //return await SendEmailAsync(from, new MailboxAddress[] { to }, subject, body, config, isHtml, attachments);
-
             var email = new EmailQueueDTO
             {
                 Action = action,
@@ -78,7 +73,12 @@ namespace BAL.Services
 
             var response = await _emailQueue.CreateEmailQueueAsync(email);
 
-            return (response.IsSuccess, response.Message);
+            //return (response.IsSuccess, response.Message);
+
+            var from = new MailboxAddress(_config.Name, _config.EmailAddress);
+            var to = new MailboxAddress(recepientName, recepientEmail);
+
+            return await SendEmailAsync(from, new MailboxAddress[] { to }, subject, body, config, isHtml, attachments);
         }
 
 
