@@ -803,6 +803,11 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
     //}
   }
 
+  setMinEndDate() {
+    console.log('start date', this.voucherEdit.startDateTime.toString());
+    this.minEndDate = this.voucherEdit.startDateTime.toString();
+  }
+
   get canManageDishCycles() {
     return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCatererDishCyclesMenu)
   }

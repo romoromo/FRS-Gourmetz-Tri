@@ -28,11 +28,11 @@
         <mat-form-field class="col-md-12" appearance="none">
           <mat-label>Voucher Usage Period</mat-label>
           <div class="date-picker">
-            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.startDateTime" name="sd">
+            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.startDateTime" (change)="setMinEndDate()" name="sd" id="sd">
           </div>
           <div class="date-picker-to"> TO </div>
           <div class="date-picker">
-            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.endDateTime" name="ed">
+            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.endDateTime" [attr.min]="minEndDate" name="ed" id="ed">
           </div>
         </mat-form-field>
         <mat-form-field class="col-md-6">

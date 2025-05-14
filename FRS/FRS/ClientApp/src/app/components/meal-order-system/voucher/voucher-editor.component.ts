@@ -34,6 +34,7 @@ export class VoucherEditorComponent {
   public changesCancelledCallback: () => void;
   private periods: MealPeriod[] = [];
   private outletProfiles = [];
+  private minEndDate: string = '';
 
   @ViewChild('f')
   private form;
@@ -115,6 +116,15 @@ export class VoucherEditorComponent {
   private save() {
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
+
+    console.log("check start date", this.voucherEdit.startDateTime, this.voucherEdit.endDateTime)
+    if (this.voucherEdit.endDateTime && this.voucherEdit.startDateTime && this.voucherEdit.endDateTime < this.voucherEdit.startDateTime) {
+      console.log('masuk');
+      this.alertService.stopLoadingMessage();
+      this.alertService.showStickyMessage("Save Error", "End date cannot be earlier than start date.", MessageSeverity.error);
+      this.isSaving = false;
+      return; // Prevent submission
+    }
 
     this.voucherEdit.voucherMealPeriods = [];
     this.periods.forEach((p, index, ps) => {
@@ -224,6 +234,8 @@ export class VoucherEditorComponent {
       this.voucherEdit = new Voucher();
       Object.assign(this.voucherEdit, voucher);
 
+      this.setMinEndDate();
+
       return this.voucherEdit;
     }
     else {
@@ -233,6 +245,11 @@ export class VoucherEditorComponent {
 
   onUsageQuantityChange(newQty: number) {
     this.voucherEdit.usageQuantityUsed = 0;
+  }
+
+  setMinEndDate() {
+    console.log('start date', this.voucherEdit.startDateTime.toString());
+    this.minEndDate = this.voucherEdit.startDateTime.toString();
   }
 
 
