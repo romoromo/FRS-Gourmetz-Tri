@@ -55,6 +55,9 @@ export class StudentGroupsManagementComponent implements OnInit {
   @ViewChild('fasTemplate')
   fasTemplate: TemplateRef<any>;
 
+  @ViewChild('totalStudents')
+  totalStudents: TemplateRef<any>;
+
   @ViewChild('studentEditorComponent')
   studentEditorComponent: StudentGroupEditorComponent;
   header: string;
@@ -98,6 +101,11 @@ export class StudentGroupsManagementComponent implements OnInit {
       { prop: 'code', name: 'Code' },
       { prop: 'name', name: 'Name' },
       { prop: 'type', name: 'Type' },
+      {
+        name: 'Students',
+        cellTemplate: this.totalStudents,
+        sortable: false
+      },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
 
