@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using DAL.Models;
 using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
 using DAL;
-using BAL.Services.Interfaces;
-using BAL.DTO;
 using AutoMapper;
-using DAL.Repositories.Interfaces;
-using System.IO;
-using NPOI.HSSF.UserModel;
 using BAL.Services.Interfaces.MealOrder;
 using BAL.DTO.MealOrder;
 using DAL.Models.MealOrder;
+using DAL.Core.DTO;
 
 namespace BAL.Services.MealOrder
 {
@@ -228,6 +220,18 @@ namespace BAL.Services.MealOrder
         public async Task<List<VoucherDTO>> GetAllValidVoucher(int studentId)
         {
             var result = _mapper.Map<List<VoucherDTO>>(await this._uow.Vouchers.GetAllValidVoucher(studentId));
+            return result;
+        }
+
+        public async Task<PagedEntity<VoucherStudentLiteDTO>> GetVouchersStudentAsync(BaseFilter filter)
+        {
+            var result = await _uow.Vouchers.GetVouchersStudentAsync(filter);
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> DeleteStudentVoucher(int id)
+        {
+            var result = await _uow.Vouchers.DeleteStudentVoucher(id);
             return result;
         }
 

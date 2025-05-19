@@ -525,7 +525,17 @@ namespace DAL
             builder.Entity<Payment>().TrackAllProperties();
             builder.Entity<StudentCard>().TrackAllProperties();
             builder.Entity<StudentRestriction>().TrackAllProperties();
+            #region StudentVoucher
             builder.Entity<StudentVoucher>().TrackAllProperties();
+            builder.Entity<StudentVoucher>()
+                .Property(x => x.Status)
+                .HasMaxLength(50)
+                .IsRequired(false);
+            builder.Entity<StudentVoucher>().HasIndex(x => x.StudentId);
+            builder.Entity<StudentVoucher>().HasIndex(x => x.VoucherId);
+            builder.Entity<StudentVoucher>().HasIndex(x => new { x.StudentId, x.VoucherId });
+            builder.Entity<StudentVoucher>().HasIndex(x => x.Status);
+            #endregion
             builder.Entity<StudentInterestGroup>().TrackAllProperties();
             builder.Entity<RouteNode>().TrackAllProperties();
             builder.Entity<Staff>().TrackAllProperties();

@@ -10,6 +10,7 @@ using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
 using DAL.Models.MealOrder;
+using DAL.Core.DTO;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -35,6 +36,40 @@ namespace DAL.Repositories.MealOrder
             int totalCount = query.Count();
             query = _sieveProcessor.Apply(filter, query, applyFiltering: false, applySorting: false);
             var result = new PagedEntity<Voucher>
+            {
+                Filter = filter,
+                TotalCount = totalCount,
+                PagedData = await query.ToListAsync()
+            };
+
+            return result;
+        }
+
+        public async Task<PagedEntity<VoucherStudentLiteDTO>> GetVouchersStudentAsync(BaseFilter filter)
+        {
+            var query = _appContext.StudentVouchers
+                .Include(e => e.Voucher).ThenInclude(x => x.VoucherType)
+                .Include(x => x.Student)
+                .AsSplitQuery()
+                .Where(x => x.IsActive)
+                .AsNoTracking()
+                .Select(x => new VoucherStudentLiteDTO
+                {
+                    StudentVoucherId = x.Id,
+                    VoucherId = x.VoucherId,
+                    StudentId = x.StudentId,
+                    Code = x.Voucher.Code,
+                    Name = x.Voucher.Name,
+                    VoucherTypeName = x.Voucher.VoucherType.Name,
+                    StudentName = x.Student.Name,
+                    Status = x.Status
+
+                });
+
+            query = _sieveProcessor.Apply(filter, query, applyPagination: false);
+            int totalCount = query.Count();
+            query = _sieveProcessor.Apply(filter, query, applyFiltering: false, applySorting: false);
+            var result = new PagedEntity<VoucherStudentLiteDTO>
             {
                 Filter = filter,
                 TotalCount = totalCount,
@@ -154,6 +189,25 @@ namespace DAL.Repositories.MealOrder
 
             result.IsSuccess = false;
             result.Message = "Voucher not found.";
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> DeleteStudentVoucher(int studentVoucherId)
+        {
+            var result = new BaseOperationResponse();
+            var selectedData = await _appContext.StudentVouchers.FindAsync(studentVoucherId);
+            _appContext.StudentVouchers.Remove(selectedData);
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+            }
+            else
+            {
+                result.Message = "Failed to delete student voucher!";
+                result.IsSuccess = false;
+            }
+
             return result;
         }
 

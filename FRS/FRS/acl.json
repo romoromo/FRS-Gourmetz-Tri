@@ -1071,6 +1071,25 @@
               ]
             },
             {
+              "name": "Voucher Unassign",
+              "value": "mosmgt.settingmgt.payment.voucherunassign",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Voucher Unassign",
+                  "value": "mosmgt.settingmgt.payment.voucherunassign.view",
+                  "description": "Permission to view Voucher",
+                  "children": []
+                },
+                {
+                  "name": "Manage Voucher Unassign",
+                  "value": "mosmgt.settingmgt.payment.voucherunassign.manage",
+                  "description": "Permission to Manage Voucher",
+                  "children": []
+                }
+              ]
+            },
+            {
               "name": "Waiver",
               "value": "mosmgt.settingmgt.payment.waiver",
               "description": "",

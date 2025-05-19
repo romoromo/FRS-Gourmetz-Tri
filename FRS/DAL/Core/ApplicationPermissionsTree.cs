@@ -666,6 +666,12 @@ namespace DAL.Core
         public static ApplicationPermissionsTree ManageMOSOrderMgtVouchersMenu = new ApplicationPermissionsTree(id++, "Manage Voucher", "mosmgt.settingmgt.payment.voucher.manage", "Permission to view Voucher", MOSOrderMgtVouchersMenu);
         #endregion
 
+        #region Vouchers UnAssign
+        public static ApplicationPermissionsTree MOSOrderMgtVouchersUnAssignMenu = new ApplicationPermissionsTree(id++, "Voucher Unassign", "mosmgt.settingmgt.payment.voucherunassign", "", ViewMOSSettingMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSOrderMgtVouchersUnAssignMenu = new ApplicationPermissionsTree(id++, "View Voucher Unassign", "mosmgt.settingmgt.payment.voucherunassign.view", "Permission to view Voucher Unassign", MOSOrderMgtVouchersUnAssignMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtVouchersUnAssignMenu = new ApplicationPermissionsTree(id++, "Manage Voucher Unassign", "mosmgt.settingmgt.payment.voucherunassign.manage", "Permission to Manage Voucher Unassign", MOSOrderMgtVouchersUnAssignMenu);
+        #endregion
+
         #region Voucher Types
         public static ApplicationPermissionsTree MOSOrderMgtWaiversMenu = new ApplicationPermissionsTree(id++, "Voucher Types", "mosmgt.settingmgt.payment.waiver", "", ViewMOSSettingMgtMenu);
         public static ApplicationPermissionsTree ViewMOSOrderMgtWaiversMenu = new ApplicationPermissionsTree(id++, "View Waiver", "mosmgt.settingmgt.payment.waiver.view", "Permission to view Waiver", MOSOrderMgtWaiversMenu);
@@ -1198,6 +1204,10 @@ namespace DAL.Core
                 MOSOrderMgtVouchersMenu,
                 ViewMOSOrderMgtVouchersMenu,
                 ManageMOSOrderMgtVouchersMenu,
+
+                MOSOrderMgtVouchersUnAssignMenu,
+                ViewMOSOrderMgtVouchersUnAssignMenu,
+                ManageMOSOrderMgtVouchersUnAssignMenu,
 
                 MOSOrderMgtWaiversMenu,
                 ViewMOSOrderMgtWaiversMenu,

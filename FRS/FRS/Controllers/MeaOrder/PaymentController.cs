@@ -13,6 +13,7 @@ using BAL.Services.Interfaces.MealOrder;
 using BAL.Services.MealOrder;
 using DAL;
 using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 using FRS.Attributes;
@@ -601,6 +602,37 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetAllValidVoucher(int studentId)
         {
             return Ok(_mapper.Map<List<VoucherDTO>>(await this._service.GetAllValidVoucher(studentId)));
+        }
+
+        [HttpGet("vouchers/sieve/student-list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetVoucherStudent(BaseFilter filter)
+        {
+            var results = await this._service.GetVouchersStudentAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<VoucherStudentLiteDTO>>(results));
+        }
+
+        [HttpDelete("vouchers/student/delete/{id:int}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteVoucherStudent([FromRoute] int id)
+        {
+            try
+            {
+                _logger.LogInformation($"DeleteVoucherStudent Id : {id}");
+
+                var dto = await this._service.DeleteStudentVoucher(id);
+                if (!dto.IsSuccess)
+                    throw new Exception("The following errors occurred while deleting: " + string.Join(", ", dto.Message));
+                return Ok(dto);
+            }
+            catch (Exception ex) {
+                _logger.LogError($"Error DeleteVoucherStudent : {ex.Message}", ex);
+                _logger.LogError($"Error DeleteVoucherStudent : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         #endregion

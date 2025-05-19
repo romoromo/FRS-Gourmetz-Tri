@@ -1,4 +1,5 @@
 ﻿using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
@@ -18,5 +19,7 @@ namespace DAL.Repositories.Interfaces
         Task<PagedEntity<Voucher>> GetVouchersAsync(BaseFilter filter);
         Task<BaseOperationResponse> ValidateVoucher(int studentId, string code);
         Task<List<Voucher>> GetAllValidVoucher(int studentId);
+        Task<PagedEntity<VoucherStudentLiteDTO>> GetVouchersStudentAsync(BaseFilter filter);
+        Task<BaseOperationResponse> DeleteStudentVoucher(int studentVoucherId);
     }
 }

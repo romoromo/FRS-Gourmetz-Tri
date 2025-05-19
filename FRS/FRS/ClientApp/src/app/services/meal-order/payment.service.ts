@@ -7,7 +7,7 @@ import { AccountEndpoint } from '../account-endpoint.service';
 import { AuthService } from '../auth.service';
 import { CommonEndpoint } from '../common-endpoint.service';
 import { ConfigurationService } from '../configuration.service';
-import {  Filter, PagedResult } from 'src/app/models/sieve-filter.model';
+import { Filter, PagedResult } from 'src/app/models/sieve-filter.model';
 import { PaymentType } from 'src/app/models/meal-order/payment-type.model';
 import { TransactionFee } from 'src/app/models/meal-order/transaction-fee.model';
 import { VoucherType } from 'src/app/models/meal-order/voucher-type.model';
@@ -129,6 +129,10 @@ export class PaymentService {
     return this.commonEndpoint.getSieve<PagedResult>(this.voucherUrl + '/sieve/list', filter);
   }
 
+  getVoucherStudent(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.voucherUrl + '/sieve/student-list', filter);
+  }
+
   updateVoucher(voucher: Voucher) {
     if (voucher.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.voucherUrl, voucher, voucher.id);
@@ -143,6 +147,10 @@ export class PaymentService {
 
   deleteVoucher(voucherOrVoucherId: string | Voucher): Observable<Voucher> {
     return this.commonEndpoint.getDeleteEndpoint<Voucher>(this.voucherUrl, <string>voucherOrVoucherId);
+  }
+
+  deleteVoucherStudent(id: string): Observable<any> {
+    return this.commonEndpoint.getDeleteEndpoint<any>(`${this.voucherUrl}/student`, id);
   }
 
   //waiver

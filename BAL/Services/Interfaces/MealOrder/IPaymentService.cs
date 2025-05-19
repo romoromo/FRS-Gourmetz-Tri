@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BAL.DTO;
 using BAL.DTO.MealOrder;
 using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 
@@ -42,6 +43,8 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdateVoucherAsync(VoucherDTO dto);
         Task<BaseOperationResponse> ValidateVoucher(int studentId, string code);
         Task<List<VoucherDTO>> GetAllValidVoucher(int studentId);
+        Task<PagedEntity<VoucherStudentLiteDTO>> GetVouchersStudentAsync(BaseFilter filter);
+        Task<BaseOperationResponse> DeleteStudentVoucher(int id);
 
         Task<BaseOperationResponse> CreateWaiverAsync(WaiverDTO dto);
         Task<BaseOperationResponse> DeleteWaiverAsync(int id);

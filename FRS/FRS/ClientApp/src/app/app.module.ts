@@ -503,6 +503,7 @@ import { FaqDetailsManagementComponent } from './components/meal-order-system/fa
 import { FaqDetailEditorComponent } from './components/meal-order-system/faq-detail/faq-detail-editor.component';
 import { FaqService } from './services/meal-order/faq.service';
 import { VoucherUtilisationsReportManagementComponent } from './components/reports/voucher-utilisation/voucher-utilisations-management.component';
+import { VouchersUnassignManagementComponent } from './components/meal-order-system/voucher-unassign/vouchers-unassign-management.component';
  
  
 
@@ -713,7 +714,7 @@ export const configFactory = (configService: ConfigurationService) => {
     DishCycleEditorComponent, DishCyclesManagementComponent, DishCycleCalendarComponent, ViewDishCycleMenuComponent, OutletDishCycleCalendarComponent, OutletViewDishCycleMenuComponent,
     PaymentTypesManagementComponent, PaymentTypeEditorComponent,
     TransactionFeesManagementComponent, TransactionFeeEditorComponent,
-    VoucherTypesManagementComponent, VoucherTypeEditorComponent, VouchersManagementComponent, VoucherEditorComponent,
+    VoucherTypesManagementComponent, VoucherTypeEditorComponent, VouchersManagementComponent,VouchersUnassignManagementComponent, VoucherEditorComponent,
     WaiversManagementComponent, WaiverEditorComponent,
     ContactUsDetailsManagementComponent, ContactUsDetailEditorComponent,
     ContactUsSubjectEditorComponent, ContactUsSubjectsManagementComponent,

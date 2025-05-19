@@ -227,6 +227,16 @@
           "childMenus": []
         },
         {
+          "label": "Vouchers Unassign",
+          "active": true,
+          "link": "/vouchers-unassign",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [ "mosmgt.settingmgt.payment.voucherunassign" ],
+          "childMenus": []
+        },
+        {
           "label": "Waivers",
           "active": true,
           "link": "/waivers",
