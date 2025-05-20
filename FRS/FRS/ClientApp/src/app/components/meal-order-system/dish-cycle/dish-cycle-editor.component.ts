@@ -75,6 +75,8 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
   public changesCancelledCallback: () => void;
   public catererId: string;
 
+  private minEndDate: Date = new Date();
+
   @ViewChild('f')
   private form;
 
@@ -136,6 +138,7 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
     if (type == 'start') {
       this.start = new Date(event.value);
       this.dishCycleEdit.startDate = new Date(event.value);
+      this.setMinEndDate();
     }
     if (type == 'end') {
       this.end = new Date(event.value);
@@ -215,6 +218,13 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
     let selectedMealPeriods = this.periods.filter(f => f.checked);
+    console.log("check start date", this.dishCycleEdit.startDate, this.dishCycleEdit.endDate)
+    if (this.dishCycleEdit.endDate && this.dishCycleEdit.startDate && this.dishCycleEdit.endDate < this.dishCycleEdit.startDate) {
+      this.alertService.stopLoadingMessage();
+      this.alertService.showStickyMessage("Save Error", "End date cannot be earlier than start date.", MessageSeverity.error);
+      this.isSaving = false;
+      return; // Prevent submission
+    }
     this.dishCycleEdit.dishCyclePeriods = [];
     this.periods.forEach((p, index, ps) => {
       if (p.checked) {
@@ -340,6 +350,8 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
       } else {
         this.initiliaseSet();
       }
+
+      this.setMinEndDate();
 
       //this.getOutletProfiles();
       return this.dishCycleEdit;
@@ -803,10 +815,10 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
     //}
   }
 
-  //setMinEndDate() {
-  //  console.log('start date', this.voucherEdit.startDateTime.toString());
-  //  this.minEndDate = this.voucherEdit.startDateTime.toString();
-  //}
+  setMinEndDate() {
+    console.log('start date', this.dishCycleEdit.startDate);
+    this.minEndDate = this.dishCycleEdit.startDate;
+  }
 
   get canManageDishCycles() {
     return this.accountService.userHasPermission(Permission.manageMOSOrderMgtCatererDishCyclesMenu)

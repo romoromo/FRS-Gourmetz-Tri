@@ -43,7 +43,7 @@
             <mat-datepicker #startpicker></mat-datepicker>
           </mat-form-field>
           <mat-form-field class="col-md-6 col-xs-12">
-            <input matInput [matDatepicker]="endpicker" placeholder="End Date" [value]="end"
+            <input matInput [min]="minEndDate" [matDatepicker]="endpicker" placeholder="End Date" [value]="end"
                    (dateChange)="onChangeDate('end', $event)" required>
             <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
             <mat-datepicker #endpicker></mat-datepicker>
