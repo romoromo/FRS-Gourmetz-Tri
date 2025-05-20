@@ -307,7 +307,7 @@ const routes: Routes = [
       { path: "transactionfees", component: TransactionFeesManagementComponent, canActivate: [AuthGuard], data: { title: "Transaction Fees" } },
       { path: "vouchertypes", component: VoucherTypesManagementComponent, canActivate: [AuthGuard], data: { title: "Voucher Types" } },
       { path: "vouchers", component: VouchersManagementComponent, canActivate: [AuthGuard], data: { title: "Vouchers" } },
-      { path: "vouchers-unassign", component: VouchersUnassignManagementComponent, canActivate: [AuthGuard], data: { title: "Vouchers Unassign" } },
+      { path: "vouchers-administration", component: VouchersUnassignManagementComponent, canActivate: [AuthGuard], data: { title: "Vouchers Administration" } },
       { path: "waivers", component: WaiversManagementComponent, canActivate: [AuthGuard], data: { title: "Waivers" } },
       { path: "contactussubjects", component: ContactUsSubjectsManagementComponent, canActivate: [AuthGuard], data: { title: "Contact Us Subjects" } },
       { path: "contactusdetails", component: ContactUsDetailsManagementComponent, canActivate: [AuthGuard], data: { title: "Contact Us Details" } },

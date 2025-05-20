@@ -229,9 +229,9 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        public async Task<BaseOperationResponse> DeleteStudentVoucher(int id)
+        public async Task<BaseOperationResponse> DeleteStudentVoucherAndUpdateCountVoucher(int id)
         {
-            var result = await _uow.Vouchers.DeleteStudentVoucher(id);
+            var result = await _uow.Vouchers.DeleteStudentVoucherAndUpdateCountVoucher(id);
             return result;
         }
 

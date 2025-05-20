@@ -20,6 +20,6 @@ namespace DAL.Repositories.Interfaces
         Task<BaseOperationResponse> ValidateVoucher(int studentId, string code);
         Task<List<Voucher>> GetAllValidVoucher(int studentId);
         Task<PagedEntity<VoucherStudentLiteDTO>> GetVouchersStudentAsync(BaseFilter filter);
-        Task<BaseOperationResponse> DeleteStudentVoucher(int studentVoucherId);
+        Task<BaseOperationResponse> DeleteStudentVoucherAndUpdateCountVoucher(int studentVoucherId);
     }
 }

@@ -667,9 +667,9 @@ namespace DAL.Core
         #endregion
 
         #region Vouchers UnAssign
-        public static ApplicationPermissionsTree MOSOrderMgtVouchersUnAssignMenu = new ApplicationPermissionsTree(id++, "Voucher Unassign", "mosmgt.settingmgt.payment.voucherunassign", "", ViewMOSSettingMgtMenu);
-        public static ApplicationPermissionsTree ViewMOSOrderMgtVouchersUnAssignMenu = new ApplicationPermissionsTree(id++, "View Voucher Unassign", "mosmgt.settingmgt.payment.voucherunassign.view", "Permission to view Voucher Unassign", MOSOrderMgtVouchersUnAssignMenu);
-        public static ApplicationPermissionsTree ManageMOSOrderMgtVouchersUnAssignMenu = new ApplicationPermissionsTree(id++, "Manage Voucher Unassign", "mosmgt.settingmgt.payment.voucherunassign.manage", "Permission to Manage Voucher Unassign", MOSOrderMgtVouchersUnAssignMenu);
+        public static ApplicationPermissionsTree MOSOrderMgtVouchersAdministrationMenu = new ApplicationPermissionsTree(id++, "Voucher Administration", "mosmgt.settingmgt.payment.voucheradministration", "", ViewMOSSettingMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSOrderMgtVouchersAdministrationMenu = new ApplicationPermissionsTree(id++, "View Voucher Administration", "mosmgt.settingmgt.payment.voucheradministration.view", "Permission to view Voucher Administration", MOSOrderMgtVouchersAdministrationMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtVouchersAdministrationMenu = new ApplicationPermissionsTree(id++, "Manage Voucher Administration", "mosmgt.settingmgt.payment.voucheradministration.manage", "Permission to Manage Voucher Administration", MOSOrderMgtVouchersAdministrationMenu);
         #endregion
 
         #region Voucher Types
@@ -1205,9 +1205,9 @@ namespace DAL.Core
                 ViewMOSOrderMgtVouchersMenu,
                 ManageMOSOrderMgtVouchersMenu,
 
-                MOSOrderMgtVouchersUnAssignMenu,
-                ViewMOSOrderMgtVouchersUnAssignMenu,
-                ManageMOSOrderMgtVouchersUnAssignMenu,
+                MOSOrderMgtVouchersAdministrationMenu,
+                ViewMOSOrderMgtVouchersAdministrationMenu,
+                ManageMOSOrderMgtVouchersAdministrationMenu,
 
                 MOSOrderMgtWaiversMenu,
                 ViewMOSOrderMgtWaiversMenu,

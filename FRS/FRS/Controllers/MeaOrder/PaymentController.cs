@@ -623,7 +623,7 @@ namespace FRS.Controllers
             {
                 _logger.LogInformation($"DeleteVoucherStudent Id : {id}");
 
-                var dto = await this._service.DeleteStudentVoucher(id);
+                var dto = await this._service.DeleteStudentVoucherAndUpdateCountVoucher(id);
                 if (!dto.IsSuccess)
                     throw new Exception("The following errors occurred while deleting: " + string.Join(", ", dto.Message));
                 return Ok(dto);

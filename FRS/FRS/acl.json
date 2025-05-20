@@ -1071,19 +1071,19 @@
               ]
             },
             {
-              "name": "Voucher Unassign",
-              "value": "mosmgt.settingmgt.payment.voucherunassign",
+              "name": "Voucher Administration",
+              "value": "mosmgt.settingmgt.payment.voucheradministration",
               "description": "",
               "children": [
                 {
-                  "name": "View Voucher Unassign",
-                  "value": "mosmgt.settingmgt.payment.voucherunassign.view",
+                  "name": "View Voucher Administration",
+                  "value": "mosmgt.settingmgt.payment.voucheradministration.view",
                   "description": "Permission to view Voucher",
                   "children": []
                 },
                 {
-                  "name": "Manage Voucher Unassign",
-                  "value": "mosmgt.settingmgt.payment.voucherunassign.manage",
+                  "name": "Manage Voucher Administration",
+                  "value": "mosmgt.settingmgt.payment.voucheradministration.manage",
                   "description": "Permission to Manage Voucher",
                   "children": []
                 }

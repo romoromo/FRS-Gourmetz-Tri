@@ -44,7 +44,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> ValidateVoucher(int studentId, string code);
         Task<List<VoucherDTO>> GetAllValidVoucher(int studentId);
         Task<PagedEntity<VoucherStudentLiteDTO>> GetVouchersStudentAsync(BaseFilter filter);
-        Task<BaseOperationResponse> DeleteStudentVoucher(int id);
+        Task<BaseOperationResponse> DeleteStudentVoucherAndUpdateCountVoucher(int id);
 
         Task<BaseOperationResponse> CreateWaiverAsync(WaiverDTO dto);
         Task<BaseOperationResponse> DeleteWaiverAsync(int id);

@@ -192,11 +192,26 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        public async Task<BaseOperationResponse> DeleteStudentVoucher(int studentVoucherId)
+        public async Task<BaseOperationResponse> DeleteStudentVoucherAndUpdateCountVoucher(int studentVoucherId)
         {
             var result = new BaseOperationResponse();
+
             var selectedData = await _appContext.StudentVouchers.FindAsync(studentVoucherId);
+            if (selectedData == null)
+            {
+                result.Message = "Student voucher not found!";
+                result.IsSuccess = false;
+                return result;
+            }
+
             _appContext.StudentVouchers.Remove(selectedData);
+
+            var selectedVoucher = await _appContext.Vouchers.FindAsync(selectedData.VoucherId);
+            if (selectedVoucher != null)
+            {
+                selectedVoucher.UsageQuantityUsed = Math.Max(0, selectedVoucher.UsageQuantityUsed - 1);
+            }
+
             if (await _appContext.SaveChangesAsync() > 0)
             {
                 result.Message = "Successfully saved!";

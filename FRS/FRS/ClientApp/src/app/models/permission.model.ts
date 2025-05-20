@@ -97,7 +97,7 @@ export type PermissionValues =
   "mosmgt.settingmgt.payment.transactionfee.manage" |
   "mosmgt.settingmgt.payment.vouchertype.manage" |
   "mosmgt.settingmgt.payment.voucher.manage" |
-  "mosmgt.settingmgt.payment.voucherunassign.manage" |
+  "mosmgt.settingmgt.payment.voucheradministration.manage" |
   "mosmgt.settingmgt.payment.waiver.manage" |
   "mosmgt.outletmgt.terms.view" |
   "mosmgt.outletmgt.terms.manage" |
@@ -336,7 +336,7 @@ export class Permission {
   public static readonly manageMOSOrderMgtTransactionFeesPermission: PermissionValues = "mosmgt.settingmgt.payment.transactionfee.manage";
   public static readonly manageMOSOrderMgtVoucherTypesPermission: PermissionValues = "mosmgt.settingmgt.payment.vouchertype.manage";
   public static readonly manageMOSOrderMgtVouchersPermission: PermissionValues = "mosmgt.settingmgt.payment.voucher.manage";
-  public static readonly manageMOSOrderMgtVoucherUnAssignPermission: PermissionValues = "mosmgt.settingmgt.payment.voucherunassign.manage";
+  public static readonly manageMOSOrderMgtVoucherUnAssignPermission: PermissionValues = "mosmgt.settingmgt.payment.voucheradministration.manage";
   public static readonly manageMOSOrderMgtWaiversPermission: PermissionValues = "mosmgt.settingmgt.payment.waiver.manage";
   public static readonly manageMOSOrderMgtContactUsSubjectsPermission: PermissionValues = "mosmgt.settingmgt.contactus.subject.manage";
   public static readonly manageMOSOrderMgtContactUsQuestionsPermission: PermissionValues = "mosmgt.settingmgt.contactus.question.manage";

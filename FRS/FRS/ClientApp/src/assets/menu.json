@@ -227,13 +227,13 @@
           "childMenus": []
         },
         {
-          "label": "Vouchers Unassign",
+          "label": "Vouchers Administration",
           "active": true,
-          "link": "/vouchers-unassign",
+          "link": "/vouchers-administration",
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.voucherunassign" ],
+          "permissions": [ "mosmgt.settingmgt.payment.voucheradministration" ],
           "childMenus": []
         },
         {
