@@ -42,6 +42,10 @@
     {{(row.isFAS ? 'YES' : 'NO')}}
   </ng-template>
 
+  <ng-template #activeTemplate let-row="row" let-value="value" let-i="index">
+    {{(row.isActive == 1 ? 'YES' : 'NO')}}
+  </ng-template>
+
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addVoucher(row?.id)"><i
         class="fa fa-ticket" aria-hidden="true"></i> Add Voucher</a>

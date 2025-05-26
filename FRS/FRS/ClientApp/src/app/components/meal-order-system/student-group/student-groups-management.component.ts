@@ -58,6 +58,9 @@ export class StudentGroupsManagementComponent implements OnInit {
   @ViewChild('totalStudents')
   totalStudents: TemplateRef<any>;
 
+  @ViewChild('activeTemplate')
+  activeTemplate: TemplateRef<any>;
+
   @ViewChild('studentEditorComponent')
   studentEditorComponent: StudentGroupEditorComponent;
   header: string;
@@ -105,6 +108,10 @@ export class StudentGroupsManagementComponent implements OnInit {
         name: 'Students',
         cellTemplate: this.totalStudents,
         sortable: false
+      },
+      {
+        name: 'Active',
+        cellTemplate: this.activeTemplate
       },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];

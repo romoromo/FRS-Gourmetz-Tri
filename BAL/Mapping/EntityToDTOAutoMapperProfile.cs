@@ -320,7 +320,7 @@ namespace BAL.Mapping
             CreateMap<StudentGroup, StudentGroupDTO>()
                 //.ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSession.Name))
                 .ForMember(e => e.TermName, map => map.MapFrom(e => e.OutletTerm.Label))
-                .ForMember(e => e.Sgdetails, map => map.MapFrom(e => e.Sgdetails.Where(f => f.Student.IsActive).ToList()))
+                .ForMember(e => e.Sgdetails, map => map.MapFrom(e => e.Sgdetails.Where(f => f.Student != null && f.Student.IsActive).ToList()))
                 .ForMember(e => e.Sessions, map => map.MapFrom(e => e.MealSessions.Where(f => f.IsActive).ToList()));
 
             CreateMap<StudentGroup, StudentGroupSimpleDTO>()
@@ -328,7 +328,7 @@ namespace BAL.Mapping
 
             CreateMap<StudentGroupDetailDTO, StudentGroupDetail>();
             CreateMap<StudentGroupDetail, StudentGroupDetailDTO>()
-                .ForMember(e => e.Name, map => map.MapFrom(e => e.Student.Name));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Student != null ? src.Student.Name : string.Empty));
 
             CreateMap<StudentGroupSessionDTO, StudentGroupSession>();
             CreateMap<StudentGroupSession, StudentGroupSessionDTO>();

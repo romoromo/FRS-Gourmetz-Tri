@@ -33,6 +33,7 @@ namespace BAL.DTO.MealOrder
         public string FileName { get; set; }
         public string FilePath { get; set; }
         public int Sequence { get; set; }
+        public int IsActive { get; set; }
         public List<StudentGroupDetailDTO> Sgdetails { get; set; }
         public List<StudentGroupSessionDTO> Sessions { get; set; }
     }
