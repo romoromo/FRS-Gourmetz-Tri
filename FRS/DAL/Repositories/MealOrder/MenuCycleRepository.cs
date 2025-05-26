@@ -427,6 +427,15 @@ namespace DAL.Repositories.MealOrder
             return await query.ToListAsync();
         }
 
+        public async Task<List<OutletClassRosterSchedule>> GetStudentMenuCycles2Async(int studentId)
+        {
+            //var outlet = await _appContext.CatererOutlets.FirstOrDefaultAsync(e => e.OutletId == outletId && e.CatererInfoId == catererId);
+            //var student = await _appContext.Students.FirstOrDefaultAsync(e => e.Id == studentId);
+            IQueryable<OutletClassRosterSchedule> query = _appContext.OutletClassRosters.Where(e => e.IsActive && e.EndDate.HasValue && e.EndDate.Value.Date >= DateTime.Now.Date).SelectMany(e => e.Schedules);
+            //query = query.Where(e => e.IsActive && e.Periods.SelectMany(f => f.Classes).Any(x => x.ClassId == student.ClassId));
+            return await query.ToListAsync();
+        }
+
         public async Task<List<OutletClassRosterSchedule>> GetStudentsMenuCyclesAsync(List<int> studentIds)
         {
             var student = await _appContext.Students.FirstOrDefaultAsync(e => studentIds.Contains(e.Id));

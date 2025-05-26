@@ -194,6 +194,40 @@ namespace BAL.Services.MealOrder
             return grpResult.ToList();
         }
 
+        public async Task<List<OutletClassRosterDTO>> GetStudentMenuCycles2Async(int classId,int studentId, int outletId, int catererId)
+        {
+            //var student = await this._uow.MenuCycles.GetStudentAsync(studentId);
+            var schedules = await this._uow.MenuCycles.GetStudentMenuCycles2Async(studentId);
+
+            var result = schedules.Select(e => new OutletClassRosterScheduleDTO
+            {
+                Day = e.Day,
+                Id = e.Id,
+                OutletClassRosterId = e.OutletClassRosterId,
+                OutletClassRoster = _mapper.Map<OutletClassRosterDTO>(e.OutletClassRoster),
+                HasClass = e.Periods.Any(f => f.IsActive && f.Classes.Any(x => x.ClassId == classId)),
+                Periods = e.Periods.Where(f => f.IsActive).Select(f => new OutletClassRosterSchedulePeriodDTO
+                {
+                    Classes = _mapper.Map<List<OutletClassRosterSchedulePeriodClassDTO>>(f.Classes.Where(x => x.IsActive && x.ClassId == classId)),
+                    MealSessionDetailName = f.MealSessionDetail.Name,
+                    MealSessionDetailId = f.MealSessionDetailId,
+                    OutletClassRosterScheduleId = f.OutletClassRosterScheduleId,
+                    MealSessionDetailEndDate = f.MealSessionDetail.EndDate,
+                    MealSessionDetailStartDate = f.MealSessionDetail.StartDate
+                }).ToList()
+            });
+
+            var grpResult = result.GroupBy(e => e.OutletClassRosterId).Select(e => new OutletClassRosterDTO
+            {
+                Id = e.Key,
+                StartDate = e.First().OutletClassRoster.StartDate,
+                EndDate = e.First().OutletClassRoster.EndDate,
+                Schedules = e.ToList()
+            });
+
+            return grpResult.ToList();
+        }
+
         public async Task<List<MealSessionDetailDTO>> GetStudentSessions(int studentId, DateTime orderDate)
         {
             var student = await this._uow.MenuCycles.GetStudentAsync(studentId);

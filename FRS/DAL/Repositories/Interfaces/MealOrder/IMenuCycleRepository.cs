@@ -28,6 +28,8 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<List<MenuCycleSchedulePeriod>> GetOutletMenuCycleSchedulePeriods(int outletId, int catererId, int menuCycleId, int day);
 
         Task<List<OutletClassRosterSchedule>> GetStudentMenuCyclesAsync(int studentId);
+
+        Task<List<OutletClassRosterSchedule>> GetStudentMenuCycles2Async(int studentId);
         Task<Student> GetStudentAsync(int studentId);
         Task<List<Student>> GetStudentsByOutletAsync(int outletId);
         Task<List<OutletClassRosterSchedule>> GetStudentsMenuCyclesAsync(List<int> studentIds);

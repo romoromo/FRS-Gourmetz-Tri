@@ -371,6 +371,20 @@ namespace FRS.Controllers
         }
 
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpGet("studentsNew/list")]
+        //[Authorize(Authorization.Policies.ViewAllMenuCyclesPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(List<OutletClassRosterDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetStudentMenuCycles2Async(int classId, int studentId, int outletId, int catererId)
+        {
+            var results = await this._service.GetStudentMenuCycles2Async(classId, studentId, outletId, catererId);
+            return Ok(results);
+        }
+
+
         //[ApiKeyAuthorize]
         [HttpGet("students/mealsessions")]
         //[Authorize(Authorization.Policies.ViewAllMenuCyclesPolicy)]

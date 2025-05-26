@@ -22,7 +22,7 @@
       "showLabel": true,
       "showLogo": true,
       "logoClass": "fa fa-cubes",
-      "permissions": [ "mosmgt.mealmgt.order.view" ],
+      "permissions": [],
       "childMenus": [
         {
           "label": "Restriction Types",
@@ -31,7 +31,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.restrictiontypes" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -41,7 +41,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.restrictions" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -51,7 +51,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.bentoboxtypes.view" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -61,7 +61,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.bentoassets" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -71,7 +71,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.cartontypes" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -81,7 +81,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.cartonassets" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -91,7 +91,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.deliveryorders" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -101,7 +101,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.dishingprocess" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -111,7 +111,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.packingprocess" ],
+          "permissions": [],
           "childMenus": []
         }
       ]
@@ -123,7 +123,7 @@
       "showLabel": true,
       "showLogo": true,
       "logoClass": "fa fa-cutlery",
-      "permissions": [ "mosmgt.caterermgt.view" ],
+      "permissions": [],
       "childMenus": [
         {
           "label": "Caterers",
@@ -132,7 +132,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.caterers" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -142,7 +142,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.mealmgt.order.delivery.routes" ],
+          "permissions": [],
           "childMenus": []
         }
       ]
@@ -154,7 +154,7 @@
       "showLabel": true,
       "showLogo": true,
       "logoClass": "fa fa-building-o",
-      "permissions": [ "mosmgt.settingmgt.outlets.outlets" ],
+      "permissions": [],
       "childMenus": []
     },
     {
@@ -164,7 +164,7 @@
       "showLabel": true,
       "showLogo": true,
       "logoClass": "fa fa-gears",
-      "permissions": [ "mosmgt.settingmgt.view" ],
+      "permissions": [],
       "childMenus": [
         {
           "label": "Store",
@@ -173,7 +173,17 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.storeinfo" ],
+          "permissions": [],
+          "childMenus": []
+        },
+        {
+          "label": "Outlet Types",
+          "active": true,
+          "link": "/outlettypes",
+          "showLabel": true,
+          "showLogo": true,
+          "logoClass": "",
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -183,7 +193,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.orders.cancelrequest" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -193,7 +203,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.paymenttype" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -203,7 +213,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.transactionfee" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -213,7 +223,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.vouchertype" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -223,7 +233,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.voucher" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -243,7 +253,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.payment.waiver" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -253,7 +263,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.contactus.subject" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -263,7 +273,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.contactus.question" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -273,7 +283,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.notifications.settings" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -283,7 +293,7 @@
           "showLabel": true,
           "showLogo": true,
           "logoClass": "",
-          "permissions": [ "mosmgt.settingmgt.notifications.events" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -293,7 +303,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "systemsetting.audit.view" ],
+          "permissions": [],
           "childMenus": [
             {
               "label": "Authentication Logs",
@@ -302,7 +312,7 @@
               "showLabel": true,
               "showLogo": false,
               "logoClass": "",
-              "permissions": [ "systemsetting.audit.authlog.view" ],
+              "permissions": [],
               "childMenus": []
             },
             {
@@ -312,7 +322,7 @@
               "showLabel": true,
               "showLogo": false,
               "logoClass": "",
-              "permissions": [ "systemsetting.audit.datalog.view" ],
+              "permissions": [],
               "childMenus": []
             }
           ]
@@ -324,7 +334,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "systemsetting.user" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -334,7 +344,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "systemsetting.role" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -366,7 +376,7 @@
       "showLabel": true,
       "showLogo": true,
       "logoClass": "fa fa-table",
-      "permissions": [ "mosmgt.reportmgt.view" ],
+      "permissions": [],
       "childMenus": [
         {
           "label": "Bento Usage",
@@ -385,7 +395,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "mosmgt.reportmgt.ordercancellation.view" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -395,7 +405,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "mosmgt.outletmgt.reports.ordercollection.view" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -405,7 +415,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "mosmgt.outletmgt.reports.orderpayment.view" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -425,7 +435,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "mosmgt.reportmgt.role.view" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -435,7 +445,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "mosmgt.reportmgt.order.view" ],
+          "permissions": [],
           "childMenus": []
         },
         {
@@ -445,7 +455,7 @@
           "showLabel": true,
           "showLogo": false,
           "logoClass": "",
-          "permissions": [ "mosmgt.reportmgt.useraccount.view" ],
+          "permissions": [],
           "childMenus": []
         },
         {
