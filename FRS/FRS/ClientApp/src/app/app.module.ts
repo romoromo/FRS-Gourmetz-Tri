@@ -504,6 +504,7 @@ import { FaqDetailEditorComponent } from './components/meal-order-system/faq-det
 import { FaqService } from './services/meal-order/faq.service';
 import { VoucherUtilisationsReportManagementComponent } from './components/reports/voucher-utilisation/voucher-utilisations-management.component';
 import { VouchersUnassignManagementComponent } from './components/meal-order-system/voucher-unassign/vouchers-unassign-management.component';
+import { ClassTransferComponent } from './components/meal-order-system/class/class-transfer/class-transfer.component';
  
  
 
@@ -684,7 +685,7 @@ export const configFactory = (configService: ConfigurationService) => {
     ClassBatchesManagementComponent, ClassBatchEditorComponent,
     ClassLevelsManagementComponent, ClassLevelEditorComponent,
     DispenserOutletManagementComponent, DispenserOutletEditorComponent,
-    ClassesManagementComponent, ClassEditorComponent,
+    ClassesManagementComponent, ClassEditorComponent,ClassTransferComponent,
     StaffTypesManagementComponent, StaffTypeEditorComponent,
     StaffsManagementComponent, StaffEditorComponent,
     RestrictionTypesManagementComponent, RestrictionTypeEditorComponent,
@@ -897,7 +898,7 @@ export const configFactory = (configService: ConfigurationService) => {
     ServiceContractEditorComponent,
     DeviceTypeEditorComponent,
     ChannelInfoEditorComponent,
-    ClassBatchEditorComponent, ClassLevelEditorComponent, ClassEditorComponent, StudentEditorComponent, StaffTypeEditorComponent, StaffEditorComponent, DispenserOutletEditorComponent,
+    ClassBatchEditorComponent, ClassLevelEditorComponent, ClassEditorComponent,ClassTransferComponent, StudentEditorComponent, StaffTypeEditorComponent, StaffEditorComponent, DispenserOutletEditorComponent,
     RestrictionTypeEditorComponent, RestrictionEditorComponent, StudentGroupEditorComponent, StudentSelectorComponent, BentoUsageManagementComponent, ScanTagComponent,
     MealTypeEditorComponent, DishTypeEditorComponent, CatererInfoEditorComponent, BentoBoxTypeEditorComponent, CartonTypeEditorComponent, DeliveryOrderEditorComponent, DeliveryOrderNewEditorComponent, TrackingStatusEditorComponent, StoreInfoEditorComponent, BentoAssetEditorComponent, CartonAssetEditorComponent, MealPeriodEditorComponent,
     DishEditorComponent, DishSelectorComponent, MenuEditorComponent, MenuCycleEditorComponent, TokenOrderEditorComponent, TokenOrdersManagementComponent, TokenOrderBulkEditorComponent, TokenOrdersBulkManagementComponent, MealAllocationssManagementComponent, PrintAllocationComponent,

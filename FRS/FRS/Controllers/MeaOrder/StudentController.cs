@@ -32,6 +32,8 @@ using DAL.Core.Helpers;
 using System.Globalization;
 using NPOI.SS.Formula.Functions;
 using DAL.Models.MealOrder;
+using FRS.Migrations;
+using Newtonsoft.Json;
 
 namespace FRS.Controllers
 {
@@ -177,6 +179,35 @@ namespace FRS.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpPut("students/transfer-class/{originClassId:int}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> TransferClass([FromRoute]int originClassId, [FromBody] StudentDTO model)
+        {
+            try
+            {
+                string dataJson = JsonConvert.SerializeObject(model);
+                _logger.LogInformation($"TransferClass UserEditViewModel : {dataJson}");
+                _logger.LogInformation($"TransferClass originClassId : {originClassId}");
+
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                return Ok(await _service.UpdateStudentClassByClassId(model, originClassId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error TransferClass originClassId : {originClassId}");
+                _logger.LogError($"Error TransferClass : {ex.Message}", ex);
+                _logger.LogError($"Error TransferClass : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
         }
 
         [HttpPost("students/createaccount")]

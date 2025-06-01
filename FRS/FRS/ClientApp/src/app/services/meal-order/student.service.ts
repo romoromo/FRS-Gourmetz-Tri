@@ -11,6 +11,7 @@ import { Filter, PagedResult } from 'src/app/models/sieve-filter.model';
 import { Student } from 'src/app/models/meal-order/student.model';
 import { StudentGroup, StudentGroupDetail } from 'src/app/models/meal-order/student-group.model';
 import { InterestGroup } from 'src/app/models/meal-order/interest-group.model';
+import { Class } from 'src/app/models/meal-order/class.model';
 
 @Injectable()
 export class StudentService {
@@ -85,6 +86,12 @@ export class StudentService {
 
   downloadReport(filter: Filter) {
     return this.commonEndpoint.getFile<any>(this.studentUrl + '/report/export', filter);
+  }
+
+  transferClassStudent(classData: any,originClassId:number) {
+    if (classData.classId) {
+      return this.commonEndpoint.getTransferClassStudentEndpoint(this.studentUrl, classData, originClassId);
+    }
   }
 
   //interest group

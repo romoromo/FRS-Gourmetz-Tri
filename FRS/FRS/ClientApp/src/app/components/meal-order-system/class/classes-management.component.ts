@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 import { Class } from 'src/app/models/meal-order/class.model';
 import { ClassEditorComponent } from './class-editor.component';
 import { ClassService } from 'src/app/services/meal-order/class.service';
+import { ClassTransferComponent } from './class-transfer/class-transfer.component';
 
 
 @Component({
@@ -40,6 +41,7 @@ export class ClassesManagementComponent implements OnInit {
   @ViewChild('classModelEditor')
   classModelEditor: ClassEditorComponent;
   header: string;
+
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private classService: ClassService, public dialog: MatDialog) {
   }
@@ -51,6 +53,18 @@ export class ClassesManagementComponent implements OnInit {
       disableClose: true
     });
 
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadData(null);
+    });
+  }
+
+  openDialogTransfer(classModel: Class): void {
+    const dialogRef = this.dialog.open(ClassTransferComponent, {
+      data: { classModel: classModel, outletId: this.outletId },
+      width: '500px',
+      disableClose: true
+    });
+    
     dialogRef.afterClosed().subscribe(result => {
       this.loadData(null);
     });
