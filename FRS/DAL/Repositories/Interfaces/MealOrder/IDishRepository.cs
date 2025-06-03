@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
@@ -18,5 +19,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<PagedEntity<Dish>> GetDishesAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateAsync(Dish Dish);
         Task<List<Dish>> GetDishChangesAsync(DateTime updatedAfter, DateTime? updatedBefore);
+        Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter);
     }
 }

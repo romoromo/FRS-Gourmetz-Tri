@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BAL.DTO.MealOrder;
 using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 
@@ -20,6 +21,8 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> DeleteDishAsync(int id);
         Task<DishDTO> GetDishByIdAsync(int id);
         Task<PagedEntity<DishDTO>> GetDishesAsync(BaseFilter filter);
+        Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter);
+        Task<byte[]> GenerateDishXlsx(BaseFilter filter);
         Task<BaseOperationResponse> UpdateDishAsync(DishDTO dto);
         Task<List<DishSimple>> GetDishChangesAsync(DateTime updatedAfter, DateTime? updatedBefore);
         Task<string> GenerateCode(int id);

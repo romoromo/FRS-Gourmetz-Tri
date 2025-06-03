@@ -12,6 +12,8 @@ import { Dish } from 'src/app/models/meal-order/dish.model';
 import { DishEditorComponent } from './dish-editor.component';
 import { DishService } from 'src/app/services/meal-order/dish.service';
 import { getBaseUrl } from 'src/app/app.module';
+import * as moment from 'moment';
+import { saveAs } from 'file-saver';
 
 
 @Component({
@@ -30,6 +32,7 @@ export class DishesManagementComponent implements OnInit {
   filter: Filter;
   pagedResult: PagedResult;
   keyword: string = '';
+  isExporting: boolean = false;
   @Input() isHideHeader: boolean;
   @Input() catererId: string;
 
@@ -57,7 +60,7 @@ export class DishesManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(!result)
+      if (!result)
         this.loadData(null);
     });
   }
@@ -68,7 +71,7 @@ export class DishesManagementComponent implements OnInit {
     this.filter.filters = '';
     this.filter.page = 1;
 
-    
+
   }
 
   initializePagedResult() {
@@ -88,7 +91,7 @@ export class DishesManagementComponent implements OnInit {
       { prop: 'dishTypeName', name: 'Type' },
       { prop: 'cuisineName', name: 'Cuisine' },
       { prop: 'bentoBoxTypeCode', name: 'Bento Box' },
-//      { prop: 'dishPeriodNames', name: 'Periods', sortable: false },
+      //      { prop: 'dishPeriodNames', name: 'Periods', sortable: false },
       { prop: 'rrPrice', name: 'RRP' },
       { prop: 'cost', name: 'Cost' },
       { prop: 'isEnabled', name: 'Is Enabled', cellTemplate: this.flagTemplate },
@@ -123,7 +126,7 @@ export class DishesManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
     this.filter.filters = f + '(IsActive)==true,(Code|Label)@=' + this.keyword;
-    
+
     this.dishService.getDishesByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
@@ -149,6 +152,33 @@ export class DishesManagementComponent implements OnInit {
           this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
         });
+  }
+
+  exportData() {
+    this.alertService.startLoadingMessage();
+    this.isExporting = true;
+    let f = new Filter();
+    f.page = 1;
+    f.filters = this.filter.filters;
+    f.sorts = this.filter.sorts;
+    const fileName = moment().format('DDMMYYYY_hhmmss') + '_DishList.xlsx';
+    this.dishService.dishExport(f).subscribe(
+      data => {
+        saveAs(data, fileName);
+        this.isExporting = false;
+      },
+      err => {
+        this.alertService.showMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(err)}"`,
+          MessageSeverity.error);
+        console.error(err);
+        this.alertService.stopLoadingMessage();
+        this.isExporting = false;
+      },
+      () => {
+        this.alertService.stopLoadingMessage();
+        this.isExporting = false;
+      }
+    );
   }
 
   clearFilterAndPagedResult() {

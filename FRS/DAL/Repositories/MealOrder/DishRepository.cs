@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DAL.Models;
-using DAL.Repositories.Interfaces;
 using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
+using DAL.Core.DTO;
+using Sieve.Models;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -35,6 +35,52 @@ namespace DAL.Repositories.MealOrder
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
 
             return result;
+        }
+
+        public async Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter)
+        {
+            IQueryable<Dish> query = _appContext.Dishes
+                .Include(x => x.DishType)
+                .Include(x => x.Cuisine)
+                .Include(x => x.BentoBoxType)
+                .AsNoTracking()
+                .AsSplitQuery();
+
+            query = _sieveProcessor.Apply(filter, query, applyPagination: false);
+            var projectedQuery = query.Select(x => new DishLiteDTO
+            {
+                Id = x.Id,
+                CatererId = x.CatererId,
+                Code = x.Code,
+                Label = x.Label,
+                ProductionDescription = x.ProductionDescription,
+                RRPrice = x.RRPrice,
+                Cost = x.Cost,
+                IsEnabled = x.IsEnabled,
+                DishTypeName = x.DishType.Name,
+                CuisineName = x.Cuisine.Name,
+                BentoBoxTypeCode = x.BentoBoxType.Code,
+            });
+            int totalCount = await query.Select(x => x.Id).CountAsync();
+            List<DishLiteDTO> pagedData = new List<DishLiteDTO>();
+            if (filter.PageSize == null || filter.PageSize < 1)
+            {
+                pagedData = await projectedQuery.ToListAsync();
+            }
+            else
+            {
+                pagedData = await projectedQuery
+                    .Skip((filter.Page.Value - 1) * filter.PageSize.Value)
+                    .Take(filter.PageSize.Value)
+                    .ToListAsync();
+            }
+
+            return new PagedEntity<DishLiteDTO>
+            {
+                Filter = filter,
+                TotalCount = totalCount,
+                PagedData = pagedData
+            };
         }
 
         #endregion

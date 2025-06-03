@@ -12,6 +12,19 @@
       <div class="navbar action-box">
         <ul class="nav navbar-nav navbar-right">
           <li *ngIf="canManageDishes" class="toolbaritem">
+            <a href="javascript:;" (click)="exportData()" *ngIf="!isExporting">
+              <i class="fa fa-download"></i> Export
+            </a>
+            <a href="javascript:;" *ngIf="isExporting">
+              <i class="fa fa-circle-o-notch fa-spin"></i> Exporting
+            </a>
+          </li>
+          <li *ngIf="canManageDishes" class="toolbaritem">
+            <a href="javascript:;">
+              <i class="fa fa-upload"></i> Import
+            </a>
+          </li>
+          <li *ngIf="canManageDishes" class="toolbaritem">
             <a href="javascript:;" (click)="newDish(row)">
               <i class="fa fa-plus-circle"></i> {{'common.New' | translate}}
             </a>

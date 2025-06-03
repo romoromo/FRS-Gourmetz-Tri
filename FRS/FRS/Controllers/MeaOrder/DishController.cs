@@ -162,6 +162,25 @@ namespace FRS.Controllers
             return Ok(_mapper.Map<PagedEntityViewModel<DishDTO>>(results));
         }
 
+        [HttpPost("dishes/sieve/list/export")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetDishesExport(BaseFilter filter)
+        {
+            var xls = await _service.GenerateDishXlsx(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_DishList.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
+
         #endregion
 
         //[ApiKeyAuthorize]

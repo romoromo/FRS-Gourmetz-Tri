@@ -121,6 +121,10 @@ export class DishService {
     return this.commonEndpoint.get<any>(this.dishUrl + '/generatecode?catererId=' + catererId);
   }
 
+  dishExport(filter: Filter) {
+    return this.commonEndpoint.getFile<any>(this.dishUrl + `/sieve/list/export`, filter);
+  }
+
   //dish cycles
   getDishCycleById(dishCycleId: string) {
 
