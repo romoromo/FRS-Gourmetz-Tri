@@ -280,6 +280,11 @@ namespace BAL.Services.MealOrder
                 return stream.ToArray();
             }
         }
+
+        public async Task<DishImportDTO> DishImport(int catererInfoId, List<DishImportInputDTO> dtos, int userId)
+        {
+            return await _uow.Dishes.DishImport(catererInfoId, dtos,userId);
+        }
         #endregion
 
         #region Cuisine

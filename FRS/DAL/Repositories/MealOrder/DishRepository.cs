@@ -11,6 +11,8 @@ using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
 using DAL.Core.DTO;
 using Sieve.Models;
+using NPOI.SS.Formula.Functions;
+using System.IO;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -228,7 +230,7 @@ namespace DAL.Repositories.MealOrder
                         var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == f.FileId);
                         if (icon == null)
                         {
-                            f.Icon = new File();
+                            f.Icon = new Models.File();
                         }
                         else
                         {
@@ -257,7 +259,7 @@ namespace DAL.Repositories.MealOrder
                         var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == f.ProductionPictureId);
                         if (icon == null)
                         {
-                            f.ProductionPicture = new File();
+                            f.ProductionPicture = new Models.File();
                         }
                         else
                         {
@@ -318,6 +320,198 @@ namespace DAL.Repositories.MealOrder
             }
 
             return result;
+        }
+
+        public async Task<DishImportDTO> DishImport(int catererInfoId, List<DishImportInputDTO> dtos, int userId)
+        {
+            var resultData = new DishImportDTO
+            {
+                IsSuccess = true,
+                Messages = new List<DishImportMessageDTO>()
+            };
+
+            if (catererInfoId <= 0 || dtos.Count == 0)
+                return resultData;
+
+            var dishTypeMap = (await _appContext.DishTypes.AsNoTracking()
+                .Where(x => x.IsActive && x.CatererId == catererInfoId)
+                .ToDictionaryAsync(x => x.Name, x => x.Id, StringComparer.OrdinalIgnoreCase));
+
+            var bentoBoxTypeMap = (await _appContext.BentoBoxTypes.AsNoTracking()
+                .Where(x => x.IsActive && x.CatererInfoId == catererInfoId)
+                .ToDictionaryAsync(x => x.Code, x => x.Id, StringComparer.OrdinalIgnoreCase));
+
+            var cuisineMap = (await _appContext.Cuisines.AsNoTracking()
+                .Where(x => x.IsActive)
+                .ToDictionaryAsync(x => x.Name, x => x.Id, StringComparer.OrdinalIgnoreCase));
+
+            var storeInfo = (await _appContext.StoreInfos.AsNoTracking()
+                .Where(x => x.IsActive && x.StoreType == "Kitchen")
+                .ToDictionaryAsync(x => x.Code, x => x.Id, StringComparer.OrdinalIgnoreCase));
+
+            var restrictions = (await _appContext.Restrictions.AsNoTracking()
+                .Where(x => x.IsActive)
+                .ToDictionaryAsync(x => x.Label, x => x.Id, StringComparer.OrdinalIgnoreCase));
+
+
+            var (validatedDtos, validationResult) = ValidateDishImport(dtos, dishTypeMap, bentoBoxTypeMap, cuisineMap,storeInfo,restrictions);
+
+            if (!validationResult.IsSuccess)
+                return validationResult;
+
+            var caterer = await _appContext.CatererInfos.FirstOrDefaultAsync(e => e.Id == catererInfoId);
+            int dishCount = await _appContext.Dishes.AsNoTracking().CountAsync(e => e.CatererId == catererInfoId && e.IsActive);
+
+            var dishItems = new List<Dish>();
+            var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmm");
+            int index = 0;
+
+            foreach (var x in validatedDtos)
+            {
+                var currentCount = dishCount + (index + 1);
+                var code = $"{caterer.Code}{timestamp}{currentCount}";
+                var fileName = $"{code}.jpg";
+                var pullPathName = Path.Combine("Resources", "Images", "Dish", fileName);
+                var fileNameProduction = $"{code}_production.jpg";
+                var pullPathNameProduction = Path.Combine("Resources", "Images", "Dish", fileNameProduction);
+
+                var datasRestriction = x.RestrictionsIds.Select(x => new DishRestriction
+                {
+                    RestrictionId = x,
+                    CreatedBy = userId,
+                    UpdatedBy = userId
+                });
+
+                var dish = new Dish
+                {
+                    Code = code,
+                    Label = x.OriginalData.Label,
+                    DishTypeId = x.DishTypeId!.Value,
+                    CuisineId = x.CuisineId,
+                    RRPrice = x.OriginalData.RPP,
+                    Cost = x.OriginalData.Cost,
+                    IsEnabled = x.OriginalData.IsEnabled,
+                    BentoBoxTypeId = x.BentoBoxTypeId!.Value,
+                    Protein = x.OriginalData.Protein,
+                    Sugar = x.OriginalData.Sugar,
+                    StoreInfoId = x.StoreId,
+                    TotalFat = x.OriginalData.TotalFat,
+                    TotalCarb = x.OriginalData.TotalCarb,
+                    Calories = x.OriginalData.Calories,
+                    SapCode = x.OriginalData.SapCode,
+                    ProductionDescription = x.OriginalData.ProductionDescription,
+                    ExtraNotes = x.OriginalData.ExtraNote,
+                    CatererId = catererInfoId,
+                    CreatedBy = userId,
+                    UpdatedBy = userId,
+                    ProductionPicture = new Models.File
+                    {
+                        FileName = fileNameProduction,
+                        Path = pullPathNameProduction,
+                        Type = FileType.Icon.ToString(),
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    },
+                    Icon = new Models.File
+                    {
+                        FileName = fileName,
+                        Path = pullPathName,
+                        Type = FileType.Icon.ToString(),
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    },
+                    Restrictions = datasRestriction.ToList()
+                };
+
+                dishItems.Add(dish);
+                index++;
+            }
+
+            AddRange(dishItems);
+            await _appContext.SaveChangesAsync();
+
+            return resultData;
+        }
+
+
+    private (List<ValidatedDishInputDTO> ValidatedDtos, DishImportDTO Result) ValidateDishImport(
+        List<DishImportInputDTO> dtos,
+        Dictionary<string, int> dishTypeMap,
+        Dictionary<string, int> bentoBoxTypeMap,
+        Dictionary<string, int> cuisineMap,
+        Dictionary<string, int> storeInfoMap,
+        Dictionary<string, int> restrictions
+        )
+        {
+            var result = new DishImportDTO
+            {
+                IsSuccess = true,
+                Messages = new List<DishImportMessageDTO>()
+            };
+
+            var validatedList = new List<ValidatedDishInputDTO>();
+            int row = 1;
+
+            foreach (var dto in dtos)
+            {
+                var messages = new List<string>();
+
+                dishTypeMap.TryGetValue(dto.DishTypeName ?? "", out var dishTypeId);
+                bentoBoxTypeMap.TryGetValue(dto.BentoBoxTypeName ?? "", out var bentoBoxTypeId);
+                int? cuisineId = null;
+                if (!string.IsNullOrEmpty(dto.CuisineName))
+                {
+                    cuisineMap.TryGetValue(dto.CuisineName ?? "", out int cuisineIdParam);
+                    cuisineId = cuisineIdParam;
+                }
+
+                    storeInfoMap.TryGetValue(dto.KicthenName ?? "", out var storeInfoId);
+
+                if (dishTypeId == 0)
+                    messages.Add($"Dish Type: {dto.DishTypeName} not found");
+                if (bentoBoxTypeId == 0)
+                    messages.Add($"Bento Box Type: {dto.BentoBoxTypeName} not found");
+                if (!string.IsNullOrEmpty(dto.CuisineName) && cuisineId == 0)
+                    messages.Add($"Cuisine: {dto.CuisineName} not found");
+                if (!string.IsNullOrEmpty(dto.KicthenName) && storeInfoId == 0)
+                    messages.Add($"Kitchen: {dto.KicthenName} not found");
+
+                List<int> validRestriction = new List<int>();
+                foreach (var item in dto.Restrictions)
+                {
+                    restrictions.TryGetValue(item ?? "", out var restrictionId);
+                    if (restrictionId == 0)
+                        messages.Add($"Restriction: {item} not found");
+                    else
+                        validRestriction.Add(restrictionId);
+                }
+
+                if (messages.Any())
+                {
+                    result.IsSuccess = false;
+                    result.Messages.Add(new DishImportMessageDTO
+                    {
+                        RowNumber = row,
+                        Message = string.Join(", ", messages)
+                    });
+                }
+                else
+                {
+                    validatedList.Add(new ValidatedDishInputDTO
+                    {
+                        OriginalData = dto,
+                        DishTypeId = dishTypeId,
+                        BentoBoxTypeId = bentoBoxTypeId,
+                        CuisineId = cuisineId,
+                        StoreId = storeInfoId,
+                        RestrictionsIds = validRestriction
+                    });
+                }
+
+                row++;
+            }
+
+            return (validatedList, result);
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

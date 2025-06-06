@@ -505,6 +505,7 @@ import { FaqService } from './services/meal-order/faq.service';
 import { VoucherUtilisationsReportManagementComponent } from './components/reports/voucher-utilisation/voucher-utilisations-management.component';
 import { VouchersUnassignManagementComponent } from './components/meal-order-system/voucher-unassign/vouchers-unassign-management.component';
 import { ClassTransferComponent } from './components/meal-order-system/class/class-transfer/class-transfer.component';
+import { DishPreviewErrorComponent } from './components/meal-order-system/dishes/dish-preview-error/dish-preview-error.component';
  
  
 
@@ -704,7 +705,7 @@ export const configFactory = (configService: ConfigurationService) => {
     StoreInfoEditorComponent, StoreInfosManagementComponent,
     MealTypeEditorComponent, MealTypesManagementComponent,
     MealPeriodEditorComponent, MealPeriodsManagementComponent,
-    DishEditorComponent, DishesManagementComponent, DishSelectorComponent, DishPreviewComponent, TokenOrderEditorComponent, TokenOrderBulkEditorComponent, TokenOrdersBulkManagementComponent,
+    DishEditorComponent, DishesManagementComponent, DishSelectorComponent, DishPreviewComponent,DishPreviewErrorComponent, TokenOrderEditorComponent, TokenOrderBulkEditorComponent, TokenOrdersBulkManagementComponent,
     MenuEditorComponent, MenusManagementComponent, TokenOrdersManagementComponent, MenuCycleEditorComponent, MenuCyclesManagementComponent, MealAllocationssManagementComponent, PrintAllocationComponent,
     CatererSelectorComponent, CatererApprovalComponent, DOSelectorComponent, ReceiveDOComponent, InventorySelectorComponent, InventoryDetailComponent, StoreSelectorComponent, StoreSelectorDetailsComponent,
     DriverEditorComponent, DriversManagementComponent, RouteEditorComponent, RoutesManagementComponent, OrderReportComponent, OrderMealSummaryComponent, PrintLabelComponent, PackingAllocationssManagementComponent, PackingAllocationEditorComponent,
@@ -930,7 +931,7 @@ export const configFactory = (configService: ConfigurationService) => {
     PaymentsReportManagementComponent,
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
     FaqDetailsManagementComponent, FaqDetailEditorComponent,
-    VoucherUtilisationsReportManagementComponent
+    VoucherUtilisationsReportManagementComponent,DishPreviewErrorComponent
   ],
 })
 export class AppModule {

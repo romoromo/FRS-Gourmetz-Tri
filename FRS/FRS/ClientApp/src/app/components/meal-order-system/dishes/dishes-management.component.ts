@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ElementRef } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -14,6 +14,8 @@ import { DishService } from 'src/app/services/meal-order/dish.service';
 import { getBaseUrl } from 'src/app/app.module';
 import * as moment from 'moment';
 import { saveAs } from 'file-saver';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
+import { DishPreviewErrorComponent } from './dish-preview-error/dish-preview-error.component';
 
 
 @Component({
@@ -33,6 +35,7 @@ export class DishesManagementComponent implements OnInit {
   pagedResult: PagedResult;
   keyword: string = '';
   isExporting: boolean = false;
+  isImporting: boolean = false;
   @Input() isHideHeader: boolean;
   @Input() catererId: string;
 
@@ -46,6 +49,9 @@ export class DishesManagementComponent implements OnInit {
   dishEditor: DishEditorComponent;
 
   @ViewChild('dishesTable') table: any;
+
+  @ViewChild('fileImport')
+  fileImport: ElementRef;
 
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
@@ -235,6 +241,80 @@ export class DishesManagementComponent implements OnInit {
 
   previewImage(row) {
     window.open(getBaseUrl() + '/preview/dish/' + row.id, '_blank');
+  }
+
+  onImportClick(fileInput: HTMLInputElement) {
+    fileInput.click();
+  }
+
+  importedFile = (files) => {
+    if (files.length === 0) {
+      return;
+    }
+
+    if (!confirm(`Are you sure to import file '${files[0].name}'? \nImport cannot be undone after the file uploaded.`)) return;
+
+    let fileToUpload = <File>files[0];
+    const userId = this.accountService.currentUser.id;
+    const formData = new FormData();
+    formData.append('file', fileToUpload, fileToUpload.name);
+    formData.append('catererId', this.catererId);
+    formData.append('userId', userId.toString());
+
+    this.loadingIndicator = true;
+    this.alertService.startLoadingMessage("Uploading...");
+    this.isImporting = true
+    this.dishService.dishImport<HttpEvent<Object>>(formData)
+      .subscribe(event => {
+        if (event.type === HttpEventType.Response) {
+          this.onUploadFinished(event.body);
+          if (this.fileImport && this.fileImport.nativeElement) {
+            this.fileImport.nativeElement.value = "";
+          }
+        }
+
+        this.loadingIndicator = false;
+        this.isExporting = false;
+      },
+        error => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+
+          if (this.fileImport && this.fileImport.nativeElement) {
+            this.fileImport.nativeElement.value = "";
+          }
+          this.isExporting = false;
+          this.alertService.showStickyMessage("Import Error", `Unable to import the file to the server.`,
+            MessageSeverity.error);
+        }),
+      () => this.isImporting = false;
+  }
+
+  onUploadFinished(response: any) {
+    this.alertService.stopLoadingMessage();
+    if (response.isSuccess) {
+      this.alertService.showMessage(response.message);
+      this.loadData(null);
+    } else {
+      this.alertService.showStickyMessage("Import Error", `Unable to import the file to the server.`,
+        MessageSeverity.error);
+
+      if (response.messages.length > 0) {
+        this.openDialogMessageError(response)
+      }
+    }
+    this.isImporting = false;
+  }
+
+  openDialogMessageError(data: any): void {
+    const dialogRef = this.dialog.open(DishPreviewErrorComponent, {
+      data: { dataResponse: data },
+      width: '50vw'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadData(null);
+    });
   }
 
   get canManageDishes() {

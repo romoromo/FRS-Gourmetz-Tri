@@ -125,6 +125,10 @@ export class DishService {
     return this.commonEndpoint.getFile<any>(this.dishUrl + `/sieve/list/export`, filter);
   }
 
+  dishImport<T>(data: any): Observable<T> {
+    return this.commonEndpoint.importFile(this.dishUrl + '/import', data);
+  }
+
   //dish cycles
   getDishCycleById(dishCycleId: string) {
 

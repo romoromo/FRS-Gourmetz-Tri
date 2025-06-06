@@ -1,0 +1,16 @@
+.import-messages {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    padding: 1rem;
+    border-radius: 5px;
+    color: #856404;
+    font-family: sans-serif;
+}
+
+.import-messages ul {
+    padding-left: 1.2rem;
+}
+
+.import-messages li {
+    margin-bottom: 0.5rem;
+}
