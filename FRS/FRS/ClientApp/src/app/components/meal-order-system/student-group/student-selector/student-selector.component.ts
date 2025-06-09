@@ -41,6 +41,7 @@ export class StudentSelectorComponent implements OnInit {
   public classes: Class[] = [];
   public interestGroups: InterestGroup[] = [];
   private selected: any[] = [];
+  private selectedOriginal: any[] = [];
   isLoading = false;
   //private allRowsSelected = false;
 
@@ -65,7 +66,7 @@ export class StudentSelectorComponent implements OnInit {
     if (typeof (data.students) != typeof (undefined)) {
       this.selectedStudents = data.students;
       let selected = data.students;
-      this.selected.splice(0, selected.length);
+      //this.selected.splice(0, selected.length);
       //this.selected.push(...selected);
     }
   }
@@ -117,19 +118,32 @@ export class StudentSelectorComponent implements OnInit {
   }
 
   onSelect({ selected }) {
-    console.log(selected);
-    //this.selected = selected;
-    let length = selected.length;
-    if (selected.length == 0) length = this.rows.length;
+    this.selected = selected;
 
-    this.selected.splice(0, length);
-    this.selected.push(...selected);
-    this.rows.forEach(row => (row.checked = this.selected.findIndex(e => e.id == row.id) > -1));
+    const visibleIds = this.rows.map(row => row.id);
+    if (selected.length === 0) {
+      this.selectedOriginal = this.selectedOriginal.filter(item =>
+        !visibleIds.includes(item.id)
+      );
+    }
+
+    for (let item of selected) {
+      if (!this.selectedOriginal.some(x => x.id == item.id)) {
+        this.selectedOriginal.push(item);
+      }
+    }
+
+    this.selectedOriginal = this.selectedOriginal.filter(item =>
+      !visibleIds.includes(item.id) || selected.some(sel => sel.id === item.id)
+    );
+    this.rows.forEach(row => (row.checked = this.selectedOriginal.findIndex(e => e.id == row.id) > -1));
   }
 
   selectRowsOnInit(): void {
     let selected = this.rows.filter(e => e.checked);
-    this.onSelect({ selected: selected });
+    this.selected = selected
+    this.selectedOriginal = selected
+    //this.onSelect({ selected: selected });
     //this.rows.forEach(row => {
     //  // Set the isChecked property based on your criteria
     //  // For example, you can select all rows where isChecked is true
@@ -152,7 +166,7 @@ export class StudentSelectorComponent implements OnInit {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving classes.\r\n"`,
             MessageSeverity.error);
-    });
+        });
   }
 
   getInterestGroups() {
@@ -166,7 +180,7 @@ export class StudentSelectorComponent implements OnInit {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving interest groups.\r\n"`,
             MessageSeverity.error);
-     })
+        })
   }
 
 
@@ -298,7 +312,7 @@ export class StudentSelectorComponent implements OnInit {
   }
 
   toggleSelectAll() {
-   // this.selected = this.allRowsSelected ? this.allRows : [];
+    // this.selected = this.allRowsSelected ? this.allRows : [];
   }
 
   filterDataOnClientSide() {
@@ -309,20 +323,24 @@ export class StudentSelectorComponent implements OnInit {
     const interestGroupId = this.filterIGId;
 
     this.rows = originalData.filter(item => {
-        const matchesName = item.name.toLowerCase().includes(keyword);
-        const matchesStatus = isFas == null || item.isFAS === isFas;
-        const matchesClass = classId == null || item.classId === classId;
-        const matchesIGId = interestGroupId == null || item.interestGroups.some(x => x.interestGroupId === interestGroupId);
+      const matchesName = item.name.toLowerCase().includes(keyword);
+      const matchesStatus = isFas == null || item.isFAS === isFas;
+      const matchesClass = classId == null || item.classId === classId;
+      const matchesIGId = interestGroupId == null || item.interestGroups.some(x => x.interestGroupId === interestGroupId);
 
-        return matchesName && matchesStatus && matchesClass && matchesIGId;
+      return matchesName && matchesStatus && matchesClass && matchesIGId;
     });
-}
+
+    const rowIds = this.rows.map(x => x.id)
+    this.selected = this.selectedOriginal.filter(x => rowIds.includes(x.id));
+    this.rows.forEach(row => (row.checked = this.selected.findIndex(e => e.id == row.id) > -1));
+  }
 
   public save = () => {
     //let studentIds= this.selected.map((e) => { return e.id; });
 
     //let students = this.rows.filter((cg) => (<any>cg).checked); 
-    this.dialogRef.close({ isCancel: false, selectedStudents: this.selected });
+    this.dialogRef.close({ isCancel: false, selectedStudents: this.selectedOriginal });
   }
 
   private cancel() {
