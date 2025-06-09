@@ -1,32 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DAL.Models;
-using DAL.Repositories.Interfaces;
 using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
 using System.Transactions;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using DAL.Core.Interfaces;
 using DAL.Core.DTO;
 using System.ComponentModel.DataAnnotations;
 using DAL.Core.Helpers;
 using System.Text.RegularExpressions;
-using System.Reflection;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore.Storage;
-using NPOI.SS.Formula.Functions;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using IsolationLevel = System.Transactions.IsolationLevel;
@@ -1337,6 +1326,50 @@ namespace DAL.Repositories.MealOrder
 
             var affectedRows = await _appContext.SaveChangesAsync();
             return affectedRows > 0;
+        }
+
+        public async Task<BaseOperationResponse> UpdateStudentClassByClassIdAsync(Student data,int originClassId)
+        {
+            var result = new BaseOperationResponse();
+
+            try
+            {
+                int classId = originClassId;
+                int destinationClassId = data?.ClassId ?? 0;
+                int classLevelId = data?.ClassLevelId ?? 0;
+                int batchId = data?.ClassBatchId ?? 0;
+
+                var studentData = await _appContext.Students
+                    .Where(u => u.IsActive && u.ClassId == classId && u.ClassBatchId == batchId)
+                    .ToListAsync();
+
+                if (studentData.Count == 0)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "No students to transfer from the class";
+                    return result;
+                }
+
+                studentData.ForEach(x =>
+                {
+                    x.ClassId = destinationClassId;
+                    x.ClassLevelId = classLevelId;
+                });
+
+                _appContext.Students.UpdateRange(studentData);
+                await _appContext.SaveChangesAsync();
+
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+            }
+            catch (Exception)
+            {
+                result.IsSuccess = false;
+                result.Message = "Failed to transfer the class";
+                throw;
+            }
+
+            return result;
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

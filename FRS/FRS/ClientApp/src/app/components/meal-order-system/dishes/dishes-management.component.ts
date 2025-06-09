@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, ElementRef } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
@@ -12,6 +12,10 @@ import { Dish } from 'src/app/models/meal-order/dish.model';
 import { DishEditorComponent } from './dish-editor.component';
 import { DishService } from 'src/app/services/meal-order/dish.service';
 import { getBaseUrl } from 'src/app/app.module';
+import * as moment from 'moment';
+import { saveAs } from 'file-saver';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
+import { DishPreviewErrorComponent } from './dish-preview-error/dish-preview-error.component';
 
 
 @Component({
@@ -30,6 +34,8 @@ export class DishesManagementComponent implements OnInit {
   filter: Filter;
   pagedResult: PagedResult;
   keyword: string = '';
+  isExporting: boolean = false;
+  isImporting: boolean = false;
   @Input() isHideHeader: boolean;
   @Input() catererId: string;
 
@@ -44,6 +50,9 @@ export class DishesManagementComponent implements OnInit {
 
   @ViewChild('dishesTable') table: any;
 
+  @ViewChild('fileImport')
+  fileImport: ElementRef;
+
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private dishService: DishService, public dialog: MatDialog) {
@@ -57,7 +66,7 @@ export class DishesManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(!result)
+      if (!result)
         this.loadData(null);
     });
   }
@@ -68,7 +77,7 @@ export class DishesManagementComponent implements OnInit {
     this.filter.filters = '';
     this.filter.page = 1;
 
-    
+
   }
 
   initializePagedResult() {
@@ -88,7 +97,7 @@ export class DishesManagementComponent implements OnInit {
       { prop: 'dishTypeName', name: 'Type' },
       { prop: 'cuisineName', name: 'Cuisine' },
       { prop: 'bentoBoxTypeCode', name: 'Bento Box' },
-//      { prop: 'dishPeriodNames', name: 'Periods', sortable: false },
+      //      { prop: 'dishPeriodNames', name: 'Periods', sortable: false },
       { prop: 'rrPrice', name: 'RRP' },
       { prop: 'cost', name: 'Cost' },
       { prop: 'isEnabled', name: 'Is Enabled', cellTemplate: this.flagTemplate },
@@ -123,7 +132,7 @@ export class DishesManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
     this.filter.filters = f + '(IsActive)==true,(Code|Label)@=' + this.keyword;
-    
+
     this.dishService.getDishesByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
@@ -149,6 +158,33 @@ export class DishesManagementComponent implements OnInit {
           this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
         });
+  }
+
+  exportData() {
+    this.alertService.startLoadingMessage();
+    this.isExporting = true;
+    let f = new Filter();
+    f.page = 1;
+    f.filters = this.filter.filters;
+    f.sorts = this.filter.sorts;
+    const fileName = moment().format('DDMMYYYY_hhmmss') + '_DishList.xlsx';
+    this.dishService.dishExport(f).subscribe(
+      data => {
+        saveAs(data, fileName);
+        this.isExporting = false;
+      },
+      err => {
+        this.alertService.showMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(err)}"`,
+          MessageSeverity.error);
+        console.error(err);
+        this.alertService.stopLoadingMessage();
+        this.isExporting = false;
+      },
+      () => {
+        this.alertService.stopLoadingMessage();
+        this.isExporting = false;
+      }
+    );
   }
 
   clearFilterAndPagedResult() {
@@ -205,6 +241,80 @@ export class DishesManagementComponent implements OnInit {
 
   previewImage(row) {
     window.open(getBaseUrl() + '/preview/dish/' + row.id, '_blank');
+  }
+
+  onImportClick(fileInput: HTMLInputElement) {
+    fileInput.click();
+  }
+
+  importedFile = (files) => {
+    if (files.length === 0) {
+      return;
+    }
+
+    if (!confirm(`Are you sure to import file '${files[0].name}'? \nImport cannot be undone after the file uploaded.`)) return;
+
+    let fileToUpload = <File>files[0];
+    const userId = this.accountService.currentUser.id;
+    const formData = new FormData();
+    formData.append('file', fileToUpload, fileToUpload.name);
+    formData.append('catererId', this.catererId);
+    formData.append('userId', userId.toString());
+
+    this.loadingIndicator = true;
+    this.alertService.startLoadingMessage("Uploading...");
+    this.isImporting = true
+    this.dishService.dishImport<HttpEvent<Object>>(formData)
+      .subscribe(event => {
+        if (event.type === HttpEventType.Response) {
+          this.onUploadFinished(event.body);
+          if (this.fileImport && this.fileImport.nativeElement) {
+            this.fileImport.nativeElement.value = "";
+          }
+        }
+
+        this.loadingIndicator = false;
+        this.isExporting = false;
+      },
+        error => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+
+          if (this.fileImport && this.fileImport.nativeElement) {
+            this.fileImport.nativeElement.value = "";
+          }
+          this.isExporting = false;
+          this.alertService.showStickyMessage("Import Error", `Unable to import the file to the server.`,
+            MessageSeverity.error);
+        }),
+      () => this.isImporting = false;
+  }
+
+  onUploadFinished(response: any) {
+    this.alertService.stopLoadingMessage();
+    if (response.isSuccess) {
+      this.alertService.showMessage(response.message);
+      this.loadData(null);
+    } else {
+      this.alertService.showStickyMessage("Import Error", `Unable to import the file to the server.`,
+        MessageSeverity.error);
+
+      if (response.messages.length > 0) {
+        this.openDialogMessageError(response)
+      }
+    }
+    this.isImporting = false;
+  }
+
+  openDialogMessageError(data: any): void {
+    const dialogRef = this.dialog.open(DishPreviewErrorComponent, {
+      data: { dataResponse: data },
+      width: '50vw'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadData(null);
+    });
   }
 
   get canManageDishes() {

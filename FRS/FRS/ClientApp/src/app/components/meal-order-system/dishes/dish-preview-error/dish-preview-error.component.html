@@ -1,0 +1,6 @@
+<h1 mat-dialog-title>Failed Import Dish</h1>
+<div class="import-messages">
+    <ul *ngFor="let item of messageErrors">
+        <li><strong>Row:</strong> {{item?.rowNumber}} - {{item?.message}}</li>
+    </ul>
+</div>

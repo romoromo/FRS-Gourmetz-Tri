@@ -46,6 +46,7 @@
 
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
+    <a *ngIf="canManageClasses" class="btn btn-link btn-xs" href="javascript:;" (click)="openDialogTransfer(row)"><i class="fa fa-exchange" aria-hidden="true"></i> Transfer</a>
     <a *ngIf="canManageClasses" class="btn btn-link btn-xs" href="javascript:;" (click)="editClass(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
     <a *ngIf="!canManageClasses" class="btn btn-link btn-xs" href="javascript:;" (click)="editClass(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
     <a *ngIf="canManageClasses" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteClass(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>

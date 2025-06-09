@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BAL.DTO;
 using BAL.DTO.MealOrder;
 using DAL.Core;
 using DAL.Core.DTO;
@@ -70,5 +69,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<byte[]> GenerateStudentListXls(int outletId, int studentGroupId);
         Task<bool> ImportStudentGroupAsync(List<int> studentids, int studentGroupId, int userId);
         Task<BaseOperationResponse> AssignVoucherByStudentGroup(int studentGroupId, string code);
+        Task<BaseOperationResponse> UpdateStudentClassByClassId(StudentDTO dto, int originClassId);
     }
 }

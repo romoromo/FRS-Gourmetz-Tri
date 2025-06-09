@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using DAL.Models;
 using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
 using DAL;
 using BAL.Services.Interfaces;
-using BAL.DTO;
 using AutoMapper;
-using DAL.Repositories.Interfaces;
-using System.IO;
-using NPOI.HSSF.UserModel;
 using BAL.Services.Interfaces.MealOrder;
 using BAL.DTO.MealOrder;
 using DAL.Models.MealOrder;
@@ -122,7 +116,13 @@ namespace BAL.Services.MealOrder
         {
             return await this._uow.Students.UpdateStudentEmail(id, email);
         }
-        
+
+        public async Task<BaseOperationResponse> UpdateStudentClassByClassId(StudentDTO dto, int originClassId)
+        {
+            var data = _mapper.Map<Student>(dto);
+            return await this._uow.Students.UpdateStudentClassByClassIdAsync(data, originClassId);
+        }
+
         public async Task<BaseOperationResponse> CreateStudentAsync(StudentDTO dto)
         {
             var result = new BaseOperationResponse();

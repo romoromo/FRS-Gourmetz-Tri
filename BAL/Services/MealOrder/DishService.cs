@@ -1,26 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using DAL.Models;
 using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
 using DAL;
-using BAL.Services.Interfaces;
-using BAL.DTO;
 using AutoMapper;
-using DAL.Repositories.Interfaces;
 using System.IO;
-using NPOI.HSSF.UserModel;
 using BAL.Services.Interfaces.MealOrder;
 using BAL.DTO.MealOrder;
 using DAL.Models.MealOrder;
 using DAL.Core.Interfaces;
 using DAL.Core.Logging;
 using Microsoft.Extensions.Logging;
+using DAL.Core.DTO;
+using NPOI.XSSF.UserModel;
+using NPOI.SS.UserModel;
+using System.Linq;
 
 namespace BAL.Services.MealOrder
 {
@@ -176,6 +173,117 @@ namespace BAL.Services.MealOrder
             }
 
             return dto;
+        }
+
+        public async Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter)
+        {
+            return await _uow.Dishes.GetDishesLiteAsync(filter);
+        }
+
+        public async Task<byte[]> GenerateDishXlsx(BaseFilter filter)
+        {
+            var dishesPaged = await GetDishesLiteAsync(filter);
+            var dishes = dishesPaged.PagedData.ToList();
+            using (var stream = new MemoryStream())
+            {
+                var wb = new XSSFWorkbook();
+                var rowCount = 0;
+                var sheet = (XSSFSheet)wb.CreateSheet("Dishes");
+                var headers = new string[] { "Code", "Label", "Production Description","Type", "Cuisine", "Bento Box","RPP","Cost","Is Enabled" };
+                #region Headers
+
+                var headerStyle = wb.CreateCellStyle();
+                var headerFont = wb.CreateFont();
+                headerFont.Boldweight = (short)FontBoldWeight.Bold;
+                headerStyle.SetFont(headerFont);
+                headerStyle.Alignment = HorizontalAlignment.Center;
+                var row = sheet.CreateRow(rowCount); var borderedHeaderStyle = wb.CreateCellStyle();
+                borderedHeaderStyle.SetFont(headerFont);
+                borderedHeaderStyle.Alignment = HorizontalAlignment.Center;
+                borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                ICell cell;
+                for (var i = 0; i < headers.Length; i++)
+                {
+                    cell = row.CreateCell(i);
+                    cell.SetCellValue(headers[i]);
+                    cell.CellStyle = borderedHeaderStyle;
+                }
+                sheet.AutoSizeColumn(0);
+
+                #endregion
+
+                #region Content
+                var contentStyle = wb.CreateCellStyle();
+                contentStyle.BorderTop = BorderStyle.Thin;
+                contentStyle.BorderBottom = BorderStyle.Thin;
+                contentStyle.BorderLeft = BorderStyle.Thin;
+                contentStyle.BorderRight = BorderStyle.Thin;
+                contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                contentStyle.Alignment = HorizontalAlignment.Left;
+                contentStyle.WrapText = true;
+                var dataFormatCustom = wb.CreateDataFormat();
+                dishes.ForEach(dt =>
+                {
+                    int i = 0;
+                    row = sheet.CreateRow(++rowCount);
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.Code);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.Label);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.ProductionDescription);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.DishTypeName);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.CuisineName);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.BentoBoxTypeCode);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.RRPrice);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.Cost);
+                    cell.CellStyle = contentStyle;
+
+                    string enableStatus = dt.IsEnabled ? "Yes" : "No";
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(enableStatus);
+                    cell.CellStyle = contentStyle;
+                });
+
+                #endregion
+
+                for (var i = 0; i < headers.Length; i++)
+                {
+                    sheet.AutoSizeColumn(i, true);
+                }
+
+                wb.Write(stream);
+
+                return stream.ToArray();
+            }
+        }
+
+        public async Task<DishImportDTO> DishImport(int catererInfoId, List<DishImportInputDTO> dtos, int userId)
+        {
+            return await _uow.Dishes.DishImport(catererInfoId, dtos,userId);
         }
         #endregion
 

@@ -36,5 +36,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdateStudentEmail(int id, string email);
         Task<List<Student>> GetStudentsLiteByIdsAsync(List<int> studentIds);
         Task<bool> ImportStudentGroupAsync(List<int> studentIds, int studentGroupId, int userId);
+        Task<BaseOperationResponse> UpdateStudentClassByClassIdAsync(Student data, int originClassId);
     }
 }

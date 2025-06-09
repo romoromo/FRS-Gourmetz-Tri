@@ -5,24 +5,20 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AutoMapper;
-using BAL.DTO;
 using BAL.DTO.MealOrder;
-using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
-using BAL.Services.MealOrder;
-using DAL;
 using DAL.Core;
+using DAL.Core.DTO;
+using DAL.Core.Helpers;
 using DAL.Filters;
-using DAL.Models;
 using FRS.Attributes;
 using FRS.ViewModels;
 using FRS.ViewModels.MealOrder;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using OpenIddict.Validation.AspNetCore;
 
 namespace FRS.Controllers
@@ -162,6 +158,25 @@ namespace FRS.Controllers
             return Ok(_mapper.Map<PagedEntityViewModel<DishDTO>>(results));
         }
 
+        [HttpPost("dishes/sieve/list/export")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetDishesExport(BaseFilter filter)
+        {
+            var xls = await _service.GenerateDishXlsx(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_DishList.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
+
         #endregion
 
         //[ApiKeyAuthorize]
@@ -296,6 +311,156 @@ namespace FRS.Controllers
             return Ok(new { code });
         }
 
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpPost("dishes/import"), DisableRequestSizeLimit]
+        [AllowAnonymous]
+        public async Task<IActionResult> ImportDish()
+        {
+            try
+            {
+                var file = Request.Form.Files[0];
+                if (file.Length <= 0) return BadRequest("No File Imported");
+
+                string catererIdParam = Request.Form["catererId"];
+                int catererId = 0;
+                bool isValidCatererId = int.TryParse(catererIdParam, out catererId);
+
+                if (string.IsNullOrEmpty(catererIdParam) && !isValidCatererId)
+                    return BadRequest("CatererId Id is missing.");
+
+                string userIdParam = Request.Form["userId"];
+                int userId = 0;
+                bool isValidUserId = int.TryParse(userIdParam, out userId);
+
+                if (string.IsNullOrEmpty(userIdParam) && !isValidUserId)
+                    return BadRequest("User Id is missing.");
+
+                var folderName = Path.Combine("Resources", "Excel");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                Directory.CreateDirectory(pathToSave);
+
+                var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                fileName = Guid.NewGuid().ToString() + fileName;
+                var fullPath = Path.Combine(pathToSave, fileName);
+                var dbPath = Path.Combine(folderName, fileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+
+                IWorkbook wb = new XSSFWorkbook(new FileStream(fullPath, FileMode.Open));
+                var studentIds = new List<int>();
+                int startRow = 1;
+                var valueExcel = new List<DishImportInputDTO>();
+                for (int x = 0; x < wb.NumberOfSheets; x++)
+                {
+                    var sheet = (XSSFSheet)wb.GetSheetAt(x);
+                    int reqNumCells = startRow - 1;
+                    int colCount = sheet.GetRow(reqNumCells).PhysicalNumberOfCells;
+
+                    int rowCount = sheet.PhysicalNumberOfRows;
+                    for (int i = startRow; ExcelUtility.GetRowWithNonEmptyCell(sheet, i) != null; i++)
+                    {
+                        var fRow = sheet.GetRow(i);
+                        if (fRow == null) continue;
+
+                        var dto = new DishImportInputDTO();
+                        int c = 0;
+
+                        var label = fRow.GetCell(c++);
+                        dto.Label = label != null ? label.ToString().Trim() : "";
+
+                        var productDescription = fRow.GetCell(c++);
+                        dto.ProductionDescription = productDescription != null ? productDescription.ToString().Trim() : "";
+
+                        var extraNote = fRow.GetCell(c++);
+                        dto.ExtraNote = extraNote != null ? extraNote.ToString().Trim() : "";
+
+                        var rrpValue = fRow.GetCell(c++);
+                        if (rrpValue != null && double.TryParse(rrpValue.ToString(), out double rrp))
+                            dto.RPP = rrp;
+                        else
+                            dto.RPP = 0;
+
+                        var costValue = fRow.GetCell(c++);
+                        if (costValue != null && double.TryParse(costValue.ToString(), out double cost))
+                            dto.Cost = cost;
+                        else
+                            dto.Cost = 0;
+
+                        var dishTypeName = fRow.GetCell(c++);
+                        dto.DishTypeName = dishTypeName != null ? dishTypeName.ToString().Trim() : "";
+
+                        var bentoBoxTypeName = fRow.GetCell(c++);
+                        dto.BentoBoxTypeName = bentoBoxTypeName != null ? bentoBoxTypeName.ToString().Trim() : "";
+
+                        var cuisineName = fRow.GetCell(c++);
+                        dto.CuisineName = cuisineName != null ? cuisineName.ToString().Trim() : "";
+
+                        var kitchenName = fRow.GetCell(c++);
+                        dto.KicthenName = kitchenName != null ? kitchenName.ToString().Trim() : "";
+
+                        var sapCode = fRow.GetCell(c++);
+                        dto.SapCode = sapCode != null ? sapCode.ToString().Trim() : "";
+
+                        var proteinValue = fRow.GetCell(c++);
+                        if (proteinValue != null && float.TryParse(proteinValue.ToString(), out float protein))
+                            dto.Protein = protein;
+                        else
+                            dto.Protein = 0;
+
+                        var sugarValue = fRow.GetCell(c++);
+                        if (sugarValue != null && float.TryParse(sugarValue.ToString(), out float sugar))
+                            dto.Sugar = sugar;
+                        else
+                            dto.Sugar = 0;
+
+                        var totalFatValue = fRow.GetCell(c++);
+                        if (totalFatValue != null && float.TryParse(totalFatValue.ToString(), out float totalFat))
+                            dto.TotalFat = totalFat;
+                        else
+                            dto.TotalFat = 0;
+
+                        var totalCarbValue = fRow.GetCell(c++);
+                        if (totalCarbValue != null && float.TryParse(totalCarbValue.ToString(), out float totalCarb))
+                            dto.TotalCarb = totalCarb;
+                        else
+                            dto.TotalCarb = 0;
+
+                        var caloriesValue = fRow.GetCell(c++);
+                        if (caloriesValue != null && float.TryParse(caloriesValue.ToString(), out float calories))
+                            dto.Calories = calories;
+                        else
+                            dto.Calories = 0;
+
+                        var restrictionNames = fRow.GetCell(c++);
+                        string restrictionString = restrictionNames != null ? restrictionNames.ToString().Trim() : "";
+                        List<string> dataRestriction = new List<string>();
+                        if (!string.IsNullOrEmpty(restrictionString))
+                            dataRestriction = restrictionString.Split(',').ToList();
+                        dto.Restrictions = dataRestriction;
+
+                        var enabledValue = fRow.GetCell(c++);
+                        dto.IsEnabled = string.Equals(enabledValue?.ToString()?.Trim(), "yes", StringComparison.OrdinalIgnoreCase);
+
+                        valueExcel.Add(dto);
+
+                    }
+                }
+                var responseData = await _service.DishImport(catererId, valueExcel,userId);
+                return Ok(responseData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error ImportDish : {ex.Message}", ex);
+                _logger.LogError($"Error ImportDish : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+
+        }
         #endregion
 
         #region Cuisines

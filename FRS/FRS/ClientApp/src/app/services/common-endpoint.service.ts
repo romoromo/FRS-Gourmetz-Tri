@@ -178,6 +178,15 @@ export class CommonEndpoint extends EndpointFactory {
       }));
   }
 
+  getTransferClassStudentEndpoint<T>(url: string, obj: any, id: number): Observable<T> {
+    let endpointUrl = `${url}/transfer-class/${id}`;
+
+    return this.http.put<T>(endpointUrl, JSON.stringify(obj), this.getRequestHeaders()).pipe<T>(
+      catchError(error => {
+        return this.handleError(error, () => this.getTransferClassStudentEndpoint(url, obj, id));
+      }));
+  }
+
   //Facilities methods
   getFacilitiesEndpoint<T>(page?: number, pageSize?: number, institutionId?: string): Observable<T> {
     let endpointUrl = page && pageSize ? `${this.facilitiesUrl}/facilities/list/${page}/${pageSize}` : this.facilitiesUrl + "/facilities/list?institutionId=" + institutionId;
