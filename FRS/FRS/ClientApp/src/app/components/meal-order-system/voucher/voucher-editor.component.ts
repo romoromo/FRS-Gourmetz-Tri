@@ -117,11 +117,16 @@ export class VoucherEditorComponent {
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
 
-    console.log("check start date", this.voucherEdit.startDateTime, this.voucherEdit.endDateTime)
     if (this.voucherEdit.endDateTime && this.voucherEdit.startDateTime && this.voucherEdit.endDateTime < this.voucherEdit.startDateTime) {
-      console.log('masuk');
       this.alertService.stopLoadingMessage();
       this.alertService.showStickyMessage("Save Error", "End date cannot be earlier than start date.", MessageSeverity.error);
+      this.isSaving = false;
+      return; // Prevent submission
+    }
+
+    if (this.voucherEdit.usageQuantity < this.voucherEdit.usageQuantityUsed) {
+      this.alertService.stopLoadingMessage();
+      this.alertService.showStickyMessage("Save Error", "Quantities Allocated cannot be less than Quantities Assigned Out.", MessageSeverity.error);
       this.isSaving = false;
       return; // Prevent submission
     }
@@ -221,6 +226,7 @@ export class VoucherEditorComponent {
     this.editingVoucherCode = null;
     this.selectedValues = {};
     this.voucherEdit = new Voucher();
+    this.voucherEdit.usageQuantityUsed = 0
     return this.voucherEdit;
   }
 
@@ -232,6 +238,9 @@ export class VoucherEditorComponent {
       this.editingVoucherCode = voucher.name;
       this.selectedValues = {};
       this.voucherEdit = new Voucher();
+      if (!this.voucherEdit.usageQuantityUsed) {
+        this.voucherEdit.usageQuantityUsed = 0
+      }
       Object.assign(this.voucherEdit, voucher);
 
       this.setMinEndDate();
@@ -241,10 +250,6 @@ export class VoucherEditorComponent {
     else {
       return this.newVoucher();
     }
-  }
-
-  onUsageQuantityChange(newQty: number) {
-    this.voucherEdit.usageQuantityUsed = 0;
   }
 
   setMinEndDate() {
