@@ -275,9 +275,44 @@ namespace BAL.Services.MealOrder
                     sheet.AutoSizeColumn(i, true);
                 }
 
+                CreateExportDishSheet(wb);
                 wb.Write(stream);
 
                 return stream.ToArray();
+            }
+        }
+
+        private void CreateExportDishSheet(XSSFWorkbook workbook)
+        {
+            var sheet = (XSSFSheet)workbook.CreateSheet("Import Dish Template");
+
+            var headers = new string[]
+            {
+                "Label", "Production Description", "Menu Description", "RPP", "Cost",
+                "Dish Type Name", "Bento Box Type Name", "Cuisine Name", "Kitchen Name",
+                "SAP Code", "Protein", "Sugar", "Total Fat", "Total Carb", "Calories",
+                "Restriction Names", "Is Enabled"
+            };
+
+            var headerStyle = workbook.CreateCellStyle();
+            var headerFont = workbook.CreateFont();
+            headerFont.Boldweight = (short)FontBoldWeight.Bold;
+            headerStyle.SetFont(headerFont);
+            headerStyle.Alignment = HorizontalAlignment.Center;
+            headerStyle.BorderTop = BorderStyle.Thin;
+            headerStyle.BorderBottom = BorderStyle.Thin;
+            headerStyle.BorderLeft = BorderStyle.Thin;
+            headerStyle.BorderRight = BorderStyle.Thin;
+
+            var row = sheet.CreateRow(0);
+            ICell cell;
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                cell = row.CreateCell(i);
+                cell.SetCellValue(headers[i]);
+                cell.CellStyle = headerStyle;
+                sheet.AutoSizeColumn(i, true);
             }
         }
 

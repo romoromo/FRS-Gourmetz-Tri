@@ -26,7 +26,7 @@
             minlength="2" maxlength="10" pattern="[a-zA-Z0-9 ]+" />
         </mat-form-field>
         <mat-form-field class="col-md-12" appearance="none">
-          <mat-label>Valid for Order Checkout date from</mat-label>
+          <mat-label>Usage Period (date range of voucher availability)</mat-label>
           <div class="date-picker">
             <input type="datetime-local" matInput [(ngModel)]="voucherEdit.startDateTime" (change)="setMinEndDate()" name="sd" id="sd">
           </div>
@@ -56,7 +56,7 @@
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="usageQuantity"
             name="usageQuantity" placeholder="Quantities Allocated" [(ngModel)]="voucherEdit.usageQuantity"
-            #usageQuantity="ngModel" (ngModelChange)="onUsageQuantityChange($event)" />
+            #usageQuantity="ngModel"/>
         </mat-form-field>
         <mat-form-field class="col-md-6">
           <input matInput [value]="voucherEdit.usageQuantityUsed" placeholder="Quantities Assigned Out" disabled />
