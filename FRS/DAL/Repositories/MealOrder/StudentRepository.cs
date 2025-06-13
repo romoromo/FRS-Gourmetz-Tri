@@ -1309,23 +1309,32 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<bool> ImportStudentGroupAsync(List<int> studentIds,int studentGroupId,int userId)
         {
-            var selectedStudentGroupDetail = await _appContext.StudentGroupDetails.AsNoTracking().Where(x => x.StudentGroupId == studentGroupId).ToListAsync();
-            _appContext.StudentGroupDetails.RemoveRange(selectedStudentGroupDetail);
-
-            var selectedStudents = await _appContext.Students.AsNoTracking().Where(x => studentIds.Contains(x.Id) && x.IsActive).ToListAsync();
-            foreach (var item in selectedStudents)
+            try
             {
-                _appContext.StudentGroupDetails.Add(new StudentGroupDetail
-                {
-                    StudentGroupId = studentGroupId,
-                    StudentId = item.Id,
-                    CreatedBy = userId,
-                    UpdatedBy = userId
-                });
-            }
+                var selectedStudentGroupDetail = await _appContext.StudentGroupDetails.AsNoTracking().Where(x => x.StudentGroupId == studentGroupId).Select(x => x.StudentId).ToListAsync();
 
-            var affectedRows = await _appContext.SaveChangesAsync();
-            return affectedRows > 0;
+                var selectedStudents = await _appContext.Students.AsNoTracking().Where(x => studentIds.Contains(x.Id) && x.IsActive).ToListAsync();
+                foreach (var item in selectedStudents)
+                {
+                    var isExist = selectedStudentGroupDetail.Any(x => x == item.Id);
+                    if (!isExist)
+                    {
+                        _appContext.StudentGroupDetails.Add(new StudentGroupDetail
+                        {
+                            StudentGroupId = studentGroupId,
+                            StudentId = item.Id,
+                            CreatedBy = userId,
+                            UpdatedBy = userId
+                        });
+                    }
+                }
+
+                await _appContext.SaveChangesAsync();
+                return true;
+            }catch(Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<BaseOperationResponse> UpdateStudentClassByClassIdAsync(Student data,int originClassId)
