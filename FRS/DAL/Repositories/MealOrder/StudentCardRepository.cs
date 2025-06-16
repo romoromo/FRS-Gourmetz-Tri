@@ -230,36 +230,26 @@ namespace DAL.Repositories.MealOrder
 
                 if (student.Vouchers != null)
                 {
-                    var studentVoucherId = student.Vouchers.Select(t => t.VoucherId).ToList();
-
-                    if (!studentVoucherId.Contains(voucher.Id))
+                    var studentVoucher = new StudentVoucher
                     {
-                        var studentVoucher = new StudentVoucher
-                        {
-                            StudentId = student.Id,
-                            VoucherId = voucher.Id,
-                            Status = "NEW"
-                        };
+                        StudentId = student.Id,
+                        VoucherId = voucher.Id,
+                        Status = "NEW"
+                    };
 
-                        await _appContext.StudentVouchers.AddAsync(studentVoucher);
-                        voucher.UsageQuantityUsed += 1;
-                        _appContext.Vouchers.Update(voucher);
+                    await _appContext.StudentVouchers.AddAsync(studentVoucher);
+                    voucher.UsageQuantityUsed += 1;
+                    _appContext.Vouchers.Update(voucher);
 
 
-                        if (await _appContext.SaveChangesAsync() > 0)
-                        {
-                            result.Message = "Successfully saved!";
-                            result.IsSuccess = true;
-                        }
-                        else
-                        {
-                            result.Message = "Failed to save!";
-                        }
+                    if (await _appContext.SaveChangesAsync() > 0)
+                    {
+                        result.Message = "Successfully saved!";
+                        result.IsSuccess = true;
                     }
                     else
                     {
-                        result.IsSuccess = false;
-                        result.Message = "Voucher already applied to the student";
+                        result.Message = "Failed to save!";
                     }
                 }
             }
@@ -344,7 +334,6 @@ namespace DAL.Repositories.MealOrder
                 .ToHashSet();
 
             var newStudentVouchers = studentIds
-                .Where(studentId => !existingVoucherIds.Contains(studentId))
                 .Select(studentId => new StudentVoucher
                 {
                     StudentId = studentId,
