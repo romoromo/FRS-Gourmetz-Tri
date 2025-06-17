@@ -25,6 +25,7 @@ namespace BAL.DTO.MealOrder
         public int UsageQuantityUsed { get; set; }
         public int MaxDistribution { get; set; }
         public bool IsDisplayAllPages { get; set; }
+        public int UsedCount{ get; set; }
         public List<VoucherMealPeriodDTO> VoucherMealPeriods { get; set; }
     }
 

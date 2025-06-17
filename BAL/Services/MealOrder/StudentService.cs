@@ -723,8 +723,19 @@ namespace BAL.Services.MealOrder
         public async Task<List<VoucherDTO>> GetVouchersAsync(int studentId)
         {
             var svs = await this._uow.StudentCards.GetStudentVouchersAsync(studentId);
+            var voucherCode = svs.Select(x => x.Voucher.Code).ToList();
+            var countData = await _uow.StudentCards.GetVoucherUsedCountAsync(studentId, voucherCode);
 
-            return _mapper.Map<List<VoucherDTO>>(svs.Select(a => a.Voucher));
+            var result = svs
+            .Select(sv =>
+            {
+                var dto = _mapper.Map<VoucherDTO>(sv.Voucher);
+                dto.UsedCount = countData.TryGetValue(sv.Voucher.Code, out var count) ? count : 0;
+                return dto;
+            })
+            .ToList();
+
+            return result;
         }
 
         public async Task<BaseOperationResponse> AssignVoucherByStudentGroup(int studentGroupId, string code)

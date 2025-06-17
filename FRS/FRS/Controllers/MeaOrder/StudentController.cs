@@ -498,7 +498,7 @@ namespace FRS.Controllers
                         }
                     }
                     bool isSuccess = await _service.ImportStudentGroupAsync(studentIds, studentGroupId,userId);
-                    return Ok(new { IsSuccess = isSuccess, Message = "File Imported!" });
+                    return Ok(new { IsSuccess = isSuccess, Message = isSuccess ? "File Imported!" : "Import Failed!" });
                 }
                 else
                 {
