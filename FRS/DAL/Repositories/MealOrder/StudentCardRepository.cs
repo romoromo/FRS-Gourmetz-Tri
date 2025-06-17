@@ -267,7 +267,22 @@ namespace DAL.Repositories.MealOrder
             var now = DateTime.Now;
             var vouchers = _appContext.StudentVouchers.Where(e => e.IsActive && e.StudentId == studentId
                                     && now <= e.Voucher.EndDateTime && e.Status != "USED");
-            return vouchers.ToList();
+            return await vouchers.ToListAsync();
+        }
+
+        public async Task<Dictionary<string,int>> GetVoucherUsedCountAsync(int studentId,List<string> voucherCodes)
+        {
+            var returnData = await _appContext.StudentVouchers
+            .Where(sv => 
+                sv.IsActive 
+                && sv.StudentId == studentId 
+                && sv.Status == "USED" 
+                && voucherCodes.Contains(sv.Voucher.Code)
+            )
+            .GroupBy(sv => sv.Voucher.Code)
+            .Select(g => new { Code = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(g => g.Code, g => g.Count);
+            return returnData;
         }
 
         public async Task<BaseOperationResponse> AssignVoucherByStudentGroup(int studentGroupId, string code)

@@ -19,6 +19,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdateAsync(StudentCard studentCard);
         Task<BaseOperationResponse> ActivateStudentVoucher(int studentId, string code);
         Task<List<StudentVoucher>> GetStudentVouchersAsync(int studentId);
+        Task<Dictionary<string, int>> GetVoucherUsedCountAsync(int studentId, List<string> voucherCodes);
         Task<BaseOperationResponse> AssignVoucherByStudentGroup(int studentGroupId, string code);
     }
 }
