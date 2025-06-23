@@ -33,13 +33,15 @@ namespace DAL.Repositories.MealOrder
         private int? _currentUserId;
         private int? _currentInstitutionId;
         private readonly ILogger _logger;
+        private IUserActivityRepository _userActivityRepository;
 
-        public TokenOrderRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId) : base(context)
+        public TokenOrderRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId, IUserActivityRepository userActivityRepository) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
             this._currentUserId = currentInstitutionId;
             _logger = Logger.CreateLogger<TokenOrderRepository>();
+            _userActivityRepository = userActivityRepository;
         }
 
         #region Sieved
@@ -1984,6 +1986,13 @@ namespace DAL.Repositories.MealOrder
 
                                 order.Payment = payment;
                                 await _appContext.TokenOrders.AddAsync(order);
+                                string message = $"{payment.StudentId} {student.Name} successfully created adhoc order for Invoice number: {payment.InvoiceNumber} with student group: {studentGroup.Name}.";
+                                await _userActivityRepository.CreateAsync(message, createdBy);
+                            }
+                            else
+                            {
+                                string skipMessage = $"{student.Id} {student.Name} adhoc order skipped: No dish found for class ID {student.ClassId} on {deliveryDate:yyyy-MM-dd}.";
+                                await _userActivityRepository.CreateAsync(skipMessage, createdBy);
                             }
                         }
 
@@ -2001,6 +2010,8 @@ namespace DAL.Repositories.MealOrder
             {
                 result.Message = "Failed to process orders!";
                 _logger.LogError($"CreateStudentGroupOrdersAsync EXCEPTION : {ex.InnerException?.StackTrace} - {ex.Message} - {ex.StackTrace}");
+                string errorMessage = $"failed to create adhoc-order on {deliveryDate:yyyy-MM-dd} student group id {studentGroupId} : {ex.Message}";
+                await _userActivityRepository.CreateAsync(errorMessage, createdBy);
                 result.IsSuccess = false;
             }
 

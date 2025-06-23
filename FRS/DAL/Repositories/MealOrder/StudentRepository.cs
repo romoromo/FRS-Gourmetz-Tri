@@ -22,6 +22,7 @@ using IsolationLevel = System.Transactions.IsolationLevel;
 using Microsoft.Extensions.Logging;
 using DAL.Core.Logging;
 using Microsoft.Extensions.Configuration;
+using DAL.Repositories.Interfaces;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -33,8 +34,9 @@ namespace DAL.Repositories.MealOrder
         private IPasswordHasher<ApplicationUser> _passwordHasher;
         private ILogger _logger;
         private IConfiguration _configuration;
+        private IUserActivityRepository _userActivityRepository;
 
-        public StudentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId,IConfiguration configuration) : base(context)
+        public StudentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId,IConfiguration configuration,IUserActivityRepository userActivityRepository) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
@@ -42,6 +44,7 @@ namespace DAL.Repositories.MealOrder
             _passwordHasher = new PasswordHasher<ApplicationUser>();
             _logger = Logger.CreateLogger<DeviceRepository>();
             _configuration = configuration;
+            _userActivityRepository = userActivityRepository;
         }
 
         public async Task<IQueryable<Student>> GetAllStudentsAsync()
@@ -1311,12 +1314,17 @@ namespace DAL.Repositories.MealOrder
         {
             try
             {
-                var selectedStudentGroupDetail = await _appContext.StudentGroupDetails.AsNoTracking().Where(x => x.StudentGroupId == studentGroupId).Select(x => x.StudentId).ToListAsync();
+                var selectedStudentGroupDetail = await _appContext.StudentGroupDetails
+                    .Include(x => x.StudentGroup)
+                    .AsSplitQuery()
+                    .AsNoTracking()
+                    .Where(x => x.StudentGroupId == studentGroupId).Select(x => new { x.StudentId,StudentGroupName =  x.StudentGroup.Name }).ToListAsync();
 
                 var selectedStudents = await _appContext.Students.AsNoTracking().Where(x => studentIds.Contains(x.Id) && x.IsActive).ToListAsync();
+                var studentGroupData = await _appContext.StudentGroups.AsNoTracking().FirstOrDefaultAsync(x => x.Id == studentGroupId);
                 foreach (var item in selectedStudents)
                 {
-                    var isExist = selectedStudentGroupDetail.Any(x => x == item.Id);
+                    var isExist = selectedStudentGroupDetail.Any(x => x.StudentId == item.Id);
                     if (!isExist)
                     {
                         _appContext.StudentGroupDetails.Add(new StudentGroupDetail
@@ -1326,6 +1334,9 @@ namespace DAL.Repositories.MealOrder
                             CreatedBy = userId,
                             UpdatedBy = userId
                         });
+
+                        string message = $"{item.Id} {item.Name} : Assigned for this Student group : {studentGroupData?.Name}";
+                        await _userActivityRepository.CreateAsync(message, userId);
                     }
                 }
 

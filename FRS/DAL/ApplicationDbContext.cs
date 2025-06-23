@@ -264,6 +264,7 @@ namespace DAL
         public DbSet<StudentAccountLinkRequest> StudentAccountLinkRequests { get; set; }
         public DbSet<FaqSubject> FaqSubjects { get; set; }
         public DbSet<FaqDetail> FaqDetails { get; set; }
+        public DbSet<UserActivity> UserActivities { get; set; }
         #region Stored Procedures
 
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
@@ -641,6 +642,16 @@ namespace DAL
             builder.Entity<StudentAccountLinkRequest>().TrackAllProperties();
             builder.Entity<FaqSubject>().TrackAllProperties();
             builder.Entity<FaqDetail>().TrackAllProperties();
+
+            #region UserActivity
+            builder.Entity<UserActivity>()
+                .Property(x => x.Message)
+                .HasColumnType("nvarchar(max)")
+                .IsRequired(false);
+            builder.Entity<UserActivity>().HasIndex(x => x.CreatedBy);
+            builder.Entity<UserActivity>().HasIndex(x => x.CreatedDate);
+            builder.Entity<UserActivity>().TrackAllProperties();
+            #endregion
 
             #endregion
 

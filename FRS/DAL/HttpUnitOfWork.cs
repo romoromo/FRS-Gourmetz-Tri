@@ -5,12 +5,13 @@ using Sieve.Services;
 using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
 using AutoMapper;
+using DAL.Repositories.Interfaces;
 
 namespace DAL
 {
     public class HttpUnitOfWork : UnitOfWork
     {
-        public HttpUnitOfWork(IConfiguration configuration, ApplicationDbContext context, IHttpContextAccessor httpAccessor, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper) : base(configuration, context, sieveProcessor, loggerFactory, mapper)
+        public HttpUnitOfWork(IConfiguration configuration, ApplicationDbContext context, IHttpContextAccessor httpAccessor, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper,IUserActivityRepository userActivityRepository) : base(configuration, context, sieveProcessor, loggerFactory, mapper, userActivityRepository)
         {
             if (httpAccessor.HttpContext != null && httpAccessor.HttpContext.User != null)
             {

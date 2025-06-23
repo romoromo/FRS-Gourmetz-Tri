@@ -19,11 +19,13 @@ namespace DAL.Repositories.MealOrder
         private ISieveProcessor _sieveProcessor;
         private int? _currentUserId;
         private int? _currentInstitutionId;
-        public VoucherRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId) : base(context)
+        private IUserActivityRepository _userActivityRepository;
+        public VoucherRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId, IUserActivityRepository userActivityRepository) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
             this._currentUserId = currentInstitutionId;
+            _userActivityRepository = userActivityRepository;
         }
 
         #region Sieved
@@ -196,7 +198,11 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var selectedData = await _appContext.StudentVouchers.FindAsync(studentVoucherId);
+            var selectedData = await _appContext.StudentVouchers
+                .Include(x => x.Student)
+                .AsSplitQuery()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == studentVoucherId);
             if (selectedData == null)
             {
                 result.Message = "Student voucher not found!";
@@ -211,6 +217,9 @@ namespace DAL.Repositories.MealOrder
             {
                 selectedVoucher.UsageQuantityUsed = Math.Max(0, selectedVoucher.UsageQuantityUsed - 1);
             }
+
+            string message = $"{selectedData.StudentId} {selectedData?.Student?.Name} : Unassigned from this voucher : {selectedVoucher.Code}";
+            await _userActivityRepository.CreateAsync(message, _currentUserId);
 
             if (await _appContext.SaveChangesAsync() > 0)
             {

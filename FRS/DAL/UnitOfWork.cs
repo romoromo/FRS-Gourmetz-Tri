@@ -149,13 +149,15 @@ namespace DAL
         private OutletTermRepository _outletTerms;
         private FaqSubjectRepository _faqSubjects;
         private FaqDetailRepository _faqDetails;
+        IUserActivityRepository _userActivityRepository;
 
-        public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper)
+        public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper,IUserActivityRepository userActivityRepository)
         {
             _context = context;
             _configuration = configuration;
             _sieveProcessor = sieveProcessor;
             _loggerFactory = loggerFactory;
+            _userActivityRepository = userActivityRepository;
             _mapper = mapper;
             Logger.ConfigureLogger(loggerFactory, configuration);
         }
@@ -798,7 +800,7 @@ namespace DAL
             get
             {
                 if (_vouchers == null)
-                    _vouchers = new VoucherRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+                    _vouchers = new VoucherRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_userActivityRepository);
 
                 return _vouchers;
             }
@@ -886,7 +888,7 @@ namespace DAL
             get
             {
                 if (_students == null)
-                    _students = new StudentRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_configuration);
+                    _students = new StudentRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_configuration,_userActivityRepository);
 
                 return _students;
             }
@@ -908,7 +910,7 @@ namespace DAL
             get
             {
                 if (_studentCards == null)
-                    _studentCards = new StudentCardRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+                    _studentCards = new StudentCardRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_userActivityRepository);
 
                 return _studentCards;
             }
@@ -919,7 +921,7 @@ namespace DAL
             get
             {
                 if (_tokenOrders == null)
-                    _tokenOrders = new TokenOrderRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+                    _tokenOrders = new TokenOrderRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_userActivityRepository);
 
                 return _tokenOrders;
             }

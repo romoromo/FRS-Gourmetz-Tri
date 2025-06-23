@@ -19,11 +19,14 @@ namespace DAL.Repositories.MealOrder
         private ISieveProcessor _sieveProcessor;
         private int? _currentUserId;
         private int? _currentInstitutionId;
-        public StudentCardRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId) : base(context)
+        private IUserActivityRepository _userActivityRepository;
+        public StudentCardRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId,
+            IUserActivityRepository userActivityRepository) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
             this._currentUserId = currentInstitutionId;
+            _userActivityRepository = userActivityRepository;
         }
 
         #region Sieved
@@ -224,9 +227,19 @@ namespace DAL.Repositories.MealOrder
                 if (voucherLeft <= 0)
                 {
                     result.IsSuccess = false;
-                    result.Message = "Insufficient vouchers for the number of students in the group!";
+                    result.Message = "Insufficient vouchers for the number of students!";
                     return result;
                 }
+
+                var currentStudentVoucherCount = await _appContext.StudentVouchers
+                    .CountAsync(x => x.VoucherId == voucher.Id && x.StudentId == studentId);
+                if(currentStudentVoucherCount >= voucher.MaxDistribution)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Maximum allocation per user reached for this student.";
+                    return result;
+                }
+
 
                 if (student.Vouchers != null)
                 {
@@ -240,6 +253,8 @@ namespace DAL.Repositories.MealOrder
                     await _appContext.StudentVouchers.AddAsync(studentVoucher);
                     voucher.UsageQuantityUsed += 1;
                     _appContext.Vouchers.Update(voucher);
+                    string message = $"{student.Id} {student.Name} : Assigned for this voucher : {voucher.Code}";
+                    await _userActivityRepository.CreateAsync(message, _currentUserId);
 
 
                     if (await _appContext.SaveChangesAsync() > 0)
@@ -338,35 +353,56 @@ namespace DAL.Repositories.MealOrder
                 return result;
             }
 
-            var studentVoucherData = await _appContext.StudentVouchers.AsNoTracking()
-                .Where(x => x.IsActive && studentIds.Contains(x.StudentId))
-                .Select(x => new { x.StudentId, x.VoucherId })
-                .ToListAsync();
-
-            var existingVoucherIds = studentVoucherData
-                .Where(x => x.VoucherId == voucher.Id)
-                .Select(x => x.StudentId)
-                .ToHashSet();
-
-            var newStudentVouchers = studentIds
-                .Select(studentId => new StudentVoucher
-                {
-                    StudentId = studentId,
-                    VoucherId = voucher.Id,
-                    Status = "NEW"
+            var existingVoucherCounts = await _appContext.StudentVouchers
+                .Include(x => x.Student)
+                .AsSplitQuery()
+                .AsNoTracking()
+                .Where(x => x.IsActive && studentIds.Contains(x.StudentId) && x.VoucherId == voucher.Id)
+                .GroupBy(x => x.StudentId)
+                .Select(g => new {
+                    StudentId = g.Key,
+                    StudentName = g.First().Student.Name,
+                    Count = g.Count()
                 })
-                .ToList();
+                .ToDictionaryAsync(g => g.StudentId, g => new { g.StudentName, g.Count });
 
-            if (newStudentVouchers.Any())
+            List<string> messageData = new List<string>();
+            List<int> dataToInsert = new List<int>();
+            foreach (var studentIdData in studentIds)
             {
-                await _appContext.StudentVouchers.AddRangeAsync(newStudentVouchers);
-                voucher.UsageQuantityUsed += newStudentVouchers.Count();
-                _appContext.Vouchers.Update(voucher);
 
-                await _appContext.SaveChangesAsync();
+                if (existingVoucherCounts.TryGetValue(studentIdData, out var usedCountData) && usedCountData.Count >= voucher.MaxDistribution)
+                {
+                    string message = $"{studentIdData} {usedCountData.StudentName} : Maximum allocation per user reached for this voucher : {voucher.Code}";
+                    messageData.Add($"{studentIdData} {usedCountData.StudentName} : Maximum allocation per user reached for this voucher");
+                    await _userActivityRepository.CreateAsync(message, _currentUserId);
+                }
+                else
+                {
+                    var dataObject = new StudentVoucher
+                    {
+                        StudentId = studentIdData,
+                        VoucherId = voucher.Id,
+                        Status = "NEW"
+                    };
+                    dataToInsert.Add(studentIdData);
+                    await _appContext.StudentVouchers.AddAsync(dataObject);
+                    string message = $"{studentIdData} {usedCountData.StudentName} : Assigned for this voucher : {voucher.Code}";
+                    await _userActivityRepository.CreateAsync(message, _currentUserId);
+                }
+
+
             }
 
+            if (dataToInsert.Any())
+            {
+                voucher.UsageQuantityUsed += dataToInsert.Count();
+                _appContext.Vouchers.Update(voucher);
+            }
+            await _appContext.SaveChangesAsync();
+
             result.IsSuccess = true;
+            result.Data = messageData;
             result.Message = "Vouchers assigned successfully.";
             return result;
         }

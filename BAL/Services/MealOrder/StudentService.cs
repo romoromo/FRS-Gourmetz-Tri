@@ -733,6 +733,7 @@ namespace BAL.Services.MealOrder
                 dto.UsedCount = countData.TryGetValue(sv.Voucher.Code, out var count) ? count : 0;
                 return dto;
             })
+            .Where(dto => dto.UsedCount <= dto.MaxDistribution)
             .ToList();
 
             return result;
