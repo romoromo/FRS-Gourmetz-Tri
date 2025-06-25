@@ -25,6 +25,8 @@ using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using OpenIddict.Validation.AspNetCore;
+using FRS.Controllers;
+using MealOrderPayments.Controllers;
 
 namespace FRS.Controllers
 {
@@ -38,8 +40,9 @@ namespace FRS.Controllers
         readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
+        private OrderController _orderController;
 
-        public PaymentController(IPaymentService service, ILogger<PaymentController> logger, ITokenOrderService tokenService, IEmailSender emailSender, IStudentService studentservice, IMapper mapper)
+        public PaymentController(IPaymentService service, ILogger<PaymentController> logger, ITokenOrderService tokenService, IEmailSender emailSender, IStudentService studentservice, IMapper mapper, OrderController orderController)
         {
             _service = service;
             _logger = logger;
@@ -47,6 +50,7 @@ namespace FRS.Controllers
             _emailSender = emailSender;
             _studentService = studentservice;
             _mapper = mapper;
+            _orderController = orderController;
         }
 
         #region Payment Types
@@ -227,6 +231,21 @@ namespace FRS.Controllers
                             }
                         }
 
+
+                        vm.TokenOrders = tos;
+                        vm.MealPlanOrders = mpos;
+
+
+                        if (vm.Status == "SUCCESS" && vm.total == 0)
+                        {
+                            await _orderController.SendInvoice(vm);
+                            vm.invoiceSent = true;
+
+                            //vm.TokenOrders = new List<TokenOrderDTO>();
+                            //vm.MealPlanOrders = new List<MealPlanOrderDTO>();
+
+                            //await _service.UpdatePaymentAsync(vm);
+                        }
 
 
                         return CreatedAtAction("GetPaymentById", new { id = vm.Id }, vm);
