@@ -42,9 +42,6 @@ namespace DAL.Repositories.MealOrder
         public async Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter)
         {
             IQueryable<Dish> query = _appContext.Dishes
-                .Include(x => x.DishType)
-                .Include(x => x.Cuisine)
-                .Include(x => x.BentoBoxType)
                 .AsNoTracking()
                 .AsSplitQuery();
 
@@ -53,6 +50,7 @@ namespace DAL.Repositories.MealOrder
             {
                 Id = x.Id,
                 CatererId = x.CatererId,
+                CatererName = x.Caterer.Name,
                 Code = x.Code,
                 Label = x.Label,
                 ProductionDescription = x.ProductionDescription,

@@ -506,6 +506,7 @@ import { VoucherUtilisationsReportManagementComponent } from './components/repor
 import { VouchersUnassignManagementComponent } from './components/meal-order-system/voucher-unassign/vouchers-unassign-management.component';
 import { ClassTransferComponent } from './components/meal-order-system/class/class-transfer/class-transfer.component';
 import { DishPreviewErrorComponent } from './components/meal-order-system/dishes/dish-preview-error/dish-preview-error.component';
+import { VoucherDishComponent } from './components/meal-order-system/voucher/voucher-dish/vouhcer-dish.component';
  
  
 
@@ -716,7 +717,7 @@ export const configFactory = (configService: ConfigurationService) => {
     DishCycleEditorComponent, DishCyclesManagementComponent, DishCycleCalendarComponent, ViewDishCycleMenuComponent, OutletDishCycleCalendarComponent, OutletViewDishCycleMenuComponent,
     PaymentTypesManagementComponent, PaymentTypeEditorComponent,
     TransactionFeesManagementComponent, TransactionFeeEditorComponent,
-    VoucherTypesManagementComponent, VoucherTypeEditorComponent, VouchersManagementComponent,VouchersUnassignManagementComponent, VoucherEditorComponent,
+    VoucherTypesManagementComponent, VoucherTypeEditorComponent, VouchersManagementComponent,VouchersUnassignManagementComponent, VoucherEditorComponent,VoucherDishComponent,
     WaiversManagementComponent, WaiverEditorComponent,
     ContactUsDetailsManagementComponent, ContactUsDetailEditorComponent,
     ContactUsSubjectEditorComponent, ContactUsSubjectsManagementComponent,
@@ -931,7 +932,7 @@ export const configFactory = (configService: ConfigurationService) => {
     PaymentsReportManagementComponent,
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
     FaqDetailsManagementComponent, FaqDetailEditorComponent,
-    VoucherUtilisationsReportManagementComponent,DishPreviewErrorComponent
+    VoucherUtilisationsReportManagementComponent,DishPreviewErrorComponent,VoucherDishComponent
   ],
 })
 export class AppModule {

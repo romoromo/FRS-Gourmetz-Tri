@@ -52,7 +52,7 @@ export class VouchersManagementComponent implements OnInit {
   openDialog(voucher: Voucher): void {
     const dialogRef = this.dialog.open(VoucherEditorComponent, {
       data: { header: this.header, voucher: voucher },
-      width: '600px',
+      width: '1000px',
       disableClose: true
     });
 

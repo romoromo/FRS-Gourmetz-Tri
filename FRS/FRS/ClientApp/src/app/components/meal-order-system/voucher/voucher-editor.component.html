@@ -28,11 +28,13 @@
         <mat-form-field class="col-md-12" appearance="none">
           <mat-label>Usage Period (date range of voucher availability)</mat-label>
           <div class="date-picker">
-            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.startDateTime" (change)="setMinEndDate()" name="sd" id="sd">
+            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.startDateTime" (change)="setMinEndDate()"
+              name="sd" id="sd">
           </div>
           <div class="date-picker-to"> TO </div>
           <div class="date-picker">
-            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.endDateTime" [attr.min]="minEndDate" name="ed" id="ed">
+            <input type="datetime-local" matInput [(ngModel)]="voucherEdit.endDateTime" [attr.min]="minEndDate"
+              name="ed" id="ed">
           </div>
         </mat-form-field>
         <mat-form-field class="col-md-6">
@@ -56,7 +58,7 @@
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="usageQuantity"
             name="usageQuantity" placeholder="Quantities Allocated" [(ngModel)]="voucherEdit.usageQuantity"
-            #usageQuantity="ngModel"/>
+            #usageQuantity="ngModel" />
         </mat-form-field>
         <mat-form-field class="col-md-6">
           <input matInput [value]="voucherEdit.usageQuantityUsed" placeholder="Quantities Assigned Out" disabled />
@@ -94,6 +96,35 @@
             <mat-radio-button [value]="false">Do not display</mat-radio-button>
           </mat-radio-group>
         </mat-form-field>
+      </div>
+      <div style="min-height:300px">
+        <button type="button" mat-button style="margin-top:20px" *ngIf="canManageVouchers" (click)="openDialogDish()">
+          <mat-icon>
+            add
+          </mat-icon> Add Dish
+        </button>
+        <table class="table table-sm table-bordered">
+          <thead class="text-center">
+            <tr>
+              <td width="100px">#</td>
+              <td>Code</td>
+              <td>Dish</td>
+              <td width="100px">Action</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let details of selectedDishes; let x=index">
+              <td>{{x + 1}}</td>
+              <td>{{details.dishCode}}</td>
+              <td>{{details.dishName}}</td>
+              <td>
+                <a *ngIf="canManageVouchers" class="btn btn-link btn-xs" href="javascript:;"
+                  (click)="deleteDish(details,x)"><i class="fa fa-trash-o" aria-hidden="true"></i>
+                  {{'common.RowAction.Delete' | translate}}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="clearfix"></div>

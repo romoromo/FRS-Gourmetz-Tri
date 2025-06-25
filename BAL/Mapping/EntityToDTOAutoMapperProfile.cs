@@ -783,6 +783,11 @@ namespace BAL.Mapping
             CreateMap<VoucherMealPeriod, VoucherMealPeriodDTO>()
                 .ForMember(e => e.MealPeriodName, map => map.MapFrom(f => f.MealPeriod.Name));
 
+            CreateMap<VoucherDishDTO, VoucherDish>();
+            CreateMap<VoucherDish, VoucherDishDTO>()
+                .ForMember(e => e.DishName, map => map.MapFrom(f => f.Dish.Label))
+                .ForMember(e => e.DishCode, map => map.MapFrom(f => f.Dish.Code));
+
             CreateMap<VoucherDTO, Voucher>();
             CreateMap<Voucher, VoucherDTO>()
                 .ForMember(e => e.VoucherTypeName, map => map.MapFrom(f => f.VoucherType.Name));

@@ -1,9 +1,9 @@
 import { Component, ViewChild, Inject } from '@angular/core';
 
-import { AlertService, MessageSeverity } from '../../../services/alert.service';
+import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { MealService } from 'src/app/services/meal-order/meal.service';
 import { PaymentService } from '../../../services/meal-order/payment.service';
 import { Voucher, VoucherMealPeriod } from 'src/app/models/meal-order/voucher.model';
@@ -11,6 +11,7 @@ import { Filter } from 'src/app/models/sieve-filter.model';
 import { Subscription } from 'rxjs';
 import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
 import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
+import { VoucherDishComponent } from './voucher-dish/vouhcer-dish.component';
 
 
 @Component({
@@ -35,6 +36,7 @@ export class VoucherEditorComponent {
   private periods: MealPeriod[] = [];
   private outletProfiles = [];
   private minEndDate: string = '';
+  selectedDishes: any[] = [];
 
   @ViewChild('f')
   private form;
@@ -42,6 +44,7 @@ export class VoucherEditorComponent {
 
   constructor(private alertService: AlertService, private paymentService: PaymentService, private accountService: AccountService,
     public dialogRef: MatDialogRef<VoucherEditorComponent>, private mealService: MealService, private deliveryService: DeliveryService,
+    public dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.voucher) != typeof (undefined)) {
       if (data.voucher.id) {
@@ -141,7 +144,7 @@ export class VoucherEditorComponent {
       }
 
     });
-
+    this.voucherEdit.voucherDishes = [...this.selectedDishes]
     if (this.isNewVoucher) {
       this.paymentService.newVoucher(this.voucherEdit).subscribe(voucher => this.saveSuccessHelper(voucher), error => this.saveFailedHelper(error));
     }
@@ -245,6 +248,15 @@ export class VoucherEditorComponent {
 
       this.setMinEndDate();
 
+      voucher.voucherDishes.forEach(dish => {
+        var detail = {
+          dishId: dish.dishId,
+          dishName: dish.dishName,
+          dishCode: dish.dishCode
+        }
+        this.selectedDishes.push(detail);
+      })
+
       return this.voucherEdit;
     }
     else {
@@ -257,7 +269,40 @@ export class VoucherEditorComponent {
     this.minEndDate = this.voucherEdit.startDateTime.toString();
   }
 
+  //#region Dish
+  openDialogDish(): void {
+    const dialogRef = this.dialog.open(VoucherDishComponent, {
+      data: { selectedDishes: this.selectedDishes },
+      width: '1000px',
+      disableClose: true
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result.isCancel) {
+        this.selectedDishes = []
+        result.selectedData.forEach(data => {
+          var detail = {
+            dishId: data.id,
+            dishName: data.label,
+            dishCode: data.code
+          }
+          this.selectedDishes.push(detail)
+        })
+      }
+    });
+
+  }
+
+  deleteDish(row: any, index: number) {
+    this.alertService.showDialog('Are you sure you want to remove the \"' + row.dishName + '\"?', DialogType.confirm, () => this.deleteDishHelper(index));
+  }
+
+
+  deleteDishHelper(index: number) {
+    if (this.selectedDishes)
+      this.selectedDishes.splice(index, 1);
+  }
+  //#endregion
 
   get canManageVouchers() {
     return this.accountService.userHasPermission(Permission.manageMOSOrderMgtVouchersPermission)

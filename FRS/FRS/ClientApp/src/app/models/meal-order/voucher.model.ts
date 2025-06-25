@@ -22,6 +22,7 @@ export class Voucher {
   public maxDistribution: number;
   public isDisplayAllPages: boolean;
   public voucherMealPeriods: VoucherMealPeriod[];
+  public voucherDishes: VoucherDish[];
 }
 
 export class VoucherMealPeriod {
@@ -33,6 +34,17 @@ export class VoucherMealPeriod {
   public VoucherId: string;
   public mealPeriodId: string;
   public mealPeriodName: string;
+}
+
+export class VoucherDish {
+
+  constructor(id?: string, name?: string) {
+  }
+
+  public dishId: string;
+  public VoucherId: string;
+  public dishName: string;
+  public dishCode: string;
 }
 
 export class VoucherUtilisation {

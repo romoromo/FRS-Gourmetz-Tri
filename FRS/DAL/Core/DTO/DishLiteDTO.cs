@@ -7,6 +7,7 @@ namespace DAL.Core.DTO
         public int Id { get; set; }
         [Sieve(CanFilter = true, CanSort = false)]
         public int? CatererId { get; set; }
+        public string CatererName { get; set; }
         [Sieve(CanFilter = true, CanSort = true)]
         public string Code { get; set; }
         [Sieve(CanFilter = true, CanSort = true)]

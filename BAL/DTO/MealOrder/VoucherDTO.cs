@@ -27,6 +27,7 @@ namespace BAL.DTO.MealOrder
         public bool IsDisplayAllPages { get; set; }
         public int UsedCount{ get; set; }
         public List<VoucherMealPeriodDTO> VoucherMealPeriods { get; set; }
+        public List<VoucherDishDTO> VoucherDishes { get; set; }
     }
 
     public class VoucherMealPeriodDTO
@@ -34,6 +35,14 @@ namespace BAL.DTO.MealOrder
         public int VoucherId { get; set; }
         public int MealPeriodId { get; set; }
         public string MealPeriodName { get; set; }
+    }
+
+    public class VoucherDishDTO
+    {
+        public int VoucherId { get; set; }
+        public int DishId { get; set; }
+        public string DishName { get; set; }
+        public string DishCode { get; set; }
     }
 
     public class VoucherTypeDTO

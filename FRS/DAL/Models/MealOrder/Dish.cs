@@ -64,5 +64,6 @@ namespace DAL.Models.MealOrder
         public virtual ICollection<DishPeriod> DishPeriods { get; set; }
         public virtual ICollection<DishRestriction> Restrictions { get; set; }
         public virtual ICollection<DishComponent> DishComponents { get; set; }
+        public virtual ICollection<VoucherDish> VoucherDishes { get; set; }
     }
 }

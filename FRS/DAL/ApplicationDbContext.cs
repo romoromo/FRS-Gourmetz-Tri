@@ -265,6 +265,7 @@ namespace DAL
         public DbSet<FaqSubject> FaqSubjects { get; set; }
         public DbSet<FaqDetail> FaqDetails { get; set; }
         public DbSet<UserActivity> UserActivities { get; set; }
+        public DbSet<VoucherDish> VoucherDishes { get; set; }
         #region Stored Procedures
 
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
@@ -620,6 +621,13 @@ namespace DAL
             builder.Entity<Voucher>().HasIndex(v => v.UsageQuantity);
             builder.Entity<Voucher>().HasIndex(v => v.UsageQuantityUsed);
             builder.Entity<Voucher>().HasIndex(v => new { v.StartDateTime, v.EndDateTime });
+            #endregion
+
+            #region Voucher Dish
+            builder.Entity<VoucherDish>().TrackAllProperties();
+            builder.Entity<VoucherDish>().HasIndex(x => x.VoucherId);
+            builder.Entity<VoucherDish>().HasIndex(x => x.DishId);
+            builder.Entity<VoucherDish>().HasIndex(x => new { x.VoucherId, x.DishId });
             #endregion
 
             builder.Entity<VoucherMealPeriod>().TrackAllProperties();

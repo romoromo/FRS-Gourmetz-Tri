@@ -104,6 +104,7 @@ namespace DAL.Repositories.MealOrder
             }
 
             var f = await AddAsync(voucher);
+            await _userActivityRepository.CreateAsync($"Voucher created: {voucher.Code}", _currentUserId);
             if (await _appContext.SaveChangesAsync() > 0)
             {
                 result.Message = "Successfully saved!";
@@ -164,7 +165,18 @@ namespace DAL.Repositories.MealOrder
             }
 
             f.CopyFrom(voucher);
+            f.VoucherDishes.Clear();
+            if (voucher.VoucherDishes.Count > 0) {
+                foreach (var item in voucher.VoucherDishes)
+                {
+                    f.VoucherDishes.Add(new VoucherDish
+                    {
+                        DishId = item.DishId,
+                    });
+                }
+            }
             Update(f);
+            await _userActivityRepository.CreateAsync($"Voucher Updated: {voucher.Code}", _currentUserId);
             if (await _appContext.SaveChangesAsync() > 0)
             {
                 result.Message = "Successfully saved!";

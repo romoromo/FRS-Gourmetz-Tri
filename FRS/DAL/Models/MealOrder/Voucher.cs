@@ -61,5 +61,6 @@ namespace DAL.Models.MealOrder
         public virtual Institution Institution { get; set; }
 
         public virtual ICollection<VoucherMealPeriod> VoucherMealPeriods { get; set; }
+        public virtual ICollection<VoucherDish> VoucherDishes { get; set; }
     }
 }
