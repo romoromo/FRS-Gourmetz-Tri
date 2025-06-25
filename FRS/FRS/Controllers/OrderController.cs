@@ -1866,7 +1866,7 @@ namespace MealOrderPayments.Controllers
 
         //}
 
-        private async Task SendInvoice(PaymentDTO p)
+        public async Task SendInvoice(PaymentDTO p)
         {
             var sb = new StringBuilder();
             sb.AppendLine(string.Format(@"<p> <b>Invoice Number:</b>{0}</p>
