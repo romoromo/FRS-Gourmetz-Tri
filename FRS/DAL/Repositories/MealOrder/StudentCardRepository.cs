@@ -304,11 +304,14 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var studentIds = await _appContext.StudentGroupDetails.AsNoTracking()
+            var studentData = await _appContext.StudentGroupDetails.AsNoTracking()
                 .Where(e => e.IsActive && e.StudentGroupId == studentGroupId)
-                .Select(x => x.StudentId)
+                .Select(x => new { x.StudentId,StudentName = x.Student.Name })
                 .Distinct()
                 .ToListAsync();
+
+            var studentIds = studentData.Select(x => x.StudentId).ToList();
+            var studentNames = studentData.ToDictionary(x => x.StudentId, x => x.StudentName);
 
             if (!studentIds.Any())
             {
@@ -354,27 +357,24 @@ namespace DAL.Repositories.MealOrder
             }
 
             var existingVoucherCounts = await _appContext.StudentVouchers
-                .Include(x => x.Student)
                 .AsSplitQuery()
                 .AsNoTracking()
                 .Where(x => x.IsActive && studentIds.Contains(x.StudentId) && x.VoucherId == voucher.Id)
                 .GroupBy(x => x.StudentId)
-                .Select(g => new {
-                    StudentId = g.Key,
-                    StudentName = g.First().Student.Name,
-                    Count = g.Count()
-                })
-                .ToDictionaryAsync(g => g.StudentId, g => new { g.StudentName, g.Count });
+                .Select(g => new { StudentId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(g => g.StudentId, g => g.Count); ;
 
             List<string> messageData = new List<string>();
             List<int> dataToInsert = new List<int>();
             foreach (var studentIdData in studentIds)
             {
+                var studentName = studentNames.TryGetValue(studentIdData, out var name) ? name : "-";
+                existingVoucherCounts.TryGetValue(studentIdData, out var usedCount);
 
-                if (existingVoucherCounts.TryGetValue(studentIdData, out var usedCountData) && usedCountData.Count >= voucher.MaxDistribution)
+                if (usedCount >= voucher.MaxDistribution)
                 {
-                    string message = $"{studentIdData} {usedCountData.StudentName} : Maximum allocation per user reached for this voucher : {voucher.Code}";
-                    messageData.Add($"{studentIdData} {usedCountData.StudentName} : Maximum allocation per user reached for this voucher");
+                    string message = $"{studentIdData} {studentName} : Maximum allocation per user reached for this voucher : {voucher.Code}";
+                    messageData.Add($"{studentIdData} {studentName} : Maximum allocation per user reached for this voucher");
                     await _userActivityRepository.CreateAsync(message, _currentUserId);
                 }
                 else
@@ -387,7 +387,7 @@ namespace DAL.Repositories.MealOrder
                     };
                     dataToInsert.Add(studentIdData);
                     await _appContext.StudentVouchers.AddAsync(dataObject);
-                    string message = $"{studentIdData} {usedCountData.StudentName} : Assigned for this voucher : {voucher.Code}";
+                    string message = $"{studentIdData} {studentName} : Assigned for this voucher : {voucher.Code}";
                     await _userActivityRepository.CreateAsync(message, _currentUserId);
                 }
 
