@@ -341,7 +341,7 @@ export class StudentGroupsManagementComponent implements OnInit {
           this.alertService.stopLoadingMessage();
           this.loadingIndicator = false;
           this.alertService.showMessage(response.message);
-          if (response.data) {
+          if (response.data && response.data.length > 0) {
             const messageData = response.data.join("<br/><br/>")
             this.alertService.showStickyMessage("Voucher Info",messageData,MessageSeverity.info)
           }
