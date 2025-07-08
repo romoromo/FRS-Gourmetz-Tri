@@ -2770,8 +2770,8 @@ namespace BAL.Services.MealOrder
                     var sheet = (XSSFSheet)wb.CreateSheet("Orders");
                     var headers = new List<string>
                     {
-                        "Invoice No.",
                         "Student Id",
+                        "Invoice No.",
                         "Name",
                         "Outlet",
                         "Class/Department",
@@ -2902,13 +2902,10 @@ namespace BAL.Services.MealOrder
                     foreach(var grp in grpOrders)
                     {
                         var paymentDetails = grp.First();
+                        var invoiceNumber = paymentDetails.InvoiceNumber;
 
                         col = 0;
                         row = sheet.CreateRow(rowCount++);
-
-                        cell = row.CreateCell(col++);
-                        cell.SetCellValue(paymentDetails.InvoiceNumber);
-                        cell.CellStyle = contentStyle;
 
                         #region Student Orders
 
@@ -2916,7 +2913,7 @@ namespace BAL.Services.MealOrder
                         int firstStudentRecord = 0;
                         foreach (var o in studentOrders)
                         {
-                            col = 1;
+                            col = 0;
 
                             if (firstStudentRecord > 0)
                             {
@@ -2930,6 +2927,10 @@ namespace BAL.Services.MealOrder
                             #region Payment 
                             cell = row.CreateCell(col++);
                             cell.SetCellValue(studentDetails.StudentId);
+                            cell.CellStyle = contentStyle;
+
+                            cell = row.CreateCell(col++);
+                            cell.SetCellValue(invoiceNumber);
                             cell.CellStyle = contentStyle;
 
                             cell = row.CreateCell(col++);
