@@ -20,7 +20,7 @@ namespace DAL.Models.MealOrder
         public string Label { get; set; }
 
         public int Sequence { get; set; }
-
+        [Sieve(CanFilter = true, CanSort = false)]
         public string CycleType { get; set; }
 
         public int? DishTypeId { get; set; }

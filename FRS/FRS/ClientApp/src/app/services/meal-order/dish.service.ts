@@ -105,6 +105,10 @@ export class DishService {
     return this.commonEndpoint.getSieve<PagedResult>(this.dishUrl + '/sieve/list-lite', filter);
   }
 
+  getDishesIdsByCycleId(dishCycleId: number) {
+    return this.commonEndpoint.get<number[]>(this.dishUrl + '/ids/cycle/' + dishCycleId);
+  }
+
   updateDish(dish: Dish) {
     if (dish.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.dishUrl, dish, dish.id);

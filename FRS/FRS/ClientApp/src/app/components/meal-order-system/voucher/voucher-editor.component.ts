@@ -272,7 +272,10 @@ export class VoucherEditorComponent {
   //#region Dish
   openDialogDish(): void {
     const dialogRef = this.dialog.open(VoucherDishComponent, {
-      data: { selectedDishes: this.selectedDishes },
+      data: {
+        selectedDishes: this.selectedDishes,
+        outletProfiles: this.outletProfiles
+      },
       width: '1000px',
       disableClose: true
     });

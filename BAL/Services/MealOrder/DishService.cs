@@ -180,6 +180,11 @@ namespace BAL.Services.MealOrder
             return await _uow.Dishes.GetDishesLiteAsync(filter);
         }
 
+        public async Task<List<int?>> GetDishesIdsByCycleIdAsync(int dishCycleId)
+        {
+            return await _uow.Dishes.GetDishesIdsByCycleIdAsync(dishCycleId);
+        }
+
         public async Task<byte[]> GenerateDishXlsx(BaseFilter filter)
         {
             var dishesPaged = await GetDishesLiteAsync(filter);

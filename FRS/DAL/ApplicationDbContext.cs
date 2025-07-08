@@ -595,10 +595,25 @@ namespace DAL
             builder.Entity<OutletClassRosterSchedule>().TrackAllProperties();
             builder.Entity<OutletClassRosterSchedulePeriod>().TrackAllProperties();
             builder.Entity<OutletClassRosterSchedulePeriodClass>().TrackAllProperties();
+            #region DishCycle
+            builder.Entity<DishCycle>().HasIndex(x => x.StartDate);
+            builder.Entity<DishCycle>().HasIndex(x => x.EndDate);
+            builder.Entity<DishCycle>().HasIndex(x => x.NumOfDays);
+            builder.Entity<DishCycle>().HasIndex(x => x.NumOfSets);
             builder.Entity<DishCycle>().TrackAllProperties();
+            #endregion
+            #region DishCycleSchedule
+            builder.Entity<DishCycleSchedule>().HasIndex(x => x.Day);
             builder.Entity<DishCycleSchedule>().TrackAllProperties();
+            #endregion
+            #region DishCycleScheduleSet
+            builder.Entity<DishCycleScheduleSet>().HasIndex(x => x.CycleTypeSequence);
             builder.Entity<DishCycleScheduleSet>().TrackAllProperties();
+            #endregion
+            #region DishCycleScheduleDetail
+            builder.Entity<DishCycleScheduleDetail>().HasIndex(x => x.Sequence);
             builder.Entity<DishCycleScheduleDetail>().TrackAllProperties();
+            #endregion
             builder.Entity<DishCycleScheduleDetailMenu>().TrackAllProperties();
             builder.Entity<DishCycleCalendar>().TrackAllProperties();
             builder.Entity<DishCycleCalendarBlockedDate>().TrackAllProperties();

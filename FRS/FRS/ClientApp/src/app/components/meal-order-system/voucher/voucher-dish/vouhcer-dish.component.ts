@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { SearchBoxComponent } from 'src/app/components/controls/search-box.component';
 import { Dish } from 'src/app/models/meal-order/dish.model';
 import { Filter, PagedResult } from 'src/app/models/sieve-filter.model';
 import { AlertService, MessageSeverity } from 'src/app/services/alert.service';
@@ -16,6 +17,7 @@ export class VoucherDishComponent implements OnInit {
   isSaving: boolean = false;
   keyword: string = '';
   filter: Filter;
+  filterDishCycle: Filter;
   pagedResult: PagedResult;
   columns: any[] = [];
   rows: Dish[] = [];
@@ -24,12 +26,20 @@ export class VoucherDishComponent implements OnInit {
   private selected: any[] = [];
   private selectedOriginal: any[] = [];
   private selectedDishes: any[] = [];
+  outletProfiles: any[] = []
+  selectedOutletProfileId: number | null = null;
+  dishCycles: any[] = []
+  dishCycleLoading: boolean = false;
+  selectedDishCycleId: number | null = null;
+
 
   @ViewChild('hdrTpl')
   hdrTpl: TemplateRef<any>;
 
   @ViewChild('actionsTemplate')
   actionsTemplate: TemplateRef<any>;
+
+  @ViewChild('searchbox') searchbox: SearchBoxComponent;
 
 
   constructor(
@@ -40,6 +50,10 @@ export class VoucherDishComponent implements OnInit {
   ) {
     if (typeof (data.selectedDishes) != typeof (undefined)) {
       this.selectedDishes = data.selectedDishes;
+    }
+
+    if (typeof (data.outletProfiles) != typeof (undefined)) {
+      this.outletProfiles = data.outletProfiles;
     }
   }
 
@@ -150,27 +164,69 @@ export class VoucherDishComponent implements OnInit {
     this.selectedOriginal = selected
   }
 
-  filterDataOnClientSide() {
-    const originalData = [...this.rowsCache];
-    const keyword = this.keyword.toLowerCase();
+  async filterDataOnClientSide() {
+    const keywordLC = this.keyword.toLowerCase().trim() || '';
+    const hasKeyword = keywordLC.length > 0;
 
-    this.rows = originalData.filter(item => {
-      const matchesName = item.label.toLowerCase().includes(keyword) || item.code.toLowerCase().includes(keyword);
+    let dishIds: number[] = [];
 
-      return matchesName
-    });
+    const hasDishCycle = this.selectedDishCycleId > 0;
+    const hasOutlet = this.selectedOutletProfileId > 0;
+    const hasDishFilter = hasDishCycle && hasOutlet;
 
-    const rowIds = this.rows.map(x => x.id)
-    this.selected = this.selectedOriginal.filter(x => rowIds.includes(x.id));
-    this.rows.forEach(row => (row.checked = this.selected.findIndex(e => e.id == row.id) > -1));
+    this.loadingIndicator = true;
+
+    if (hasDishFilter) {
+      dishIds = await this.dishService.getDishesIdsByCycleId(this.selectedDishCycleId).toPromise();
+    }
+
+    const dishIdSet = dishIds.length > 0 ? new Set(dishIds.map(id => id.toString())) : null;
+
+    if (!hasKeyword && !dishIdSet) {
+      this.rows = [...this.rowsCache];
+      this.loadingIndicator = false;
+      return;
+    }
+
+
+    this.rows = [];
+
+    for (const item of this.rowsCache) {
+      const idStr = item.id.toString();
+
+      const matchesName =
+        hasKeyword &&
+        (item.label.toLowerCase().includes(keywordLC) || item.code.toLowerCase().includes(keywordLC));
+
+      const matchesDishCycle = dishIdSet && dishIdSet.has(idStr);
+
+      let shouldInclude = false
+      if (hasKeyword && hasDishFilter) {
+        shouldInclude = matchesName && matchesDishCycle;
+      } else if (hasKeyword && !hasDishFilter) {
+        shouldInclude = matchesName;
+      } else if (!hasKeyword && hasDishFilter) {
+        shouldInclude = matchesDishCycle;
+      }
+
+      if (shouldInclude) {
+        this.rows.push(item);
+      }
+    }
+
+    this.loadingIndicator = false;
   }
 
   onSearchChanged(value: string) {
     this.keyword = value;
   }
 
-  onSearchTriggered() {
-    this.filterDataOnClientSide()
+  async onSearchTriggered() {
+    await this.filterDataOnClientSide()
+  }
+
+  async onAppyFilterTrigger() {
+    await this.filterDataOnClientSide()
   }
 
   selectFn(ev) {
@@ -187,5 +243,45 @@ export class VoucherDishComponent implements OnInit {
 
   private cancel() {
     this.dialogRef.close({ isCancel: true });
+  }
+
+  onOutletChange = (selectedId: number) => {
+    this.selectedOutletProfileId = selectedId
+    this.loadDishCyle(selectedId)
+  }
+
+  loadDishCyle(outletProfileId: number) {
+    this.dishCycleLoading = true
+    const now: Date = new Date();
+    this.filterDishCycle = new Filter(1, 10);
+    this.filterDishCycle.sorts = 'label';
+    this.filterDishCycle.filters = `(IsActive)==true,(OutletProfileId)==${outletProfileId},(EndDate)>=${now.toDateString()},(CycleType)==Main Menu`;
+
+    this.dishService.getDishCyclesSimpleByFilter(this.filterDishCycle)
+      .subscribe(results => {
+        this.dishCycles = results.pagedData
+        this.dishCycleLoading = false
+      },
+        error => {
+          this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
+            MessageSeverity.error);
+          this.dishCycleLoading = false
+        },
+        () => {
+          this.dishCycleLoading = false
+        });
+  }
+
+  onDishCycleChange = (selectedId: number) => {
+    this.selectedDishCycleId = selectedId
+  }
+
+  clearFilters() {
+    this.keyword = '';
+    this.searchbox.clear();
+    this.selectedOutletProfileId = null;
+    this.selectedDishCycleId = null
+    const originalData = [...this.rowsCache];
+    this.rows = originalData
   }
 }

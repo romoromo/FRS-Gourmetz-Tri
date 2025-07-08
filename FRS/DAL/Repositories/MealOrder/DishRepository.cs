@@ -10,8 +10,6 @@ using DAL.Filters;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
 using DAL.Core.DTO;
-using Sieve.Models;
-using NPOI.SS.Formula.Functions;
 using System.IO;
 
 namespace DAL.Repositories.MealOrder
@@ -40,7 +38,7 @@ namespace DAL.Repositories.MealOrder
         }
 
         public async Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter)
-        {
+        {   
             IQueryable<Dish> query = _appContext.Dishes
                 .AsNoTracking()
                 .AsSplitQuery();
@@ -81,6 +79,37 @@ namespace DAL.Repositories.MealOrder
                 TotalCount = totalCount,
                 PagedData = pagedData
             };
+        }
+
+        public async Task<List<int?>> GetDishesIdsByCycleIdAsync(int dishCycleId)
+        {
+            var cycleSetsData = await _appContext.DishCycleScheduleSets
+                .AsNoTracking()
+                .Where(x => x.DishCycleId == dishCycleId && x.IsActive)
+                .Select(x => new { x.CycleTypeId, x.CycleTypeSequence,x.DishCycle.NumOfDays })
+                .ToListAsync();
+
+            var numOfDays = cycleSetsData.Select(x => x.NumOfDays).FirstOrDefault();
+
+            var queryDish = await _appContext.DishCycles
+                .AsSplitQuery()
+                .AsNoTracking()
+                .Where(x => cycleSetsData.Select(x => x.CycleTypeId).Contains(x.Id))
+                .SelectMany(cycle => 
+                    cycle.Schedules.Where(y => y.Day <= numOfDays)
+                        .SelectMany(y => y.Details
+                            .SelectMany(z => z.Menus
+                                .Select(x => new { x.DishId,DishCycleId = cycle.Id, z.Sequence}))))
+                .ToListAsync();
+
+            var filteredIds = queryDish
+                .Where(d => cycleSetsData
+                    .Any(cs => cs.CycleTypeId == d.DishCycleId && cs.CycleTypeSequence == d.Sequence))
+                .Select(d => d.DishId)
+                .Distinct()
+                .ToList();
+
+            return filteredIds;
         }
 
         #endregion

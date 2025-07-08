@@ -56,5 +56,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<List<DishCycleDTO>> GetOutletStudentDishCyclesAsync(int studentId, DateTime date, int sessionId);
         Task<IEnumerable<DishTypeDTO>> GetDishTypesByActiveDishCyclesAsync(int outletId, DateTime deliveryDate, DateTime deliveryDateTo);
         Task<DishImportDTO> DishImport(int catererInfoId, List<DishImportInputDTO> dtos,int userId);
+        Task<List<int?>> GetDishesIdsByCycleIdAsync(int dishCycleId);
     }
 }

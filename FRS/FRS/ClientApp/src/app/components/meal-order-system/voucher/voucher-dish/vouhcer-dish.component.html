@@ -1,10 +1,33 @@
 <h1 mat-dialog-title>Dishes</h1>
 <div mat-dialog-content>
     <div class="form-group search-box">
-        <search-box (searchChange)="onSearchChanged($event)" (onEnter)="onSearchTriggered()"
+        <search-box #searchbox (searchChange)="onSearchChanged($event)"
             placeholder="{{'common.Search' | translate}}"></search-box>
     </div>
-
+    <div class="row">
+        <mat-form-field class="col-md-4 col-xs-12">
+            <mat-label>Outlet Profile</mat-label>
+            <mat-select id="outletProfileId" name="outletProfileId" [(ngModel)]="selectedOutletProfileId"
+                (selectionChange)="onOutletChange($event.value)">
+                <mat-option *ngFor=" let outletProfile of outletProfiles" [value]="outletProfile.id">
+                    {{outletProfile.label}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-md-4 col-xs-12">
+            <mat-label>Dish Cycle</mat-label>
+            <mat-select id="dishCycleId" name="dishCycleId" [(ngModel)]="selectedDishCycleId"
+                (selectionChange)="onDishCycleChange($event.value)" [disabled]="dishCycleLoading">
+                <mat-option *ngFor=" let item of dishCycles" [value]="item.id">
+                    {{item.label}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class="col-md-4 col-xs-12" style="display: flex;gap: 5px;">
+            <button mat-raised-button (click)="onAppyFilterTrigger()">Apply</button>
+            <button mat-raised-button (click)="clearFilters()" color="warn">Clear</button>
+        </div>
+    </div>
     <ngx-datatable class="material colored-header" [loadingIndicator]="loadingIndicator" [rows]="rows"
         [rowHeight]="'auto'" [headerHeight]="'auto'" [footerHeight]="35" [columns]="columns" [columnMode]="'force'"
         [limit]="10" [selectionType]="'checkbox'" (select)="onSelect($event)" [selected]="selected">

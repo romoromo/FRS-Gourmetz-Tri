@@ -21,5 +21,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<List<Dish>> GetDishChangesAsync(DateTime updatedAfter, DateTime? updatedBefore);
         Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter);
         Task<DishImportDTO> DishImport(int catererInfoId, List<DishImportInputDTO> dtos,int userId);
+        Task<List<int?>> GetDishesIdsByCycleIdAsync(int dishCycleId);
     }
 }

@@ -167,6 +167,15 @@ namespace FRS.Controllers
             return Ok(_mapper.Map<PagedEntityViewModel<DishLiteDTO>>(results));
         }
 
+        [HttpGet("dishes/ids/cycle/{id:int}")]
+        [ProducesResponseType(200, Type = typeof(List<int>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetDishesIdsByCycleId([FromRoute] int id)
+        {
+            var results = await this._service.GetDishesIdsByCycleIdAsync(id);
+            return Ok(results);
+        }
+
         [HttpPost("dishes/sieve/list/export")]
         [ProducesResponseType(200)]
         public async Task<IActionResult> GetDishesExport(BaseFilter filter)
