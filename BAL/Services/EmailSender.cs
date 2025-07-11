@@ -16,19 +16,28 @@ using System.Linq;
 using BAL.DTO;
 using System.Net.Mail;
 using DAL.Core.Logging;
+using System.Net.Http;
+using System.Net.Http.Json;
+using Newtonsoft.Json;
+using System.Text;
+using System.Net.Http.Headers;
+using iTextSharp.text;
+using System.Diagnostics;
 
 namespace BAL.Services
 {
     public class EmailSender : IEmailSender
     {
         private SmtpConfig _config;
+        private SmtpOauth2Config _configOauth;
         private IApplicationSettingService _appSetting;
         private IEmailQueueService _emailQueue;
         private ILogger _logger;
 
-        public EmailSender(IOptions<SmtpConfig> config, IApplicationSettingService appSetting, IEmailQueueService emailQueue)
+        public EmailSender(IOptions<SmtpConfig> config, IOptions<SmtpOauth2Config> configOauth, IApplicationSettingService appSetting, IEmailQueueService emailQueue)
         {
             _config = config.Value;
+            _configOauth = configOauth.Value;
             _appSetting = appSetting;
             _emailQueue = emailQueue;
             _logger = Logger.CreateLogger<EmailSender>();
@@ -47,7 +56,7 @@ namespace BAL.Services
         /// <param name="attachments"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public async Task<(bool success, string errorMsg)> SendEmailAsync(
+        public async Task<(bool success, string errorMsg)> SendEmailOldAsync(
             string recepientName,
             string recepientEmail,
             string subject,
@@ -81,9 +90,90 @@ namespace BAL.Services
             return await SendEmailAsync(from, new MailboxAddress[] { to }, subject, body, config, isHtml, attachments);
         }
 
+        public async Task<(bool success, string errorMsg)> SendEmailAsync(
+            string recepientName,
+            string recepientEmail,
+            string subject,
+            string body,
+            SmtpOauth2Config config = null,
+            bool isHtml = true,
+            List<EmailAttachment> attachments = null,
+            string action = null)
+        {
+            try
+            {
+                if (config == null)
+                    config = _configOauth;
 
+                using var tokenClient = new HttpClient();
+                var tokenBody = new Dictionary<string, string> {
+                    { "client_id", config.client_id },
+                    { "client_secret", config.client_secret },
+                    { "scope", config.scope},
+                    { "grant_type", config.grant_type },
+                };
+                var content = new FormUrlEncodedContent(tokenBody);
+                var response = await tokenClient.PostAsync(config.token_url, content);
+                //var tokenObj = await response.Content.ReadAsStringAsync();
+                var tokenObj = await response.Content.ReadFromJsonAsync<Oauth2TokenResponse>();
+
+                if (tokenObj == null) return (false, "Fetching token is failed.");
+                if (!string.IsNullOrWhiteSpace(tokenObj.error) || string.IsNullOrWhiteSpace(tokenObj.access_token)) return (false, "Error No Token - " + await response.Content.ReadAsStringAsync());
+        
+                using var emailClient = new HttpClient();
+                emailClient.DefaultRequestHeaders.Authorization
+                         = new AuthenticationHeaderValue("Bearer", tokenObj.access_token);
+
+                var jsonObj = JsonConvert.SerializeObject(new
+                {
+                    message =  new
+                    {
+                        subject = subject,
+                        body = new
+                        {
+                            contentType = isHtml ? "HTML" : "Text",
+                            content = body
+                        },
+                        toRecipients = new[] {
+                            new {
+                                emailAddress = new {
+                                    address = recepientEmail
+                                }
+                            }
+                        }
+                    }
+                });
+                var stringContent = new StringContent(jsonObj, Encoding.UTF8, "application/json");
+                var resp = await emailClient.PostAsync(config.email_url, stringContent);
+                var emailContent = await resp.Content.ReadAsStringAsync();
+
+                if(emailContent.Contains("error")) return (false, emailContent);
+
+                return (true, "");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.ToString());
+            }
+        }
 
         public async Task<(bool success, string errorMsg)> SendEmailAsync(
+            string senderName,
+            string senderEmail,
+            string recepientName,
+            string recepientEmail,
+            string subject,
+            string body,
+            SmtpOauth2Config config = null,
+            bool isHtml = true,
+            List<EmailAttachment> attachments = null)
+        {
+            return await SendEmailAsync(recepientName, recepientEmail, subject, body, config, isHtml, attachments);
+        }
+
+
+
+        public async Task<(bool success, string errorMsg)> SendEmailOldAsync(
             string senderName,
             string senderEmail,
             string recepientName,

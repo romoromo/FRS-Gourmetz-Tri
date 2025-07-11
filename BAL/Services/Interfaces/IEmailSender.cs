@@ -14,8 +14,10 @@ namespace BAL.Services.Interfaces
     public interface IEmailSender
     {
         Task<(bool success, string errorMsg)> SendEmailAsync(MailboxAddress sender, MailboxAddress[] recepients, string subject, string body, SmtpConfig config = null, bool isHtml = true, List<EmailAttachment> attachments = null);
-        Task<(bool success, string errorMsg)> SendEmailAsync(string recepientName, string recepientEmail, string subject, string body, SmtpConfig config = null, bool isHtml = true, List<EmailAttachment> attachments = null, string action = null);
-        Task<(bool success, string errorMsg)> SendEmailAsync(string senderName, string senderEmail, string recepientName, string recepientEmail, string subject, string body, SmtpConfig config = null, bool isHtml = true, List<EmailAttachment> attachments = null);
+        Task<(bool success, string errorMsg)> SendEmailOldAsync(string recepientName, string recepientEmail, string subject, string body, SmtpConfig config = null, bool isHtml = true, List<EmailAttachment> attachments = null, string action = null);
+        Task<(bool success, string errorMsg)> SendEmailAsync(string recepientName, string recepientEmail, string subject, string body, SmtpOauth2Config config = null, bool isHtml = true, List<EmailAttachment> attachments = null, string action = null);
+        Task<(bool success, string errorMsg)> SendEmailAsync(string senderName, string senderEmail, string recepientName, string recepientEmail, string subject, string body, SmtpOauth2Config config = null, bool isHtml = true, List<EmailAttachment> attachments = null);
+        Task<(bool success, string errorMsg)> SendEmailOldAsync(string senderName, string senderEmail, string recepientName, string recepientEmail, string subject, string body, SmtpConfig config = null, bool isHtml = true, List<EmailAttachment> attachments = null);
         Calendar CreateCalendarEntry(DateTime? start, DateTime? end, string title, string description, string location, string organizerName, string organizerEmail);
     }
 }
