@@ -48,17 +48,17 @@
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="discountAmount"
             name="discountAmount" placeholder="Discount Amount" [(ngModel)]="voucherEdit.discountAmount"
-            #discountAmount="ngModel" step='0.01' />
+            #discountAmount="ngModel" step='0.01' required/>
         </mat-form-field>
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="minimumBasketPrice"
             name="minimumBasketPrice" placeholder="Minimum Basket Price" [(ngModel)]="voucherEdit.minimumBasketPrice"
-            #minimumBasketPrice="ngModel" step='0.01' />
+            #minimumBasketPrice="ngModel" step='0.01' required/>
         </mat-form-field>
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="usageQuantity"
             name="usageQuantity" placeholder="Quantities Allocated" [(ngModel)]="voucherEdit.usageQuantity"
-            #usageQuantity="ngModel" />
+            #usageQuantity="ngModel" required/>
         </mat-form-field>
         <mat-form-field class="col-md-6">
           <input matInput [value]="voucherEdit.usageQuantityUsed" placeholder="Quantities Assigned Out" disabled />
@@ -66,7 +66,7 @@
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="maxDistribution"
             name="maxDistribution" placeholder="Max Allocation / User" [(ngModel)]="voucherEdit.maxDistribution"
-            #maxDistribution="ngModel" step='0.01' />
+            #maxDistribution="ngModel" step='0.01' required/>
         </mat-form-field>
         <mat-form-field class="col-md-6 col-xs-12">
           <mat-label>Outlet Profile</mat-label>
