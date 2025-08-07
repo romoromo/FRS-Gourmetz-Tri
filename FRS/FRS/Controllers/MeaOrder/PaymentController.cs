@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BAL.DTO;
 using BAL.DTO.MealOrder;
-using BAL.Services.Interfaces;
+using BAL.Services.Interfaces;  
 using BAL.Services.Interfaces.MealOrder;
 using BAL.Services.MealOrder;
 using DAL;
@@ -252,6 +252,7 @@ namespace FRS.Controllers
                     }
 
                     AddErrors(new string[] { result.Message + "- errorPayment" });
+                    return Ok(result);
                 }
 
                 return BadRequest(ModelState);

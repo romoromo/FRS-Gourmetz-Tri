@@ -20,6 +20,8 @@ export class Voucher {
   public usageQuantity: number;
   public usageQuantityUsed: number;
   public maxDistribution: number;
+  public maxRedeemCheckout: number;
+  public maxRedeemCheckoutMessage: string;
   public isDisplayAllPages: boolean;
   public voucherMealPeriods: VoucherMealPeriod[];
   public voucherDishes: VoucherDish[];

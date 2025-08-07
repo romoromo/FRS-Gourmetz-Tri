@@ -53,6 +53,8 @@ namespace DAL.Models.MealOrder
 
         [Sieve(CanFilter = true, CanSort = true)]
         public int? OutletProfileId { get; set; }
+        public int MaxRedeemCheckout { get; set; }
+        public string MaxRedeemCheckoutMessage { get; set; }
 
         [ForeignKey("VoucherTypeId")]
         public virtual VoucherType VoucherType { get; set; }

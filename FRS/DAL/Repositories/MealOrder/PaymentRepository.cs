@@ -66,24 +66,84 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> CreateAsync(Payment Payment)
         {
-            _appContext.AuditUserActivityType = new AuditUserActivityType
-            {
-                GroupId = Common.GenerateUniqueStringId(),
-                ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
-                Remarks = "Payment was created."
-            };
-
             var result = new BaseOperationResponse();
-            var f = await AddAsync(Payment);
+            Payment f = new Payment();
 
-            
-            
+            bool useVoucher = await _appContext.Vouchers.AnyAsync(x => x.Id == Payment.VoucherId);
 
-            if (await _appContext.SaveChangesAsync() > 0)
+            int resultSaveChange = 0;
+            if (useVoucher)
+            {
+                var voucherData = await _appContext.Vouchers
+                    .Where(x => x.Id == Payment.VoucherId)
+                    .Select(x => new
+                    {
+                        x.Id,
+                        x.MaxRedeemCheckout,
+                        x.MaxRedeemCheckoutMessage
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (voucherData?.MaxRedeemCheckout > 0)
+                {
+                    using var transaction = await _appContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+                    var getUsedVoucher = await _appContext.StudentVouchers.CountAsync(x => x.VoucherId == voucherData.Id && x.Status == "USED");
+                    if(getUsedVoucher >= voucherData.MaxRedeemCheckout)
+                    {
+                        string defaultMessage = "Sorry the voucher is limited to some users and has been fully redeemed";
+                        if (!string.IsNullOrEmpty(voucherData?.MaxRedeemCheckoutMessage))
+                        {
+                            defaultMessage = voucherData?.MaxRedeemCheckoutMessage;
+                        }
+                        result.IsSuccess = false;
+                        result.Message = defaultMessage;
+                        return result;
+                    }
+                    else
+                    {
+                        _appContext.AuditUserActivityType = new AuditUserActivityType
+                        {
+                            GroupId = Common.GenerateUniqueStringId(),
+                            ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
+                            Remarks = "Payment was created."
+                        };
+                        f = await AddAsync(Payment);
+                        resultSaveChange = await _appContext.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                    }
+
+                }
+                else
+                {
+                    _appContext.AuditUserActivityType = new AuditUserActivityType
+                    {
+                        GroupId = Common.GenerateUniqueStringId(),
+                        ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
+                        Remarks = "Payment was created."
+                    };
+
+                    f = await AddAsync(Payment);
+                    resultSaveChange = await _appContext.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                _appContext.AuditUserActivityType = new AuditUserActivityType
+                {
+                    GroupId = Common.GenerateUniqueStringId(),
+                    ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
+                    Remarks = "Payment was created."
+                };
+
+                f = await AddAsync(Payment);
+                resultSaveChange = await _appContext.SaveChangesAsync();
+            }
+
+            if (resultSaveChange > 0)
             {
                 if (Payment.Status == "SUCCESS")
                 {
-                    var studentVoucher = _appContext.StudentVouchers.FirstOrDefault(a => a.IsActive && a.StudentId == Payment.StudentId && a.VoucherId == Payment.VoucherId);
+                    var studentVoucher = _appContext.StudentVouchers.FirstOrDefault(a => a.IsActive && a.StudentId == Payment.StudentId && a.VoucherId == Payment.VoucherId && a.Status == "NEW");
 
                     if (studentVoucher != null)
                     {

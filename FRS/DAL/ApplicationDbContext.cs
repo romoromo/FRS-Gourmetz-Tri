@@ -635,6 +635,8 @@ namespace DAL
             builder.Entity<Voucher>().HasIndex(v => v.EndDateTime);
             builder.Entity<Voucher>().HasIndex(v => v.UsageQuantity);
             builder.Entity<Voucher>().HasIndex(v => v.UsageQuantityUsed);
+            builder.Entity<Voucher>().HasIndex(v => v.MaxRedeemCheckout);
+            builder.Entity<Voucher>().Property(v => v.MaxRedeemCheckoutMessage).HasMaxLength(255);
             builder.Entity<Voucher>().HasIndex(v => new { v.StartDateTime, v.EndDateTime });
             #endregion
 

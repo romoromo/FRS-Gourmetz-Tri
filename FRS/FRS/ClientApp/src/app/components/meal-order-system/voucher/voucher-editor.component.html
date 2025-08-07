@@ -48,17 +48,17 @@
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="discountAmount"
             name="discountAmount" placeholder="Discount Amount" [(ngModel)]="voucherEdit.discountAmount"
-            #discountAmount="ngModel" step='0.01' required/>
+            #discountAmount="ngModel" step='0.01' required />
         </mat-form-field>
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="minimumBasketPrice"
             name="minimumBasketPrice" placeholder="Minimum Basket Price" [(ngModel)]="voucherEdit.minimumBasketPrice"
-            #minimumBasketPrice="ngModel" step='0.01' required/>
+            #minimumBasketPrice="ngModel" step='0.01' required />
         </mat-form-field>
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="usageQuantity"
             name="usageQuantity" placeholder="Quantities Allocated" [(ngModel)]="voucherEdit.usageQuantity"
-            #usageQuantity="ngModel" required/>
+            #usageQuantity="ngModel" required />
         </mat-form-field>
         <mat-form-field class="col-md-6">
           <input matInput [value]="voucherEdit.usageQuantityUsed" placeholder="Quantities Assigned Out" disabled />
@@ -66,9 +66,14 @@
         <mat-form-field class="col-md-6">
           <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="maxDistribution"
             name="maxDistribution" placeholder="Max Allocation / User" [(ngModel)]="voucherEdit.maxDistribution"
-            #maxDistribution="ngModel" step='0.01' required/>
+            #maxDistribution="ngModel" step='0.01' required />
         </mat-form-field>
-        <mat-form-field class="col-md-6 col-xs-12">
+        <mat-form-field class="col-md-6">
+          <input matInput autocomplete="off" [disabled]="!canManageVouchers" type="number" id="maxRedeemCheckout"
+            name="maxRedeemCheckout" placeholder="Maxed out message" [(ngModel)]="voucherEdit.maxRedeemCheckout"
+            #maxDistribution="ngModel" step='1' required />
+        </mat-form-field>
+        <mat-form-field class="col-md-6">
           <mat-label>Outlet Profile</mat-label>
           <mat-select [disabled]="!canManageVouchers || voucherEdit.id > 0" id="outletProfileId" name="outletProfileId"
             [(ngModel)]="voucherEdit.outletProfileId" #outletProfileId="ngModel" required
@@ -78,7 +83,12 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-label class="col-md-12">
+        <mat-form-field class="col-md-6">
+          <mat-label>User Maxed Message</mat-label>
+          <textarea matInput placeholder="" [disabled]="!canManageVouchers"
+            [(ngModel)]="voucherEdit.maxRedeemCheckoutMessage" rows="5" name="maxRedeemCheckoutMessage"></textarea>
+        </mat-form-field>
+        <mat-label class="col-md-6">
           <h5>Meal Periods</h5>
         </mat-label>
         <div *ngFor="let period of periods; let i=index" class="col-md-3">
