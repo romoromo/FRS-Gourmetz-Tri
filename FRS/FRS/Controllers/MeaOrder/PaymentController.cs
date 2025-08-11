@@ -252,6 +252,9 @@ namespace FRS.Controllers
                     }
 
                     AddErrors(new string[] { result.Message + "- errorPayment" });
+
+                    if(!result.IsSuccess) return BadRequest(result);
+
                     return Ok(result);
                 }
 
