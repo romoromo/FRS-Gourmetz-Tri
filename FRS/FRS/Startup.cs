@@ -583,6 +583,8 @@ namespace FRS
             // Configurations
             services.Configure<SmtpConfig>(Configuration.GetSection("SmtpConfig"));
 
+            services.Configure<SmtpOauth2Config>(Configuration.GetSection("SmtpOauth2Config"));
+
             // Business Services
             services.AddScoped<IEmailSender, EmailSender>();
 
