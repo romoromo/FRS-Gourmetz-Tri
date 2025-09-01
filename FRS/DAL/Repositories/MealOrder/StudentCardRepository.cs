@@ -286,14 +286,23 @@ namespace DAL.Repositories.MealOrder
         }
 
         public async Task<Dictionary<string,int>> GetVoucherUsedCountAsync(int studentId,List<string> voucherCodes)
-        {
-            var returnData = await _appContext.StudentVouchers
-            .Where(sv => 
-                sv.IsActive 
-                && sv.StudentId == studentId 
-                && sv.Status == "USED" 
+        { 
+
+            var baseQuery = _appContext.StudentVouchers
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Where(sv =>
+                sv.IsActive
+                && sv.Status == "USED"
                 && voucherCodes.Contains(sv.Voucher.Code)
-            )
+            );
+
+            if(studentId > 0)
+            {
+                baseQuery = baseQuery.Where(x => x.StudentId == studentId);
+            }
+
+            var returnData = await baseQuery
             .GroupBy(sv => sv.Voucher.Code)
             .Select(g => new { Code = g.Key, Count = g.Count() })
             .ToDictionaryAsync(g => g.Code, g => g.Count);

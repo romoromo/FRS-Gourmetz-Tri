@@ -725,12 +725,15 @@ namespace BAL.Services.MealOrder
             var svs = await this._uow.StudentCards.GetStudentVouchersAsync(studentId);
             var voucherCode = svs.Select(x => x.Voucher.Code).ToList();
             var countData = await _uow.StudentCards.GetVoucherUsedCountAsync(studentId, voucherCode);
-
+            var countDataByVoucherCode = await _uow.StudentCards.GetVoucherUsedCountAsync(0, voucherCode);
             var result = svs
             .Select(sv =>
             {
                 var dto = _mapper.Map<VoucherDTO>(sv.Voucher);
+                countDataByVoucherCode.TryGetValue(sv.Voucher.Code, out var countByCode);
+                bool isMaxRedeemed = countByCode >= sv.Voucher.MaxRedeemCheckout;
                 dto.UsedCount = countData.TryGetValue(sv.Voucher.Code, out var count) ? count : 0;
+                dto.IsMaxRedeemed = isMaxRedeemed;
                 return dto;
             })
             .Where(dto => dto.UsedCount <= dto.MaxDistribution)
