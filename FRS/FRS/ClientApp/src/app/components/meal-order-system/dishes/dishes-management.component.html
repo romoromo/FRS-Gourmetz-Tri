@@ -50,7 +50,7 @@
 
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
-    <a *ngIf="!canManageDishes" class="btn btn-link btn-xs" href="javascript:;" (click)="previewImage(row)"><i
+    <a class="btn btn-link btn-xs" href="javascript:;" (click)="previewImage(row)"><i
         class="fa fa-eye" aria-hidden="true"></i> Preview</a>
     <a *ngIf="canManageDishes" class="btn btn-link btn-xs" href="javascript:;" (click)="editDish(row)"><i
         class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
