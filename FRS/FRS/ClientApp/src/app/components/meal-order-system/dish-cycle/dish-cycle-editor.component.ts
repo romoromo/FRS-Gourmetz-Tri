@@ -370,7 +370,7 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
     this.subscription.add(this.dishService.getDishTypesByFilter(filter)
       .subscribe(results => {
         this.dishTypes = results.pagedData;
-        this.getDishes();
+        //this.getDishes();
       },
         error => {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
@@ -380,6 +380,8 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
   }
 
   getDishes() {
+
+    console.log("get dishes")
     let filter = new Filter();
     let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
     f = f + (this.dishCycleEdit.dishTypeId ? '(DishTypeId)==' + this.dishCycleEdit.dishTypeId + ',' : '');
