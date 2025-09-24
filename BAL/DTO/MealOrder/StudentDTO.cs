@@ -1,4 +1,5 @@
-﻿using Sieve.Attributes;
+﻿using DAL.Core.Audit.Attributes;
+using Sieve.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -69,6 +70,9 @@ namespace BAL.DTO.MealOrder
         public bool isNotifCancellationRequestStatus { get; set; }
         public bool isNotifNoCardSetup { get; set; }
         public bool isNotifMissedCollection { get; set; }
+        public double WalletBalance { get; set; }
+        public byte[] ConcurrencyStamp { get; set; }
+        public double PointBalance { get; set; }
 
         public List<UserCardIdDTO> Cards { get; set; }
         public List<StudentCardDTO> StudentCards { get; set; }
@@ -144,5 +148,38 @@ namespace BAL.DTO.MealOrder
         public string Email { get; set; }
         public string Status { get; set; }
         public bool EmailSent { get; set; }
+    }
+
+
+    public class StudentWalletTransactionDTO
+    {
+        public int Id { get; set; }
+
+        public DateTime? TransactionDateTime { get; set; }
+
+        public int StudentId { get; set; }
+
+        public byte[] ConcurrencyStamp { get; set; }
+        public double Amount { get; set; }
+
+        public string TransactionType { get; set; }
+
+        public string Description { get; set; }
+    }
+
+    public class StudentPointTransactionDTO
+    {
+        public int Id { get; set; }
+
+        public DateTime? TransactionDateTime { get; set; }
+
+        public int StudentId { get; set; }
+
+        public byte[] ConcurrencyStamp { get; set; }
+        public double Amount { get; set; }
+
+        public string TransactionType { get; set; }
+
+        public string Description { get; set; }
     }
 }

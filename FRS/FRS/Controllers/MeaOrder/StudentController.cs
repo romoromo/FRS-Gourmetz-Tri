@@ -48,7 +48,12 @@ namespace FRS.Controllers
         private readonly ApplicationUserManager _userManager;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        public StudentController(IStudentService service, ILogger<StudentController> logger, IAccountManager accountManager, IEmailSender emailSender, ApplicationUserManager userManager, IConfiguration configuration, IMapper mapper)
+
+        private IStudentWalletService _walletService;
+        private IStudentPointService _pointService;
+
+        public StudentController(IStudentService service, ILogger<StudentController> logger, IAccountManager accountManager, IEmailSender emailSender, ApplicationUserManager userManager, IConfiguration configuration, IMapper mapper
+            , IStudentWalletService walletService, IStudentPointService pointService)
         {
             _service = service;
             _logger = logger;
@@ -57,6 +62,8 @@ namespace FRS.Controllers
             _userManager = userManager;
             _configuration = configuration;
             _mapper = mapper;
+            _walletService = walletService;
+            _pointService = pointService;
         }
 
         #region Students
@@ -1100,6 +1107,216 @@ namespace FRS.Controllers
         }
 
         #endregion
+
+        #endregion
+
+        #region Wallet
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpGet("wallet/transactions/{studentId}")]
+        [ProducesResponseType(200, Type = typeof(List<StudentWalletTransactionDTO>))]
+        [ProducesResponseType(403)]
+        //[AllowAnonymous]
+        public async Task<IActionResult> GetWalletTransactions(int studentId)
+        {
+            var result = await this._walletService.GetWalletTransactionByIdAsync(studentId);
+            return Ok(result);
+        }
+
+        //[ApiExplorerSettings(IgnoreApi = true)]
+        //[ApiKeyAuthorize]
+        //[HttpPut("wallet/topup/{id}")]
+        ////[Authorize(Authorization.Policies.ManageAllAssetsPolicy)]
+        //[ProducesResponseType(204)]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
+        //public async Task<IActionResult> TopUpWallet(string id, [FromBody] WalletTopUpDTO model)
+        //{
+        //    string dataJSON = JsonConvert.SerializeObject(model);
+        //    _logger.LogInformation($"TopUpWallet WalletTopUpDTO : {dataJSON}");
+        //    _logger.LogInformation($"TopUpWallet Id : {id}");
+
+        //    try
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            if (model == null)
+        //                return BadRequest($"{nameof(model)} cannot be null");
+
+        //            if (model.WalletId == 0)
+        //                return BadRequest("Conflicting type id in parameter and model data");
+
+
+        //            var dto = await this._walletService.GetByIdAsync(model.WalletId);
+
+        //            if (dto == null)
+        //                return NotFound(id);
+
+        //            var result = await this._walletService.TopUpAsync(model);
+        //            return Ok(result);
+
+        //        }
+
+        //        return BadRequest(ModelState);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error TopUpWallet : {ex.Message}", ex);
+        //        _logger.LogError($"Error TopUpWallet : {ex.StackTrace}", ex);
+        //        return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+        //    }
+        //}
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpPut("wallet/operation/{studentId}")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllAssetsPolicy)]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> WalletTransaction(string studentId, [FromBody] StudentWalletTransactionDTO model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"WalletTransaction WalletOperationDTO : {dataJSON}");
+            _logger.LogInformation($"WalletTransaction studentId : {studentId}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.StudentId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+
+
+                    var dto = await this._service.GetStudentByIdAsync(model.StudentId);
+
+                    if (dto == null)
+                        return NotFound(studentId);
+
+                    var result = await this._walletService.StudentWalletTransactionAsync(model);
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error WalletTransaction : {ex.Message}", ex);
+                _logger.LogError($"Error WalletTransaction : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
+        #endregion
+
+        #region point
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpGet("point/transactions/{studentId}")]
+        [ProducesResponseType(200, Type = typeof(List<StudentPointTransactionDTO>))]
+        [ProducesResponseType(403)]
+        //[AllowAnonymous]
+        public async Task<IActionResult> GetPointTransactions(int studentId)
+        {
+            var result = await this._pointService.GetPointTransactionByIdAsync(studentId);
+            return Ok(result);
+        }
+
+        //[ApiExplorerSettings(IgnoreApi = true)]
+        //[ApiKeyAuthorize]
+        //[HttpPut("wallet/topup/{id}")]
+        ////[Authorize(Authorization.Policies.ManageAllAssetsPolicy)]
+        //[ProducesResponseType(204)]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
+        //public async Task<IActionResult> TopUpWallet(string id, [FromBody] WalletTopUpDTO model)
+        //{
+        //    string dataJSON = JsonConvert.SerializeObject(model);
+        //    _logger.LogInformation($"TopUpWallet WalletTopUpDTO : {dataJSON}");
+        //    _logger.LogInformation($"TopUpWallet Id : {id}");
+
+        //    try
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            if (model == null)
+        //                return BadRequest($"{nameof(model)} cannot be null");
+
+        //            if (model.WalletId == 0)
+        //                return BadRequest("Conflicting type id in parameter and model data");
+
+
+        //            var dto = await this._walletService.GetByIdAsync(model.WalletId);
+
+        //            if (dto == null)
+        //                return NotFound(id);
+
+        //            var result = await this._walletService.TopUpAsync(model);
+        //            return Ok(result);
+
+        //        }
+
+        //        return BadRequest(ModelState);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error TopUpWallet : {ex.Message}", ex);
+        //        _logger.LogError($"Error TopUpWallet : {ex.StackTrace}", ex);
+        //        return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+        //    }
+        //}
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpPut("point/operation/{studentId}")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllAssetsPolicy)]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> PointTransaction(string studentId, [FromBody] StudentPointTransactionDTO model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"PointTransaction WalletOperationDTO : {dataJSON}");
+            _logger.LogInformation($"PointTransaction studentId : {studentId}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.StudentId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+
+
+                    var dto = await this._service.GetStudentByIdAsync(model.StudentId);
+
+                    if (dto == null)
+                        return NotFound(studentId);
+
+                    var result = await this._pointService.StudentPointTransactionAsync(model);
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error PointTransaction : {ex.Message}", ex);
+                _logger.LogError($"Error PointTransaction : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
 
         #endregion
     }

@@ -78,6 +78,8 @@ namespace DAL
         private WalletRepository _wallets;
         private RewardRepository _rewards;
         private WalletTransactionRepository _walletTransactions;
+        private StudentWalletTransactionRepository _studentWalletTransactions;
+        private StudentPointTransactionRepository _studentPointTransactions;
         private RewardTransactionRepository _rewardTransactions;
         private DeviceTypeRepository _deviceTypes;
         private ChannelInfoRepository _channelInfos;
@@ -724,6 +726,28 @@ namespace DAL
                     _walletTransactions = new WalletTransactionRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
 
                 return _walletTransactions;
+            }
+        }
+
+        public IStudentWalletTransactionRepository StudentWalletTransactions
+        {
+            get
+            {
+                if (_studentWalletTransactions == null)
+                    _studentWalletTransactions = new StudentWalletTransactionRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+
+                return _studentWalletTransactions;
+            }
+        }
+
+        public IStudentPointTransactionRepository StudentPointTransactions
+        {
+            get
+            {
+                if (_studentPointTransactions == null)
+                    _studentPointTransactions = new StudentPointTransactionRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+
+                return _studentPointTransactions;
             }
         }
 

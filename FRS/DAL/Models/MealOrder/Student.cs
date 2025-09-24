@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Asn1.Ocsp;
+﻿using DAL.Core.Audit.Attributes;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Sieve.Attributes;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,15 @@ namespace DAL.Models.MealOrder
         public int? ClassBatchId { get; set; }
 
         public int? OutletId { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        public double WalletBalance { get; set; }
+
+        [SkipTracking]
+        public byte[] ConcurrencyStamp { get; set; }
+
+        [Sieve(CanFilter = true, CanSort = true)]
+        public double PointBalance { get; set; }
 
         public bool isNotifNoOrderMadeForNextWeek { get; set; }
         public bool isNotifAbandonCart { get; set; }

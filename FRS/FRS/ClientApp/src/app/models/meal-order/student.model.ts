@@ -34,6 +34,9 @@ export class Student {
   public restrictions: StudentRestriction[];
   public interestGroups: StudentInterestGroup[];
   public vouchers: StudentVoucher[];
+  public walletBalance: number;
+  public concurrencyStamp: string;
+  public pointBalance: number;
   
 }
 

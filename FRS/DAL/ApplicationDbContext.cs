@@ -129,6 +129,8 @@ namespace DAL
         public DbSet<EmailQueue> EmailQueues { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<WalletTransaction> WalletTransactions { get; set; }
+        public DbSet<StudentWalletTransaction> StudentWalletTransactions { get; set; }
+        public DbSet<StudentPointTransaction> StudentPointTransactions { get; set; }
         public DbSet<Reward> Rewards { get; set; }
         public DbSet<RewardTransaction> RewardTransactions { get; set; }
         public DbSet<DeviceType> DeviceTypes { get; set; }
@@ -377,6 +379,7 @@ namespace DAL
             builder.Entity<Student>().HasMany(s => s.StudentCards).WithOne(s => s.Student);
             builder.Entity<Student>().HasMany(s => s.Restrictions).WithOne(s => s.Student);
             builder.Entity<Student>().HasMany(s => s.InterestGroups).WithOne(s => s.Student);
+            builder.Entity<Student>().Property(u => u.ConcurrencyStamp).ValueGeneratedOnAddOrUpdate().IsConcurrencyToken(true).IsRowVersion();
             builder.Entity<StudentGroup>().HasMany(s => s.Sgdetails).WithOne(s => s.StudentGroup);
             builder.Entity<StudentAccount>().HasKey(lf => new { lf.StudentId, lf.UserId });
             builder.Entity<TokenOrder>().HasMany(s => s.Tokens).WithOne(s => s.Order);
@@ -506,6 +509,9 @@ namespace DAL
             builder.Entity<Connection>().TrackAllProperties();
             builder.Entity<Wallet>().TrackAllProperties();
             builder.Entity<WalletTransaction>().TrackAllProperties();
+            builder.Entity<StudentWalletTransaction>().TrackAllProperties();
+            builder.Entity<StudentPointTransaction>().TrackAllProperties();
+
             builder.Entity<Reward>().TrackAllProperties();
             builder.Entity<RewardTransaction>().TrackAllProperties();
 

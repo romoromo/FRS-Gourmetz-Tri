@@ -24,6 +24,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<PagedEntity<Student>> GetStudentsAsync(BaseFilter filter, bool noAccount = false);
         Task<List<Student>> GetStudentsByUserAsync(int userId);
         Task<BaseOperationResponse> UpdateAsync(IAccountManager accountManager, Student student, ApplicationUser user, string currentPassword, string newPassword, List<UserCardId> cards, List<StudentCard> studentCards, List<StudentRestriction> restrictions, List<StudentInterestGroup> interestGroups);
+        Task<BaseOperationResponse> UpdateAsync(Student student);
         Task<BaseOperationResponse> ImportStudentCardAsync(IAccountManager accountManager, List<StudentCardImportDTO> dto);
         Task<List<Student>> GetByInterestGroupIdAsync(int id);
         Task<List<Student>> GetStudentsWithNoOrder(DateTime from, DateTime to);

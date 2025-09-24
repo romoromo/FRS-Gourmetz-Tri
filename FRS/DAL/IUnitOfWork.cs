@@ -59,6 +59,8 @@ namespace DAL
         IEmailTemplateRepository EmailTemplates { get; }
         IWalletRepository Wallets { get; }
         IWalletTransactionRepository WalletTransactions { get; }
+        IStudentWalletTransactionRepository StudentWalletTransactions { get; }
+        IStudentPointTransactionRepository StudentPointTransactions { get; }
         IRewardRepository Rewards { get; }
         IRewardTransactionRepository RewardTransactions { get; }
         IDeviceTypeRepository DeviceTypes { get; }

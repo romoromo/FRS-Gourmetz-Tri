@@ -657,6 +657,57 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+
+        public async Task<BaseOperationResponse> UpdateAsync(Student student)
+        {
+            var result = new BaseOperationResponse();
+            try
+            {
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
+                                    new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
+                                    TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var f = await GetSingleOrDefaultAsync(e => e.Id == student.Id);
+
+                    f.CopyFrom(student);
+
+                    Update(f);
+                    if (await _appContext.SaveChangesAsync() > 0)
+                    {
+                        result.Message = "Successfully saved!";
+                        result.IsSuccess = true;
+                        result.Data = f;
+
+                        scope.Complete();
+                    }
+                    else
+                    {
+                        result.Message = "Failed to save!";
+                        result.IsSuccess = false;
+                    }
+
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError($"Error saving changes: {ex.Message}", ex);
+                _logger.LogError($"Error saving changes: {ex.StackTrace}", ex);
+
+                result.Message = "Failed to save due to a database update error!";
+                result.IsSuccess = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error saving changes: {ex.Message}", ex);
+                _logger.LogError($"Error saving changes: {ex.StackTrace}", ex);
+
+                result.Message = "Failed to save due to an unexpected error!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
         public async Task<BaseOperationResponse> CreateAccountAsync(List<int> ids, bool generateRandomPassword, IAccountManager accountManager, string defaultPassword)
         {
             var result = new BaseOperationResponse();
