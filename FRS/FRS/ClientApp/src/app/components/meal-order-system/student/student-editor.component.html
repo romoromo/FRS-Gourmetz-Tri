@@ -4,18 +4,33 @@
         (ngSubmit)="f.form.valid ? save() : invalidate()">
     <div mat-dialog-content>
       <div class="row">
+
+        <div class="col-sm-6">
+          <mat-label>Wallet Balance: </mat-label>
+          <input matInput [disabled]="true"
+                 type="text"
+                 [value]="studentEdit.walletBalance | currency:'USD':'symbol':'1.2-2'">
+        </div>
+
+        <div class="col-sm-6">
+          <mat-label>Point: </mat-label>
+          <input matInput [disabled]="true"
+                 type="text"
+                 [value]="studentEdit.pointBalance">
+        </div>
+
         <div class="col-sm-12">
           <h4>Student Information</h4>
         </div>
         <div class="col-sm-12">
           <!--<mat-form-field class="col-xs-12">
-            <mat-label>Outlet</mat-label>
-            <mat-select [disabled]="!canManageStudents" id="outlet" name="outlet" [(ngModel)]="studentEdit.outletId" #outlet="ngModel" required (selectionChange)="onOutletChange($event.value)">
-              <mat-option *ngFor="let outlet of outlets" [value]="outlet.id">
-                {{outlet.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>-->
+      <mat-label>Outlet</mat-label>
+      <mat-select [disabled]="!canManageStudents" id="outlet" name="outlet" [(ngModel)]="studentEdit.outletId" #outlet="ngModel" required (selectionChange)="onOutletChange($event.value)">
+        <mat-option *ngFor="let outlet of outlets" [value]="outlet.id">
+          {{outlet.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>-->
 
           <mat-form-field class="col-md-12">
             <input matInput autocomplete="off" [disabled]="!canManageStudents" type="text" id="studentName" name="studentName" placeholder="Enter name" [(ngModel)]="studentEdit.name" #studentName="ngModel" required minlength="2" maxlength="200" />
@@ -159,6 +174,8 @@
           <h4>Interest Groups</h4>
         </div>
         <div *ngFor="let interestGroup of interestGroups; let i=index" class="col-md-6">
+          -6
+          >
           <mat-checkbox class="col-sm-6 col-xs-12" [(ngModel)]="interestGroup.checked" id="interestGroup-{{i}}"
                         name="interestGroup-{{i}}">
             <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">{{interestGroup.name}}</label>
@@ -245,7 +262,9 @@
           <!--<label for="newPassword" class="control-label col-md-2">{{'users.editor.Password' | translate}}</label>-->
           <div *ngIf="!isChangePassword && studentEdit.userId" class="col-md-12">
             <button type="button" (click)="changePassword()" class="btn btn-link">{{'users.editor.ChangePassword' | translate}}</button>
-            <button type="button" (click)="resetPassword(studentEdit)" class="btn btn-link">Reset Password</button>
+            <button type="button" (click)="resetPassword(studentEdit)" class="btn btn-link">
+                Reset Password
+            </button>
           </div>
 
           <div *ngIf="isChangePassword || (isAddAccount && !studentEdit.userId)" class="col-md-12">
