@@ -625,6 +625,8 @@ namespace FRS
             services.AddScoped<IEmailQueueService, EmailQueueService>();
             services.AddScoped<IConnectionService, ConnectionService>();
             services.AddScoped<IWalletService, WalletService>();
+            services.AddScoped<IStudentWalletService, StudentWalletService>();
+            services.AddScoped<IStudentPointService, StudentPointService>();
             services.AddScoped<IRewardService, RewardService>();
             services.AddScoped<IDeviceService, DeviceService>();
             services.AddScoped<IChannelInfoService, ChannelInfoService>();

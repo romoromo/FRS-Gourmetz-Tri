@@ -17,7 +17,7 @@ using BAL.DTO.MealOrder;
 
 namespace BAL.Services
 {
-    public class StudentpointService : IStudentPointService
+    public class StudentPointService : IStudentPointService
     {
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
