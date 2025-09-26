@@ -634,6 +634,8 @@ namespace FRS
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IManagementService, ManagementService>();
             services.AddScoped<IUserActivityRepository, UserActivityRepository>();
+            services.AddScoped<IStudentWalletService, StudentWalletService>();
+            services.AddScoped<IStudentPointService, StudentpointService>();
 
             services.Configure<FormOptions>(o =>  // currently all set to max, configure it to your needs!
             {

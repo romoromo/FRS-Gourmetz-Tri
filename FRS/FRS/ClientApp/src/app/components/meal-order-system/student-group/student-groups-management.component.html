@@ -49,6 +49,8 @@
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addVoucher(row?.id)"><i
         class="fa fa-ticket" aria-hidden="true"></i> Add Voucher</a>
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addWalletTopup(row?.id)"><i
+        class="fa fa-money" aria-hidden="true"></i> Wallet topup</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;"
       (click)="onImportClick(row?.id,fileImport)"><i class="fa fa-upload" aria-hidden="true"></i> Import</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="exportListStudent(row?.id)"><i
