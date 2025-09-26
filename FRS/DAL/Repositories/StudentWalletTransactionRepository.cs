@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DAL.Models;
@@ -115,6 +112,71 @@ namespace DAL.Repositories
 
             return result;
         }
+
+        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount)
+        {
+            var result = new BaseOperationResponse();
+
+            var studentGroupData = await _appContext.StudentGroups
+                .AsNoTracking()
+                .Where(e => e.IsActive && e.Id == studentGroupId)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    StudentIds = x.Sgdetails
+                        .Where(d => d.IsActive)
+                        .Select(d => d.StudentId)
+                })
+                .FirstOrDefaultAsync();
+
+            if (studentGroupData == null)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Student Group with Id={studentGroupId} not found or inactive.";
+                return result;
+            }
+
+            var studentIds = studentGroupData.StudentIds.ToList();
+            if (!studentIds.Any())
+            {
+                result.IsSuccess = false;
+                result.Message = $"No active students found in Student Group Id={studentGroupData.Id} ({studentGroupData.Name}).";
+                return result;
+            }
+
+            var studentData = await _appContext.Students
+                .Where(e => e.IsActive && studentIds.Contains(e.Id))
+                .ToListAsync();
+
+            if (!studentData.Any())
+            {
+                result.IsSuccess = false;
+                result.Message = $"No active students matched in Students table for Student Group Id={studentGroupData.Id}.";
+                return result;
+            }
+
+            foreach (var student in studentData)
+            {
+                student.WalletBalance += amount;
+
+                var transaction = new StudentWalletTransaction
+                {
+                    Amount = amount,
+                    TransactionType = WalletTransactionType.CREDIT.ToString(),
+                    StudentId = student.Id,
+                    Description = $"Top-up by Student Group Id={studentGroupData.Id}, Group Name={studentGroupData.Name}"
+                };
+                await _appContext.StudentWalletTransactions.AddAsync(transaction);
+            }
+
+            await _appContext.SaveChangesAsync();
+
+            result.IsSuccess = true;
+            result.Message = $"Successfully topped up {amount:C} to {studentData.Count} students in group '{studentGroupData.Name}'";
+            return result;
+        }
+
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }

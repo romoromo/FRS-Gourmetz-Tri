@@ -343,7 +343,7 @@ export class StudentGroupsManagementComponent implements OnInit {
           this.alertService.showMessage(response.message);
           if (response.data && response.data.length > 0) {
             const messageData = response.data.join("<br/><br/>")
-            this.alertService.showStickyMessage("Voucher Info",messageData,MessageSeverity.info)
+            this.alertService.showStickyMessage("Voucher Info", messageData, MessageSeverity.info)
           }
 
         },
@@ -356,5 +356,48 @@ export class StudentGroupsManagementComponent implements OnInit {
     }, () => {
     });
   }
+
+  addWalletTopup(studentGroupId: string) {
+    this.alertService.showDialog('Enter Top up Amount:', DialogType.prompt, (val: string) => {
+      if (!val) return;
+      const normalized = val.replace(',', '.');
+      const amount = parseFloat(normalized);
+      if (isNaN(amount) || amount <= 0) {
+        this.alertService.showStickyMessage(
+          "Invalid Input",
+          "Please enter a valid positive amount (numbers only, decimals allowed).",
+          MessageSeverity.error
+        );
+        return;
+      }
+
+      this.alertService.startLoadingMessage("Processing top-up...");
+      this.studentService.walletTopupForStudentGroup(studentGroupId, amount)
+        .subscribe({
+          next: (response) => {
+            this.alertService.stopLoadingMessage();
+            this.loadingIndicator = false;
+            this.alertService.showMessage(response.message);
+
+            if (response.data && response.data.length > 0) {
+              const messageData = response.data.join("<br/><br/>");
+              this.alertService.showStickyMessage("Top-up Info", messageData, MessageSeverity.info);
+            }
+          },
+          error: () => {
+            this.alertService.stopLoadingMessage();
+            this.loadingIndicator = false;
+            this.alertService.showStickyMessage(
+              "Wallet Top-up Error",
+              "Unable to add amount.",
+              MessageSeverity.error
+            );
+          }
+        });
+    }, () => {
+      // Cancel callback
+    });
+  }
+
 
 }

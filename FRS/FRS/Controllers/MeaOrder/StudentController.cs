@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AutoMapper;
-using BAL.DTO;
 using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
-using BAL.Services.MealOrder;
-using DAL;
 using DAL.Core;
 using DAL.Core.DTO;
 using DAL.Core.Interfaces;
 using DAL.Filters;
-using DAL.Models;
 using FRS.Attributes;
 using FRS.Helpers;
 using FRS.ViewModels;
@@ -23,17 +18,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using OpenIddict.Validation.AspNetCore;
 using Microsoft.Extensions.Configuration;
 using DAL.Core.Helpers;
 using System.Globalization;
-using NPOI.SS.Formula.Functions;
 using DAL.Models.MealOrder;
-using FRS.Migrations;
 using Newtonsoft.Json;
+using FRS.ViewModels.MealOrder;
 
 namespace FRS.Controllers
 {
@@ -1209,6 +1202,41 @@ namespace FRS.Controllers
             {
                 _logger.LogError($"Error WalletTransaction : {ex.Message}", ex);
                 _logger.LogError($"Error WalletTransaction : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
+        [ApiKeyAuthorize]
+        [HttpPost("wallet/studentgroup")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> WalletTopupForStudentGroup([FromBody] StudentGroupWalletRequestViewModel model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"WalletTopupForStudentGroup StudentGroupWalletRequestViewModel : {dataJSON}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.StudentGroupId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+
+                    var result = await this._walletService.TopupWalletBalanceByStudentGroupIdAsync(model.StudentGroupId,model.Amount);
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error WalletTopupForStudentGroup : {ex.Message}", ex);
+                _logger.LogError($"Error WalletTopupForStudentGroup : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
         }

@@ -28,6 +28,9 @@ export class StudentService {
   private readonly _outletTermUrl: string = "/api/student/outlets/terms";
   get outletTermUrl() { return this.configurations.baseUrl + this._outletTermUrl; }
 
+  private readonly _walletUrl: string = "/api/student/wallet";
+  get walletUrl() { return this.configurations.baseUrl + this._walletUrl; }
+
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
 
@@ -88,7 +91,7 @@ export class StudentService {
     return this.commonEndpoint.getFile<any>(this.studentUrl + '/report/export', filter);
   }
 
-  transferClassStudent(classData: any,originClassId:number) {
+  transferClassStudent(classData: any, originClassId: number) {
     if (classData.classId) {
       return this.commonEndpoint.getTransferClassStudentEndpoint(this.studentUrl, classData, originClassId);
     }
@@ -161,14 +164,14 @@ export class StudentService {
   }
 
   addStudentVoucher(studentId: string, code: string) {
-    return this.commonEndpoint.get<any>(this.voucherUrl + '/add?studentId=' + studentId + '&code=' + code );
+    return this.commonEndpoint.get<any>(this.voucherUrl + '/add?studentId=' + studentId + '&code=' + code);
   }
 
   generateDishCode(catererId: string) {
     return this.commonEndpoint.get<any>(this.studentGroupUrl + '/generatecode?catererId=' + catererId);
   }
 
-  studentListExport(outletId:number,studentGroupId:number) {
+  studentListExport(outletId: number, studentGroupId: number) {
     return this.commonEndpoint.getFile<any>(this.studentUrl + `/list/export/${outletId}/${studentGroupId}`);
   }
 
@@ -178,5 +181,13 @@ export class StudentService {
 
   addStudentVoucherByStudentGroup(studentGroupId: string, code: string) {
     return this.commonEndpoint.get<any>(this.voucherUrl + `/addbystudentgroup/${studentGroupId}/${code}`);
+  }
+
+  walletTopupForStudentGroup(studentGroupId: string, amount: number) {
+    const param = {
+      studentGroupId: studentGroupId,
+      amount: amount
+    }
+    return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/studentgroup`, param);
   }
 }
