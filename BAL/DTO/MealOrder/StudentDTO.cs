@@ -165,6 +165,14 @@ namespace BAL.DTO.MealOrder
         public string TransactionType { get; set; }
 
         public string Description { get; set; }
+
+        public string Remarks { get; set; }
+
+        public int UserId { get; set; }
+
+        public string UserName { get; set; }
+
+        public string StudentName { get; set; }
     }
 
     public class StudentPointTransactionDTO
@@ -181,5 +189,13 @@ namespace BAL.DTO.MealOrder
         public string TransactionType { get; set; }
 
         public string Description { get; set; }
+
+        public string Remarks { get; set; }
+
+        public int UserId { get; set; }
+
+        public string UserName { get; set; }
+
+        public string StudentName { get; set; }
     }
 }

@@ -1105,6 +1105,21 @@ namespace FRS.Controllers
 
         #region Wallet
 
+        #region Sieved
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpGet("wallet/transactions/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllStudentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<StudentWalletTransactionDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetAllWalletTransactions(BaseFilter filter)
+        {
+            var results = await this._walletService.GetWalletTransactionsAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<StudentWalletTransactionDTO>>(results));
+        }
+        #endregion
+
         [ApiExplorerSettings(IgnoreApi = true)]
         [ApiKeyAuthorize]
         [HttpGet("wallet/transactions/{studentId}")]
@@ -1244,6 +1259,21 @@ namespace FRS.Controllers
         #endregion
 
         #region point
+
+        #region Sieved
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpGet("point/transactions/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllStudentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<StudentPointTransactionDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetAllPointTransactions(BaseFilter filter)
+        {
+            var results = await this._pointService.GetPointTransactionsAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<StudentPointTransactionDTO>>(results));
+        }
+        #endregion
 
         [ApiExplorerSettings(IgnoreApi = true)]
         [ApiKeyAuthorize]

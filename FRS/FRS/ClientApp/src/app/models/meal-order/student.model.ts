@@ -88,3 +88,37 @@ export class StudentVoucher {
   public status: string;
   public voucherCode: string;
 }
+
+export class StudentWalletTransaction {
+
+  constructor() {
+  }
+
+  public studentId: string;
+  public amount: number;
+  public concurrencyStamp: string;
+  public transactionType: string;
+  public description: string;
+  public remarks: string;
+  public userId: string;
+  public userName: string;
+  public studentName: string;
+
+
+}
+
+export class StudentPointTransaction {
+
+  constructor() {
+  }
+
+  public studentId: string;
+  public amount: number;
+  public concurrencyStamp: string;
+  public transactionType: string;
+  public description: string;
+  public remarks: string;
+  public userId: string;
+  public userName: string;
+  public studentName: string;
+}

@@ -177,6 +177,56 @@ namespace DAL.Filters
             return result; // Must return modified IQueryable<TEntity>
         }
 
+        public IQueryable<StudentWalletTransaction> WalletTransactionDateRange(IQueryable<StudentWalletTransaction> source, string op, string[] values) // The method is given the {Operator} & {Value}
+        {
+            var result = source;
+
+            if (values != null && values.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(values[0]))
+                {
+                    DateTime start = Convert.ToDateTime(values[0]);
+                    result = result.Where(c => c.CreatedDate >= start);
+                }
+
+
+                if (values.Length > 1)
+                {
+                    if (!string.IsNullOrEmpty(values[1]))
+                    {
+                        DateTime end = Convert.ToDateTime(values[1]);
+                        result = result.Where(c => c.CreatedDate <= end);
+                    }
+                }
+            }
+            return result; // Must return modified IQueryable<TEntity>
+        }
+
+        public IQueryable<StudentPointTransaction> PointTransactionDateRange(IQueryable<StudentPointTransaction> source, string op, string[] values) // The method is given the {Operator} & {Value}
+        {
+            var result = source;
+
+            if (values != null && values.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(values[0]))
+                {
+                    DateTime start = Convert.ToDateTime(values[0]);
+                    result = result.Where(c => c.CreatedDate >= start);
+                }
+
+
+                if (values.Length > 1)
+                {
+                    if (!string.IsNullOrEmpty(values[1]))
+                    {
+                        DateTime end = Convert.ToDateTime(values[1]);
+                        result = result.Where(c => c.CreatedDate <= end);
+                    }
+                }
+            }
+            return result; // Must return modified IQueryable<TEntity>
+        }
+
         public IQueryable<UpDownTimeLog> UpDownTimeDateRange(IQueryable<UpDownTimeLog> source, string op, string[] values) // The method is given the {Operator} & {Value}
         {
             var result = source;

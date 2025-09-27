@@ -23,6 +23,12 @@ namespace BAL.Services
         private IUnitOfWork _uow;
         private readonly IMapper _mapper;
 
+        public async Task<PagedEntity<StudentPointTransactionDTO>> GetPointTransactionsAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<StudentPointTransactionDTO>>(await this._uow.StudentPointTransactions.GetPointTransactionsAsync(filter));
+            return result;
+        }
+
         public async Task<List<StudentPointTransactionDTO>> GetPointTransactionByIdAsync(int id)
         {
             return _mapper.Map<List<StudentPointTransactionDTO>>((await this._uow.StudentPointTransactions.FindAsync(e => e.StudentId == id)).ToList());

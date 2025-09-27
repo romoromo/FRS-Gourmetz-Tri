@@ -1090,6 +1090,25 @@
               ]
             },
             {
+              "name": "Student Wallet Transaction",
+              "value": "mosmgt.settingmgt.student.wallet",
+              "description": "",
+              "children": [
+                {
+                  "name": "View Student Wallet Transaction",
+                  "value": "mosmgt.settingmgt.student.wallet.view",
+                  "description": "Permission to view Wallet Transaction",
+                  "children": []
+                },
+                {
+                  "name": "Manage Student Wallet Transaction",
+                  "value": "mosmgt.settingmgt.student.wallet.manage",
+                  "description": "Permission to Manage Wallet Transaction",
+                  "children": []
+                }
+              ]
+            },
+            {
               "name": "Waiver",
               "value": "mosmgt.settingmgt.payment.waiver",
               "description": "",

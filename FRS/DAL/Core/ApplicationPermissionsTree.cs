@@ -678,6 +678,12 @@ namespace DAL.Core
         public static ApplicationPermissionsTree ManageMOSOrderMgtWaiversMenu = new ApplicationPermissionsTree(id++, "Manage Waiver", "mosmgt.settingmgt.payment.waiver.manage", "Permission to view Waiver", MOSOrderMgtWaiversMenu);
         #endregion
 
+        #region Wallet Transaction UnAssign
+        public static ApplicationPermissionsTree MOSOrderMgtWalletTransactionMenu = new ApplicationPermissionsTree(id++, "Voucher Administration", "mosmgt.settingmgt.student.wallet", "", ViewMOSSettingMgtMenu);
+        public static ApplicationPermissionsTree ViewMOSOrderMgtWalletTransactionMenu = new ApplicationPermissionsTree(id++, "View Voucher Administration", "mosmgt.settingmgt.student.wallet.view", "Permission to view Wallet Transaction", MOSOrderMgtWalletTransactionMenu);
+        public static ApplicationPermissionsTree ManageMOSOrderMgtWalletTransactionMenu = new ApplicationPermissionsTree(id++, "Manage Voucher Administration", "mosmgt.settingmgt.student.wallet.manage", "Permission to Manage Wallet Transaction", MOSOrderMgtWalletTransactionMenu);
+        #endregion
+
         #region Contact Us Subjects
         public static ApplicationPermissionsTree MOSOrderMgtContactUsSubjectsMenu = new ApplicationPermissionsTree(id++, "Contact Us Subjects", "mosmgt.settingmgt.contactus.subject", "", ViewMOSSettingMgtMenu);
         public static ApplicationPermissionsTree ManageMOSOrderMgtContactUsSubjectsPermission = new ApplicationPermissionsTree(id++, "Manage Contact Us Subjects", "mosmgt.settingmgt.contactus.subject.manage", "Permission to add, edit and delete Contact Us Subjects", MOSOrderMgtContactUsSubjectsMenu);

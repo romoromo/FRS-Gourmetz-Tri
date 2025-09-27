@@ -324,6 +324,16 @@
               "logoClass": "",
               "permissions": [],
               "childMenus": []
+            },
+            {
+              "label": "Ewallet Transactions",
+              "active": true,
+              "link": "/wallet-transaction-log-management",
+              "showLabel": true,
+              "showLogo": false,
+              "logoClass": "",
+              "permissions": [],
+              "childMenus": []
             }
           ]
         },

@@ -507,6 +507,7 @@ import { VouchersUnassignManagementComponent } from './components/meal-order-sys
 import { ClassTransferComponent } from './components/meal-order-system/class/class-transfer/class-transfer.component';
 import { DishPreviewErrorComponent } from './components/meal-order-system/dishes/dish-preview-error/dish-preview-error.component';
 import { VoucherDishComponent } from './components/meal-order-system/voucher/voucher-dish/vouhcer-dish.component';
+import { WalletTransactionLogManagementComponent } from './components/meal-order-system/wallet-transaction-log/wallet-transaction-log-management.component';
  
  
 
@@ -717,7 +718,7 @@ export const configFactory = (configService: ConfigurationService) => {
     DishCycleEditorComponent, DishCyclesManagementComponent, DishCycleCalendarComponent, ViewDishCycleMenuComponent, OutletDishCycleCalendarComponent, OutletViewDishCycleMenuComponent,
     PaymentTypesManagementComponent, PaymentTypeEditorComponent,
     TransactionFeesManagementComponent, TransactionFeeEditorComponent,
-    VoucherTypesManagementComponent, VoucherTypeEditorComponent, VouchersManagementComponent,VouchersUnassignManagementComponent, VoucherEditorComponent,VoucherDishComponent,
+    VoucherTypesManagementComponent, VoucherTypeEditorComponent, VouchersManagementComponent, VouchersUnassignManagementComponent, VoucherEditorComponent, VoucherDishComponent, WalletTransactionLogManagementComponent,
     WaiversManagementComponent, WaiverEditorComponent,
     ContactUsDetailsManagementComponent, ContactUsDetailEditorComponent,
     ContactUsSubjectEditorComponent, ContactUsSubjectsManagementComponent,

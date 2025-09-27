@@ -130,6 +130,7 @@ export type PermissionValues =
   "mosmgt.settingmgt.notifications.settings.manage" |
   "mosmgt.settingmgt.notifications.events.manage" |
   "mosmgt.settingmgt.orders.cancelrequest.manage" |
+  "mosmgt.settingmgt.student.wallet.manage" |
 
   "mosmgt.outletmgt.stores.view" |
   "mosmgt.outletmgt.stores.manage" |
@@ -342,6 +343,8 @@ export class Permission {
   public static readonly manageMOSOrderMgtContactUsQuestionsPermission: PermissionValues = "mosmgt.settingmgt.contactus.question.manage";
   public static readonly manageMOSOrderMgtNotificationSettingsPermission: PermissionValues = "mosmgt.settingmgt.notifications.settings.manage";
   public static readonly manageMOSOrderMgtNotificationEventsPermission: PermissionValues = "mosmgt.settingmgt.notifications.events.manage";
+
+  public static readonly manageMOSOrderMgtWalletTransactionsPermission: PermissionValues = "mosmgt.settingmgt.student.wallet.manage";
 
   // MOS SETTINGS MAIN MENU
 

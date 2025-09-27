@@ -101,11 +101,17 @@ namespace BAL.Mapping
             CreateMap<WalletTransactionDTO, WalletTransaction>();
 
             CreateMap<StudentWalletTransaction, StudentWalletTransactionDTO>()
-                .ForMember(e => e.TransactionDateTime, map => map.MapFrom(e => e.CreatedDate));
+                .ForMember(e => e.TransactionDateTime, map => map.MapFrom(e => e.CreatedDate))
+                .ForMember(e => e.UserId, map => map.MapFrom(e => e.CreatedBy))
+                .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
+                .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name));
             CreateMap<StudentWalletTransactionDTO, StudentWalletTransaction>();
 
             CreateMap<StudentPointTransaction, StudentPointTransactionDTO>()
-                .ForMember(e => e.TransactionDateTime, map => map.MapFrom(e => e.CreatedDate));
+                .ForMember(e => e.TransactionDateTime, map => map.MapFrom(e => e.CreatedDate))
+                .ForMember(e => e.UserId, map => map.MapFrom(e => e.CreatedBy))
+                .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
+                .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name));
             CreateMap<StudentPointTransactionDTO, StudentPointTransaction>();
 
             CreateMap<Reward, RewardDTO>()

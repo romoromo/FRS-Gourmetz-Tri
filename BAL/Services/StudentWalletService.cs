@@ -9,6 +9,7 @@ using DAL;
 using BAL.Services.Interfaces;
 using AutoMapper;
 using BAL.DTO.MealOrder;
+using DAL.Filters;
 
 namespace BAL.Services
 {
@@ -23,6 +24,12 @@ namespace BAL.Services
             _sieveProcessor = sieveProcessor;
             _uow = uow;
             _mapper = mapper;
+        }
+
+        public async Task<PagedEntity<StudentWalletTransactionDTO>> GetWalletTransactionsAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<StudentWalletTransactionDTO>>(await this._uow.StudentWalletTransactions.GetWalletTransactionsAsync(filter));
+            return result;
         }
 
         public async Task<List<StudentWalletTransactionDTO>> GetWalletTransactionByIdAsync(int id)

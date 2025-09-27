@@ -12,6 +12,7 @@ namespace BAL.Services.Interfaces
 {
     public interface IStudentPointService
     {
+        Task<PagedEntity<StudentPointTransactionDTO>> GetPointTransactionsAsync(BaseFilter filter);
         Task<BaseOperationResponse> StudentPointTransactionAsync(StudentPointTransactionDTO dto);
         Task<List<StudentPointTransactionDTO>> GetPointTransactionByIdAsync(int id);
     }

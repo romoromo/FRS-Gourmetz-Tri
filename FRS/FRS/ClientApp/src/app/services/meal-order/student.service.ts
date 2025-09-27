@@ -31,6 +31,9 @@ export class StudentService {
   private readonly _walletUrl: string = "/api/student/wallet";
   get walletUrl() { return this.configurations.baseUrl + this._walletUrl; }
 
+  private readonly _pointUrl: string = "/api/student/point";
+  get pointUrl() { return this.configurations.baseUrl + this._pointUrl; }
+
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
 
@@ -181,6 +184,10 @@ export class StudentService {
 
   addStudentVoucherByStudentGroup(studentGroupId: string, code: string) {
     return this.commonEndpoint.get<any>(this.voucherUrl + `/addbystudentgroup/${studentGroupId}/${code}`);
+  }
+
+  getStudentWalletTransactionsByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.walletUrl + '/transactions/sieve/list', filter);
   }
 
   walletTopupForStudentGroup(studentGroupId: string, amount: number) {

@@ -25,6 +25,9 @@ namespace DAL.Models
         [Sieve(CanFilter = true, CanSort = true)]
         public string Description { get; set; }
 
+        public string Remarks { get; set; }
+
+
         [ForeignKey("StudentId")]
         public virtual Student student { get; set; }
     }

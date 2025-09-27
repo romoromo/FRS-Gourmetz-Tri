@@ -58,6 +58,8 @@ namespace DAL.Filters
             ClassLevelMapping(ref mapper);
             DispenserOutletMapping(ref mapper);
             StudentMapping(ref mapper);
+            StudentWalletTransactionMapping(ref mapper);
+            StudentPointTransactionMapping(ref mapper);
             StudentCardMapping(ref mapper);
             StudentRestrictionMapping(ref mapper);
             StaffTypeMapping(ref mapper);
@@ -769,6 +771,63 @@ namespace DAL.Filters
                 .HasName("outletProfileName");
         }
 
+        private void StudentWalletTransactionMapping(ref SievePropertyMapper mapper)
+        {
+            mapper.Property<StudentWalletTransaction>(p => p.Id)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<StudentWalletTransaction>(p => p.TransactionType)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<StudentWalletTransaction>(p => p.CreatedDate)
+                .CanFilter()
+                .CanSort()
+                .HasName("transactionDate");
+
+            mapper.Property<StudentWalletTransaction>(p => p.Description)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<StudentWalletTransaction>(p => p.StudentId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<StudentWalletTransaction>(p => p.student.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("studentName");
+        }
+
+        private void StudentPointTransactionMapping(ref SievePropertyMapper mapper)
+        {
+            mapper.Property<StudentPointTransaction>(p => p.Id)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<StudentPointTransaction>(p => p.TransactionType)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<StudentPointTransaction>(p => p.CreatedDate)
+                .CanFilter()
+                .CanSort()
+                .HasName("transactionDate");
+
+            mapper.Property<StudentPointTransaction>(p => p.Description)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<StudentPointTransaction>(p => p.StudentId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<StudentPointTransaction>(p => p.student.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("studentName");
+        }
 
         private void ClassMapping(ref SievePropertyMapper mapper)
         {
