@@ -78,7 +78,7 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(!result) this.loadData(null);
+      if (!result) this.loadData(null);
     });
   }
 
@@ -375,9 +375,9 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
               MessageSeverity.error);
           });
     }, () => {
-        if (this.fileStudentCardImport && this.fileStudentCardImport.nativeElement) {
-          this.fileStudentCardImport.nativeElement.value = "";
-        }
+      if (this.fileStudentCardImport && this.fileStudentCardImport.nativeElement) {
+        this.fileStudentCardImport.nativeElement.value = "";
+      }
     });
   }
 
@@ -481,13 +481,13 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result && !result.isCancel)
+      if (result && !result.isCancel)
         setTimeout(() => this.loadData(null), 2000);
     });
   }
 
   openStudentCalendar(student) {
-    window.open(getBaseUrl() +'/studentcalendars/' + student.id, '_blank');
+    window.open(getBaseUrl() + '/studentcalendars/' + student.id, '_blank');
   }
 
 
@@ -500,6 +500,48 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
 
   onDetailToggle(event) {
     console.log('Detail Toggled', event);
+  }
+
+  addWalletTopup(studentId: string) {
+    this.alertService.showDialog('Enter Top up Amount:', DialogType.prompt, (val: string) => {
+      if (!val) return;
+      const normalized = val.replace(',', '.');
+      const amount = parseFloat(normalized);
+      if (isNaN(amount) || amount <= 0) {
+        this.alertService.showStickyMessage(
+          "Invalid Input",
+          "Please enter a valid positive amount (numbers only, decimals allowed).",
+          MessageSeverity.error
+        );
+        return;
+      }
+
+      this.alertService.startLoadingMessage("Processing top-up...");
+      this.studentService.walletTopupForStudent(studentId, amount)
+        .subscribe({
+          next: (response) => {
+            this.alertService.stopLoadingMessage();
+            this.loadingIndicator = false;
+            this.alertService.showMessage(response.message);
+
+            if (response.data && response.data.length > 0) {
+              const messageData = response.data.join("<br/><br/>");
+              this.alertService.showStickyMessage("Top-up Info", messageData, MessageSeverity.info);
+            }
+          },
+          error: () => {
+            this.alertService.stopLoadingMessage();
+            this.loadingIndicator = false;
+            this.alertService.showStickyMessage(
+              "Wallet Top-up Error",
+              "Unable to add amount.",
+              MessageSeverity.error
+            );
+          }
+        });
+    }, () => {
+      // Cancel callback
+    });
   }
 
 
@@ -588,7 +630,7 @@ export class CreateAccountMultiple {
   }
 
   ngOnInit() {
-    
+
   }
 
   pageChanged(newValue) {
