@@ -37,6 +37,8 @@ export class Student {
   public walletBalance: number;
   public concurrencyStamp: string;
   public pointBalance: number;
+  public isWalletFreeze: boolean;
+  public walletDailyLimit: number;
   
 }
 

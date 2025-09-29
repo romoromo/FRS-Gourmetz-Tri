@@ -44,6 +44,10 @@ namespace DAL.Models.MealOrder
         [Sieve(CanFilter = true, CanSort = true)]
         public double WalletBalance { get; set; }
 
+        public bool IsWalletFreeze { get; set; }
+
+        public double WalletDailyLimit { get; set; }
+
         [SkipTracking]
         public byte[] ConcurrencyStamp { get; set; }
 

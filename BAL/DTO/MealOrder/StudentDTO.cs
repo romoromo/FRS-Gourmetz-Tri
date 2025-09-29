@@ -73,6 +73,8 @@ namespace BAL.DTO.MealOrder
         public double WalletBalance { get; set; }
         public byte[] ConcurrencyStamp { get; set; }
         public double PointBalance { get; set; }
+        public bool IsWalletFreeze { get; set; }
+        public double WalletDailyLimit { get; set; }
 
         public List<UserCardIdDTO> Cards { get; set; }
         public List<StudentCardDTO> StudentCards { get; set; }
