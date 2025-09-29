@@ -1256,6 +1256,41 @@ namespace FRS.Controllers
             }
         }
 
+        [ApiKeyAuthorize]
+        [HttpPost("wallet/student")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> WalletTopupForStudent([FromBody] StudentGroupWalletRequestViewModel model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"WalletTopupForStudent StudentGroupWalletRequestViewModel : {dataJSON}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.StudentGroupId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+
+                    var result = await this._walletService.TopupWalletBalanceByStudentIdAsync(model.StudentGroupId, model.Amount);
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error WalletTopupForStudent : {ex.Message}", ex);
+                _logger.LogError($"Error WalletTopupForStudent : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
         #endregion
 
         #region point

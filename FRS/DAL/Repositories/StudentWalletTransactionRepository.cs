@@ -6,6 +6,7 @@ using DAL.Repositories.Interfaces;
 using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
+using System;
 
 namespace DAL.Repositories
 {
@@ -117,6 +118,13 @@ namespace DAL.Repositories
         {
             var result = new BaseOperationResponse();
 
+            if (amount <= 0)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Invalid top-up amount: {amount}. Amount must be greater than zero.";
+                return result;
+            }
+
             var studentGroupData = await _appContext.StudentGroups
                 .AsNoTracking()
                 .Where(e => e.IsActive && e.Id == studentGroupId)
@@ -176,6 +184,56 @@ namespace DAL.Repositories
             result.Message = $"Successfully topped up {amount:C} to {studentData.Count} students in group '{studentGroupData.Name}'";
             return result;
         }
+
+        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount)
+        {
+            var result = new BaseOperationResponse();
+
+            if (amount <= 0)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Invalid top-up amount: {amount}. Amount must be greater than zero.";
+                return result;
+            }
+
+            try
+            {
+                var studentData = await _appContext.Students
+                    .FirstOrDefaultAsync(e => e.IsActive && e.Id == studentId);
+
+                if (studentData == null)
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Student with Id={studentId} not found or inactive.";
+                    return result;
+                }
+
+                var oldBalance = studentData.WalletBalance;
+                studentData.WalletBalance += amount;
+
+                var transaction = new StudentWalletTransaction
+                {
+                    Amount = amount,
+                    TransactionType = WalletTransactionType.CREDIT.ToString(),
+                    StudentId = studentData.Id,
+                    Description = $"Top-up by Student Id={studentData.Id}, Name={studentData.Name}"
+                };
+
+                await _appContext.StudentWalletTransactions.AddAsync(transaction);
+                await _appContext.SaveChangesAsync();
+
+                result.IsSuccess = true;
+                result.Message = $"Successfully topped up {amount:C} for students : '{studentData.Name}'";
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Error while topping up wallet for StudentId={studentId}. Details: {ex.Message}";
+            }
+
+            return result;
+        }
+
 
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

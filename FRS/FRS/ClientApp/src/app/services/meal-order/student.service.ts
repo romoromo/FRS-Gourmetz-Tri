@@ -197,4 +197,12 @@ export class StudentService {
     }
     return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/studentgroup`, param);
   }
+
+  walletTopupForStudent(studentId: string, amount: number) {
+    const param = {
+      studentGroupId: studentId,
+      amount: amount
+    }
+    return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/student`, param);
+  }
 }
