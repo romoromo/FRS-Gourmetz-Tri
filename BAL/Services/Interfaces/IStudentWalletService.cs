@@ -15,7 +15,7 @@ namespace BAL.Services.Interfaces
         Task<PagedEntity<StudentWalletTransactionDTO>> GetWalletTransactionsAsync(BaseFilter filter);
         Task<BaseOperationResponse> StudentWalletTransactionAsync(StudentWalletTransactionDTO dto);
         Task<List<StudentWalletTransactionDTO>> GetWalletTransactionByIdAsync(int id);
-        Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount);
-        Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount);
+        Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId);
+        Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userid);
     }
 }

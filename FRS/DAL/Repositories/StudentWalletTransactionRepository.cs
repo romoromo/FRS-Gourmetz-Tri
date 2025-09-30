@@ -114,7 +114,7 @@ namespace DAL.Repositories
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount)
+        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId)
         {
             var result = new BaseOperationResponse();
 
@@ -173,7 +173,9 @@ namespace DAL.Repositories
                     Amount = amount,
                     TransactionType = WalletTransactionType.CREDIT.ToString(),
                     StudentId = student.Id,
-                    Description = $"Top-up by Student Group Id={studentGroupData.Id}, Group Name={studentGroupData.Name}"
+                    Description = $"Top-up by Student Group Id={studentGroupData.Id}, Group Name={studentGroupData.Name}",
+                    CreatedBy = userId,
+                    UpdatedBy = userId
                 };
                 await _appContext.StudentWalletTransactions.AddAsync(transaction);
             }
@@ -185,7 +187,7 @@ namespace DAL.Repositories
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount)
+        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userId)
         {
             var result = new BaseOperationResponse();
 
@@ -216,7 +218,9 @@ namespace DAL.Repositories
                     Amount = amount,
                     TransactionType = WalletTransactionType.CREDIT.ToString(),
                     StudentId = studentData.Id,
-                    Description = $"Top-up by Student Id={studentData.Id}, Name={studentData.Name}"
+                    Description = $"Top-up by Student Id={studentData.Id}, Name={studentData.Name}",
+                    CreatedBy = userId,
+                    UpdatedBy = userId
                 };
 
                 await _appContext.StudentWalletTransactions.AddAsync(transaction);

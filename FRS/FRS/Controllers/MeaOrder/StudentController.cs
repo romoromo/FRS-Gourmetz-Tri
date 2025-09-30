@@ -1241,7 +1241,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._walletService.TopupWalletBalanceByStudentGroupIdAsync(model.StudentGroupId,model.Amount);
+                    var result = await this._walletService.TopupWalletBalanceByStudentGroupIdAsync(model.StudentGroupId,model.Amount, model.UserId);
                     return Ok(result);
 
                 }
@@ -1276,7 +1276,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._walletService.TopupWalletBalanceByStudentIdAsync(model.StudentGroupId, model.Amount);
+                    var result = await this._walletService.TopupWalletBalanceByStudentIdAsync(model.StudentGroupId, model.Amount, model.UserId);
                     return Ok(result);
 
                 }

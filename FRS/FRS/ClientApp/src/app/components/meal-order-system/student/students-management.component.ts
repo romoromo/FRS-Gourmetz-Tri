@@ -517,7 +517,7 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
       }
 
       this.alertService.startLoadingMessage("Processing top-up...");
-      this.studentService.walletTopupForStudent(studentId, amount)
+      this.studentService.walletTopupForStudent(studentId, amount, this.accountService.currentUser.id)
         .subscribe({
           next: (response) => {
             this.alertService.stopLoadingMessage();

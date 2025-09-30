@@ -133,8 +133,16 @@ export class WalletTransactionLogManagementComponent implements OnInit, OnDestro
       }
     }
 
-    if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(studentName)@=' + this.keyword ;
+    console.log("keyword: ", this.filter.keyword)
+
+    console.log("filter: ", this.filter)
+
+    if (!this.filter.keyword) this.filter.keyword = '';
+    this.filter.filters = '(studentName)@=' + this.filter.keyword;
+
+    if (this.filter.transactionType) {
+      this.filter.filters = this.filter.filters + ',(TransactionType)==' + this.filter.transactionType;
+    }
 
     if (this.start && this.end) {
       this.filter.filters = this.filter.filters + ',(WalletTransactionDateRange)==' + this.start.toDateString() + '|' + this.end.toDateString();
@@ -193,6 +201,7 @@ export class WalletTransactionLogManagementComponent implements OnInit, OnDestro
   onSearchChanged(value: string) {
     //this.rows = this.rowsCache.filter(r => Utilities.searchArray(value, false, r.name, r.description));
     this.keyword = value;
+    console.log("keyword on change: ", this.keyword, value);
     //this.loadData(null);
   }
 
