@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using DAL.Models;
 using DAL.Core;
 using Sieve.Services;
 using DAL.Filters;
 using DAL;
 using BAL.Services.Interfaces;
-using BAL.DTO;
 using AutoMapper;
-using DAL.Repositories.Interfaces;
 using BAL.DTO.MealOrder;
 
 namespace BAL.Services
@@ -22,6 +18,13 @@ namespace BAL.Services
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
         private readonly IMapper _mapper;
+
+        public StudentPointService(ISieveProcessor sieveProcessor, IUnitOfWork uow, IMapper mapper)
+        {
+            _sieveProcessor = sieveProcessor;
+            _uow = uow;
+            _mapper = mapper;
+        }
 
         public async Task<PagedEntity<StudentPointTransactionDTO>> GetPointTransactionsAsync(BaseFilter filter)
         {
@@ -94,6 +97,16 @@ namespace BAL.Services
             }
 
             return result;
+        }
+
+        public async Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount)
+        {
+            return await this._uow.StudentPointTransactions.TopupPointBalanceByStudentGroupIdAsync(studentGroupId, amount);
+        }
+
+        public async Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount)
+        {
+            return await this._uow.StudentPointTransactions.TopupPointBalanceByStudentIdAsync(studentId, amount);
         }
     }
 }

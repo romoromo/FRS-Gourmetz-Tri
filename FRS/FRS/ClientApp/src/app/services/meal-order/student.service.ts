@@ -207,4 +207,20 @@ export class StudentService {
     }
     return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/student`, param);
   }
+
+  pointTopupForStudentGroup(studentGroupId: string, amount: number) {
+    const param = {
+      studentGroupId: studentGroupId,
+      amount: amount
+    }
+    return this.commonEndpoint.getNewEndpoint<any>(this.pointUrl + `/studentgroup`, param);
+  }
+
+  pointTopupForStudent(studentId: string, amount: number) {
+    const param = {
+      studentGroupId: studentId,
+      amount: amount
+    }
+    return this.commonEndpoint.getNewEndpoint<any>(this.pointUrl + `/student`, param);
+  }
 }
