@@ -190,18 +190,20 @@ export class StudentService {
     return this.commonEndpoint.getSieve<PagedResult>(this.walletUrl + '/transactions/sieve/list', filter);
   }
 
-  walletTopupForStudentGroup(studentGroupId: string, amount: number) {
+  walletTopupForStudentGroup(studentGroupId: string, amount: number, userId: string) {
     const param = {
       studentGroupId: studentGroupId,
-      amount: amount
+      amount: amount,
+      userId: userId
     }
     return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/studentgroup`, param);
   }
 
-  walletTopupForStudent(studentId: string, amount: number) {
+  walletTopupForStudent(studentId: string, amount: number, userId: string) {
     const param = {
       studentGroupId: studentId,
-      amount: amount
+      amount: amount,
+      userid: userId
     }
     return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/student`, param);
   }

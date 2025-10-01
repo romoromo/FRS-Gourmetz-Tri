@@ -194,7 +194,7 @@ namespace DAL.Filters
                 {
                     if (!string.IsNullOrEmpty(values[1]))
                     {
-                        DateTime end = Convert.ToDateTime(values[1]);
+                        DateTime end = (Convert.ToDateTime(values[1])).AddDays(1);
                         result = result.Where(c => c.CreatedDate <= end);
                     }
                 }

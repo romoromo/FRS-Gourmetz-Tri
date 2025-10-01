@@ -12,7 +12,7 @@ namespace DAL.Repositories.Interfaces
         Task<StudentWalletTransaction> GetByIdAsync(int id);
         Task<BaseOperationResponse> UpdateAsync(StudentWalletTransaction walletTransaction);
         Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsAsync(BaseFilter filter);
-        Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount);
-        Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount);
+        Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId);
+        Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userId);
     }
 }
