@@ -2227,6 +2227,15 @@ namespace BAL.Services.MealOrder
                                 png.SetAbsolutePosition(10f, 50f);
                                 document.Add(png);
 
+                                string qrCodeData = dto[i].dishes[j].dish_name + ". Packed: " + dto[i].deliveryDate  + " "+ dto[i].timePacked.Value.ToString("hh:mm tt") + ", Consume By: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt");
+                                BarcodeQRCode barcodeQRCode = new BarcodeQRCode(qrCodeData, 20, 20, null); // width, height, parameters
+
+                                iTextSharp.text.Image qrCodeImage = barcodeQRCode.GetImage();
+                                qrCodeImage.ScaleToFit(40f, 40f);
+                                qrCodeImage.SetAbsolutePosition(175f, 50f);
+                                document.Add(qrCodeImage);
+
+
                                 Paragraph para1 = new Paragraph("SATS Food Services Pte Ltd", new iTextSharp.text.Font(allerfont, 10));
                                 para1.Alignment = Element.ALIGN_CENTER;
                                 document.Add(para1);
