@@ -544,6 +544,48 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
     });
   }
 
+  addPointTopup(studentId: string) {
+    this.alertService.showDialog('Enter Top up Point:', DialogType.prompt, (val: string) => {
+      if (!val) return;
+      const normalized = val.replace(',', '.');
+      const amount = parseFloat(normalized);
+      if (isNaN(amount) || amount <= 0) {
+        this.alertService.showStickyMessage(
+          "Invalid Input",
+          "Please enter a valid positive point.",
+          MessageSeverity.error
+        );
+        return;
+      }
+
+      this.alertService.startLoadingMessage("Processing top-up...");
+      this.studentService.pointTopupForStudent(studentId, amount)
+        .subscribe({
+          next: (response) => {
+            this.alertService.stopLoadingMessage();
+            this.loadingIndicator = false;
+            this.alertService.showMessage(response.message);
+
+            if (response.data && response.data.length > 0) {
+              const messageData = response.data.join("<br/><br/>");
+              this.alertService.showStickyMessage("Top-up Info", messageData, MessageSeverity.info);
+            }
+          },
+          error: () => {
+            this.alertService.stopLoadingMessage();
+            this.loadingIndicator = false;
+            this.alertService.showStickyMessage(
+              "Point Top-up Error",
+              "Unable to add Point.",
+              MessageSeverity.error
+            );
+          }
+        });
+    }, () => {
+      // Cancel callback
+    });
+  }
+
 
 
   get canManageStudents() {

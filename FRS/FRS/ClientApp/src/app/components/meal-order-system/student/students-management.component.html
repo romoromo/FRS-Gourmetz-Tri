@@ -5,11 +5,13 @@
   <div class="row control-box">
     <div class="col-sm-8">
       <div class="form-group search-box col-sm-8">
-        <search-box (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()" placeholder="Type search keyword and press enter"></search-box>
+        <search-box (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()"
+          placeholder="Type search keyword and press enter"></search-box>
       </div>
       <mat-form-field class="col-sm-4">
         <mat-label>Batch</mat-label>
-        <mat-select [disabled]="!canImportStudents" id="cb" name="cb" [(ngModel)]="batchId" #cb="ngModel" (selectionChange)="onSearch()">
+        <mat-select [disabled]="!canImportStudents" id="cb" name="cb" [(ngModel)]="batchId" #cb="ngModel"
+          (selectionChange)="onSearch()">
           <mat-option [value]="">
             --
           </mat-option>
@@ -40,7 +42,9 @@
             <a href="javascript:;" (click)="fileStudentCardImport.click()">
               <i class="fa fa-upload"></i> Batch Import
             </a>
-            <input type="file" #fileStudentCardImport placeholder="Choose file" (change)="importedStudentCardFile(fileStudentCardImport.files)" style="display:none;" accept="{{fileTypes}}">
+            <input type="file" #fileStudentCardImport placeholder="Choose file"
+              (change)="importedStudentCardFile(fileStudentCardImport.files)" style="display:none;"
+              accept="{{fileTypes}}">
 
           </li>
           <li *ngIf="canManageStudents" class="toolbaritem">
@@ -64,29 +68,20 @@
     </div>
   </div>
 
-  <ngx-datatable #studentsTable
-                 class="material expandable colored-header students"
-                 [loadingIndicator]="loadingIndicator"
-                 [rows]="rows"
-                 [rowHeight]="'auto'"
-                 [headerHeight]="'auto'"
-                 [footerHeight]="35"
-                 [columns]="columns"
-                 [columnMode]="'force'"
-                 [externalPaging]="true"
-                 [externalSorting]="true"
-                 [count]="pagedResult.totalCount"
-                 [limit]="pagedResult.filter.pageSize"
-                 (page)="loadData($event)"
-                 (sort)="loadData($event)">
+  <ngx-datatable #studentsTable class="material expandable colored-header students"
+    [loadingIndicator]="loadingIndicator" [rows]="rows" [rowHeight]="'auto'" [headerHeight]="'auto'" [footerHeight]="35"
+    [columns]="columns" [columnMode]="'force'" [externalPaging]="true" [externalSorting]="true"
+    [count]="pagedResult.totalCount" [limit]="pagedResult.filter.pageSize" (page)="loadData($event)"
+    (sort)="loadData($event)">
     <!-- Row Detail Template -->
-    <ngx-datatable-row-detail [rowHeight]="'100%'"  #studentDetail (toggle)="onDetailToggle($event)">
+    <ngx-datatable-row-detail [rowHeight]="'100%'" #studentDetail (toggle)="onDetailToggle($event)">
       <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
         <div style="min-height:450px;">
           <mat-tab-group dynamicHeight mat-stretch-tabs style="width: 90vw">
             <mat-tab label="Order Management" *ngIf="canManageStudents">
               <div class="container-fluid" style="padding-top:20px">
-                <student-orders-management [isHideHeader]="true" [outletId]="row.outletId" [studentId]="row.id" [studentName]="row.name" [studentEmail]="row.email"></student-orders-management>
+                <student-orders-management [isHideHeader]="true" [outletId]="row.outletId" [studentId]="row.id"
+                  [studentName]="row.name" [studentEmail]="row.email"></student-orders-management>
               </div>
             </mat-tab>
           </mat-tab-group>
@@ -185,15 +180,23 @@
   </ng-template>
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
-    <a *ngIf="canManageStudentOrderMgt" class="btn btn-link btn-xs" href="javascript:;" (click)="toggleExpandRow(row)">Orders</a>
-    <a *ngIf="canEditStudent" class="btn btn-link btn-xs" href="javascript:;" (click)="editStudent(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
+    <a *ngIf="canManageStudentOrderMgt" class="btn btn-link btn-xs" href="javascript:;"
+      (click)="toggleExpandRow(row)">Orders</a>
+    <a *ngIf="canEditStudent" class="btn btn-link btn-xs" href="javascript:;" (click)="editStudent(row)"><i
+        class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
     <!--<a *ngIf="canManageStudentCalendar" class="btn btn-link btn-xs" href="javascript:;" (click)="studentCalendar(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>-->
-    <a *ngIf="canDeleteStudent" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteStudent(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+    <a *ngIf="canDeleteStudent" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteStudent(row)"><i
+        class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
     <!--<a *ngIf="canManageStudentOrderMgt" class="btn btn-link btn-xs" href="javascript:;" (click)="openTokenOrder(row)"><i class="fa" aria-hidden="true"></i> Meal Order</a>-->
-    <a *ngIf="canManageStudentCalendar" class="btn btn-link btn-xs" href="javascript:;" (click)="openStudentCalendar(row)"><i class="fa" aria-hidden="true"></i> Calendar </a>
-    <a *ngIf="canManageStudentVoucher" class="btn btn-link btn-xs" href="javascript:;" (click)="addVoucher(row)"><i class="fa" aria-hidden="true"></i> Add Voucher </a>
+    <a *ngIf="canManageStudentCalendar" class="btn btn-link btn-xs" href="javascript:;"
+      (click)="openStudentCalendar(row)"><i class="fa" aria-hidden="true"></i> Calendar </a>
+    <a *ngIf="canManageStudentVoucher" class="btn btn-link btn-xs" href="javascript:;" (click)="addVoucher(row)"><i
+        class="fa" aria-hidden="true"></i> Add Voucher </a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addWalletTopup(row?.id)"><i
         class="fa fa-money" aria-hidden="true"></i> Wallet topup</a>
-    <a *ngIf="canManageStudentNotification" class="btn btn-link btn-xs" href="javascript:;" (click)="triggerNotification(row)"><i class="fa" aria-hidden="true"></i> Send Notification </a>
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addPointTopup(row?.id)"><i
+        class="fa fa-credit-card" aria-hidden="true"></i> Point topup</a>
+    <a *ngIf="canManageStudentNotification" class="btn btn-link btn-xs" href="javascript:;"
+      (click)="triggerNotification(row)"><i class="fa" aria-hidden="true"></i> Send Notification </a>
   </ng-template>
 </div>

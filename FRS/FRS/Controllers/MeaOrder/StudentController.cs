@@ -1411,6 +1411,75 @@ namespace FRS.Controllers
             }
         }
 
+        [ApiKeyAuthorize]
+        [HttpPost("point/studentgroup")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> PointTopupForStudentGroup([FromBody] StudentGroupWalletRequestViewModel model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"PointTopupForStudentGroup StudentGroupWalletRequestViewModel : {dataJSON}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.StudentGroupId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+
+                    var result = await this._pointService.TopupPointBalanceByStudentGroupIdAsync(model.StudentGroupId, model.Amount);
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error PointTopupForStudentGroup : {ex.Message}", ex);
+                _logger.LogError($"Error PointTopupForStudentGroup : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
+        [ApiKeyAuthorize]
+        [HttpPost("point/student")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> PointTopupForStudent([FromBody] StudentGroupWalletRequestViewModel model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"PointTopupForStudent StudentGroupPointRequestViewModel : {dataJSON}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.StudentGroupId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+
+                    var result = await this._pointService.TopupPointBalanceByStudentIdAsync(model.StudentGroupId, model.Amount);
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error PointTopupForStudent : {ex.Message}", ex);
+                _logger.LogError($"Error PointTopupForStudent : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
         #endregion
     }
 }
