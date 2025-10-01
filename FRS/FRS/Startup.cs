@@ -404,6 +404,15 @@ namespace FRS
             //// Add framework services.
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddHsts(options =>
+            {
+                options.Preload = true; // Preload for browser support
+                options.IncludeSubDomains = true; // Apply to subdomains
+                options.MaxAge = TimeSpan.FromDays(365); // Set max-age to 1 year
+                //options.ExcludedHosts.Add("tappeemeals.com"); // Exclude specific hosts
+                options.ExcludedHosts.Add("uat.tappeemeals.com");
+            });
+
             string enableSignalR = Configuration["AppSettings:enableSignalR"];
             if (string.IsNullOrEmpty(enableSignalR) || enableSignalR == "Y")
             {
