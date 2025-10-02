@@ -300,6 +300,7 @@ namespace BAL.DTO.MealOrder
     {
         public int Id { get; set; }
         public int meal_allocation_id { get; set; }
+        public int order_id { get; set; }
         public int token_id { get; set; }
         public string token_name { get; set; }
         public int qty { get; set; }

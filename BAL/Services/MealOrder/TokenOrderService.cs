@@ -31,6 +31,8 @@ using System.Drawing;
 using NPOI.SS.Util;
 using NodaTime.Calendars;
 using NPOI.HSSF.Util;
+using static System.Net.WebRequestMethods;
+using System.Text.RegularExpressions;
 
 namespace BAL.Services.MealOrder
 {
@@ -2216,6 +2218,9 @@ namespace BAL.Services.MealOrder
 
                     for (int i = 0; i < dto.Length; i++)
                     {
+                        //var order = await this.GetTokenOrderByIdAsync(dto[i].order_id);
+
+
                         for (int j = 0; j < dto[i].dishes.ToArray().Length; j++)
                         {
                             for (int k = 0; k < dto[i].dishes[j].t_qty; k++)
@@ -2227,7 +2232,11 @@ namespace BAL.Services.MealOrder
                                 png.SetAbsolutePosition(10f, 50f);
                                 document.Add(png);
 
-                                string qrCodeData = dto[i].dishes[j].dish_name + ". Packed: " + dto[i].deliveryDate  + " "+ dto[i].timePacked.Value.ToString("hh:mm tt") + ", Consume By: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt");
+                                string cleanDate = Regex.Replace(dto[i].deliveryDate, "[^a-zA-Z0-9]", "");
+
+                                string uniqueCode = "B" + cleanDate + dto[i].meal_allocation_id.ToString().PadLeft(5,'0') + dto[i].dishes[j].dish_id.ToString().PadLeft(4, '0') +  dto[i].dishes[j].token_id.ToString().PadLeft(3, '0') + k.ToString().PadLeft(3, '0');
+
+                                string qrCodeData = "Code: " + uniqueCode + ", Dish : " + dto[i].dishes[j].dish_name + "', Packed: " + dto[i].deliveryDate  + " "+ dto[i].timePacked.Value.ToString("hh:mm tt") + ", Consume By: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt");
                                 BarcodeQRCode barcodeQRCode = new BarcodeQRCode(qrCodeData, 20, 20, null); // width, height, parameters
 
                                 iTextSharp.text.Image qrCodeImage = barcodeQRCode.GetImage();

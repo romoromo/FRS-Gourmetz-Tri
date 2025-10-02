@@ -285,6 +285,8 @@ export class PrintAllocationComponent implements OnInit {
       //Order Loop
       this.orders.forEach(o => {
 
+        console.log("order: ", o)
+
         //Token Loop
         o.tokens.forEach(t => {
 
@@ -293,6 +295,7 @@ export class PrintAllocationComponent implements OnInit {
           var tokenIndex = this.token_count.findIndex(x => x.token_id === t.tokenId)
           if (tokenIndex < 0) {
             var token = new TokenLabel;
+            token.order_id = o.id;
             token.token_id = t.tokenId;
             token.meal_allocation_id = this.allocation.id;
             token.timePacked = this.allocation.timePacked;

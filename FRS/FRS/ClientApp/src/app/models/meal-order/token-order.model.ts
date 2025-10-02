@@ -108,6 +108,7 @@ export class MealAllocation {
 export class TokenLabel {
   public id: string;
   public meal_allocation_id: string;
+  public order_id: string;
   public token_id: string;
   public token_name: string;
   public qty: number;
