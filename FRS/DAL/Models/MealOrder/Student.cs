@@ -79,7 +79,9 @@ namespace DAL.Models.MealOrder
         public virtual ICollection<StudentVoucher> Vouchers { get; set; }
         public virtual ICollection<StudentManageAccount> Users { get; set; }
         public virtual ICollection<StudentAccountLinkRequest> AccountLinkRequests { get; set; }
-        
+
+        public virtual ICollection<WalletPayment> WalletPayments { get; set; }
+
 
     }
 }

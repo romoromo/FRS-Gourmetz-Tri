@@ -231,6 +231,8 @@ namespace DAL
         public DbSet<NotificationEvent> NotificationEvents { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
         public DbSet<Payment> Payments { get; set; }
+
+        public DbSet<WalletPayment> WalletPayments { get; set; }
         public DbSet<TransactionFee> TransactionFees { get; set; }
         public DbSet<TransactionFeeDetail> TransactionFeeDetails { get; set; }
         public DbSet<VoucherType> VoucherTypes { get; set; }
@@ -531,6 +533,7 @@ namespace DAL
             builder.Entity<PackingAllocation>().TrackAllProperties();
             builder.Entity<DishAllocation>().TrackAllProperties();
             builder.Entity<Payment>().TrackAllProperties();
+            builder.Entity<WalletPayment>().TrackAllProperties();
             builder.Entity<StudentCard>().TrackAllProperties();
             builder.Entity<StudentRestriction>().TrackAllProperties();
             #region StudentVoucher

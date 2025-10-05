@@ -76,6 +76,12 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<List<WalletPaymentDTO>> GetCreatedWalletPaymentsAsync(int? studentId = null)
+        {
+            var result = _mapper.Map<List<WalletPaymentDTO>>(await this._uow.Payments.GetCreatedWalletPaymentsAsync(studentId));
+            return result;
+        }
+
         public async Task<PaymentDTO> GetPaymentByIdAsync(int id)
         {
             return _mapper.Map<PaymentDTO>(await this._uow.Payments.GetByIdAsync(id));
@@ -88,10 +94,24 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<BaseOperationResponse> CreateWalletPaymentAsync(WalletPaymentDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.Payments.CreateWalletPaymentAsync(_mapper.Map<WalletPayment>(dto));
+            return result;
+        }
+
         public async Task<BaseOperationResponse> UpdatePaymentAsync(PaymentDTO dto)
         {
             var result = new BaseOperationResponse();
             result = await this._uow.Payments.UpdateAsync(_mapper.Map<Payment>(dto));
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateWalletPaymentAsync(WalletPaymentDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.Payments.UpdateWalletPaymentAsync(_mapper.Map<WalletPayment>(dto));
             return result;
         }
 

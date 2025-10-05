@@ -27,6 +27,7 @@ using System.Globalization;
 using DAL.Models.MealOrder;
 using Newtonsoft.Json;
 using FRS.ViewModels.MealOrder;
+using MealOrderPayments.Controllers;
 
 namespace FRS.Controllers
 {
@@ -44,9 +45,10 @@ namespace FRS.Controllers
 
         private IStudentWalletService _walletService;
         private IStudentPointService _pointService;
+        private OrderController _orderController;
 
         public StudentController(IStudentService service, ILogger<StudentController> logger, IAccountManager accountManager, IEmailSender emailSender, ApplicationUserManager userManager, IConfiguration configuration, IMapper mapper
-            , IStudentWalletService walletService, IStudentPointService pointService)
+            , IStudentWalletService walletService, IStudentPointService pointService, OrderController orderController)
         {
             _service = service;
             _logger = logger;
@@ -57,6 +59,7 @@ namespace FRS.Controllers
             _mapper = mapper;
             _walletService = walletService;
             _pointService = pointService;
+            _orderController = orderController;
         }
 
         #region Students
@@ -83,8 +86,23 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetStudentsByUser(int userId)
         {
-            var results = await this._service.GetStudentsByUserAsync(userId);
-            return Ok(_mapper.Map<List<StudentDTO>>(results));
+            try
+            {
+                var results = await this._service.GetStudentsByUserAsync(userId);
+
+                foreach (var student in results)
+                {
+                    await _orderController.QueryAndUpdateWalletPaymentStatus(student.Id);
+                }
+
+                results = await this._service.GetStudentsByUserAsync(userId);
+
+                return Ok(_mapper.Map<List<StudentDTO>>(results));
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.ToString());
+            }
         }
 
         [HttpGet("students/get/id/{id}")]
