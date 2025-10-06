@@ -180,6 +180,7 @@ namespace BAL.Mapping
                 .ForMember(d => d.Users, map => map.MapFrom(s => s.Users.Where(f => f.IsActive)))
                 .ForMember(e => e.StudentCards, map => map.MapFrom(e => e.StudentCards.Where(f => f.IsActive).ToList()))
                 .ForMember(e => e.Restrictions, map => map.MapFrom(e => e.Restrictions.Where(f => f.IsActive).ToList()))
+                 .ForMember(e => e.WalletPayments, map => map.MapFrom(e => e.WalletPayments.Where(f => f.IsActive && f.Status == "CREATED").ToList()))
                 .ForMember(e => e.InterestGroups, map => map.MapFrom(e => e.InterestGroups.Where(f => f.IsActive).ToList()))
                 .ForMember(e => e.Vouchers, map => map.MapFrom(e => e.Vouchers.Where(f => f.IsActive).ToList()))
                 .ForMember(e => e.AccountLinkRequests, map => map.MapFrom(e => e.AccountLinkRequests.Where(f => f.IsActive && f.Status == "Pending").ToList()));
@@ -780,6 +781,11 @@ namespace BAL.Mapping
             CreateMap<Payment, PaymentDTO>()
                 .ForMember(d => d.TokenOrders, map => map.MapFrom(s => s.TokenOrders != null ? s.TokenOrders.Where(z => z.IsActive) : null))
                 .ForMember(d => d.MealPlanOrders, map => map.MapFrom(s => s.MealPlanOrders != null ? s.MealPlanOrders.Where(z => z.IsActive) : null))
+                .ForMember(e => e.userName, map => map.MapFrom(f => f.User.FriendlyName))
+                .ForMember(e => e.studentName, map => map.MapFrom(f => f.Student.Name));
+
+            CreateMap<WalletPaymentDTO, WalletPayment>();
+            CreateMap<WalletPayment, WalletPaymentDTO>()
                 .ForMember(e => e.userName, map => map.MapFrom(f => f.User.FriendlyName))
                 .ForMember(e => e.studentName, map => map.MapFrom(f => f.Student.Name));
 

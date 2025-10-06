@@ -267,6 +267,55 @@ namespace FRS.Controllers
             }
         }
 
+        [HttpPost("walletpayment")]
+        //[Authorize(Authorization.Policies.ManageAllPaymentsPolicy)]
+        [ProducesResponseType(201, Type = typeof(WalletPaymentDTO))]
+        [ProducesResponseType(400)]
+        //[AllowAnonymous]
+        public async Task<IActionResult> CreateWalletPayment([FromBody] WalletPaymentDTO dto)
+        {
+            //TODO
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (dto == null)
+                        return BadRequest($"{nameof(dto)} cannot be null");
+
+                    dto.InvoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmssffffff");
+
+
+                    var result = await this._service.CreateWalletPaymentAsync(dto);
+                    if (result.IsSuccess)
+                    {
+                        WalletPaymentDTO vm = _mapper.Map<WalletPaymentDTO>(result.Data);
+
+                        if (vm.Status == "SUCCESS" && vm.total == 0)
+                        {
+                            await _orderController.SendWalletInvoice(vm);
+                            vm.invoiceSent = true;
+                        }
+
+
+                        return CreatedAtAction("GetPaymentById", new { id = vm.Id }, vm);
+                    }
+
+                    AddErrors(new string[] { result.Message + "- errorPayment" });
+
+                    if (!result.IsSuccess) return BadRequest(result);
+
+                    return Ok(result);
+                }
+
+                return BadRequest(ModelState);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error -- " + ex.ToString());
+            }
+        }
+
 
         [HttpDelete("payment/delete/{id}")]
         //[Authorize(Authorization.Policies.ManageAllPaymentsPolicy)]

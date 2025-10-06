@@ -36,6 +36,7 @@ using LoggingEvents = DAL.Core.Logging.LoggingEvents;
 using System.Security.Policy;
 using System.Web;
 using DAL.Models.MealOrder;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace MealOrderPayments.Controllers
 {
@@ -53,11 +54,12 @@ namespace MealOrderPayments.Controllers
         private ITokenOrderService _service;
         private IPaymentService _paymentService;
         private IStudentService _studentService;
+        private IStudentWalletService _walletService;
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
 
 
-        public OrderController(IConfiguration configuration, IUnitOfWork unitOfWork, ITokenOrderService service, IPaymentService paymentService, IEmailSender emailSender, IStudentService studentService, IMapper mapper)
+        public OrderController(IConfiguration configuration, IUnitOfWork unitOfWork, ITokenOrderService service, IPaymentService paymentService, IEmailSender emailSender, IStudentService studentService, IMapper mapper, IStudentWalletService walletService)
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
@@ -68,6 +70,7 @@ namespace MealOrderPayments.Controllers
             _emailSender = emailSender;
             _mapper = mapper;
             _logger = Utilities.CreateLogger<OrderController>();
+            _walletService = walletService;
         }
 
 
@@ -1949,6 +1952,52 @@ namespace MealOrderPayments.Controllers
             var isSuccess = await _emailSender.SendEmailAsync(p.name, p.email, "Tappee Payment Invoice", sb.ToString());
         }
 
+        public async Task SendWalletInvoice(WalletPaymentDTO p)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(string.Format(@"<p> <b>Invoice Number:</b>{0}</p>
+                                    <table>
+                                      <thead>
+                                        <tr>
+                                          <td colspan=""4"" style=""text-align:center;padding:5px""><b>Dishes</b></td>
+                                        </tr>
+                                      </thead>
+                                      <tbody>", p.InvoiceNumber));
+
+          
+
+            sb.AppendLine("<tr>");
+            sb.AppendLine(string.Format("<td style=\"padding: 5px;\">{0}</td>", "Amount"));
+            sb.AppendLine(string.Format("<td style=\"text-align: right;padding:5px;\" >{0}</td>", p.amount));
+            sb.AppendLine("</tr>");
+
+            
+
+            sb.AppendLine("<tr>");
+            sb.AppendLine(string.Format("<td style=\"padding: 5px;\">{0}</td>", "Transaction Fee:"));
+            sb.AppendLine(string.Format("<td style=\"text-align: right;padding:5px;\" >{0}</td>", p.transactionFee));
+            sb.AppendLine("</tr>");
+
+            if (p.fixedTransactionFee > 0)
+            {
+                sb.AppendLine("<tr>");
+                sb.AppendLine(string.Format("<td style=\"padding: 5px;\">{0}</td>", "Fixed Transaction Fee:"));
+                sb.AppendLine(string.Format("<td style=\"text-align: right;padding:5px;\" >{0}</td>", p.fixedTransactionFee));
+                sb.AppendLine("</tr>");
+            }
+
+            sb.AppendLine("<tr>");
+            sb.AppendLine(string.Format("<td style=\"padding: 5px;\"><b>{0}</b></td>", "Total"));
+            sb.AppendLine(string.Format("<td style=\"text-align: right;padding:5px;\" ><b>{0}</b></td>", p.total));
+            sb.AppendLine("</tr>");
+            sb.AppendLine("</tbody>");
+            sb.AppendLine("</table>");
+            sb.AppendLine("<div><p>SATS Food Services Pte Ltd<br />GST Registration No: M90363671C</p></div>");
+
+
+            var isSuccess = await _emailSender.SendEmailAsync(p.name, p.email, "Tappee Payment Invoice", sb.ToString());
+        }
+
         /// <summary>
         /// Create a method that can be awaited, but does not return any value.
         /// In this case we don't need to anything after querying payment and 
@@ -2078,6 +2127,68 @@ namespace MealOrderPayments.Controllers
 
         }
 
+        /// <summary>
+        /// Create a method that can be awaited, but does not return any value.
+        /// In this case we don't need to anything after querying payment and 
+        /// updating database. Hence mark method as Task. rather than very undersiable
+        /// void.
+        /// </summary>
+        /// <param name="objBodyPayload"></param>
+        /// <returns></returns>
+        public async Task QueryAndUpdateWalletPaymentStatus(int? studentId = null)
+        {
+            try
+            {
+                List<WalletPaymentDTO> payments = await _paymentService.GetCreatedWalletPaymentsAsync(studentId);
+
+                foreach (var p in payments)
+                {
+                    var updated = false;
+                    var tokenOrderUpdated = false;
+                    var emailSent = false;
+                    var strOrderStatus = "";
+
+                    try
+                    {
+
+                        strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : QueryOrderStatus(p.fomoid);
+
+                        if (!String.IsNullOrEmpty(strOrderStatus))
+                        {
+                            if (p.Status != strOrderStatus)
+                            {
+                                p.Status = strOrderStatus;
+
+                                if (!p.invoiceSent && p.Status == "SUCCESS")
+                                {
+                                    await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value);
+                                    await SendWalletInvoice(p);
+                                    emailSent = true;
+                                    p.invoiceSent = true;
+                                }
+
+                                await _paymentService.UpdateWalletPaymentAsync(p);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, $"Error when update payment status. Payment Id {p.Id}, status {p.Status}, status from fomo {strOrderStatus}, payment update {updated}, token order updated {tokenOrderUpdated}, email sent {emailSent}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteToEventLog("FRS Exception", ex.Message);
+
+                _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, "Error when update payment and token order status.");
+            }
+            finally
+            {
+            }
+
+        }
+
         [HttpGet("notifypayment/{id}")]// need to enable this when using tesing with POSTMAN
         [AllowAnonymous]
         [ProducesResponseType(400)]  // Bad request status response 
@@ -2095,8 +2206,21 @@ namespace MealOrderPayments.Controllers
             return BadRequest();
         }
 
+        [HttpGet("notifywalletpayment/{id}")]// need to enable this when using tesing with POSTMAN
+        [AllowAnonymous]
+        [ProducesResponseType(400)]  // Bad request status response 
+        [ProducesResponseType(200)]  // Sucess send after conforming request is valid and authenicated
+        public async Task<IActionResult> NotifyWallet(string orderID)
+        {
+            try
+            {
+                await QueryAndUpdateWalletPaymentStatus();
 
+                return Ok();
+            }
+            catch (Exception ex) { }
 
-
+            return BadRequest();
+        }
     }
 }

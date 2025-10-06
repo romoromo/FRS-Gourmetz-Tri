@@ -18,11 +18,14 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdatePaymentTypeAsync(PaymentTypeDTO dto);
 
         Task<BaseOperationResponse> CreatePaymentAsync(PaymentDTO dto);
+        Task<BaseOperationResponse> CreateWalletPaymentAsync(WalletPaymentDTO dto);
         Task<BaseOperationResponse> DeletePaymentAsync(int id);
         Task<PaymentDTO> GetPaymentByIdAsync(int id);
         Task<PagedEntity<PaymentDTO>> GetPaymentsAsync(BaseFilter filter);
         Task<List<PaymentDTO>> GetCreatedPaymentsAsync(int? studentId = null);
+        Task<List<WalletPaymentDTO>> GetCreatedWalletPaymentsAsync(int? studentId = null);
         Task<BaseOperationResponse> UpdatePaymentAsync(PaymentDTO dto);
+        Task<BaseOperationResponse> UpdateWalletPaymentAsync(WalletPaymentDTO dto);
 
         Task<BaseOperationResponse> CreateTransactionFeeAsync(TransactionFeeDTO dto);
         Task<BaseOperationResponse> DeleteTransactionFeeAsync(int id);

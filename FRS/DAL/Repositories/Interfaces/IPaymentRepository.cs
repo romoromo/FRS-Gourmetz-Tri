@@ -12,10 +12,13 @@ namespace DAL.Repositories.Interfaces
     public interface IPaymentRepository : IRepository<Payment>
     {
         Task<BaseOperationResponse> CreateAsync(Payment Payment);
+        Task<BaseOperationResponse> CreateWalletPaymentAsync(WalletPayment Payment);
         Task<BaseOperationResponse> DeleteAsync(int PaymentId);
         Task<Payment> GetByIdAsync(int id);
         Task<BaseOperationResponse> UpdateAsync(Payment Payment);
+        Task<BaseOperationResponse> UpdateWalletPaymentAsync(WalletPayment Payment);
         Task<PagedEntity<Payment>> GetPaymentsAsync(BaseFilter filter);
         Task<List<Payment>> GetCreatedPaymentsAsync(int? studentId = null);
+        Task<List<WalletPayment>> GetCreatedWalletPaymentsAsync(int? studentId = null);
     }
 }

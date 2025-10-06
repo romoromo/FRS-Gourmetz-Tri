@@ -59,6 +59,17 @@ namespace DAL.Repositories.MealOrder
             return query.ToList();
         }
 
+        public async Task<List<WalletPayment>> GetCreatedWalletPaymentsAsync(int? studentId = null)
+        {
+            IQueryable<WalletPayment> query = _appContext.WalletPayments.Where(d => d.Status == "CREATED" && d.CreatedDate >= DateTime.Now.AddDays(-7))
+                .Include(e => e.Institution);
+
+            if (studentId != null) query = query.Where(d => d.StudentId == studentId);
+
+
+            return query.ToList();
+        }
+
         public async Task<Payment> GetByIdAsync(int id)
         {
             return await GetAsync(id);
@@ -198,6 +209,41 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        public async Task<BaseOperationResponse> CreateWalletPaymentAsync(WalletPayment Payment)
+        {
+            var result = new BaseOperationResponse();
+            WalletPayment f = new WalletPayment();
+
+            int resultSaveChange = 0;
+            
+                _appContext.AuditUserActivityType = new AuditUserActivityType
+                {
+                    GroupId = Common.GenerateUniqueStringId(),
+                    ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
+                    Remarks = "Payment was created."
+                };
+
+                _appContext.WalletPayments.Add(Payment);
+                f = Payment;
+                resultSaveChange = await _appContext.SaveChangesAsync();
+            
+
+            if (resultSaveChange > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+                result.Data = f;
+            }
+            else
+            {
+                result.Message = "Failed to save payment type!";
+                result.IsSuccess = false;
+            }
+
+            _appContext.ResetAuditUserAction();
+            return result;
+        }
+
         public async Task<BaseOperationResponse> UpdateAsync(Payment Payment)
         {
             _appContext.AuditUserActivityType = new AuditUserActivityType
@@ -252,6 +298,37 @@ namespace DAL.Repositories.MealOrder
                     }
                 }
 
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+                result.Data = f;
+            }
+            else
+            {
+                result.Message = "Failed to save payment type!";
+                result.IsSuccess = false;
+            }
+            _appContext.ResetAuditUserAction();
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateWalletPaymentAsync(WalletPayment Payment)
+        {
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.PAYMENT_UPDATE.ToString(),
+                Remarks = "Payment was updated."
+            };
+
+            var result = new BaseOperationResponse();
+
+            var f = await _appContext.WalletPayments.FirstOrDefaultAsync(e => e.Id == Payment.Id);
+
+            f.CopyFrom(Payment);
+            _appContext.WalletPayments.Update(f);
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
                 result.Message = "Successfully saved!";
                 result.IsSuccess = true;
                 result.Data = f;
