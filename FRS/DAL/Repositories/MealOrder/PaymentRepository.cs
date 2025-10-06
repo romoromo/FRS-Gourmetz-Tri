@@ -223,7 +223,8 @@ namespace DAL.Repositories.MealOrder
                     Remarks = "Payment was created."
                 };
 
-                await _appContext.WalletPayments.AddAsync(Payment);
+                _appContext.WalletPayments.Add(Payment);
+                f = Payment;
                 resultSaveChange = await _appContext.SaveChangesAsync();
             
 

@@ -85,7 +85,7 @@ namespace BAL.DTO.MealOrder
         public List<StudentManageAccountDTO> Users { get; set; }
         public List<StudentAccountLinkRequestDTO> AccountLinkRequests { get; set; }
 
-        public List<WalletPayment> WalletPayments { get; set; }
+        public List<WalletPaymentDTO> WalletPayments { get; set; }
     }
 
     public class StudentManageAccountDTO
