@@ -43,10 +43,11 @@ namespace BAL.Services.MealOrder
         private IAccountManager _accountManager;
         private ApplicationDbContext _appContext;
         private IClassService _classService;
+        private IDeliveryService _deliveryService;
         private readonly IMapper _mapper;
 
         public TokenOrderService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, ApplicationDbContext context,
-            IClassService classService, IMapper mapper)
+            IClassService classService, IMapper mapper, IDeliveryService deliveryService)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
@@ -54,6 +55,7 @@ namespace BAL.Services.MealOrder
             this._appContext = context;
             this._classService = classService;
             _mapper = mapper;
+            this._deliveryService = deliveryService;
         }
 
         #region TokenOrder
@@ -2244,6 +2246,12 @@ namespace BAL.Services.MealOrder
                                 qrCodeImage.SetAbsolutePosition(150f, 35f);
                                 document.Add(qrCodeImage);
 
+                                BentoAssetDTO bentoAsset = new BentoAssetDTO();
+                                bentoAsset.Code = uniqueCode;
+                                bentoAsset.BentoBoxTypeId = 1;
+                                bentoAsset.DishId = dto[i].dishes[j].dish_id;
+
+                                this._deliveryService.CreateBentoAssetAsync(bentoAsset);
 
                                 Paragraph para1 = new Paragraph("SATS Food Services Pte Ltd", new iTextSharp.text.Font(allerfont, 10));
                                 para1.Alignment = Element.ALIGN_CENTER;
