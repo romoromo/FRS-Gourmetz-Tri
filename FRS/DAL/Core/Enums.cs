@@ -206,4 +206,11 @@ namespace DAL.Core
         CANCEL_ORDER_UPDATE,
         CANCEL_ORDER_DELETE,
     }
+
+    public enum MealCollectionType
+    {
+        BY_CLASS_ROASTER = 1,
+        STUDENT_SELECTS = 2,
+        BY_CLASS_LEVEL = 3
+    }
 }

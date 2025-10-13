@@ -586,7 +586,10 @@ namespace DAL
             builder.Entity<MenuCycleSchedulePeriod>().TrackAllProperties();
             builder.Entity<MenuCycleSchedulePeriodMenu>().TrackAllProperties();
             builder.Entity<OutletProfile>().TrackAllProperties();
+            #region Outlet
             builder.Entity<Outlet>().TrackAllProperties();
+            builder.Entity<Outlet>().HasIndex(x => x.MealCollectionType);
+            #endregion
             builder.Entity<CatererOutlet>().TrackAllProperties();
             builder.Entity<Driver>().TrackAllProperties();
             builder.Entity<InterestGroup>().TrackAllProperties();

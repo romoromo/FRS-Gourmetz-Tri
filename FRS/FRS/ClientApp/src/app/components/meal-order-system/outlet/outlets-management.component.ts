@@ -22,6 +22,7 @@ import { OrderDeliveryReportComponent } from './order-delivery-report/order-deli
 import { PrintLabelComponent } from './print-label/print-label.component';
 import { OrderMealSummaryComponent } from './order-meal-summary/order-meal-summary.component';
 import { getBaseUrl } from 'src/app/app.module';
+import { MealCollectionTypeList } from 'src/app/helpers/enums';
 
 @Component({
   selector: 'outlets-management',
@@ -40,9 +41,13 @@ export class OutletsManagementComponent implements OnInit {
   filter: Filter;
   pagedResult: PagedResult;
   keyword: string = '';
+  mealCollectionTypes = MealCollectionTypeList
 
   @ViewChild('actionsTemplate')
   actionsTemplate: TemplateRef<any>;
+
+  @ViewChild('mealCollectionTypeTemplate')
+  mealCollectionTypeTemplate: TemplateRef<any>;
 
   @ViewChild('flagTemplate')
   flagTemplate: TemplateRef<any>;
@@ -111,7 +116,7 @@ export class OutletsManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(!result)
+      if (!result)
         this.loadData(null);
     });
   }
@@ -122,7 +127,7 @@ export class OutletsManagementComponent implements OnInit {
     this.filter.filters = '';
     this.filter.page = 1;
 
-    
+
   }
 
   initializePagedResult() {
@@ -139,6 +144,11 @@ export class OutletsManagementComponent implements OnInit {
       { prop: 'name', name: 'Name' },
       { prop: 'address', name: 'Address' },
       { prop: 'daysToFreezeOrdering', name: 'Cut-off in Days' },
+      {
+        prop: 'mealCollectionType',
+        name: 'Meal Colection',
+        cellTemplate: this.mealCollectionTypeTemplate
+      },
       //{ prop: 'outletProfileName', name: 'Outlet Profile Name' },
       { name: '', width: 350, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
@@ -247,7 +257,7 @@ export class OutletsManagementComponent implements OnInit {
     //let catererId = outlets && outlets.length > 0? outlets[0].catererInfoId : '';
 
     const dialogRef = this.dialog.open(CatererSelectorComponent, {
-      data: { header: "Caterers", outlet: row},
+      data: { header: "Caterers", outlet: row },
       width: '60vw',
       disableClose: true
     });
@@ -377,6 +387,12 @@ export class OutletsManagementComponent implements OnInit {
   onDetailToggle(event) {
     console.log('Detail Toggled', event);
   }
+
+  getMealCollectionTypeLabel(id: number): string {
+    const type = this.mealCollectionTypes.find(t => t.id == id);
+    return type ? type.label : '-';
+  }
+
 
   get canViewOutlets() {
     return this.accountService.userHasPermission(Permission.viewMOSOrderMgtOutletsPermission)

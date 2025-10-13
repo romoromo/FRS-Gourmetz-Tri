@@ -35,3 +35,9 @@ export enum VoucherUsageStatus {
   Used = "Used"
   
 }
+
+export enum MealCollectionType {
+  BY_CLASS_ROASTER = 1,
+  STUDENT_SELECTS = 2,
+  BY_CLASS_LEVEL = 3
+}

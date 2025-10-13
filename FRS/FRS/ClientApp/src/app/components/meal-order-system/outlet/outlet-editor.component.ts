@@ -10,6 +10,7 @@ import { Filter } from 'src/app/models/sieve-filter.model';
 import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
 import { StaffService } from '../../../services/meal-order/staff.service';
 import { DeliveryService } from '../../../services/meal-order/delivery.service';
+import { MealCollectionTypeList } from 'src/app/helpers/enums';
 
 
 @Component({
@@ -28,6 +29,7 @@ export class OutletEditorComponent {
   private selectedValues: { [key: string]: boolean; } = {};
   public formResetToggle = true;
   private outletProfiles: OutletProfile[] = [];
+  mealCollectionTypeList = MealCollectionTypeList;
 
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;

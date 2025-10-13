@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ namespace BAL.DTO.MealOrder
         public string OutletProfileName { get; set; }
         public int DaysToFreezeOrdering { get; set; }
         public int? CreatedBy { get; set; }
+        public MealCollectionType? MealCollectionType { get; set; }
     }
 
     public class OutletDTO : OutletSimpleDTO

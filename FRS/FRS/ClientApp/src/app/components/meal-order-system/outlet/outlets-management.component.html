@@ -143,6 +143,9 @@
     <div class="text-center"><i [ngClass]="value ? 'fa fa-check-circle-o active': 'fa fa-circle-o'" aria-hidden="true"></i></div>
   </ng-template>
 
+  <ng-template #mealCollectionTypeTemplate let-row="row">
+    {{ getMealCollectionTypeLabel(row.mealCollectionType) }}
+  </ng-template>
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="requestCaterer(row)"><i class="fa" aria-hidden="true"></i> Caterer</a>
