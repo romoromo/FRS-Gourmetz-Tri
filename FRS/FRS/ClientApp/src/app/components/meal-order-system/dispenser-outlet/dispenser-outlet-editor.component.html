@@ -24,7 +24,7 @@
             <input matInput autocomplete="off" [disabled]="!canManageClassLevels" type="text" id="locationCode" name="locationCode" placeholder="Enter Location Code" [(ngModel)]="dispenserOutletEdit.locationCode" #locationCode="ngModel" minlength="2" maxlength="200" />
           </mat-form-field>
           <mat-form-field class="col-md-12">
-            <input matInput autocomplete="off" [disabled]="!canManageClassLevels" type="text" id="color" name="color" placeholder="Enter Color" [(ngModel)]="dispenserOutletEdit.color" #color="ngModel" minlength="2" maxlength="200" />
+            <input matInput autocomplete="off" [disabled]="!canManageClassLevels" type="color" id="color" name="color" placeholder="Enter Color" [(ngModel)]="dispenserOutletEdit.color" #color="ngModel" minlength="2" maxlength="200" />
           </mat-form-field>
           <mat-form-field class="col-md-12">
             <input matInput autocomplete="off" [disabled]="!canManageClassLevels" type="text" id="plcipAddress" name="plcipAddress" placeholder="Enter IP Address" [(ngModel)]="dispenserOutletEdit.plcipAddress" #plcipAddress="ngModel" minlength="2" maxlength="200" />

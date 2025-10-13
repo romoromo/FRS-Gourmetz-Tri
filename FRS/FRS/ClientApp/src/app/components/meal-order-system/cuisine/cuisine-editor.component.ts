@@ -8,6 +8,7 @@ import { Cuisine } from 'src/app/models/meal-order/cuisine.model';
 import { MealService } from 'src/app/services/meal-order/meal.service';
 import { Filter } from 'src/app/models/sieve-filter.model';
 import { DishService } from '../../../services/meal-order/dish.service';
+import { FileService } from 'src/app/services/file.service';
 
 
 @Component({
@@ -25,6 +26,7 @@ export class CuisineEditorComponent {
   private allPermissions: Permission[] = [];
   private selectedValues: { [key: string]: boolean; } = {};
   public formResetToggle = true;
+  public fileUploadResponse: { dbPath: '', fileId: null, fileName: '' };
 
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
@@ -35,7 +37,7 @@ export class CuisineEditorComponent {
   private form;
 
   constructor(private alertService: AlertService, private dishService: DishService, private accountService: AccountService,
-    public dialogRef: MatDialogRef<CuisineEditorComponent>, private mealService: MealService,
+    public dialogRef: MatDialogRef<CuisineEditorComponent>, private mealService: MealService, private fileService: FileService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.cuisine) != typeof (undefined)) {
       if (data.cuisine.id) {
@@ -156,6 +158,21 @@ export class CuisineEditorComponent {
     else {
       return this.newCuisine();
     }
+  }
+
+  public uploadFinished = (event) => {
+    this.fileUploadResponse = event;
+    this.cuisineEdit.filePath = this.fileUploadResponse ? this.fileUploadResponse.dbPath : null;
+  }
+
+  getFileImage(path) {
+    return this.fileService.getFile(path);
+  }
+
+  removePhoto() {
+    this.cuisineEdit.filePath = null;
+    this.cuisineEdit.fileId = null;
+    this.cuisineEdit.fileName = null;
   }
 
 

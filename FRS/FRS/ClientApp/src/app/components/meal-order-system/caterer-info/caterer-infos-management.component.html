@@ -63,26 +63,31 @@
                 <dish-types-management [isHideHeader]="true" [catererId]="row.id"></dish-types-management>
               </div>
             </mat-tab>
-            <mat-tab label="Dishes" *ngIf="canViewDishes">
+            <mat-tab label="Cuisines" *ngIf="canViewDishes">
               <div class="container-fluid" style="padding-top:20px">
-                <dishes-management [isHideHeader]="true" [catererId]="row.id"></dishes-management>
+                <cuisines-management [isHideHeader]="true" [catererId]="row.id"></cuisines-management>
               </div>
             </mat-tab>
-            <mat-tab label="Dish Cycles" *ngIf="canViewDishCycles">
-              <div class="container-fluid" style="padding-top:20px">
-                <dish-cycles-management [isHideHeader]="true" [catererId]="row.id"></dish-cycles-management>
-              </div>
-            </mat-tab>
-            <!--<mat-tab label="Menus">
-              <div class="container-fluid" style="padding-top:20px">
-                <menus-management [isHideHeader]="true" [catererId]="row.id"></menus-management>
-              </div>
-            </mat-tab>
-            <mat-tab label="Menu Cycles">
-              <div class="container-fluid" style="padding-top:20px">
-                <menu-cycles-management [isHideHeader]="true" [catererId]="row.id"></menu-cycles-management>
-              </div>
-            </mat-tab>-->
+              <mat-tab label="Dishes" *ngIf="canViewDishes">
+                <div class="container-fluid" style="padding-top:20px">
+                  <dishes-management [isHideHeader]="true" [catererId]="row.id"></dishes-management>
+                </div>
+              </mat-tab>
+              <mat-tab label="Dish Cycles" *ngIf="canViewDishCycles">
+                <div class="container-fluid" style="padding-top:20px">
+                  <dish-cycles-management [isHideHeader]="true" [catererId]="row.id"></dish-cycles-management>
+                </div>
+              </mat-tab>
+              <!--<mat-tab label="Menus">
+      <div class="container-fluid" style="padding-top:20px">
+        <menus-management [isHideHeader]="true" [catererId]="row.id"></menus-management>
+      </div>
+    </mat-tab>
+    <mat-tab label="Menu Cycles">
+      <div class="container-fluid" style="padding-top:20px">
+        <menu-cycles-management [isHideHeader]="true" [catererId]="row.id"></menu-cycles-management>
+      </div>
+    </mat-tab>-->
           </mat-tab-group>
         </div>
       </ng-template>

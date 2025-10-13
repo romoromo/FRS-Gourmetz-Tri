@@ -10,4 +10,8 @@ export class Cuisine {
   public id: string;
   public name: string;
   public institutionId: string;
+
+  public fileId: string;
+  public fileName: string;
+  public filePath: string;
 }

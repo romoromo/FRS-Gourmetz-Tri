@@ -30,6 +30,7 @@ export class CuisinesManagementComponent implements OnInit {
   pagedResult: PagedResult;
   keyword: string = '';
   @Input() isHideHeader: boolean;
+  @Input() catererId: string;
 
   @ViewChild('actionsTemplate')
   actionsTemplate: TemplateRef<any>;

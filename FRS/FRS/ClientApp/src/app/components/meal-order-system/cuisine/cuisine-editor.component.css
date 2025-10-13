@@ -1,50 +1,50 @@
 .row:not(:last-child) {
-    /*border-bottom: 1px solid #ccc;*/
+  /*border-bottom: 1px solid #ccc;*/
 }
 
 .separator-hr {
-    margin: 0 5px;
-    border-top-style: dashed;
+  margin: 0 5px;
+  border-top-style: dashed;
 }
 
 .edit-separator-hr {
-    margin: 10px 5px;
-    border-top-style: dashed;
+  margin: 10px 5px;
+  border-top-style: dashed;
 }
 
 .last-separator-hr {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .edit-last-separator-hr {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 input.form-control {
-    border-left-width: 5px;
+  border-left-width: 5px;
 }
 
 .facilityTypeErrorMessage {
-    margin-left: 50px;
+  margin-left: 50px;
 }
 
 .permissionsColumn {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .permissionsRow {
-    margin: 0 15px;
+  margin: 0 15px;
 }
 
 
 .password-well {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 @media (min-width: 992px) {
-    .user-enabled {
-        margin-left: 40px;
-    }
+  .user-enabled {
+    margin-left: 40px;
+  }
 }
 
 :host ::ng-deep .mat-radio-container {

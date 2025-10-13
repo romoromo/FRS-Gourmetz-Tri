@@ -15,6 +15,11 @@ namespace DAL.Models.MealOrder
         [Sieve(CanFilter = true, CanSort = true)]
         public string Name { get; set; }
 
+        public int? FileId { get; set; }
+
+        [ForeignKey("FileId")]
+        public virtual File Icon { get; set; }
+
         public int? InstitutionId { get; set; }
 
         [ForeignKey("InstitutionId")]
