@@ -506,30 +506,6 @@ export class PrintAllocationComponent implements OnInit {
               token.qty_dishes = token.dishes.reduce((sum, d) => sum + (d.o_qty || 0), 0);
               token.qty_tdishes = token.dishes.reduce((sum, d) => sum + (d.t_qty || 0), 0);
             });
-
-            //this.orders.forEach(order => {
-            //  order.tokens.forEach(token => {
-            //    if (token.qty == 0) token.qty = 1;
-            //
-            //    var tokenIndex = this.token_count.findIndex(x => x.token_id == token.tokenId);
-            //    var dishIndex = this.token_count[tokenIndex].dishes.findIndex(y => y.dish_id === selectedDish.id)
-            //
-            //    if (dishIndex < 0) {
-            //      var dish = new TokenDishLabel;
-            //      dish.token_id = token.tokenId;
-            //      dish.token_name = this.getTokenName(token.tokenId);
-            //      dish.dish_id = selectedDish.id;
-            //      dish.dish_name = this.getDishName(selectedDish.id);
-            //      dish.dish_code = this.getDishCode(selectedDish.id);
-            //      dish.o_qty = selectedDish.qty ? selectedDish.qty : 0;
-            //      dish.t_qty = 0;
-            //      this.token_count[tokenIndex].dishes.push(dish);
-            //    } else {
-            //      this.token_count[tokenIndex].dishes[dishIndex].o_qty += selectedDish.qty ? selectedDish.qty : 0;
-            //    }
-            //    this.token_count[tokenIndex].qty_dishes += selectedDish.qty ? selectedDish.qty : 0;
-            //  });
-            //});
           }
 
         });
