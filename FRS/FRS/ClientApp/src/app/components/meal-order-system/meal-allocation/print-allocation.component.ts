@@ -19,6 +19,7 @@ import { MealService } from 'src/app/services/meal-order/meal.service';
 import { DishService } from 'src/app/services/meal-order/dish.service';
 import { MealSessionDetail, MealSession } from 'src/app/models/meal-order/meal-session.model';
 
+import { DishSelectorComponent } from '../dishes/dish-selector/dish-selector.component';
 
 @Component({
   selector: 'print-allocation',
@@ -156,7 +157,7 @@ export class PrintAllocationComponent implements OnInit {
     let filter = new Filter();
     filter.sorts = 'name';
     //let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
-    filter.filters ='(IsActive)==true';
+    filter.filters = '(IsActive)==true';
     this.mealService.getMealTypesByFilter(filter)
       .subscribe(results => {
         this.tokens = results.pagedData;
@@ -170,7 +171,7 @@ export class PrintAllocationComponent implements OnInit {
   getMenuDishes() {
     let filter = new Filter();
     //let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
-    filter.filters ='(IsActive)==true';
+    filter.filters = '(IsActive)==true';
     this.dishService.getDishesByFilter(filter)
       .subscribe(results => {
         this.dishes = results.pagedData;
@@ -241,7 +242,7 @@ export class PrintAllocationComponent implements OnInit {
     }
   }
 
-  
+
 
   onChangeQty(event, detail?: TokenDishLabel, token?: TokenLabel) {
     if (detail.a_qty > 0) {
@@ -280,7 +281,7 @@ export class PrintAllocationComponent implements OnInit {
       console.log("results: ", results)
       this.orders = results;
 
-      console.log("order : ",this.orders)
+      console.log("order : ", this.orders)
 
       //Order Loop
       this.orders.forEach(o => {
@@ -468,5 +469,75 @@ export class PrintAllocationComponent implements OnInit {
     );
   }
 
+  addDish() {
+    const dialogRef = this.dialog.open(DishSelectorComponent, {
+      width: '1000px',
+      data: { header: "Sub Dishes", dishes: this.dishes, catererId: '' },
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result.isCancel) {
+        result.selectedDishes.forEach((selectedDish, index, ps) => {
+          if (selectedDish.checked) {
+            console.log("selected: ", selectedDish)
+            console.log("token", this.tokens);
+            console.log("token_count", this.token_count);
+            this.token_count.forEach(token => {
+              // Find if the dish already exists for this token
+              const dishIndex = token.dishes.findIndex(d => d.dish_id === selectedDish.id);
+
+              if (dishIndex < 0) {
+                // New dish — create a new TokenDishLabel entry
+                const dish = new TokenDishLabel();
+                dish.token_id = token.token_id;
+                dish.token_name = this.getTokenName(token.token_id);
+                dish.dish_id = selectedDish.id;
+                dish.dish_name = this.getDishName(selectedDish.id);
+                dish.dish_code = this.getDishCode(selectedDish.id);
+                dish.o_qty = selectedDish.qty ? selectedDish.qty : 0;
+                dish.t_qty = 0;
+                token.dishes.push(dish);
+              } else {
+                // Existing dish — increase its ordered quantity
+                token.dishes[dishIndex].o_qty += selectedDish.qty ? selectedDish.qty : 0;
+              }
+
+              // Update total quantities per token
+              token.qty_dishes = token.dishes.reduce((sum, d) => sum + (d.o_qty || 0), 0);
+              token.qty_tdishes = token.dishes.reduce((sum, d) => sum + (d.t_qty || 0), 0);
+            });
+
+            //this.orders.forEach(order => {
+            //  order.tokens.forEach(token => {
+            //    if (token.qty == 0) token.qty = 1;
+            //
+            //    var tokenIndex = this.token_count.findIndex(x => x.token_id == token.tokenId);
+            //    var dishIndex = this.token_count[tokenIndex].dishes.findIndex(y => y.dish_id === selectedDish.id)
+            //
+            //    if (dishIndex < 0) {
+            //      var dish = new TokenDishLabel;
+            //      dish.token_id = token.tokenId;
+            //      dish.token_name = this.getTokenName(token.tokenId);
+            //      dish.dish_id = selectedDish.id;
+            //      dish.dish_name = this.getDishName(selectedDish.id);
+            //      dish.dish_code = this.getDishCode(selectedDish.id);
+            //      dish.o_qty = selectedDish.qty ? selectedDish.qty : 0;
+            //      dish.t_qty = 0;
+            //      this.token_count[tokenIndex].dishes.push(dish);
+            //    } else {
+            //      this.token_count[tokenIndex].dishes[dishIndex].o_qty += selectedDish.qty ? selectedDish.qty : 0;
+            //    }
+            //    this.token_count[tokenIndex].qty_dishes += selectedDish.qty ? selectedDish.qty : 0;
+            //  });
+            //});
+          }
+
+        });
+
+        console.log("token", this.tokens);
+        console.log("token_count", this.token_count);
+      }
+    });
+
+  }
 }
