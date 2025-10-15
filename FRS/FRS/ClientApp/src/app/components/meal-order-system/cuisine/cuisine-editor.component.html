@@ -9,6 +9,10 @@
           <input matInput autocomplete="off" [disabled]="!canManageCuisines" type="text" id="cuisineName" name="cuisineName" placeholder="Name" [(ngModel)]="cuisineEdit.name" #cuisineName="ngModel" required minlength="2" maxlength="200" />
         </mat-form-field>
 
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCuisines" type="text" id="licenseCode" name="licenseCode" placeholder="License Code" [(ngModel)]="cuisineEdit.licenseCode" #licenseCode="ngModel" required minlength="2" maxlength="200" />
+        </mat-form-field>
+
         <div class="col-md-12">
           <mat-label>
             <span class="upload-title">Icon</span>

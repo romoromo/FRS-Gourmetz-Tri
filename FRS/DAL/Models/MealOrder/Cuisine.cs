@@ -20,6 +20,9 @@ namespace DAL.Models.MealOrder
         [ForeignKey("FileId")]
         public virtual File Icon { get; set; }
 
+        [Sieve(CanFilter = true, CanSort = true)]
+        public string LicenseCode { get; set; }
+
         public int? InstitutionId { get; set; }
 
         [ForeignKey("InstitutionId")]
