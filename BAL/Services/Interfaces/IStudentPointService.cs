@@ -12,7 +12,7 @@ namespace BAL.Services.Interfaces
         Task<PagedEntity<StudentPointTransactionDTO>> GetPointTransactionsAsync(BaseFilter filter);
         Task<BaseOperationResponse> StudentPointTransactionAsync(StudentPointTransactionDTO dto);
         Task<List<StudentPointTransactionDTO>> GetPointTransactionByIdAsync(int id);
-        Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount);
-        Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount);
+        Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId);
+        Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount, int userId);
     }
 }

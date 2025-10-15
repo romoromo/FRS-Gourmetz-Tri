@@ -114,7 +114,7 @@ namespace DAL.Repositories
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount)
+        public async Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount,int userId)
         {
             var result = new BaseOperationResponse();
 
@@ -173,7 +173,9 @@ namespace DAL.Repositories
                     Amount = amount,
                     TransactionType = WalletTransactionType.CREDIT.ToString(),
                     StudentId = student.Id,
-                    Description = $"Top-up Point by Student Group Id={studentGroupData.Id}, Group Name={studentGroupData.Name}"
+                    Description = $"Top-up Point by Student Group Id={studentGroupData.Id}, Group Name={studentGroupData.Name}",
+                    CreatedBy = userId,
+                    UpdatedBy = userId
                 };
                 await _appContext.StudentPointTransactions.AddAsync(transaction);
             }
@@ -185,7 +187,7 @@ namespace DAL.Repositories
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount)
+        public async Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount,int userId)
         {
             var result = new BaseOperationResponse();
 
@@ -216,7 +218,9 @@ namespace DAL.Repositories
                     Amount = amount,
                     TransactionType = WalletTransactionType.CREDIT.ToString(),
                     StudentId = studentData.Id,
-                    Description = $"Top-up point by Student Id={studentData.Id}, Name={studentData.Name}"
+                    Description = $"Top-up point by Student Id={studentData.Id}, Name={studentData.Name}",
+                    CreatedBy = userId,
+                    UpdatedBy = userId
                 };
 
                 await _appContext.StudentPointTransactions.AddAsync(transaction);
