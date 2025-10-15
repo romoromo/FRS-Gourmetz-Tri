@@ -44,10 +44,11 @@ namespace BAL.Services.MealOrder
         private ApplicationDbContext _appContext;
         private IClassService _classService;
         private IDeliveryService _deliveryService;
+        private IDishService _dishService;
         private readonly IMapper _mapper;
 
         public TokenOrderService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, ApplicationDbContext context,
-            IClassService classService, IMapper mapper, IDeliveryService deliveryService)
+            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
@@ -56,6 +57,7 @@ namespace BAL.Services.MealOrder
             this._classService = classService;
             _mapper = mapper;
             this._deliveryService = deliveryService;
+            this._dishService = dishService;
         }
 
         #region TokenOrder
@@ -2226,13 +2228,24 @@ namespace BAL.Services.MealOrder
 
                     for (int i = 0; i < dto.Length; i++)
                     {
-                        //var order = await this.GetTokenOrderByIdAsync(dto[i].order_id);
-
 
                         for (int j = 0; j < dto[i].dishes.ToArray().Length; j++)
                         {
                             for (int k = 0; k < dto[i].dishes[j].t_qty; k++)
                             {
+
+                                DishDTO dish = await this._dishService.GetDishByIdAsync(dto[i].dishes[j].dish_id);
+
+                                string cuisineLicense = dish.CuisineLicenseCode;
+
+                                string toIconFilePath = "";
+
+                                if (dish.CuisineIconFileName != null && dish.CuisineIconFileName != "")
+                                {
+                                    toIconFilePath =  Path.Combine(pathToImageSave, dish.CuisineIconFileName);
+                                }
+
+
                                 document.NewPage();
 
                                 float margin = document.LeftMargin;
@@ -2249,11 +2262,15 @@ namespace BAL.Services.MealOrder
                                 // Create a ColumnText for the left column
                                 ColumnText columnLeft = new ColumnText(writer.DirectContent);
                                 columnLeft.SetSimpleColumn(leftColumn);
+                                
 
-                                iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(fullImagePath);
-                                png.ScaleToFit(13, 13);
-                                png.SetAbsolutePosition(63f, 5f);
-                                document.Add(png);
+                                if(toIconFilePath != "")
+                                {
+                                    iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(toIconFilePath);
+                                    png.ScaleToFit(13, 13);
+                                    png.SetAbsolutePosition(63f, 5f);
+                                    document.Add(png);
+                                }
 
                                 string cleanDate = Regex.Replace(dto[i].deliveryDate, "[^a-zA-Z0-9]", "");
 
@@ -2279,7 +2296,15 @@ namespace BAL.Services.MealOrder
                                 para1.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para1);
 
-                                Paragraph para2 = new Paragraph("License No: PL24L0327", new iTextSharp.text.Font(allerfont, 4));
+
+                                string licenseNo = "PL24L0327";
+
+                                if (cuisineLicense != null && cuisineLicense != "")
+                                {
+                                    licenseNo = cuisineLicense;
+                                }
+
+                                Paragraph para2 = new Paragraph("License No: " + licenseNo, new iTextSharp.text.Font(allerfont, 4));
                                 para2.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para2);
 
