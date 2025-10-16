@@ -133,7 +133,7 @@ namespace DAL.Repositories.MealOrder
                                     }
                                     else
                                     {
-                                        //d.token_label_id = e.Id;
+                                        d.token_label_id = sc?.Id ?? e.Id;
                                         this._appContext.TokenDishLabels.Add(d);
                                     }
 
