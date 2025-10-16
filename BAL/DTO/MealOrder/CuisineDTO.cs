@@ -14,6 +14,7 @@ namespace BAL.DTO.MealOrder
         public string FileName { get; set; }
         public string FilePath { get; set; }
 
+        public string LicenseCode { get; set; }
         public int? InstitutionId { get; set; }
 
         public string InstitutionName { get; set; }

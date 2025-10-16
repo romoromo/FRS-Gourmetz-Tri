@@ -51,6 +51,12 @@ namespace BAL.DTO.MealOrder
         public int? CuisineId { get; set; }
         public string CuisineName { get; set; }
 
+        public string CuisineIconFileName { get; set; }
+        public string CuisineIconFilePath { get; set; }
+        public string CuisineLicenseCode { get; set; }
+
+
+
         public string SapCode { get; set; }
         public int? StoreInfoId { get; set; }
         public string StoreInfoCode { get; set; }

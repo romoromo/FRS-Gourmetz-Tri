@@ -47,6 +47,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<MealAllocationDTO> GetMealAllocationByIdAsync(int id);
         Task<PagedEntity<MealAllocationDTO>> GetMealAllocationsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateMealAllocationAsync(MealAllocationDTO dto);
+        Task<List<MealAllocationDTO>> GetMealAllocationsAdditionalDish(MealAllocationAdditionalDishFilter filter);
 
         Task<BaseOperationResponse> CreatePackingAllocationAsync(PackingAllocationDTO dto);
         Task<BaseOperationResponse> DeletePackingAllocationAsync(int id);

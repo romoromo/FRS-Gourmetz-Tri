@@ -44,10 +44,11 @@ namespace BAL.Services.MealOrder
         private ApplicationDbContext _appContext;
         private IClassService _classService;
         private IDeliveryService _deliveryService;
+        private IDishService _dishService;
         private readonly IMapper _mapper;
 
         public TokenOrderService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, ApplicationDbContext context,
-            IClassService classService, IMapper mapper, IDeliveryService deliveryService)
+            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
@@ -56,6 +57,7 @@ namespace BAL.Services.MealOrder
             this._classService = classService;
             _mapper = mapper;
             this._deliveryService = deliveryService;
+            this._dishService = dishService;
         }
 
         #region TokenOrder
@@ -217,7 +219,7 @@ namespace BAL.Services.MealOrder
         #region Meal Plan
         public async Task<List<GroupedTermStudentGroupMealPlanDTO>> GetStudentMealPlanAsync(int studentId, DateTime? orderDate)
         {
-            var mealPlans =  _mapper.Map<List<StudentGroupMealPlanDTO>>(await this._uow.TokenOrders.GetStudentMealPlansAsync(studentId, orderDate));
+            var mealPlans = _mapper.Map<List<StudentGroupMealPlanDTO>>(await this._uow.TokenOrders.GetStudentMealPlansAsync(studentId, orderDate));
             //var grpMealPlans = mealPlans.GroupBy(e => e.StudentGroupId).Select(e => new GroupedStudentGroupMealPlanDTO
             //{
             //    StudentGroupId = e.Key,
@@ -452,6 +454,12 @@ namespace BAL.Services.MealOrder
         {
             var result = new BaseOperationResponse();
             result = await this._uow.MealAllocations.DeleteAsync(id);
+            return result;
+        }
+
+        public async Task<List<MealAllocationDTO>> GetMealAllocationsAdditionalDish(MealAllocationAdditionalDishFilter filter)
+        {
+            var result = _mapper.Map<List<MealAllocationDTO>>(await this._uow.MealAllocations.MealAllocationsAdditionalDish(filter).ToListAsync());
             return result;
         }
 
@@ -1029,7 +1037,8 @@ namespace BAL.Services.MealOrder
                                             cell = row.CreateCell(c++);
                                             cell.SetCellValue(o.CollectionTime?.ToString("dd/MM/yy hh:mm:ss").Split(' ')[1]);
                                             cell.CellStyle = contentStyle;
-                                        } else
+                                        }
+                                        else
                                         {
                                             cell = row.CreateCell(c++);
                                             cell.SetCellValue(" ");
@@ -1530,7 +1539,7 @@ namespace BAL.Services.MealOrder
                             {
                                 alr = AllRoutes.Find(r => r.routeId == currentOrderMealSession.RouteId.Value);
                             }
-                            
+
                             //route
                             if (alr == null)
                             {
@@ -1541,7 +1550,8 @@ namespace BAL.Services.MealOrder
                                     rot.routeLabel = currentOrderMealSession.RouteName;
                                     rot.startTime = currentOrderMealSession.RouteTime.Value.TimeOfDay;
                                     rot.isFas = false;
-                                } else
+                                }
+                                else
                                 {
                                     rot.routeId = o.Session.RouteId.Value;
                                     rot.routeLabel = o.Session.Route.Label;
@@ -1563,7 +1573,8 @@ namespace BAL.Services.MealOrder
                                 rot.sessions.Add(sess);
 
                                 AllRoutes.Add(rot);
-                            } else
+                            }
+                            else
                             {
                                 var als = alr.sessions.Find(r => (r.mealSessionDetailId == o.Session.Id) && (r.isFas == o.IsFAS));
                                 if (als == null)
@@ -1580,7 +1591,7 @@ namespace BAL.Services.MealOrder
                                     alr.sessions.Add(sess);
                                 }
                             }
-                           
+
 
                             foreach (TokenOrdered t in o.Tokens)
                             {
@@ -1692,7 +1703,7 @@ namespace BAL.Services.MealOrder
                     AllRoutes.Sort((x, y) => TimeSpan.Compare(x.startTime, y.startTime));
                     foreach (var item in AllRoutes)
                     {
-                        item.sessions =  item.sessions.OrderBy(x => x.name).ThenBy(x => x.isFas).ToList();
+                        item.sessions = item.sessions.OrderBy(x => x.name).ThenBy(x => x.isFas).ToList();
                     }
 
                     var wb = new XSSFWorkbook();
@@ -1815,7 +1826,8 @@ namespace BAL.Services.MealOrder
                     AllRoutes.ForEach(ar =>
                     {
                         ar.sessions = ar.sessions.OrderBy(o => o.startTime).ToList();
-                        ar.sessions.ForEach(ars => {
+                        ar.sessions.ForEach(ars =>
+                        {
                             cell = row.CreateCell(i);
                             cell.SetCellValue(ars.name);
                             if (ars.isFas)
@@ -1824,7 +1836,7 @@ namespace BAL.Services.MealOrder
                                 sheet.SetColumnWidth(i, 25 * 256);
                                 cell.SetCellValue($"{ars.name}\n(FAS)");
                             }
-                            cell.CellStyle = ars.isFas ? borderedHeaderStyleWrapText :  borderedHeaderStyle;
+                            cell.CellStyle = ars.isFas ? borderedHeaderStyleWrapText : borderedHeaderStyle;
 
                             i += 1;
 
@@ -2125,7 +2137,7 @@ namespace BAL.Services.MealOrder
             }
         }
 
-        public async Task<List<TokenOrder>> GetTokenOrderWithCurrentSession(BaseFilter filter,int sessionDetailId)
+        public async Task<List<TokenOrder>> GetTokenOrderWithCurrentSession(BaseFilter filter, int sessionDetailId)
         {
             IQueryable<TokenOrder> query = _appContext.TokenOrders;
 
@@ -2175,7 +2187,8 @@ namespace BAL.Services.MealOrder
 
                             dtos.Add(o);
                         }
-                    } else
+                    }
+                    else
                     {
                         if (o.Tokens != null && o.Status == "paid" && o.MealSessionDetailId == sessionDetailId)
                         {
@@ -2213,37 +2226,68 @@ namespace BAL.Services.MealOrder
                     BaseFont allerfont = BaseFont.CreateFont(fullPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
                     iTextSharp.text.Font aller = new iTextSharp.text.Font(allerfont, 12);
 
-                    var pgSize = new iTextSharp.text.Rectangle(225, 120);
-                    Document document = new Document(pgSize, 5, 5, 5, 5);
+                    var pgSize = new iTextSharp.text.Rectangle(88, 66);
+                    Document document = new Document(pgSize, 2, 2, 2, 2);
                     PdfWriter writer = PdfWriter.GetInstance(document, stream);
                     document.Open();
 
+
                     for (int i = 0; i < dto.Length; i++)
                     {
-                        //var order = await this.GetTokenOrderByIdAsync(dto[i].order_id);
-
 
                         for (int j = 0; j < dto[i].dishes.ToArray().Length; j++)
                         {
                             for (int k = 0; k < dto[i].dishes[j].t_qty; k++)
                             {
+
+                                DishDTO dish = await this._dishService.GetDishByIdAsync(dto[i].dishes[j].dish_id);
+
+                                string cuisineLicense = dish.CuisineLicenseCode;
+
+                                string toIconFilePath = "";
+
+                                if (dish.CuisineIconFileName != null && dish.CuisineIconFileName != "")
+                                {
+                                    toIconFilePath =  Path.Combine(pathToImageSave, dish.CuisineIconFileName);
+                                }
+
+
                                 document.NewPage();
 
-                                iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(fullImagePath);
-                                png.ScaleToFit(40f, 40f);
-                                png.SetAbsolutePosition(10f, 50f);
-                                document.Add(png);
+                                float margin = document.LeftMargin;
+                                float totalWidth = document.PageSize.Width - document.LeftMargin - document.RightMargin;
+                                float columnWidth = 50;
+
+                                iTextSharp.text.Rectangle leftColumn = new iTextSharp.text.Rectangle(
+                                    document.Left,        // x1
+                                    document.Bottom,      // y1
+                                    document.Left + columnWidth, // x2
+                                    document.Top          // y2
+                                );
+
+                                // Create a ColumnText for the left column
+                                ColumnText columnLeft = new ColumnText(writer.DirectContent);
+                                columnLeft.SetSimpleColumn(leftColumn);
+                                
+
+                                if(toIconFilePath != "")
+                                {
+                                    iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(toIconFilePath);
+                                    png.ScaleToFit(13, 13);
+                                    png.SetAbsolutePosition(63f, 5f);
+                                    document.Add(png);
+                                }
 
                                 string cleanDate = Regex.Replace(dto[i].deliveryDate, "[^a-zA-Z0-9]", "");
 
-                                string uniqueCode = "B" + cleanDate + dto[i].meal_allocation_id.ToString().PadLeft(5,'0') + dto[i].dishes[j].dish_id.ToString().PadLeft(4, '0') +  dto[i].dishes[j].token_id.ToString().PadLeft(3, '0') + k.ToString().PadLeft(3, '0');
+                                string uniqueCode = "B" + cleanDate + dto[i].meal_allocation_id.ToString().PadLeft(5, '0') + dto[i].dishes[j].dish_id.ToString().PadLeft(4, '0') + dto[i].dishes[j].token_id.ToString().PadLeft(3, '0') + k.ToString().PadLeft(3, '0');
 
-                                string qrCodeData = uniqueCode + " Dish : " + dto[i].dishes[j].dish_name + "', Packed: " + dto[i].deliveryDate  + " "+ dto[i].timePacked.Value.ToString("hh:mm tt") + ", Consume By: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt") + "\n";
-                                BarcodeQRCode barcodeQRCode = new BarcodeQRCode(qrCodeData, 95, 95, null); // width, height, parameters
+                                string qrCodeData = uniqueCode + " Dish : " + dto[i].dishes[j].dish_name + "', Packed: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.ToString("hh:mm tt") + ", Consume By: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt") + "\n";
+                                BarcodeQRCode barcodeQRCode = new BarcodeQRCode(qrCodeData, 15, 15, null); // width, height, parameters
 
                                 iTextSharp.text.Image qrCodeImage = barcodeQRCode.GetImage();
-                                //qrCodeImage.ScaleToFit(90f, 90f);
-                                qrCodeImage.SetAbsolutePosition(150f, 18f);
+                                qrCodeImage.ScaleToFit(36, 36);
+                                qrCodeImage.SetAbsolutePosition(51f, 20f);
                                 document.Add(qrCodeImage);
 
                                 BentoAssetDTO bentoAsset = new BentoAssetDTO();
@@ -2254,42 +2298,53 @@ namespace BAL.Services.MealOrder
 
                                 await this._deliveryService.CreateBentoAssetAsync(bentoAsset);
 
-                                Paragraph para1 = new Paragraph("SATS Food Services Pte Ltd", new iTextSharp.text.Font(allerfont, 10));
+                                Paragraph para1 = new Paragraph("Gourmetz Pte Ltd", new iTextSharp.text.Font(allerfont, 5));
                                 para1.Alignment = Element.ALIGN_CENTER;
-                                document.Add(para1);
+                                columnLeft.AddElement(para1);
 
-                                Paragraph para2 = new Paragraph("License No: PL82K1707", new iTextSharp.text.Font(allerfont, 8));
+
+                                string licenseNo = "PL24L0327";
+
+                                if (cuisineLicense != null && cuisineLicense != "")
+                                {
+                                    licenseNo = cuisineLicense;
+                                }
+
+                                Paragraph para2 = new Paragraph("License No: " + licenseNo, new iTextSharp.text.Font(allerfont, 4));
                                 para2.Alignment = Element.ALIGN_CENTER;
-                                document.Add(para2);
+                                columnLeft.AddElement(para2);
 
-                                Paragraph para3 = new Paragraph("Date Packed: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 8));
+                                Paragraph para3 = new Paragraph("Date Packed: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 4));
                                 para3.Alignment = Element.ALIGN_CENTER;
-                                document.Add(para3);
+                                columnLeft.AddElement(para3);
 
-                                Chunk c = new Chunk("Time Packed: " + dto[i].timePacked.Value.ToString("hh:mm tt"), new iTextSharp.text.Font(allerfont, 8));
+                                Chunk c = new Chunk("Time Packed: " + dto[i].timePacked.Value.ToString("hh:mm tt"), new iTextSharp.text.Font(allerfont, 4));
                                 if (dto[i].color != null && dto[i].color != "")
                                 {
                                     c.SetBackground(new BaseColor(ColorTranslator.FromHtml(dto[i].color)));
                                 }
                                 Paragraph para4 = new Paragraph(c);
                                 para4.Alignment = Element.ALIGN_CENTER;
-                                document.Add(para4);
+                                columnLeft.AddElement(para4);
 
-                                Paragraph para5 = new Paragraph("Consume By: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 8));
+                                Paragraph para5 = new Paragraph("Consume By: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 4));
                                 para5.Alignment = Element.ALIGN_CENTER;
-                                document.Add(para5);
+                                columnLeft.AddElement(para5);
 
-                                Paragraph para6 = new Paragraph("At: " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt"), new iTextSharp.text.Font(allerfont, 8));
+                                Paragraph para6 = new Paragraph("At: " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt"), new iTextSharp.text.Font(allerfont, 4));
                                 para6.Alignment = Element.ALIGN_CENTER;
-                                document.Add(para6);
+                                columnLeft.AddElement(para6);
 
                                 var phrase = new Phrase();
                                 //phrase.Add(new Chunk("(" + dto[i].dishes[j].dish_code + ") - ", new Font(Font.FontFamily.HELVETICA, 8)));
-                                phrase.Add(new Chunk(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 10, iTextSharp.text.Font.BOLD)));
+                                phrase.Add(new Chunk(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 5, iTextSharp.text.Font.BOLD)));
 
-                                Paragraph para7 = new Paragraph(phrase);
+                                //Paragraph para7 = new Paragraph(phrase);
+                                Paragraph para7 = new Paragraph(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 5, iTextSharp.text.Font.BOLD));
                                 para7.Alignment = Element.ALIGN_CENTER;
-                                document.Add(para7);
+                                columnLeft.AddElement(para7);
+
+                                columnLeft.Go();
                             }
                         }
                     }
@@ -2379,7 +2434,7 @@ namespace BAL.Services.MealOrder
                         Orders = e
                     });
 
-                    foreach(var oprofile in ordersByProfile)
+                    foreach (var oprofile in ordersByProfile)
                     {
                         var studentProfile = oprofile.Orders.First();
                         var studentHeaders = new List<string> { "Class", "Profile", "Email", "FAS" };
@@ -2397,10 +2452,10 @@ namespace BAL.Services.MealOrder
                         row = sheet.CreateRow(++rowCount);
                         CreateCellValues(row, 0, studentHeaderValues, contentStyle);
 
-                        var ordersByPayment = oprofile.Orders.GroupBy(e => e.PaymentId).Select(e => 
+                        var ordersByPayment = oprofile.Orders.GroupBy(e => e.PaymentId).Select(e =>
                                                 new { PaymentId = e.Key, Orders = e });
 
-                        foreach(var oPayment in ordersByPayment)
+                        foreach (var oPayment in ordersByPayment)
                         {
                             var payment = oPayment.Orders.First();
 
@@ -2926,7 +2981,7 @@ namespace BAL.Services.MealOrder
                     string studentName = null;
                     orders = orders.OrderByDescending(e => e.InvoiceNumber).ThenBy(e => e.StudentName).ToList();
                     var grpOrders = orders.GroupBy(e => new { e.InvoiceNumber });
-                    foreach(var grp in grpOrders)
+                    foreach (var grp in grpOrders)
                     {
                         var paymentDetails = grp.First();
                         var invoiceNumber = paymentDetails.InvoiceNumber;
@@ -3029,7 +3084,7 @@ namespace BAL.Services.MealOrder
                             {
                                 col = 15;
 
-                                if(firstOrder > 0)
+                                if (firstOrder > 0)
                                 {
                                     row = sheet.CreateRow(rowCount++);
                                 }
@@ -3207,7 +3262,7 @@ namespace BAL.Services.MealOrder
                         //});
                     }
 
-                    
+
 
                     #endregion
 
@@ -3705,7 +3760,7 @@ namespace BAL.Services.MealOrder
                         cell = row.CreateCell(col++);
                         cell.SetCellValue(dt.Status);
                         cell.CellStyle = contentStyle;
-                        
+
                         #endregion
                     });
 
@@ -3892,7 +3947,7 @@ namespace BAL.Services.MealOrder
 
                         cell = row.CreateCell(col++);
                         cell.SetCellType(CellType.Numeric);
-                        if(dt.UtilisedDate.Date != DateTime.MinValue.Date)
+                        if (dt.UtilisedDate.Date != DateTime.MinValue.Date)
                             cell.SetCellValue(dt.UtilisedDate.Date);
 
                         //cell.SetCellValue(dt.UtilisedDate.Date == DateTime.MinValue.Date ? string.Empty : dt.UtilisedDate.Date);
@@ -3933,7 +3988,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<List<SalesOrderCollectionSummary>> GetSalesOrderCollectionSummary(DateTime orderDate, int outletId)
         {
-            var orders = _appContext.TokenOrders.Where(e => e.IsActive && e.Status == "paid" && 
+            var orders = _appContext.TokenOrders.Where(e => e.IsActive && e.Status == "paid" &&
                                         e.DeliveryDate.Date == orderDate.Date);
 
             var mealSessions = _appContext.MealSessions.Where(e => e.IsActive && e.OutletId == outletId)

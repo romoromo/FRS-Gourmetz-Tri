@@ -204,6 +204,17 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        public IQueryable<MealAllocation> MealAllocationsAdditionalDish(MealAllocationAdditionalDishFilter filter)
+        {
+            IQueryable<MealAllocation> query = _appContext.MealAllocations
+                .Include(e => e.tokens).ThenInclude(t => t.dishes);
+            if (filter.OutletId > 0)
+            {
+                query = query.Where(e => e.outletId == filter.OutletId);
+            }
+            return query;
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }
