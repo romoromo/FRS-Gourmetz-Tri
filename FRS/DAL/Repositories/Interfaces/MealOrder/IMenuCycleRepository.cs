@@ -33,5 +33,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<Student> GetStudentAsync(int studentId);
         Task<List<Student>> GetStudentsByOutletAsync(int outletId);
         Task<List<OutletClassRosterSchedule>> GetStudentsMenuCyclesAsync(List<int> studentIds);
+
+        Task<List<OutletClassRosterSchedule>> GetOutletsMenuCyclesAsync(int outletId);
     }
 }

@@ -443,6 +443,13 @@ namespace DAL.Repositories.MealOrder
             return await query.ToListAsync();
         }
 
+        public async Task<List<OutletClassRosterSchedule>> GetOutletsMenuCyclesAsync(int outletId)
+        {
+            IQueryable<OutletClassRosterSchedule> query = _appContext.OutletClassRosters.Where(e => e.IsActive && e.OutletProfileId == outletId).SelectMany(e => e.Schedules);
+            return await query.ToListAsync();
+        }
+
+
         #endregion
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

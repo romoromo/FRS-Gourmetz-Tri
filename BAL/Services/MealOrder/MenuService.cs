@@ -318,6 +318,36 @@ namespace BAL.Services.MealOrder
             return _mapper.Map<List<MealSessionDetailDTO>>(listOfSessions.Distinct());
         }
 
+
+        public async Task<List<MealSessionDetailDTO>> GetOutleOnlyMealSessions(int outletId, DateTime orderDate)
+        {
+            var schedules = await this._uow.MenuCycles.GetOutletsMenuCyclesAsync(outletId);
+            DateTime currentDate = orderDate;
+
+            var grpSchedules = schedules.GroupBy(e => e.OutletClassRosterId);
+            var listOfSessions = new List<MealSessionDetail>();
+
+            foreach (var grpSchedule in grpSchedules)
+            {
+                DateTime start = grpSchedule.First().OutletClassRoster.StartDate;
+                DateTime? end = grpSchedule.First().OutletClassRoster.EndDate;
+                currentDate = orderDate;
+
+                var scheds = grpSchedule.Where(e => e.IsActive).OrderBy(e => e.Day).ToList();
+
+                if (orderDate >= start.Date && (!end.HasValue || orderDate <= end.Value.Date))
+                {
+                    var periods = scheds.SelectMany(e => e.Periods);
+                    var sessions = periods.Select(f => f.MealSessionDetail);
+                    listOfSessions.AddRange(sessions);
+                }
+            }
+
+            return _mapper.Map<List<MealSessionDetailDTO>>(listOfSessions.Distinct());
+        }
+
+
+
         #endregion
 
         #region Menu Cycle Calendar
