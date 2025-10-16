@@ -452,6 +452,7 @@ export class PrintAllocationComponent implements OnInit {
   }
 
   downloadLabel() {
+    this.isLoading = true;
     const fileName = moment().format('DDMMYYYY_hhmmss') + '_OrderLabel.pdf';
 
     console.log("token sent: ", this.token_count)
@@ -459,9 +460,11 @@ export class PrintAllocationComponent implements OnInit {
     this.menuService.downloadOrderLabel(this.token_count).subscribe(
       data => {
         console.log(data);
+        this.isLoading = false;
         saveAs(data, fileName);
       },
       err => {
+        this.isLoading = false;
         alert("Problem while downloading the file.");
         console.error(err);
       }
