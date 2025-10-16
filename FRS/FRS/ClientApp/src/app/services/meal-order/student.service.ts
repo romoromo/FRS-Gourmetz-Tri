@@ -208,19 +208,29 @@ export class StudentService {
     return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/student`, param);
   }
 
-  pointTopupForStudentGroup(studentGroupId: string, amount: number) {
+  pointTopupForStudentGroup(studentGroupId: string, amount: number, userId: string) {
     const param = {
       studentGroupId: studentGroupId,
-      amount: amount
+      amount: amount,
+      userId
     }
     return this.commonEndpoint.getNewEndpoint<any>(this.pointUrl + `/studentgroup`, param);
   }
 
-  pointTopupForStudent(studentId: string, amount: number) {
+  pointTopupForStudent(studentId: string, amount: number, userId: string) {
     const param = {
       studentGroupId: studentId,
-      amount: amount
+      amount: amount,
+      userId
     }
     return this.commonEndpoint.getNewEndpoint<any>(this.pointUrl + `/student`, param);
+  }
+
+  offBoardingStudent(studentId: string, userId: string) {
+    const param = {
+      studentGroupId: studentId,
+      userId: userId
+    }
+    return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/student-off-boarding`, param);
   }
 }

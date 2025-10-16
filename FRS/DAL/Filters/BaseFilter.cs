@@ -31,7 +31,7 @@ namespace DAL.Filters
 
     }
 
-    public class ClassRosterFilter: BaseFilter
+    public class ClassRosterFilter : BaseFilter
     {
         public int CatererId { get; set; }
         public int OutletId { get; set; }
@@ -99,5 +99,12 @@ namespace DAL.Filters
         public DateTime ReportDateTo { get; set; }
         public string Keyword { get; set; }
         public string ReportType { get; set; }
+    }
+
+    public class MealAllocationAdditionalDishFilter
+    {
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public int OutletId { get; set; }
     }
 }

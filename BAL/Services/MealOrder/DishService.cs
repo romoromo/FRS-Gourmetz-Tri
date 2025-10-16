@@ -79,7 +79,8 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<DishDTO>> GetDishesAsync(BaseFilter filter)
         {
-            var result = _mapper.Map<PagedEntity<DishDTO>>(await this._uow.Dishes.GetDishesAsync(filter));
+            var datas = await this._uow.Dishes.GetDishesAsync(filter);
+            var result = _mapper.Map<PagedEntity<DishDTO>>(datas);
             return result;
         }
 
