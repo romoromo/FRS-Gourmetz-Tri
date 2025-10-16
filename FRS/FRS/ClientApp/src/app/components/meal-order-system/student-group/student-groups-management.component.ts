@@ -414,7 +414,7 @@ export class StudentGroupsManagementComponent implements OnInit {
       }
 
       this.alertService.startLoadingMessage("Processing top-up...");
-      this.studentService.pointTopupForStudentGroup(studentGroupId, amount)
+      this.studentService.pointTopupForStudentGroup(studentGroupId, amount,this.accountService.currentUser.id)
         .subscribe({
           next: (response) => {
             this.alertService.stopLoadingMessage();

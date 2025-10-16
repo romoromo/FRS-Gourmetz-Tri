@@ -99,14 +99,14 @@ namespace BAL.Services
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount)
+        public async Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount,int userId)
         {
-            return await this._uow.StudentPointTransactions.TopupPointBalanceByStudentGroupIdAsync(studentGroupId, amount);
+            return await this._uow.StudentPointTransactions.TopupPointBalanceByStudentGroupIdAsync(studentGroupId, amount,userId);
         }
 
-        public async Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount)
+        public async Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount,int userId)
         {
-            return await this._uow.StudentPointTransactions.TopupPointBalanceByStudentIdAsync(studentId, amount);
+            return await this._uow.StudentPointTransactions.TopupPointBalanceByStudentIdAsync(studentId, amount, userId);
         }
     }
 }

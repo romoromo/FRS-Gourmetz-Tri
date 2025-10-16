@@ -1309,6 +1309,44 @@ namespace FRS.Controllers
             }
         }
 
+        [ApiKeyAuthorize]
+        [HttpPost("wallet/student-off-boarding")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> OffBoardingStudent([FromBody] StudentGroupWalletRequestViewModel model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"OffBoardingStudent StudentGroupWalletRequestViewModel : {dataJSON}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.StudentGroupId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+                    var result = await this._walletService.OffBoardingStudent(model.StudentGroupId,  model.UserId);
+                    if (result.IsSuccess)
+                    {
+                        await _service.DeleteStudentAsync(model.StudentGroupId);
+                    }
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error OffBoardingStudent : {ex.Message}", ex);
+                _logger.LogError($"Error OffBoardingStudent : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
         #endregion
 
         #region point
@@ -1449,7 +1487,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._pointService.TopupPointBalanceByStudentGroupIdAsync(model.StudentGroupId, model.Amount);
+                    var result = await this._pointService.TopupPointBalanceByStudentGroupIdAsync(model.StudentGroupId, model.Amount,model.UserId);
                     return Ok(result);
 
                 }
@@ -1484,7 +1522,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._pointService.TopupPointBalanceByStudentIdAsync(model.StudentGroupId, model.Amount);
+                    var result = await this._pointService.TopupPointBalanceByStudentIdAsync(model.StudentGroupId, model.Amount,model.UserId);
                     return Ok(result);
 
                 }
