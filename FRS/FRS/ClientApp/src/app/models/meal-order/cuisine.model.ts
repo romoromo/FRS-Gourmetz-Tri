@@ -9,6 +9,7 @@ export class Cuisine {
 
   public id: string;
   public name: string;
+  public licenseCode: string;
   public institutionId: string;
 
   public fileId: string;
