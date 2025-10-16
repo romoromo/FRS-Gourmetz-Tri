@@ -38,7 +38,7 @@
                 <th width="10%" class="text-center">Token Booked</th>
                 <th width="10%" class="text-center">Dish Booked</th>
                 <th width="10%" class="text-center">Proposed Allocation</th>
-                <th width="10%" class="text-center">Overwrite Allocation</th>
+                <th width="10%" class="text-center">Counter Sales Allocation</th>
                 <th width="10%" class="text-center">Total</th>
               </tr>
             </thead>
@@ -70,8 +70,8 @@
                       {{getDishName(dc.dish_id)}}
                     </div>
                     <!--<mat-form-field class="col-md-12">
-              <input matInput [disabled]="true" type="text" id="dish-name{{dc.dish_id}}{{i}}" name="dish-name{{dc.dish_id}}{{i}}" autocomplete="off" [value]="getDishName(dc.dish_id)" minlength="1" maxlength="200" />
-            </mat-form-field>-->
+                      <input matInput [disabled]="true" type="text" id="dish-name{{dc.dish_id}}{{i}}" name="dish-name{{dc.dish_id}}{{i}}" autocomplete="off" [value]="getDishName(dc.dish_id)" minlength="1" maxlength="200" />
+                    </mat-form-field>-->
                   </td>
                   <td></td>
                   <td>
@@ -133,6 +133,7 @@
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">
+      <button type="button" mat-button [disabled]="isSaving || isLoading || filterLoading" (click)="addDish()"><i class='fa fa-plus-circle'></i>Add Dish</button>
       <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
       <button type="submit" mat-button [disabled]="isSaving || isLoading || filterLoading">
         <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
