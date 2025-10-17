@@ -207,11 +207,13 @@ namespace DAL.Repositories.MealOrder
         public IQueryable<MealAllocation> MealAllocationsAdditionalDish(MealAllocationAdditionalDishFilter filter)
         {
             IQueryable<MealAllocation> query = _appContext.MealAllocations
-                .Include(e => e.tokens).ThenInclude(t => t.dishes);
-            if (filter.OutletId > 0)
-            {
-                query = query.Where(e => e.outletId == filter.OutletId);
-            }
+                .Include(e => e.tokens).ThenInclude(t => t.dishes)
+                .Where(e =>
+                          (filter.OutletId <= 0 || e.outletId == filter.OutletId) &&
+                          (!filter.DateFrom.HasValue || filter.DateFrom == DateTime.MinValue || e.deliveryDate >= filter.DateFrom.Value) &&
+                          (!filter.DateTo.HasValue || filter.DateTo == DateTime.MinValue || e.deliveryDate <= filter.DateTo.Value)
+                      );
+            
             return query;
         }
 
