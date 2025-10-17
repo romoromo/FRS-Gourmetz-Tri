@@ -74,3 +74,11 @@ input.form-control {
   padding: 4px !important;
   vertical-align:middle;
 }
+
+:host ::ng-deep .no-padding-bottom .mat-form-field-wrapper {
+  padding-bottom: 0px;
+}
+
+:host ::ng-deep .no-padding-top .mat-form-field-wrapper {
+  margin-top: -11px;
+}

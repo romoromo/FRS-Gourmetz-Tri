@@ -457,9 +457,9 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        public async Task<List<MealAllocationDTO>> GetMealAllocationsAdditionalDish(MealAllocationAdditionalDishFilter filter)
+        public async Task<List<KioskOrderDishDTO>> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter)
         {
-            var result = _mapper.Map<List<MealAllocationDTO>>(await this._uow.MealAllocations.MealAllocationsAdditionalDish(filter).ToListAsync());
+            var result = _mapper.Map<List<KioskOrderDishDTO>>(await this._uow.MealAllocations.GetKioskOrderDish(filter).ToListAsync());
             return result;
         }
 

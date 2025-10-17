@@ -1,20 +1,20 @@
 <h1 mat-dialog-title>{{data.header}}</h1>
 <div>
   <form *ngIf="formResetToggle" class="form-horizontal" name="mealSessionEditorForm" #f="ngForm" novalidate
-        (ngSubmit)="save()">
+    (ngSubmit)="save()">
     <div mat-dialog-content>
       <div class="row">
         <div class="col-xs-12 table-responsive">
           <table class="table table-sm table-bordered" style="table-layout:fixed !important">
             <thead>
               <tr>
-                <th>Name</th>
+                <th style="width: 175px;">Name</th>
                 <th class="text-center">Start Time</th>
                 <th class="text-center">Route (Minutes)</th>
                 <th class="text-center">Overheads (Minutes)</th>
                 <th class="text-center">Cal. Source</th>
                 <th class="text-center">Assigned Route</th>
-                <th  class="text-center" style="width:100px">Actions</th>
+                <th class="text-center" style="width:100px">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -23,35 +23,46 @@
                   <tr>
                     <td colspan="6">
                       <b>{{mealSession.name}}</b>
-                      <span style="margin-left:10px">{{mealSession.startDate | date: "h:mm a"}}-{{mealSession.endDate | date: "h:mm a"}}</span>
+                      <span style="margin-left:10px">{{mealSession.startDate | date: "h:mm a"}}-{{mealSession.endDate |
+                        date: "h:mm a"}}</span>
                     </td>
-                    <td><button class="btn btn-sm btn-link" type="button" (click)="addMealSession(mealSession)"><i class="fa fa-plus-circle"></i> New</button>
-                        <button class="btn btn-sm btn-link" type="button" (click)="openClassRoster(mealSession)">Class Rosters</button></td>
+                    <td><button class="btn btn-sm btn-link" type="button" (click)="addMealSession(mealSession)"><i
+                          class="fa fa-plus-circle"></i> New</button>
+                      <button class="btn btn-sm btn-link" type="button" (click)="openClassRoster(mealSession)">Class
+                        Rosters</button>
+                    </td>
                   </tr>
                   <tr *ngFor="let detail of mealSession.details; let i = index">
                     <td>
                       <mat-form-field class="col-md-12">
-                        <input matInput [disabled]="!canManageMealSessions" type="text" id="detail-name-{{a}}{{x}}{{i}}" name="detail-name-{{a}}{{x}}{{i}}" autocomplete="off" [(ngModel)]="detail.name" minlength="1" maxlength="200" required placeholder="Enter label" />
+                        <input matInput [disabled]="!canManageMealSessions" type="text" id="detail-name-{{a}}{{x}}{{i}}"
+                          name="detail-name-{{a}}{{x}}{{i}}" autocomplete="off" [(ngModel)]="detail.name" minlength="1"
+                          maxlength="200" required placeholder="Enter label" />
 
                       </mat-form-field>
                       <div class="col-xs-12">
-                        <mat-checkbox [disabled]="!canManageMealSessions" id="detail-isactive-{{a}}{{x}}{{i}}" name="detail-isactive-{{a}}{{x}}{{i}}" [(ngModel)]="detail.isActive">
+                        <mat-checkbox [disabled]="!canManageMealSessions" id="detail-isactive-{{a}}{{x}}{{i}}"
+                          name="detail-isactive-{{a}}{{x}}{{i}}" [(ngModel)]="detail.isActive">
                           Active
                         </mat-checkbox>
                       </div>
-                      
+
 
                     </td>
                     <td>
-                      <mat-form-field class="col-md-12" [floatLabel]="never">
-                        <input matInput type="time" id="detail-start-{{a}}{{x}}{{i}}" name="detail-start-{{a}}{{x}}{{i}}" required [ngModel]="detail.startDate | date:  'HH:mm'" (ngModelChange)="validateStart(mealSession, $event, a, x, i, detail)" />
+                      <mat-form-field class="col-md-12 no-padding-bottom no-padding-top" [floatLabel]="never">
+                        <input matInput type="time" id="detail-start-{{a}}{{x}}{{i}}"
+                          name="detail-start-{{a}}{{x}}{{i}}" required [ngModel]="detail.startDate | date:  'HH:mm'"
+                          (ngModelChange)="validateStart(mealSession, $event, a, x, i, detail)" />
                         <mat-error *ngIf="f.submitted && isValid(a, x, i)">Time must be within the period</mat-error>
                         <!--<div *ngIf="errors['start-{{a}}{{x}}{{i}}']">Incorrect time</div>-->
                       </mat-form-field>
+                      <div class="col-xs-12">
+                        &nbsp;
+                      </div>
 
 
-
-                    <!--<mat-form-field class="col-md-12">
+                      <!--<mat-form-field class="col-md-12">
                       <input matInput [matDatepicker]="startpicker" placeholder="" [(ngModel)]="detail.start"
                              (dateChange)="onChangeDate('start', detail, $event)" required [disabled]="!canManageMealSessions" id="detail-start-{{i}}" name="detail-start-{{i}}">
                       <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
@@ -59,9 +70,14 @@
                     </mat-form-field>-->
                     </td>
                     <td>
-                      <mat-form-field class="col-md-12" [floatLabel]="never">
-                        <input matInput type="number" id="detail-route-{{a}}{{x}}{{i}}" name="detail-route-{{a}}{{x}}{{i}}" [(ngModel)]="detail.routeInterval" required style="text-align:right" />
+                      <mat-form-field class="col-md-12 no-padding-top" [floatLabel]="never">
+                        <input matInput type="number" id="detail-route-{{a}}{{x}}{{i}}"
+                          name="detail-route-{{a}}{{x}}{{i}}" [(ngModel)]="detail.routeInterval" required
+                          style="text-align:right" />
                       </mat-form-field>
+                      <div class="col-xs-12">
+                        &nbsp;
+                      </div>
                       <!--<mat-form-field class="col-md-12" [floatLabel]="never">
             <input matInput placeholder="Route Time" type="time" id="detail-route{{i}}" name="detail-route{{i}}" [(ngModel)]="detail.rTime" required />
           </mat-form-field>-->
@@ -73,9 +89,14 @@
           </mat-form-field>-->
                     </td>
                     <td>
-                      <mat-form-field class="col-md-12" [floatLabel]="never">
-                        <input matInput type="number" id="detail-overheads-{{a}}{{x}}{{i}}" name="detail-overheads-{{a}}{{x}}{{i}}" [(ngModel)]="detail.overheadInterval" required style="text-align:right" />
+                      <mat-form-field class="col-md-12 no-padding-top" [floatLabel]="never">
+                        <input matInput type="number" id="detail-overheads-{{a}}{{x}}{{i}}"
+                          name="detail-overheads-{{a}}{{x}}{{i}}" [(ngModel)]="detail.overheadInterval" required
+                          style="text-align:right" />
                       </mat-form-field>
+                      <div class="col-xs-12">
+                        &nbsp;
+                      </div>
                       <!--<mat-form-field class="col-md-12" [floatLabel]="never">
             <input matInput placeholder="Overheads" type="time" id="detail-overheads{{i}}" name="detail-overheads{{i}}" [(ngModel)]="detail.oTime" required />
           </mat-form-field>-->
@@ -88,6 +109,9 @@
                     </td>
                     <td style="text-align:center">
                       {{calculateCalSource(detail)}}
+                      <div class="col-xs-12">
+                        &nbsp;
+                      </div>
                       <!--<mat-form-field class="col-md-12" [floatLabel]="never">
                         <input matInput type="time" id="detail-calsource-{{a}}{{x}}{{i}}" name="detail-calsource-{{a}}{{x}}{{i}}" [ngModel]="detail.calSourceTime | date:  'HH:mm'" (ngModelChange)="validateCalSource(mealSession, $event, a, x, i, detail)" />
                       </mat-form-field>-->
@@ -99,16 +123,21 @@
           </mat-form-field>-->
                     </td>
                     <td>
-                      <mat-form-field class="col-xs-12" [floatLabel]="never">
-                        <mat-select id="assignedRoutes-{{a}}{{x}}{{i}}" name="assignedRoutes-{{a}}{{x}}{{i}}" [(ngModel)]="detail.routeId" #route="ngModel" required>
+                      <mat-form-field class="col-xs-12 no-padding-top" [floatLabel]="never">
+                        <mat-select id="assignedRoutes-{{a}}{{x}}{{i}}" name="assignedRoutes-{{a}}{{x}}{{i}}"
+                          [(ngModel)]="detail.routeId" #route="ngModel" required>
                           <mat-option *ngFor="let route of routes" [value]="route.id">
                             {{route.label}}
                           </mat-option>
                         </mat-select>
                       </mat-form-field>
+                      <div class="col-xs-12">
+                        &nbsp;
+                      </div>
                     </td>
                     <td>
-                      <button class="btn btn-sm btn-link" type="button" (click)="deleteMealSession(mealSession, i)"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
+                      <button class="btn btn-sm btn-link" type="button" (click)="deleteMealSession(mealSession, i)"><i
+                          class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
                     </td>
                   </tr>
                 </ng-container>
@@ -121,10 +150,13 @@
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">
-      <button *ngIf="!canManageMealSessions" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
-      <button *ngIf="canManageMealSessions" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="!canManageMealSessions" type="button" mat-button (click)="cancel()">{{'common.editor.Close' |
+        translate}}</button>
+      <button *ngIf="canManageMealSessions" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i
+          class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
       <button *ngIf="canManageMealSessions" type="submit" mat-button [disabled]="isSaving">
-        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i>
+        {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
       </button>
     </div>
   </form>

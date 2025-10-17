@@ -19,6 +19,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         //Task<BaseOperationResponse> ImportAsync(IAccountManager accountManager, List<StudentImportDTO> dto);
         Task<PagedEntity<MealAllocation>> GetMealAllocationsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateAsync(MealAllocation allocation, List<TokenLabel> tokens);
-        IQueryable<MealAllocation> MealAllocationsAdditionalDish(MealAllocationAdditionalDishFilter filter);
+        IQueryable<MealAllocation> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter);
     }
 }

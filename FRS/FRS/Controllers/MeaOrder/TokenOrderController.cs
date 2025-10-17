@@ -979,9 +979,9 @@ namespace FRS.Controllers
         [HttpGet("mealallocations/getKioskOrderDish")]
         [ProducesResponseType(200, Type = typeof(List<MealAllocationDTO>))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetMealAdditionalDish(MealAllocationAdditionalDishFilter filter)
+        public async Task<IActionResult> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter)
         {
-            return Ok(await this._service.GetMealAllocationsAdditionalDish(filter));
+            return Ok(await this._service.GetKioskOrderDish(filter));
         }
 
         [HttpGet("mealallocations/get/{id}")]

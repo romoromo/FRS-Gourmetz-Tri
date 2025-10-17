@@ -204,10 +204,11 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        public IQueryable<MealAllocation> MealAllocationsAdditionalDish(MealAllocationAdditionalDishFilter filter)
+        public IQueryable<MealAllocation> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter)
         {
             IQueryable<MealAllocation> query = _appContext.MealAllocations
                 .Include(e => e.tokens).ThenInclude(t => t.dishes)
+                .Include(e => e.MealSessionDetail)
                 .Where(e =>
                           (filter.OutletId <= 0 || e.outletId == filter.OutletId) &&
                           (!filter.DateFrom.HasValue || filter.DateFrom == DateTime.MinValue || e.deliveryDate >= filter.DateFrom.Value) &&
