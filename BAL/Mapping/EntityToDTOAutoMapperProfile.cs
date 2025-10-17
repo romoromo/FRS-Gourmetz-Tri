@@ -188,7 +188,7 @@ namespace BAL.Mapping
             CreateMap<StudentManageAccount, StudentManageAccountDTO>()
                 .ForMember(d => d.Name, map => map.MapFrom(s => s.Student != null ? s.Student.Name : string.Empty))
                 .ForMember(d => d.UserName, map => map.MapFrom(s => s.User != null ? s.User.UserName : string.Empty))
-                .ForMember(d => d.FullName, map => map.MapFrom(s => s.User != null ? s.User.FullName: string.Empty))
+                .ForMember(d => d.FullName, map => map.MapFrom(s => s.User != null ? s.User.FullName : string.Empty))
                 .ForMember(d => d.Email, map => map.MapFrom(s => s.User != null ? s.User.Email : string.Empty))
                 ;
             CreateMap<StudentManageAccountDTO, StudentManageAccount>();
@@ -270,7 +270,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.CancelledOn, map => map.MapFrom(e => string.IsNullOrEmpty(e.CancelledOn) ? DateTime.MinValue : DateTime.Parse(e.CancelledOn)))
                 .ForMember(e => e.CollectionTime, map => map.MapFrom(e => string.IsNullOrEmpty(e.CollectionTime) ? DateTime.MinValue : DateTime.Parse(e.CollectionTime)))
                 .ForMember(e => e.ReturnTime, map => map.MapFrom(e => string.IsNullOrEmpty(e.ReturnTime) ? DateTime.MinValue : DateTime.Parse(e.ReturnTime)));
-                //.ForMember(e => e.ProcessedBy, map => map.MapFrom(e => e.ProcessedBy));
+            //.ForMember(e => e.ProcessedBy, map => map.MapFrom(e => e.ProcessedBy));
 
             CreateMap<TokensOrderHistoryDTO, TokensOrderHistory>();
             CreateMap<TokensOrderHistory, TokensOrderHistoryDTO>()
@@ -322,10 +322,14 @@ namespace BAL.Mapping
             CreateMap<MealAllocation, MealAllocationDTO>()
                 .ForMember(e => e.routeId, map => map.MapFrom(e => e.MealSessionDetail != null ? e.MealSessionDetail.RouteId : null));
 
+            CreateMap<MealAllocation, KioskOrderDishDTO>()
+                .ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSessionDetail != null ? e.MealSessionDetail.Name : null));
+
+
             CreateMap<PackingAllocationDTO, PackingAllocation>();
             CreateMap<PackingAllocation, PackingAllocationDTO>()
                 .ForMember(e => e.RouteLabel, map => map.MapFrom(f => f.Route.Label));
-                //.ForMember(e => e.ToStoreInfoId, map => map.MapFrom(f => f.));
+            //.ForMember(e => e.ToStoreInfoId, map => map.MapFrom(f => f.));
 
             CreateMap<DishAllocationDTO, DishAllocation>();
             CreateMap<DishAllocation, DishAllocationDTO>();
@@ -408,7 +412,7 @@ namespace BAL.Mapping
             CreateMap<OutletProfileDTO, OutletProfile>();
 
             CreateMap<Outlet, OutletDTO>();
-                //.ForMember(e => e.OutletProfileName, map => map.MapFrom(e => e.OutletProfile.Label));
+            //.ForMember(e => e.OutletProfileName, map => map.MapFrom(e => e.OutletProfile.Label));
             CreateMap<OutletDTO, Outlet>();
 
             CreateMap<Outlet, OutletSimpleDTO>();
@@ -418,7 +422,7 @@ namespace BAL.Mapping
             CreateMap<OutletMenuDishDTO, OutletMenuDish>();
 
             CreateMap<CatererOutlet, CatererOutletDTO>();
-                //.ForMember(e => e.OutletProfileId, map => map.MapFrom(e => e.Outlet.OutletProfileId));
+            //.ForMember(e => e.OutletProfileId, map => map.MapFrom(e => e.Outlet.OutletProfileId));
             CreateMap<CatererOutletDTO, CatererOutlet>();
 
             CreateMap<DishByDate, DishByDateDTO>();
@@ -902,7 +906,7 @@ namespace BAL.Mapping
             CreateMap<spGetUserActivityLogHeader, UserActivityLogDTO>();
             CreateMap<spGetUserActivityLogDetail, UserActivityLogDetailDTO>();
             CreateMap<spVoucherUtilisationReport, VoucherUtilisation>()
-                .ForMember(dest => dest.UtilisedDate, opt => opt.MapFrom(src => src.UtilisedDate.Date == DateTime.MinValue.Date ? (DateTime?) null : src.UtilisedDate));
+                .ForMember(dest => dest.UtilisedDate, opt => opt.MapFrom(src => src.UtilisedDate.Date == DateTime.MinValue.Date ? (DateTime?)null : src.UtilisedDate));
         }
     }
 }

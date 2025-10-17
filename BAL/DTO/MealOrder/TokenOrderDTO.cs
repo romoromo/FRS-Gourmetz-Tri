@@ -264,6 +264,11 @@ namespace BAL.DTO.MealOrder
         public List<TokenLabelDTO> tokens { get; set; }
     }
 
+    public class KioskOrderDishDTO : MealAllocationDTO
+    {
+        public string MealSessionName { get; set; }
+    }
+
     public class DOReportDTO
     {
         public int Id { get; set; }
