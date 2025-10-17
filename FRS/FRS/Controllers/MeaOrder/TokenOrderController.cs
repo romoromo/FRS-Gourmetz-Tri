@@ -976,7 +976,7 @@ namespace FRS.Controllers
         #endregion
 
         [ApiKeyAuthorize]
-        [HttpGet("mealallocations/additional/dish")]
+        [HttpGet("mealallocations/getKioskOrderDish")]
         [ProducesResponseType(200, Type = typeof(List<MealAllocationDTO>))]
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetMealAdditionalDish(MealAllocationAdditionalDishFilter filter)
