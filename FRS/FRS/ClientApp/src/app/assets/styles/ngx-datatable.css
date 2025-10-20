@@ -153,13 +153,13 @@
 .ngx-datatable.material.colored-header .datatable-header {
     padding: 1px 0;
     color: #fff;
-    background-color: #007f7b;
+    background-color: #54C5CD;
 }
 
   .ngx-datatable.material .datatable-header .datatable-row-right {
     padding: 5px 0;
     color: #fff;
-    background-color: #007f7b;
+    background-color: #54C5CD;
   }
 
 .ngx-datatable.material.table .datatable-body .datatable-body-row,

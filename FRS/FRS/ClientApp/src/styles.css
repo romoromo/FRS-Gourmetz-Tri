@@ -43,7 +43,7 @@
 
 .app-component > li > a:focus, .app-component > li > a:hover {
   text-decoration: none;
-  background-color: #007f7b;
+  background-color: #54C5CD;
 }
 
 .disabledContainer {
@@ -377,7 +377,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 
 .ngx-datatable.material.colored-header .datatable-header, .ngx-datatable.material .datatable-header .datatable-row-left {
-  background-color: #007f7b !important;
+  background-color: #54C5CD !important;
 }
 
 .ngx-datatable.material .datatable-header .datatable-header-cell
@@ -390,8 +390,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .btn-primary {
-  background-color: #007f7b;
-  border-color: #007f7b;
+  background-color: #54C5CD;
+  border-color: #54C5CD;
 }
 
   .btn-primary.active, .btn-primary:active, .open > .dropdown-toggle.btn-primary {
@@ -401,7 +401,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
     .btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary:active.focus, .btn-primary:active:focus, .btn-primary:active:hover, .open > .dropdown-toggle.btn-primary.focus, .open > .dropdown-toggle.btn-primary:focus, .open > .dropdown-toggle.btn-primary:hover
     {
-      background-color: #007f7b !important;
+      background-color: #54C5CD !important;
     }
 
 

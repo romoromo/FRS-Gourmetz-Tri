@@ -37,14 +37,14 @@
 
 .login-container .panel-primary > .panel-heading {
   color: #fff;
-  background-color: #007f7b;
-  border-color: #007f7b;
+  background-color: #54C5CD;
+  border-color: #54C5CD;
 }
 
 .login-container .btn-primary {
   color: #fff;
-  background-color: #007f7b;
-  border-color: #007f7b;
+  background-color: #54C5CD;
+  border-color: #54C5CD;
 }
 
 @media (min-width: 768px) {

@@ -52,7 +52,7 @@
   }
 
     .choices a:focus, .choices a:active, .choices a:hover, .choices a.selected {
-      background: #007f7b;
+      background: #54C5CD;
       color: white;
     }
 

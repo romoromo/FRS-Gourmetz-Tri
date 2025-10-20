@@ -1,7 +1,7 @@
 
 .unread {
   font-weight: bold;
-  color: #007f7b;
+  color: #54C5CD;
 }
 
 .no-notification {
@@ -12,5 +12,5 @@
 }
 
   .no-notification a {
-    color: #007f7b !important;
+    color: #54C5CD !important;
   }

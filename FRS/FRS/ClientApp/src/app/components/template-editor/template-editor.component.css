@@ -49,7 +49,7 @@ canvas {
   border: solid 1px;
   right: 0;
   background: #dadada;
-  color: #007f7b;
+  color: #54C5CD;
 }
 
 .properties-handle {
@@ -97,7 +97,7 @@ canvas {
 
   .preview-stage-parent h4 {
     text-align: center;
-    /* background-color: #007f7b; */
+    /* background-color: #54C5CD; */
     color: #000;
     border-bottom: 1px dashed;
     padding-bottom: 10px;
