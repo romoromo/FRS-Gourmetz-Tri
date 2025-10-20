@@ -15,7 +15,9 @@ using DAL.Core;
 using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
+using DAL.Models.MealOrder;
 using FRS.Attributes;
+using FRS.Migrations;
 using FRS.ViewModels;
 using FRS.ViewModels.MealOrder;
 using Microsoft.AspNetCore.Authorization;
@@ -35,13 +37,16 @@ namespace FRS.Controllers
         private IMenuService _service;
         readonly ILogger _logger;
         private readonly IMapper _mapper;
+        private IStudentService _studentService;
+        private IDeliveryService _deliveryService;
 
-
-        public MenuController(IMenuService service, ILogger<MenuController> logger, IMapper mapper)
+        public MenuController(IMenuService service, ILogger<MenuController> logger, IMapper mapper, IStudentService studentService, IDeliveryService deliveryService)
         {
             _service = service;
             _logger = logger;
             _mapper = mapper;
+            _studentService = studentService;
+            _deliveryService = deliveryService;
         }
 
         #region Menus
@@ -393,7 +398,18 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetStudentSessions(int studentId, DateTime orderDate)
         {
-            var results = await this._service.GetStudentSessions(studentId, orderDate);
+            var student = await this._studentService.GetStudentByIdAsync(studentId);
+            var outlet = student != null ? await this._deliveryService.GetOutletByIdSimpleAsync(student.OutletId.Value) : null;
+
+            var results = new List<MealSessionDetailDTO>();
+
+            if(student != null && outlet != null && outlet.MealCollectionType == MealCollectionType.STUDENT_SELECTS)
+            {
+                results = await this._service.GetOutleOnlyMealSessions(student.OutletId.Value, orderDate);
+                return Ok(results);
+            }
+
+            results = await this._service.GetStudentSessions(studentId, orderDate);
             return Ok(results);
         }
 

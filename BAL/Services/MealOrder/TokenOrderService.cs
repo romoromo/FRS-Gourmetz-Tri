@@ -457,6 +457,12 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<List<KioskOrderDishDTO>> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter)
+        {
+            var result = _mapper.Map<List<KioskOrderDishDTO>>(await this._uow.MealAllocations.GetKioskOrderDish(filter).ToListAsync());
+            return result;
+        }
+
         #endregion
 
         #region Packing Allocation

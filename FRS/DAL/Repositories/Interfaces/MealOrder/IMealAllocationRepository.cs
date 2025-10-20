@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DAL.Core;
 using DAL.Core.DTO;
@@ -18,5 +19,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         //Task<BaseOperationResponse> ImportAsync(IAccountManager accountManager, List<StudentImportDTO> dto);
         Task<PagedEntity<MealAllocation>> GetMealAllocationsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateAsync(MealAllocation allocation, List<TokenLabel> tokens);
+        IQueryable<MealAllocation> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter);
     }
 }

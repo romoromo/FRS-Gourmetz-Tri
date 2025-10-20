@@ -183,7 +183,7 @@ namespace FRS.Controllers
 
                 var dto = await this._service.GetTokenOrderByIdAsync(model.Id);
 
-          
+
                 if (dto == null)
                     return NotFound(id);
 
@@ -497,7 +497,7 @@ namespace FRS.Controllers
                 title = string.IsNullOrEmpty(title) ? "Your cancellation request is rejected!" : title;
                 template = EmailTemplates.GetCancellationRequestRejected(template, dto.DeliveryDate.ToShortDateString(), dto.MealSessionName, items);
             }
-            
+
             //send email
             //string enableNotificationEmail = _configuration["AppSettings:NOTIFICATION_EMAIL_ENABLED"];
             if (setting.IsEmailEnabled && !string.IsNullOrEmpty(dto.StudentEmail) && dto.IsNotifCancellationRequestStatus)
@@ -506,7 +506,7 @@ namespace FRS.Controllers
             }
 
             //string enableNotificationAlert = _configuration["AppSettings:NOTIFICATION_ALERT_ENABLED"];
-            if (setting.IsAlertEnabled &&  dto.IsNotifCancellationRequestStatus)
+            if (setting.IsAlertEnabled && dto.IsNotifCancellationRequestStatus)
             {
                 //int enableNotificationAlertEventId = Convert.ToInt32(_configuration["AppSettings:NOTIFICATION_ALERT_EVENT_ID"]);
 
@@ -974,6 +974,15 @@ namespace FRS.Controllers
         }
 
         #endregion
+
+        [ApiKeyAuthorize]
+        [HttpGet("mealallocations/getKioskOrderDish")]
+        [ProducesResponseType(200, Type = typeof(List<MealAllocationDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter)
+        {
+            return Ok(await this._service.GetKioskOrderDish(filter));
+        }
 
         [HttpGet("mealallocations/get/{id}")]
         //[AllowAnonymous]

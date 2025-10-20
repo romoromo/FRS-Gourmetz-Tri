@@ -559,7 +559,7 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
       }
 
       this.alertService.startLoadingMessage("Processing top-up...");
-      this.studentService.pointTopupForStudent(studentId, amount)
+      this.studentService.pointTopupForStudent(studentId, amount, this.accountService.currentUser.id)
         .subscribe({
           next: (response) => {
             this.alertService.stopLoadingMessage();
@@ -584,6 +584,40 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
     }, () => {
       // Cancel callback
     });
+  }
+
+  offBoarding(studentId: string) {
+    this.alertService.showDialog('Are you sure you want to off-board this student? Once confirmed, the student will be marked as inactive, and their wallet balance and points will be reset to zero.',
+      DialogType.confirm,
+      () => {
+        this.alertService.startLoadingMessage("Processing top-up...");
+        this.studentService.offBoardingStudent(studentId,this.accountService.currentUser.id)
+          .subscribe({
+            next: (response) => {
+              this.alertService.stopLoadingMessage();
+              this.loadingIndicator = false;
+              this.alertService.showMessage(response.message);
+
+              if (response.data && response.data.length > 0) {
+                const messageData = response.data.join("<br/><br/>");
+                this.alertService.showStickyMessage("Top-up Info", messageData, MessageSeverity.info);
+              }
+
+              if(response.isSuccess){
+                this.loadData();
+              }
+            },
+            error: () => {
+              this.alertService.stopLoadingMessage();
+              this.loadingIndicator = false;
+              this.alertService.showStickyMessage(
+                "Point Top-up Error",
+                "Unable to add Point.",
+                MessageSeverity.error
+              );
+            }
+          });
+      });
   }
 
 

@@ -238,6 +238,65 @@ namespace DAL.Repositories
             return result;
         }
 
+        public async Task<BaseOperationResponse> OffBoardingStudent(int studentId, int userId)
+        {
+            var result = new BaseOperationResponse();
+
+            try
+            {
+                var studentData = await _appContext.Students
+                    .FirstOrDefaultAsync(e => e.IsActive && e.Id == studentId);
+
+                if (studentData == null)
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Student with Id={studentId} not found or is inactive.";
+                    return result;
+                }
+
+                var oldWalletBalance = studentData.WalletBalance;
+                var oldPointBalance = studentData.PointBalance;
+
+                studentData.WalletBalance = 0;
+                studentData.PointBalance = 0;
+
+                var walletTransaction = new StudentWalletTransaction
+                {
+                    Amount = -oldWalletBalance,
+                    TransactionType = WalletTransactionType.DEBIT.ToString(),
+                    StudentId = studentData.Id,
+                    Description = $"Offboarding adjustment by userId={userId}. Previous balance: {oldWalletBalance}",
+                    CreatedBy = userId,
+                    UpdatedBy = userId
+                };
+                await _appContext.StudentWalletTransactions.AddAsync(walletTransaction);
+
+                var pointTransaction = new StudentPointTransaction
+                {
+                    Amount = -oldPointBalance,
+                    TransactionType = WalletTransactionType.DEBIT.ToString(),
+                    StudentId = studentData.Id,
+                    Description = $"Offboarding adjustment by userId={userId}. Previous points: {oldPointBalance}",
+                    CreatedBy = userId,
+                    UpdatedBy = userId
+                };
+                await _appContext.StudentPointTransactions.AddAsync(pointTransaction);
+                await _appContext.SaveChangesAsync();
+
+                result.IsSuccess = true;
+                result.Message = $"Student (Id={studentId}, Name={studentData.Name}) successfully offboarded. " +
+                                 $"Wallet reset from {oldWalletBalance} to 0, Points reset from {oldPointBalance} to 0.";
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Error while offboarding Student Id={studentId}. " +
+                                 $"Details: {ex.Message}" +
+                                 (ex.InnerException != null ? $" | Inner: {ex.InnerException.Message}" : string.Empty);
+            }
+
+            return result;
+        }
 
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

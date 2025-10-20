@@ -204,6 +204,20 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        public IQueryable<MealAllocation> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter)
+        {
+            IQueryable<MealAllocation> query = _appContext.MealAllocations
+                .Include(e => e.tokens).ThenInclude(t => t.dishes)
+                .Include(e => e.MealSessionDetail)
+                .Where(e =>
+                          (filter.OutletId <= 0 || e.outletId == filter.OutletId) &&
+                          (!filter.DateFrom.HasValue || filter.DateFrom == DateTime.MinValue || e.deliveryDate >= filter.DateFrom.Value) &&
+                          (!filter.DateTo.HasValue || filter.DateTo == DateTime.MinValue || e.deliveryDate <= filter.DateTo.Value)
+                      );
+            
+            return query;
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }
