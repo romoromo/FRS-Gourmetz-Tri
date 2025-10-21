@@ -9,6 +9,7 @@ import { ClassService } from "../../../../services/meal-order/class.service";
 import { MatDialog } from "@angular/material";
 import { DispenserOutlet } from "../../../../models/meal-order/dispenser-outlet.model";
 import { Utilities } from "../../../../services/utilities";
+import { PlcEditorComponent } from "./plc-editor.component";
 @Component({
   selector: 'plc-management',
   templateUrl: './plc-management.component.html',
@@ -33,22 +34,22 @@ export class PlcManagementComponent implements OnInit {
   actionsTemplate: TemplateRef<any>;
 
   @ViewChild('dispenserOutletEditor')
-  //dispenserOutletEditor: DispenserOutletEditorComponent;
+  plcEditor: PlcEditorComponent;
   header: string;
 
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService, private classService: ClassService, public dialog: MatDialog) {
   }
 
-  openDialog(dispenserOutlet: PlcModel): void {
-    //const dialogRef = this.dialog.open(DispenserOutletEditorComponent, {
-    //  data: { header: this.header, dispenserOutlet: dispenserOutlet },
-    //  width: '400px',
-    //  disableClose: true
-    //});
+  openDialog(plc: PlcModel): void {
+    const dialogRef = this.dialog.open(PlcEditorComponent, {
+      data: { header: this.header, plc: plc },
+      width: '400px',
+      disableClose: true
+    });
 
-    //dialogRef.afterClosed().subscribe(result => {
-    //  this.loadData(null);
-    //});
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadData(null);
+    });
   }
 
   initializeFilter() {
@@ -132,16 +133,16 @@ export class PlcManagementComponent implements OnInit {
   }
 
   newPLC() {
-    this.header = 'New Dispenser';
+    this.header = 'New PLC';
     this.editedPlc = new PlcModel();
-    this.editedPlc.id = this.outletId;
+    this.editedPlc.outletId = this.outletId;
     this.openDialog(this.editedPlc);
   }
 
 
   editPLC(row: PlcModel) {
     this.editedPlc = row;
-    this.header = 'Edit Dispenser';
+    this.header = 'Edit PLC';
     this.openDialog(this.editedPlc);
   }
 

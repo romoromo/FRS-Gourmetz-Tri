@@ -167,6 +167,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\components\meal-order-system\outlet\plc\plc-editor.component.ts" />
     <None Remove="ClientApp\src\app\components\meal-order-system\outlet\plc\plc-management.component.ts" />
     <None Remove="ClientApp\src\app\components\signage\signage-component-types\signage-component-type-wrapper.component.ts" />
     <None Remove="ClientApp\src\app\components\signage\signage-component-types\vjs-player.component.ts" />
@@ -236,6 +237,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\components\meal-order-system\outlet\plc\plc-management.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\components\meal-order-system\outlet\plc\plc-editor.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\components\signage\signage-component-types\signage-component-type-wrapper.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\components\signage\signage-component-types\vjs-player.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\components\signage\signage-display\signage-display.component.ts" />

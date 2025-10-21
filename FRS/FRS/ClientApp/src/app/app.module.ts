@@ -509,7 +509,7 @@ import { DishPreviewErrorComponent } from './components/meal-order-system/dishes
 import { VoucherDishComponent } from './components/meal-order-system/voucher/voucher-dish/vouhcer-dish.component';
 import { WalletTransactionLogManagementComponent } from './components/meal-order-system/wallet-transaction-log/wallet-transaction-log-management.component';
 import { PlcManagementComponent } from './components/meal-order-system/outlet/plc/plc-management.component';
- 
+import { PlcEditorComponent } from './components/meal-order-system/outlet/plc/plc-editor.component';
 
 
 export const configFactory = (configService: ConfigurationService) => {
@@ -749,7 +749,7 @@ export const configFactory = (configService: ConfigurationService) => {
 
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
     FaqDetailsManagementComponent, FaqDetailEditorComponent,
-    VoucherUtilisationsReportManagementComponent, PlcManagementComponent
+    VoucherUtilisationsReportManagementComponent, PlcManagementComponent, PlcEditorComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },
@@ -933,7 +933,7 @@ export const configFactory = (configService: ConfigurationService) => {
     PaymentsReportManagementComponent,
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
     FaqDetailsManagementComponent, FaqDetailEditorComponent,
-    VoucherUtilisationsReportManagementComponent,DishPreviewErrorComponent,VoucherDishComponent
+    VoucherUtilisationsReportManagementComponent, DishPreviewErrorComponent, VoucherDishComponent, PlcEditorComponent
   ],
 })
 export class AppModule {

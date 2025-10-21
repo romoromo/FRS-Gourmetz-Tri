@@ -6,5 +6,8 @@
         public string IPAddress { get; set; }
         public string Framework { get; set; }
         public int TotalNumber { get; set; }
+
+        public int? InstitutionId { get; set; }
+        public int? OutletId { get; set; }
     }
 }

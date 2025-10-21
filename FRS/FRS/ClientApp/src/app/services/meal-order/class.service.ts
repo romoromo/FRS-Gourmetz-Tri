@@ -184,6 +184,16 @@ export class ClassService {
   }
 
   deletePLC(plcId: string | PlcModel): Observable<PlcModel> {
-    return this.commonEndpoint.getDeleteEndpoint<PlcModel>(this.dispenserOutletUrl, <string>plcId);
+    return this.commonEndpoint.getDeleteEndpoint<PlcModel>(this.plcUrl, <string>plcId);
+  }
+
+  newPLC(plc: PlcModel) {
+    return this.commonEndpoint.getNewEndpoint<PlcModel>(this.plcUrl, plc);
+  }
+
+  updatePLC(plc: PlcModel) {
+    if (plc.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.plcUrl, plc, plc.id);
+    }
   }
 }
