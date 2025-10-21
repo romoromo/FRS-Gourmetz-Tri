@@ -508,7 +508,7 @@ import { ClassTransferComponent } from './components/meal-order-system/class/cla
 import { DishPreviewErrorComponent } from './components/meal-order-system/dishes/dish-preview-error/dish-preview-error.component';
 import { VoucherDishComponent } from './components/meal-order-system/voucher/voucher-dish/vouhcer-dish.component';
 import { WalletTransactionLogManagementComponent } from './components/meal-order-system/wallet-transaction-log/wallet-transaction-log-management.component';
- 
+import { PlcManagementComponent } from './components/meal-order-system/outlet/plc/plc-management.component';
  
 
 
@@ -749,7 +749,7 @@ export const configFactory = (configService: ConfigurationService) => {
 
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
     FaqDetailsManagementComponent, FaqDetailEditorComponent,
-    VoucherUtilisationsReportManagementComponent
+    VoucherUtilisationsReportManagementComponent, PlcManagementComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },

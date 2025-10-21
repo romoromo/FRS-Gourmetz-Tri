@@ -152,6 +152,7 @@ namespace DAL
         private FaqSubjectRepository _faqSubjects;
         private FaqDetailRepository _faqDetails;
         IUserActivityRepository _userActivityRepository;
+        private PLCRepository _plcRepository;
 
         public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper,IUserActivityRepository userActivityRepository)
         {
@@ -1458,6 +1459,7 @@ namespace DAL
                 return _faqDetails;
             }
         }
+
         #endregion
 
         #region TokenPayments section
@@ -1506,8 +1508,15 @@ namespace DAL
             }
         }
 
+        public IPLCRepository PLCRepository {
+            get
+            {
+                if (_plcRepository == null)
+                    _plcRepository = new PLCRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
 
-
+                return _plcRepository;
+            }
+        }
 
         #endregion
 

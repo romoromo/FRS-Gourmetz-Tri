@@ -358,5 +358,39 @@ namespace BAL.Services.MealOrder
 
         #endregion
 
+        #region PLC
+        public async Task<PagedEntity<PLCDTO>> GetPLCPagedAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<PLCDTO>>(await this._uow.PLCRepository.GetPaged(filter));
+            return result;
+        }
+
+        public async Task<PLCDTO> GetPLCByIdAsync(int id)
+        {
+            return _mapper.Map<PLCDTO>(await this._uow.PLCRepository.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreatePLCAsync(PLCDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.PLCRepository.CreateAsync(_mapper.Map<PLCModel>(dto));
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdatePLCAsync(PLCDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.PLCRepository.UpdateAsync(_mapper.Map<PLCModel>(dto));
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> DeletePLCAsync(int id)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.PLCRepository.DeleteAsync(id);
+            return result;
+        }
+        #endregion
+
     }
 }

@@ -601,5 +601,96 @@ namespace FRS.Controllers
         }
 
         #endregion
+
+        #region PLC
+
+        #region Sieved
+        [ApiKeyAuthorize]
+        [HttpGet("plc/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetPLCs(BaseFilter filter)
+        {
+            var results = await this._service.GetPLCPagedAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<PLCDTO>>(results));
+        }
+
+        #endregion
+
+        [HttpPost("plc")]
+        //[Authorize(Authorization.Policies.ManageAllClassLevelsPolicy)]
+        [ProducesResponseType(201, Type = typeof(PLCDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreatePLC([FromBody] PLCDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                var result = await this._service.CreatePLCAsync(dto);
+                if (result.IsSuccess)
+                {
+                    PLCDTO vm = _mapper.Map<PLCDTO>(result.Data);
+                    return CreatedAtAction("GetPLCById", new { id = vm.Id }, vm);
+                }
+
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
+        [HttpDelete("plc/delete/{id}")]
+        [ProducesResponseType(200, Type = typeof(DispenserOutletDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeletePLC(int id)
+        {
+            var dto = await this._service.GetPLCByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            var result = await this._service.DeletePLCAsync(id);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while deleting: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+        [HttpPut("plc/update/{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdatePLC(string id, [FromBody] PLCDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model == null)
+                    return BadRequest($"{nameof(model)} cannot be null");
+
+                if (model.Id == 0)
+                    return BadRequest("Conflicting type id in parameter and model data");
+
+
+                var dto = await this._service.GetPLCByIdAsync(model.Id);
+
+                if (dto == null)
+                    return NotFound(id);
+
+                var result = await this._service.UpdatePLCAsync(model);
+                if (result.IsSuccess)
+                    return NoContent();
+
+                AddErrors(new string[] { result.Message });
+
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        #endregion
     }
 }
