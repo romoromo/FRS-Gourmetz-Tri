@@ -13,4 +13,5 @@ export class ClassLevel {
   public institutionId: string;
   public outletId: string;
   public outletName: string;
+  public mealSessionId: string;
 }

@@ -123,4 +123,8 @@ export class MealService {
   getFasMealOrderSummary(outletId: string, storeId: string, mealSessionId: string, deliveryDate: Date) {
     return this.commonEndpoint.get<any>(`${this.mealSessionUrl}/fas/ordersummary?outletId=${outletId}&storeId=${storeId}&mealSessionId=${mealSessionId}&deliveryDate=${deliveryDate}`);
   }
+
+  getMealSessionLite(outletId: string) {
+    return this.commonEndpoint.get<any>(`${this.mealSessionUrl}/outlet-lite?outletId=${outletId}`);
+  }
 }

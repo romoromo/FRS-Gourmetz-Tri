@@ -1,19 +1,20 @@
-﻿using System;
+﻿using DAL.Core;
+using DAL.Core.DTO;
+using DAL.Core.Helpers;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces;
+using DAL.Repositories.Interfaces.MealOrder;
+using Microsoft.EntityFrameworkCore;
+using Sieve.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Repositories.Interfaces;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
-using DAL.Models.MealOrder;
-using DAL.Repositories.Interfaces.MealOrder;
-using DAL.Core.DTO;
 using System.Transactions;
-using DAL.Core.Helpers;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -146,6 +147,21 @@ namespace DAL.Repositories.MealOrder
             }
 
             return list;
+        }
+
+        public async Task<List<MealSessionLiteDto>> GetLiteByOutletId(int outletId)
+        {
+            var datas = await _appContext.MealSessions
+                .Where(e => e.IsActive && e.OutletId == outletId)
+                .OrderBy(e => e.Sequence)
+                .Select(x => new MealSessionLiteDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Sequence = x.Sequence
+                })
+                .ToListAsync();
+            return datas;
         }
 
         public async Task<MealSession> GetByIdAsync(int id)

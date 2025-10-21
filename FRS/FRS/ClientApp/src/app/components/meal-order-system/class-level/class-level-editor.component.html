@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>{{data.header}}</h1>
 <div>
   <form *ngIf="formResetToggle" class="form-horizontal" name="classLevelEditorForm" #f="ngForm" novalidate
-        (ngSubmit)="f.form.valid ? save() :
+    (ngSubmit)="f.form.valid ? save() :
           (!classLevelName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
     <div mat-dialog-content>
       <div class="row">
@@ -15,7 +15,19 @@
             </mat-select>
           </mat-form-field>-->
           <mat-form-field class="col-md-12">
-            <input matInput autocomplete="off" [disabled]="!canManageClassLevels" type="text" id="classLevelName" name="classLevelName" placeholder="Enter name" [(ngModel)]="classLevelEdit.name" #classLevelName="ngModel" required minlength="2" maxlength="200" />
+            <input matInput autocomplete="off" [disabled]="!canManageClassLevels" type="text" id="classLevelName"
+              name="classLevelName" placeholder="Enter name" [(ngModel)]="classLevelEdit.name" #classLevelName="ngModel"
+              required minlength="2" maxlength="200" />
+          </mat-form-field>
+          <mat-form-field class="col-md-12">
+            <mat-label>Meal Session</mat-label>
+            <mat-select [disabled]="!canManageClassLevels" id="mealSessionId" name="mealSessionId"
+              [(ngModel)]="classLevelEdit.mealSessionId" #mealSessionId="ngModel">
+              <mat-option [value]=""></mat-option>
+              <mat-option *ngFor="let item of mealSessionsItems" [value]="item.id">
+                {{item.name}}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
         </div>
       </div>
@@ -23,10 +35,13 @@
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">
-      <button *ngIf="!canManageClassLevels" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
-      <button *ngIf="canManageClassLevels" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="!canManageClassLevels" type="button" mat-button (click)="cancel()">{{'common.editor.Close' |
+        translate}}</button>
+      <button *ngIf="canManageClassLevels" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i
+          class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
       <button *ngIf="canManageClassLevels" type="submit" mat-button [disabled]="isSaving">
-        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i>
+        {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
       </button>
     </div>
   </form>

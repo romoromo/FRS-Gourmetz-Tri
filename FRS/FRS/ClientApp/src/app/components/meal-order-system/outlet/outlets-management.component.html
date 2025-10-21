@@ -21,21 +21,11 @@
     </div>
   </div>
 
-  <ngx-datatable #infotable class="material colored-header"
-                 [loadingIndicator]="loadingIndicator"
-                 [rows]="rows"
-                 [rowHeight]="'auto'"
-                 [headerHeight]="'auto'"
-                 [footerHeight]="35"
-                 [columns]="columns"
-                 [columnMode]="'force'"
-                 [externalPaging]="true"
-                 [externalSorting]="true"
-                 [count]="pagedResult.totalCount"
-                 [offset]="pagedResult.filter.pageNumber"
-                 [limit]="pagedResult.filter.pageSize"
-                 (page)="loadData($event)"
-                 (sort)="loadData($event)">
+  <ngx-datatable #infotable class="material colored-header" [loadingIndicator]="loadingIndicator" [rows]="rows"
+    [rowHeight]="'auto'" [headerHeight]="'auto'" [footerHeight]="35" [columns]="columns" [columnMode]="'force'"
+    [externalPaging]="true" [externalSorting]="true" [count]="pagedResult.totalCount"
+    [offset]="pagedResult.filter.pageNumber" [limit]="pagedResult.filter.pageSize" (page)="loadData($event)"
+    (sort)="loadData($event)">
     <!-- Row Detail Template -->
     <ngx-datatable-row-detail [rowHeight]="'100%'" #myDetailRow (toggle)="onDetailToggle($event)">
       <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
@@ -84,7 +74,8 @@
             </mat-tab>
             <mat-tab label="Order Cancellation" *ngIf="canViewCancellations">
               <div class="container-fluid" style="padding-top:20px">
-                <order-cancellations-management [isHideHeader]="true" [outletId]="row.id"></order-cancellations-management>
+                <order-cancellations-management [isHideHeader]="true"
+                  [outletId]="row.id"></order-cancellations-management>
               </div>
             </mat-tab>
             <!--<mat-tab label="Staff Types">
@@ -104,7 +95,8 @@
   </mat-tab>-->
             <mat-tab label="Order Portal Content" *ngIf="canViewPortalContents">
               <div class="container-fluid" style="padding-top:20px">
-                <order-portal-content-management [isHideHeader]="true" [outletId]="row.id"></order-portal-content-management>
+                <order-portal-content-management [isHideHeader]="true"
+                  [outletId]="row.id"></order-portal-content-management>
               </div>
             </mat-tab>
             <mat-tab label="Email Templates" *ngIf="canViewEmailTemplates">
@@ -119,7 +111,8 @@
             </mat-tab>
             <mat-tab label="Packing Allocations" *ngIf="canViewPackingAllocations">
               <div class="container-fluid" style="padding-top:20px">
-                <packing-allocations-management [isHideHeader]="true" [outletId]="row.id"></packing-allocations-management>
+                <packing-allocations-management [isHideHeader]="true"
+                  [outletId]="row.id"></packing-allocations-management>
               </div>
             </mat-tab>
             <mat-tab label="Packings" *ngIf="canViewPackingAllocations">
@@ -127,7 +120,12 @@
                 <packing-tags-management [isHideHeader]="true" [outletId]="row.id"></packing-tags-management>
               </div>
             </mat-tab>
-            <mat-tab label="Dispensers" *ngIf="canViewClassLevels">
+            <mat-tab label="Dispensers Update" *ngIf="canViewClassLevels">
+              <div class="container-fluid" style="padding-top:20px">
+                <dispenser-outlet-management [isHideHeader]="true" [outletId]="row.id"></dispenser-outlet-management>
+              </div>
+            </mat-tab>
+            <mat-tab label="CICI " *ngIf="canViewClassLevels">
               <div class="container-fluid" style="padding-top:20px">
                 <dispenser-outlet-management [isHideHeader]="true" [outletId]="row.id"></dispenser-outlet-management>
               </div>
@@ -140,7 +138,8 @@
   </ngx-datatable>
 
   <ng-template #flagTemplate let-row="row" let-value="value" let-i="index">
-    <div class="text-center"><i [ngClass]="value ? 'fa fa-check-circle-o active': 'fa fa-circle-o'" aria-hidden="true"></i></div>
+    <div class="text-center"><i [ngClass]="value ? 'fa fa-check-circle-o active': 'fa fa-circle-o'"
+        aria-hidden="true"></i></div>
   </ng-template>
 
   <ng-template #mealCollectionTypeTemplate let-row="row">
@@ -148,14 +147,21 @@
   </ng-template>
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
-    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="requestCaterer(row)"><i class="fa" aria-hidden="true"></i> Caterer</a>
-    <a *ngIf="canManageOutletCaterers" class="btn btn-link btn-xs" href="javascript:;" (click)="editOutlet(row)"><i class="fa fa-pencil-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
-    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteOutlet(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="requestCaterer(row)"><i
+        class="fa" aria-hidden="true"></i> Caterer</a>
+    <a *ngIf="canManageOutletCaterers" class="btn btn-link btn-xs" href="javascript:;" (click)="editOutlet(row)"><i
+        class="fa fa-pencil-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
+    <a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteOutlet(row)"><i
+        class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
     <a *ngIf="canViewOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="toggleExpandRow(row)">Details</a>
-    <a *ngIf="canManageOutletStores" class="btn btn-link btn-xs" href="javascript:;" (click)="openOutletStore(row)"><i class="fa" aria-hidden="true"></i> Stores</a>
-    <a *ngIf="canViewOutletSalesOrderDetailReports" class="btn btn-link btn-xs" href="javascript:;" (click)="openOrderReport(row)"><i class="fa" aria-hidden="true"></i> Order Report</a>
-    <a *ngIf="canViewOutletDeliveryReports" class="btn btn-link btn-xs" href="javascript:;" (click)="openDeliveryOrderReport(row)"><i class="fa" aria-hidden="true"></i>Delivery Report</a>
-    <a *ngIf="canManageOutletMealSummary" class="btn btn-link btn-xs" href="javascript:;" (click)="openMealSummaryReport(row)"><i class="fa" aria-hidden="true"></i>Meal Summary</a>
+    <a *ngIf="canManageOutletStores" class="btn btn-link btn-xs" href="javascript:;" (click)="openOutletStore(row)"><i
+        class="fa" aria-hidden="true"></i> Stores</a>
+    <a *ngIf="canViewOutletSalesOrderDetailReports" class="btn btn-link btn-xs" href="javascript:;"
+      (click)="openOrderReport(row)"><i class="fa" aria-hidden="true"></i> Order Report</a>
+    <a *ngIf="canViewOutletDeliveryReports" class="btn btn-link btn-xs" href="javascript:;"
+      (click)="openDeliveryOrderReport(row)"><i class="fa" aria-hidden="true"></i>Delivery Report</a>
+    <a *ngIf="canManageOutletMealSummary" class="btn btn-link btn-xs" href="javascript:;"
+      (click)="openMealSummaryReport(row)"><i class="fa" aria-hidden="true"></i>Meal Summary</a>
     <!--<a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openPrintLabel(row)"><i class="fa" aria-hidden="true"></i> Print Label</a>-->
     <!--<a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openMealSession(row)"><i class="fa" aria-hidden="true"></i> Sessions</a>-->
     <!--<a *ngIf="canManageOutlets" class="btn btn-link btn-xs" href="javascript:;" (click)="openOutletCalendar(row)"><i class="fa" aria-hidden="true"></i> Calendar</a>-->

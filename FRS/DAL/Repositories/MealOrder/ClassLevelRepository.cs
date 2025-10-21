@@ -30,7 +30,10 @@ namespace DAL.Repositories.MealOrder
         public async Task<PagedEntity<ClassLevel>> GetClassLevelsAsync(BaseFilter filter)
         {
             IQueryable<ClassLevel> query = _appContext.ClassLevels
-                .Include(e => e.Institution);
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Include(e => e.Institution)
+                .Include(e => e.MealSession);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
             //int totalCount = query.Count();
