@@ -101,7 +101,7 @@ import { DeviceEditorComponent } from "./components/device-manager/unknown-devic
 
 import { LocationsManagementComponent } from "./components/controls/locations/locations-management.component";
 import { LocationEditorComponent } from "./components/controls/locations/location-editor.component";
-import { MatInputModule, MatFormFieldModule, MAT_LABEL_GLOBAL_OPTIONS, MAT_DATE_LOCALE } from '@angular/material';
+import { MatInputModule, MatFormFieldModule, MAT_LABEL_GLOBAL_OPTIONS, MAT_DATE_LOCALE, MatIconModule, MatButtonModule } from '@angular/material';
 import { ReservationListComponent } from './components/calendar/reservations/reservations.component';
 import { ReservationListEditorComponent } from './components/calendar/reservations/reservation-editor.component';
 
@@ -526,7 +526,7 @@ export const configFactory = (configService: ConfigurationService) => {
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    MatFormFieldModule, MatDialogModule,
+    MatFormFieldModule, MatDialogModule, MatIconModule, MatButtonModule,
     MatInputModule,
     AppRoutingModule,
     //BaseModule,

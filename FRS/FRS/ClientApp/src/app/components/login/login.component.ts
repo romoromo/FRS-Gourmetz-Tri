@@ -30,6 +30,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   @Input()
   isModal = false;
 
+  showPassword = false;
+
   public languageoptions = [
     { value: 'en', viewValue: 'EN' },
     { value: 'cn', viewValue: 'CN' }
@@ -195,6 +197,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.isLoading = false;
           }, 500);
         });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
 

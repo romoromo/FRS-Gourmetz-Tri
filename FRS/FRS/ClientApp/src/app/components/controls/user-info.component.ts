@@ -55,7 +55,10 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   private selectedUserGroupIds: string[];
   private selectedUserOutletIds: string[];
   private selectedUserCatererIds: string[];
-  
+
+  showPassword = false;
+  showConfirmPassword = false;
+
   public formResetToggle = true;
   private topUpAmount:number = 0;
   private walletAmount: number = 0;
@@ -858,6 +861,14 @@ export class UserInfoComponent implements OnInit, OnDestroy {
         this.userEdit.status = ev;
       }
     }
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   get canViewAllRoles() {
