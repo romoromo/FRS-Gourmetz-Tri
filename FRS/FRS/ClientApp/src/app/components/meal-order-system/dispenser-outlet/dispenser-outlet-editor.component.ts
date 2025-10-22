@@ -3,11 +3,12 @@ import { Component, ViewChild, Inject } from '@angular/core';
 import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DispenserOutlet } from 'src/app/models/meal-order/dispenser-outlet.model';
 import { ClassService } from 'src/app/services/meal-order/class.service';
 import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
 import { Filter } from 'src/app/models/sieve-filter.model';
+import { TrayEditorComponent } from './tray-editor.component';
 
 
 @Component({
@@ -37,10 +38,11 @@ export class DispenserOutletEditorComponent {
 
   constructor(private alertService: AlertService, private classService: ClassService, private accountService: AccountService,
     public dialogRef: MatDialogRef<DispenserOutletEditorComponent>, private deliveryService: DeliveryService,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+    @Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog) {
     this.editDispenserOutlet(data.dispenserOutlet);
 
     this.getOutlets();
+
   }
 
   getOutlets() {
@@ -173,5 +175,20 @@ export class DispenserOutletEditorComponent {
 
   get canManageClassLevels() {
     return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassLevelsPermission)
+  }
+
+  openDialogTrays(): void {
+    const dialogRef = this.dialog.open(TrayEditorComponent, {
+      width: '500px',
+      disableClose: true,
+      data: { outletId: this.dispenserOutletEdit.outletId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Trays Result : ', result);
+      }
+    });
+
   }
 }

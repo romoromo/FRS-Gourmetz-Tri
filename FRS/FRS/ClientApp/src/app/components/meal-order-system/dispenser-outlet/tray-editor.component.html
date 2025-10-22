@@ -1,0 +1,43 @@
+<h1 mat-dialog-title>Dishes</h1>
+<div>
+  <form class="form-horizontal" name="tryEditorForm" #f="ngForm">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <mat-label>IP Address</mat-label>
+          <mat-select id="ipAddress" name="ipAddress"
+                      [(ngModel)]="tryEdit.plcId" (selectionChange)="onPLCSelected($event)" #voucherType="ngModel" required>
+            <mat-option *ngFor="let plc of plcs" [value]="plc.id">
+              {{plc.ipAddress}} - {{ plc.framework}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="showValidationErrors && f.submitted">IP Address is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <mat-label>Framework</mat-label>
+          <input matInput autocomplete="off" type="text" readonly
+                 [value]="selectedPlc?.framework" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" type="number" id="motorOutputNumber" name="motorOutputNumber" placeholder="Motor Output Number"
+                 [(ngModel)]="tryEdit.motorOutputNumber" #outputTotalNumber="ngModel" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" type="number" id="ledOutputNumber" name="ledOutputNumber" placeholder="LED Output Number"
+                 [(ngModel)]="tryEdit.ledOutputNumber" #outputTotalNumber="ngModel" maxlength="200" />
+        </mat-form-field>
+
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>
