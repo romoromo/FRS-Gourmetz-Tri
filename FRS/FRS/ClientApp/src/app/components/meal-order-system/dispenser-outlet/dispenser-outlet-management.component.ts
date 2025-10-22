@@ -47,7 +47,7 @@ export class DispenserOutletManagementComponent implements OnInit {
   openDialog(dispenserOutlet: DispenserOutlet): void {
     const dialogRef = this.dialog.open(DispenserOutletEditorComponent, {
       data: { header: this.header, dispenserOutlet: dispenserOutlet },
-      width: '400px',
+      width: '1000px',
       disableClose: true
     });
 
