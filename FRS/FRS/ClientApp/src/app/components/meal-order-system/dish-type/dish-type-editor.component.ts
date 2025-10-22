@@ -10,6 +10,7 @@ import { MealService } from 'src/app/services/meal-order/meal.service';
 import { Filter } from 'src/app/models/sieve-filter.model';
 import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
 import { NgForm } from '@angular/forms';
+import { FileService } from 'src/app/services/file.service';
 
 
 @Component({
@@ -32,13 +33,14 @@ export class DishTypeEditorComponent {
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
   public changesCancelledCallback: () => void;
+  public fileUploadResponse: { dbPath: '', fileId: null, fileName: '' };
 
 
   @ViewChild('f')
   private form: NgForm;
 
   constructor(private alertService: AlertService, private dishService: DishService, private accountService: AccountService,
-    public dialogRef: MatDialogRef<DishTypeEditorComponent>, private mealService: MealService,
+    public dialogRef: MatDialogRef<DishTypeEditorComponent>, private mealService: MealService, private fileService: FileService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.dishType) != typeof (undefined)) {
       this.catererId = data.catererId;
@@ -203,6 +205,21 @@ export class DishTypeEditorComponent {
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving cperiods.\r\n"`,
             MessageSeverity.error);
         })
+  }
+
+  public uploadFinished = (event) => {
+    this.fileUploadResponse = event;
+    this.dishTypeEdit.filePath = this.fileUploadResponse ? this.fileUploadResponse.dbPath : null;
+  }
+
+  getFileImage(path) {
+    return this.fileService.getFile(path);
+  }
+
+  removePhoto() {
+    this.dishTypeEdit.filePath = null;
+    this.dishTypeEdit.fileId = null;
+    this.dishTypeEdit.fileName = null;
   }
 
   get canManageDishTypes() {
