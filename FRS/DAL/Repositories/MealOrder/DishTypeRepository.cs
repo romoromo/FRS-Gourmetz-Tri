@@ -92,6 +92,35 @@ namespace DAL.Repositories.MealOrder
 
             f.CopyFrom(dishType);
 
+            if (dishType.Icon != null && !string.IsNullOrEmpty(dishType.Icon.Path))
+            {
+                if (!f.FileId.HasValue)
+                {
+                    f.Icon = dishType.Icon;
+                }
+                else
+                {
+                    if (f.Icon == null)
+                    {
+                        //TODO: check why EF Core is not loading the Icon property; interim solution
+                        var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == f.FileId);
+                        if (icon == null)
+                        {
+                            f.Icon = new Models.File();
+                        }
+                        else
+                        {
+                            f.Icon = icon;
+                            f.FileId = icon.Id;
+                        }
+                    }
+
+                    f.Icon.Path = dishType.Icon.Path;
+                    f.Icon.FileName = dishType.Icon.FileName ?? System.IO.Path.GetFileName(dishType.Icon.Path);
+                    f.Icon.Type = FileType.Icon.ToString();
+                }
+            }
+
             Update(f);
             if (await _appContext.SaveChangesAsync() > 0)
             {

@@ -26,5 +26,10 @@ namespace DAL.Models.MealOrder
 
         public virtual ICollection<DishTypePeriod> DishTypePeriods { get; set; }
         public int? OrderNumber { get; set; }
+
+        public int? FileId { get; set; }
+
+        [ForeignKey("FileId")]
+        public virtual File Icon { get; set; }
     }
 }

@@ -13,6 +13,9 @@ export class DishType {
   public institutionId: string;
   public catererId: string;
   public dishTypePeriods: DishTypePeriod[];
+  public fileId: string;
+  public fileName: string;
+  public filePath: string;
 }
 
 export class DishTypePeriod {
