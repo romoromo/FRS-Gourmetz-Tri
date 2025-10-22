@@ -192,10 +192,10 @@
       (click)="openStudentCalendar(row)"><i class="fa" aria-hidden="true"></i> Calendar </a>
     <a *ngIf="canManageStudentVoucher" class="btn btn-link btn-xs" href="javascript:;" (click)="addVoucher(row)"><i
         class="fa" aria-hidden="true"></i> Add Voucher </a>
-    <!--<a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addWalletTopup(row?.id)"><i
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addWalletTopup(row?.id)"><i
         class="fa fa-money" aria-hidden="true"></i> Wallet topup</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addPointTopup(row?.id)"><i
-        class="fa fa-credit-card" aria-hidden="true"></i> Point topup</a>-->
+        class="fa fa-credit-card" aria-hidden="true"></i> Point topup</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="offBoarding(row?.id)"><i
         class="fa fa-sign-out" aria-hidden="true"></i> off-boarding</a>
     <a *ngIf="canManageStudentNotification" class="btn btn-link btn-xs" href="javascript:;"
