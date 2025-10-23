@@ -1,12 +1,14 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Repositories.Interfaces;
-using DAL.Core;
-using Sieve.Services;
+﻿using DAL.Core;
 using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
+using Sieve.Services;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DAL.Repositories
 {
@@ -109,6 +111,86 @@ namespace DAL.Repositories
             {
                 result.Message = "Failed to delete!";
                 result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+
+        public async Task<BaseOperationResponse> StudentWalletTransactionAsync(StudentWalletTransaction dto, int userId)
+        {
+            var result = new BaseOperationResponse();
+
+            try
+            {
+                var student = await this._appContext.Students
+                .FirstOrDefaultAsync(e => e.IsActive && e.Id == dto.StudentId);
+
+                if (student == null)
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Student with Id={dto.StudentId} not found or inactive.";
+                    return result;
+                }
+
+                if (string.IsNullOrEmpty(dto.TransactionType) ||
+                    (!dto.TransactionType.Equals(RewardTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                    !dto.TransactionType.Equals(RewardTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Transaction type is missing or invalid.";
+                    return result;
+                }
+
+                if (dto.TransactionType.Equals(WalletTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    student.WalletBalance += dto.Amount;
+                }
+                else if (dto.TransactionType.Equals(WalletTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    if (student.WalletBalance - dto.Amount < 0)
+                    {
+                        result.IsSuccess = false;
+                        result.Message = "Insufficient balance.";
+                        return result;
+                    } else if (student.IsWalletFreeze)
+                    {
+                        result.IsSuccess = false;
+                        result.Message = "Wallet is Freezed";
+                        return result;
+                    }
+                    else
+                    {
+                        student.WalletBalance -= dto.Amount;
+                    }
+                }
+
+                //result = await this._uow.Students.UpdateAsync(student);
+                if (result.IsSuccess)
+                {
+                    var transaction = new StudentWalletTransaction
+                    {
+                        Amount = dto.Amount,
+                        TransactionType = dto.TransactionType,
+                        StudentId = dto.StudentId,
+                        Description = dto.Description,
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    };
+
+                    await _appContext.StudentWalletTransactions.AddAsync(transaction);
+                }
+
+
+                await _appContext.SaveChangesAsync();
+
+                result.IsSuccess = true;
+                result.Message = $"Successfully paid {dto.Amount:D} for students : '{student.Name}'";
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Error while processing wallet transaction for StudentId={dto.StudentId}. Details: {ex.Message}";
             }
 
             return result;
