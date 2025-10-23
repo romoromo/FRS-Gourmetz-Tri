@@ -151,7 +151,7 @@ export class DispenserOutletManagementComponent implements OnInit {
 
 
   editDispenserOutlet(row: DispenserOutlet) {
-    this.editedDispenserOutlet = row;
+    this.editedDispenserOutlet = row; 
     this.header = 'Edit Dispenser';
     this.openDialog(this.editedDispenserOutlet);
   }

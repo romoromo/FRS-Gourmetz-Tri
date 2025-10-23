@@ -175,7 +175,7 @@
     <None Remove="ClientApp\src\app\directives\signage-component-type.directive.ts" />
     <None Remove="ClientApp\src\app\models\bookinggridrow.model.ts" />
     <None Remove="ClientApp\src\app\models\meal-order\plc.model.ts" />
-    <None Remove="ClientApp\src\app\models\meal-order\TryModel.ts" />
+    <None Remove="ClientApp\src\app\models\meal-order\TrayModel.ts" />
     <None Remove="ClientApp\src\app\models\usercardid.model.ts" />
     <None Remove="ClientApp\src\app\models\userreward.model.ts" />
     <None Remove="ClientApp\src\app\models\uservehicle.model.ts" />
@@ -245,7 +245,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\directives\signage-component-type.directive.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\models\bookinggridrow.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\models\meal-order\plc.model.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\models\meal-order\TryModel.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\meal-order\TrayModel.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\models\userreward.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\models\usercardid.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\models\userwallet.model.ts" />

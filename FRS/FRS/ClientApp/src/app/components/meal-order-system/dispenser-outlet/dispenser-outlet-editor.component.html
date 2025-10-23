@@ -60,7 +60,20 @@
                 <td>LED Output Number</td>
                 <td width="100px">Action</td>
               </tr>
-            </thead>            
+            </thead>
+            <tbody>
+              <tr *ngFor="let tray of dispenserOutletEdit.trays; let i = index" class="text-center">
+                <td>{{ i + 1 }}</td>
+                <td>{{ tray.ipAddress }}</td>
+                <td>{{ tray.framework }}</td>
+                <td>{{ tray.motorOutputNumber }}</td>
+                <td>{{ tray.ledOutputNumber }}</td>
+                <td>
+                  <button mat-button type="button" (click)="openDialogTrays(tray)"><mat-icon>edit</mat-icon></button>
+                  <button mat-button type="button" (click)="deleteTray(tray)"><mat-icon>delete</mat-icon></button>                 
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>

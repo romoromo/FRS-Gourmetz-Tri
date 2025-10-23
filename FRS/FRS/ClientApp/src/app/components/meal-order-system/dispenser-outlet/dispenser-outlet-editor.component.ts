@@ -1,6 +1,6 @@
 import { Component, ViewChild, Inject } from '@angular/core';
 
-import { AlertService, MessageSeverity } from '../../../services/alert.service';
+import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
@@ -9,6 +9,7 @@ import { ClassService } from 'src/app/services/meal-order/class.service';
 import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
 import { Filter } from 'src/app/models/sieve-filter.model';
 import { TrayEditorComponent } from './tray-editor.component';
+import { TrayModel } from '../../../models/meal-order/TrayModel';
 
 
 @Component({
@@ -35,7 +36,7 @@ export class DispenserOutletEditorComponent {
 
   @ViewChild('f')
   private form;
-
+  trays: TrayModel[] = [];
   constructor(private alertService: AlertService, private classService: ClassService, private accountService: AccountService,
     public dialogRef: MatDialogRef<DispenserOutletEditorComponent>, private deliveryService: DeliveryService,
     @Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog) {
@@ -177,18 +178,84 @@ export class DispenserOutletEditorComponent {
     return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassLevelsPermission)
   }
 
-  openDialogTrays(): void {
+  openDialogTrays(trayToEdit?: any): void {
     const dialogRef = this.dialog.open(TrayEditorComponent, {
       width: '500px',
       disableClose: true,
-      data: { outletId: this.dispenserOutletEdit.outletId }
+      data: {
+        outletId: this.dispenserOutletEdit.outletId,
+        tray: trayToEdit
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Trays Result : ', result);
+        result.dispenserId = this.dispenserOutletEdit.id;
+        if (!this.dispenserOutletEdit.trays) {
+          this.dispenserOutletEdit.trays = [];
+        }
+
+        const existingIndex = this.dispenserOutletEdit.trays.findIndex(
+          t => t.plcId === result.plcId
+        );
+
+        if (existingIndex >= 0) {
+          // Update existing tray
+          this.dispenserOutletEdit.trays[existingIndex] = result;
+          this.alertService.showMessage(
+            'Tray Updated',
+            `Updated tray for PLC ${result.ipAddress}`,
+            MessageSeverity.success
+          );
+        } else {
+          // Add new tray
+          this.dispenserOutletEdit.trays.push(result);
+          this.alertService.showMessage(
+            'Tray Added',
+            `Added tray for PLC ${result.ipAddress}`,
+            MessageSeverity.success
+          );
+        }
+
+        console.log("Updated trays:", this.dispenserOutletEdit.trays);
       }
     });
 
+  }
+
+  editTray(tray: TrayModel) {
+    const dialogRef = this.dialog.open(TrayEditorComponent, {
+      width: '500px',
+      disableClose: true,
+      data: { outletId: this.dispenserOutletEdit.outletId, tray: tray }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        Object.assign(tray, result);
+      }
+    });
+  }
+
+  deleteTray(tray: TrayModel): void {
+    this.alertService.showDialog(`Are you sure you want to delete the tray for PLC ${tray.ipAddress}?`, DialogType.confirm, () => this.confirmDeleteTray(tray));
+  }
+
+  confirmDeleteTray(tray: TrayModel) {
+    this.alertService.showDialog(
+      `Are you sure you want to delete tray for PLC ${tray.ipAddress}?`,
+      DialogType.confirm,
+      () => {
+        this.dispenserOutletEdit.trays = this.dispenserOutletEdit.trays.filter(
+          t => t.plcId !== tray.plcId
+        );
+        this.alertService.showMessage(
+          "Tray Deleted",
+          `Tray for PLC ${tray.ipAddress} removed.`,
+          MessageSeverity.success
+        );
+      }
+    );
   }
 }
