@@ -2226,125 +2226,60 @@ namespace BAL.Services.MealOrder
                     BaseFont allerfont = BaseFont.CreateFont(fullPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
                     iTextSharp.text.Font aller = new iTextSharp.text.Font(allerfont, 12);
 
-                    var pgSize = new iTextSharp.text.Rectangle(88, 66);
-                    Document document = new Document(pgSize, 2, 2, 2, 2);
+                    var pgSize = new iTextSharp.text.Rectangle(225, 120);
+                    Document document = new Document(pgSize, 5, 5, 5, 5);
                     PdfWriter writer = PdfWriter.GetInstance(document, stream);
                     document.Open();
 
-
                     for (int i = 0; i < dto.Length; i++)
                     {
-
                         for (int j = 0; j < dto[i].dishes.ToArray().Length; j++)
                         {
                             for (int k = 0; k < dto[i].dishes[j].t_qty; k++)
                             {
-
-                                DishDTO dish = await this._dishService.GetDishByIdAsync(dto[i].dishes[j].dish_id);
-
-                                string cuisineLicense = dish.CuisineLicenseCode;
-
-                                string toIconFilePath = "";
-
-                                if (dish.CuisineIconFileName != null && dish.CuisineIconFileName != "")
-                                {
-                                    toIconFilePath =  Path.Combine(pathToImageSave, dish.CuisineIconFileName);
-                                }
-
-
                                 document.NewPage();
 
-                                float margin = document.LeftMargin;
-                                float totalWidth = document.PageSize.Width - document.LeftMargin - document.RightMargin;
-                                float columnWidth = 50;
+                                iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(fullImagePath);
+                                png.ScaleToFit(40f, 40f);
+                                png.SetAbsolutePosition(10f, 50f);
+                                document.Add(png);
 
-                                iTextSharp.text.Rectangle leftColumn = new iTextSharp.text.Rectangle(
-                                    document.Left,        // x1
-                                    document.Bottom,      // y1
-                                    document.Left + columnWidth, // x2
-                                    document.Top          // y2
-                                );
-
-                                // Create a ColumnText for the left column
-                                ColumnText columnLeft = new ColumnText(writer.DirectContent);
-                                columnLeft.SetSimpleColumn(leftColumn);
-                                
-
-                                if(toIconFilePath != "")
-                                {
-                                    iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(toIconFilePath);
-                                    png.ScaleToFit(13, 13);
-                                    png.SetAbsolutePosition(63f, 5f);
-                                    document.Add(png);
-                                }
-
-                                string cleanDate = Regex.Replace(dto[i].deliveryDate, "[^a-zA-Z0-9]", "");
-
-                                string uniqueCode = "B" + cleanDate + dto[i].meal_allocation_id.ToString().PadLeft(5, '0') + dto[i].dishes[j].dish_id.ToString().PadLeft(4, '0') + dto[i].dishes[j].token_id.ToString().PadLeft(3, '0') + k.ToString().PadLeft(3, '0');
-
-                                string qrCodeData = uniqueCode + " Dish : " + dto[i].dishes[j].dish_name + "', Packed: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.ToString("hh:mm tt") + ", Consume By: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt") + "\n";
-                                BarcodeQRCode barcodeQRCode = new BarcodeQRCode(qrCodeData, 15, 15, null); // width, height, parameters
-
-                                iTextSharp.text.Image qrCodeImage = barcodeQRCode.GetImage();
-                                qrCodeImage.ScaleToFit(36, 36);
-                                qrCodeImage.SetAbsolutePosition(51f, 20f);
-                                document.Add(qrCodeImage);
-
-                                BentoAssetDTO bentoAsset = new BentoAssetDTO();
-                                bentoAsset.Code = uniqueCode;
-                                bentoAsset.BentoBoxTypeId = 1;
-                                bentoAsset.DishId = dto[i].dishes[j].dish_id;
-                                bentoAsset.InstitutionId = 1;
-
-                                await this._deliveryService.CreateBentoAssetAsync(bentoAsset);
-
-                                Paragraph para1 = new Paragraph("Gourmetz Pte Ltd", new iTextSharp.text.Font(allerfont, 5));
+                                Paragraph para1 = new Paragraph("SATS Food Services Pte Ltd", new iTextSharp.text.Font(allerfont, 10));
                                 para1.Alignment = Element.ALIGN_CENTER;
-                                columnLeft.AddElement(para1);
+                                document.Add(para1);
 
-
-                                string licenseNo = "PL24L0327";
-
-                                if (cuisineLicense != null && cuisineLicense != "")
-                                {
-                                    licenseNo = cuisineLicense;
-                                }
-
-                                Paragraph para2 = new Paragraph("License No: " + licenseNo, new iTextSharp.text.Font(allerfont, 4));
+                                Paragraph para2 = new Paragraph("License No: PL82K1707", new iTextSharp.text.Font(allerfont, 8));
                                 para2.Alignment = Element.ALIGN_CENTER;
-                                columnLeft.AddElement(para2);
+                                document.Add(para2);
 
-                                Paragraph para3 = new Paragraph("Date Packed: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 4));
+                                Paragraph para3 = new Paragraph("Date Packed: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 8));
                                 para3.Alignment = Element.ALIGN_CENTER;
-                                columnLeft.AddElement(para3);
+                                document.Add(para3);
 
-                                Chunk c = new Chunk("Time Packed: " + dto[i].timePacked.Value.ToString("hh:mm tt"), new iTextSharp.text.Font(allerfont, 4));
+                                Chunk c = new Chunk("Time Packed: " + dto[i].timePacked.Value.ToString("hh:mm tt"), new iTextSharp.text.Font(allerfont, 8));
                                 if (dto[i].color != null && dto[i].color != "")
                                 {
                                     c.SetBackground(new BaseColor(ColorTranslator.FromHtml(dto[i].color)));
                                 }
                                 Paragraph para4 = new Paragraph(c);
                                 para4.Alignment = Element.ALIGN_CENTER;
-                                columnLeft.AddElement(para4);
+                                document.Add(para4);
 
-                                Paragraph para5 = new Paragraph("Consume By: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 4));
+                                Paragraph para5 = new Paragraph("Consume By: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 8));
                                 para5.Alignment = Element.ALIGN_CENTER;
-                                columnLeft.AddElement(para5);
+                                document.Add(para5);
 
-                                Paragraph para6 = new Paragraph("At: " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt"), new iTextSharp.text.Font(allerfont, 4));
+                                Paragraph para6 = new Paragraph("At: " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt"), new iTextSharp.text.Font(allerfont, 8));
                                 para6.Alignment = Element.ALIGN_CENTER;
-                                columnLeft.AddElement(para6);
+                                document.Add(para6);
 
                                 var phrase = new Phrase();
                                 //phrase.Add(new Chunk("(" + dto[i].dishes[j].dish_code + ") - ", new Font(Font.FontFamily.HELVETICA, 8)));
-                                phrase.Add(new Chunk(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 5, iTextSharp.text.Font.BOLD)));
+                                phrase.Add(new Chunk(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 10, iTextSharp.text.Font.BOLD)));
 
-                                //Paragraph para7 = new Paragraph(phrase);
-                                Paragraph para7 = new Paragraph(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 5, iTextSharp.text.Font.BOLD));
+                                Paragraph para7 = new Paragraph(phrase);
                                 para7.Alignment = Element.ALIGN_CENTER;
-                                columnLeft.AddElement(para7);
-
-                                columnLeft.Go();
+                                document.Add(para7);
                             }
                         }
                     }
@@ -2362,6 +2297,7 @@ namespace BAL.Services.MealOrder
             }
 
         }
+
 
         public async Task<byte[]> GenerateOrderLogXls(BaseFilter filter)
         {
