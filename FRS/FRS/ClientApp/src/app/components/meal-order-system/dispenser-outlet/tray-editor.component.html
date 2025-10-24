@@ -1,0 +1,63 @@
+<h1 mat-dialog-title>{{ data?.tray ? 'Edit Tray' : 'Add Tray' }}</h1>
+
+<ng-container *ngIf="!loadingIndicator; else loadingTpl">
+  <form class="form-horizontal" name="tryEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+        (!trayId.valid && showErrorAlert('Tray Id is required', 'Please enter Tray Id'))">
+    <div mat-dialog-content>
+      <div class="row">
+
+        <mat-form-field class="col-md-12">
+          <input matInput id="trayId" name="trayId"
+                 placeholder="Tray Id"
+                 [(ngModel)]="trayEdit.trayId" required [disabled]="!!data?.tray"/>
+          <mat-error *ngIf="f.submitted && !trayEdit.trayId">Tray ID is required</mat-error>
+        </mat-form-field>
+
+        <!-- PLC dropdown -->
+        <mat-form-field class="col-md-12">
+          <mat-label>PLC / IP Address</mat-label>
+          <mat-select id="ipAddress" name="ipAddress"
+                      [(ngModel)]="trayEdit.plcId"
+                      (selectionChange)="onPLCSelected($event)"
+                      required [disabled]="!!data?.tray">
+            <mat-option *ngFor="let plc of plcs" [value]="plc.id">
+              {{ plc.ipAddress }} - {{ plc.framework }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="f.submitted && !trayEdit.plcId">PLC is required</mat-error>
+        </mat-form-field>
+
+        <!-- Motor Output -->
+        <mat-form-field class="col-md-12">
+          <input matInput type="number" id="motorOutputNumber" name="motorOutputNumber"
+                 placeholder="Motor Output Number"
+                 [(ngModel)]="trayEdit.motorOutputNumber" required />
+        </mat-form-field>
+
+        <!-- LED Output -->
+        <mat-form-field class="col-md-12">
+          <input matInput type="number" id="ledOutputNumber" name="ledOutputNumber"
+                 placeholder="LED Output Number"
+                 [(ngModel)]="trayEdit.ledOutputNumber" required />
+        </mat-form-field>
+
+      </div>
+    </div>
+
+    <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()">{{ 'common.editor.Cancel' | translate }}</button>
+      <button type="submit" mat-button color="primary" [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i>
+        <i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i>
+        {{ isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate) }}
+      </button>
+    </div>
+  </form>
+</ng-container>
+
+<ng-template #loadingTpl>
+  <div class="text-center p-4">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+</ng-template>

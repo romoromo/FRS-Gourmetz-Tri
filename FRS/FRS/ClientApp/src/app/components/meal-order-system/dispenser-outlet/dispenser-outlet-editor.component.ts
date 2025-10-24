@@ -1,13 +1,15 @@
 import { Component, ViewChild, Inject } from '@angular/core';
 
-import { AlertService, MessageSeverity } from '../../../services/alert.service';
+import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DispenserOutlet } from 'src/app/models/meal-order/dispenser-outlet.model';
 import { ClassService } from 'src/app/services/meal-order/class.service';
 import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
 import { Filter } from 'src/app/models/sieve-filter.model';
+import { TrayEditorComponent } from './tray-editor.component';
+import { TrayModel } from '../../../models/meal-order/TrayModel';
 
 
 @Component({
@@ -34,13 +36,14 @@ export class DispenserOutletEditorComponent {
 
   @ViewChild('f')
   private form;
-
+  trays: TrayModel[] = [];
   constructor(private alertService: AlertService, private classService: ClassService, private accountService: AccountService,
     public dialogRef: MatDialogRef<DispenserOutletEditorComponent>, private deliveryService: DeliveryService,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+    @Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog) {
     this.editDispenserOutlet(data.dispenserOutlet);
 
     this.getOutlets();
+
   }
 
   getOutlets() {
@@ -173,5 +176,114 @@ export class DispenserOutletEditorComponent {
 
   get canManageClassLevels() {
     return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassLevelsPermission)
+  }
+
+  openDialogTrays(trayToEdit?: TrayModel): void {
+    const isEdit = !!trayToEdit;
+
+    const dialogRef = this.dialog.open(TrayEditorComponent, {
+      width: '500px',
+      disableClose: true,
+      data: {
+        outletId: this.dispenserOutletEdit.outletId,
+        tray: trayToEdit
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+
+      result.dispenserId = this.dispenserOutletEdit.id;
+      if (!this.dispenserOutletEdit.trays) {
+        this.dispenserOutletEdit.trays = [];
+      }
+
+      if (isEdit) {
+        const index = this.dispenserOutletEdit.trays.findIndex(t => t.trayId === trayToEdit.trayId);
+        if (index >= 0) {
+          const dupTray = this.dispenserOutletEdit.trays.find(
+            (t, i) => i !== index && t.trayId === result.trayId
+          );
+          if (dupTray) {
+            this.alertService.showMessage('Information', `Tray ID already exists`, MessageSeverity.info);
+            return;
+          }
+
+          const dupOutput = this.dispenserOutletEdit.trays.find(
+            (t, i) =>
+              i !== index &&
+              t.plcId === result.plcId &&
+              t.ledOutputNumber === result.ledOutputNumber &&
+              t.motorOutputNumber === result.motorOutputNumber
+          );
+          if (dupOutput) {
+            this.alertService.showMessage(
+              'Information',
+              `PLC ${result.ipAddress} already exists with the same output`,
+              MessageSeverity.info
+            );
+            return;
+          }
+
+          this.dispenserOutletEdit.trays[index] = result;
+          this.alertService.showMessage(
+            'Tray Updated',
+            `Tray ${result.trayId} updated successfully`,
+            MessageSeverity.success
+          );
+        }
+      } else {
+        const dupTray = this.dispenserOutletEdit.trays.find(t => t.trayId === result.trayId);
+        if (dupTray) {
+          this.alertService.showMessage('Information', `Tray ID already exists`, MessageSeverity.info);
+          return;
+        }
+
+        const dupOutput = this.dispenserOutletEdit.trays.find(
+          t =>
+            t.plcId === result.plcId &&
+            t.ledOutputNumber === result.ledOutputNumber &&
+            t.motorOutputNumber === result.motorOutputNumber
+        );
+        if (dupOutput) {
+          this.alertService.showMessage(
+            'Information',
+            `PLC ${result.ipAddress} already exists with the same output`,
+            MessageSeverity.info
+          );
+          return;
+        }
+
+        this.dispenserOutletEdit.trays.push(result);
+        this.alertService.showMessage(
+          'Tray Added',
+          `Added tray for PLC ${result.ipAddress}`,
+          MessageSeverity.success
+        );
+      }
+
+      console.log("Updated trays:", this.dispenserOutletEdit.trays);
+    });
+  }
+
+  deleteTray(tray: TrayModel): void {
+    this.confirmDeleteTray(tray);
+  }
+
+  confirmDeleteTray(tray: TrayModel) {
+    this.alertService.showDialog(
+      `Are you sure you want to delete tray for PLC ${tray.ipAddress}?`,
+      DialogType.confirm,
+      () => {
+        this.dispenserOutletEdit.trays = this.dispenserOutletEdit.trays.filter(
+          t => t.trayId !== tray.trayId
+        );
+        this.alertService.showMessage(
+          "Tray Deleted",
+          `Tray for PLC ${tray.ipAddress} removed.`,
+          MessageSeverity.success
+        );
+      }
+    );
   }
 }
