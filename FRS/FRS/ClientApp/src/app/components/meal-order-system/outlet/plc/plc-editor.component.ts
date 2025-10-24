@@ -61,7 +61,6 @@ export class PlcEditorComponent {
   }
 
   private save() {
-    debugger;
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
     if (this.isNewPlc) {

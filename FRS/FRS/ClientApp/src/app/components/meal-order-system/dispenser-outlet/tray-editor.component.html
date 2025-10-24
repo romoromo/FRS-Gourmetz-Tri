@@ -10,7 +10,7 @@
         <mat-form-field class="col-md-12">
           <input matInput id="trayId" name="trayId"
                  placeholder="Tray Id"
-                 [(ngModel)]="trayEdit.trayId" required />
+                 [(ngModel)]="trayEdit.trayId" required [disabled]="!!data?.tray"/>
           <mat-error *ngIf="f.submitted && !trayEdit.trayId">Tray ID is required</mat-error>
         </mat-form-field>
 
