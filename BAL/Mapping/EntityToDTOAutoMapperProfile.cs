@@ -910,6 +910,10 @@ namespace BAL.Mapping
             CreateMap<spVoucherUtilisationReport, VoucherUtilisation>()
                 .ForMember(dest => dest.UtilisedDate, opt => opt.MapFrom(src => src.UtilisedDate.Date == DateTime.MinValue.Date ? (DateTime?)null : src.UtilisedDate));
             CreateMap<PLCModel, PLCDTO>().ReverseMap();
+            CreateMap<TrayModel, TrayDTO>()
+                .ForMember(dest => dest.IPAddress, opt => opt.MapFrom(src => src.PLC.IPAddress))
+                .ForMember(dest => dest.Framework, opt => opt.MapFrom(src => src.PLC.Framework))
+                .ReverseMap();
         }
     }
 }

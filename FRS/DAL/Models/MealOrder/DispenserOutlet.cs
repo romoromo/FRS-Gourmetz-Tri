@@ -41,5 +41,7 @@ namespace DAL.Models.MealOrder
 
         [ForeignKey("OutletId")]
         public virtual Outlet Outlet { get; set; }
+
+        public virtual ICollection<TrayModel> Trays { get; set; } = new HashSet<TrayModel>();
     }
 }

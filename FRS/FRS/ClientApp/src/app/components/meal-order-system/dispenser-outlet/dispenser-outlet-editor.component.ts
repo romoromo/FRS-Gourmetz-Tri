@@ -239,7 +239,7 @@ export class DispenserOutletEditorComponent {
   }
 
   deleteTray(tray: TrayModel): void {
-    this.alertService.showDialog(`Are you sure you want to delete the tray for PLC ${tray.ipAddress}?`, DialogType.confirm, () => this.confirmDeleteTray(tray));
+    this.confirmDeleteTray(tray);
   }
 
   confirmDeleteTray(tray: TrayModel) {

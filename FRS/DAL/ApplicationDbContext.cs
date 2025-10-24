@@ -271,6 +271,7 @@ namespace DAL
         public DbSet<UserActivity> UserActivities { get; set; }
         public DbSet<VoucherDish> VoucherDishes { get; set; }
         public DbSet<PLCModel> PLCs { get; set; }
+        public DbSet<TrayModel> Trays { get; set; }
         #region Stored Procedures
 
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
@@ -682,6 +683,8 @@ namespace DAL
             builder.Entity<FaqDetail>().TrackAllProperties();
             builder.Entity<PLCModel>().TrackAllProperties();
             builder.Entity<PLCModel>().HasIndex(p => new { p.IPAddress, p.Framework, p.TotalNumber, p.OutletId, p.InstitutionId });
+            builder.Entity<TrayModel>().TrackAllProperties();
+            builder.Entity<TrayModel>().HasIndex(p => new { p.PLCId });
             #region UserActivity
             builder.Entity<UserActivity>()
                 .Property(x => x.Message)

@@ -1,4 +1,5 @@
 ﻿using Sieve.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,6 +25,8 @@ namespace DAL.Models.MealOrder
 
         [ForeignKey("OutletId")]
         public virtual Outlet Outlet { get; set; }
+
+        public virtual ICollection<TrayModel> Trays { get; set; } = new HashSet<TrayModel>();
 
     }
 }
