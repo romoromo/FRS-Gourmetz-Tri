@@ -168,20 +168,6 @@ namespace DAL.Repositories.MealOrder
                 {
                     student.WalletBalance -= Decimal.ToDouble(Payment.total);
 
-                    _appContext.AuditUserActivityType = new AuditUserActivityType
-                    {
-                        GroupId = Common.GenerateUniqueStringId(),
-                        ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
-                        Remarks = "Payment was created."
-                    };
-
-                    f = await AddAsync(Payment);
-                    resultSaveChange = await _appContext.SaveChangesAsync();
-                }
-
-                //result = await this._uow.Students.UpdateAsync(student);
-                if (result.IsSuccess)
-                {
                     var transaction = new StudentWalletTransaction
                     {
                         Amount = Decimal.ToDouble(Payment.total),
@@ -193,8 +179,24 @@ namespace DAL.Repositories.MealOrder
                     };
 
                     await _appContext.StudentWalletTransactions.AddAsync(transaction);
+
+                    _appContext.AuditUserActivityType = new AuditUserActivityType
+                    {
+                        GroupId = Common.GenerateUniqueStringId(),
+                        ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
+                        Remarks = "Payment was created."
+                    };
+
+                    Payment.Status = "SUCCESS";
+
+                    f = await AddAsync(Payment);
+
+                    resultSaveChange = await _appContext.SaveChangesAsync();
                 }
-                await _appContext.SaveChangesAsync();
+
+                //result = await this._uow.Students.UpdateAsync(student);
+
+                
             }
             else
             {

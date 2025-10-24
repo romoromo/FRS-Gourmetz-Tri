@@ -167,11 +167,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\components\meal-order-system\outlet\plc\plc-editor.component.ts" />
+    <None Remove="ClientApp\src\app\components\meal-order-system\outlet\plc\plc-management.component.ts" />
     <None Remove="ClientApp\src\app\components\signage\signage-component-types\signage-component-type-wrapper.component.ts" />
     <None Remove="ClientApp\src\app\components\signage\signage-component-types\vjs-player.component.ts" />
     <None Remove="ClientApp\src\app\components\signage\signage-display\signage-display.component.ts" />
     <None Remove="ClientApp\src\app\directives\signage-component-type.directive.ts" />
     <None Remove="ClientApp\src\app\models\bookinggridrow.model.ts" />
+    <None Remove="ClientApp\src\app\models\meal-order\plc.model.ts" />
+    <None Remove="ClientApp\src\app\models\meal-order\TrayModel.ts" />
     <None Remove="ClientApp\src\app\models\usercardid.model.ts" />
     <None Remove="ClientApp\src\app\models\userreward.model.ts" />
     <None Remove="ClientApp\src\app\models\uservehicle.model.ts" />
@@ -233,11 +237,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\components\meal-order-system\outlet\plc\plc-management.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\components\meal-order-system\outlet\plc\plc-editor.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\components\signage\signage-component-types\signage-component-type-wrapper.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\components\signage\signage-component-types\vjs-player.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\components\signage\signage-display\signage-display.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\directives\signage-component-type.directive.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\models\bookinggridrow.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\meal-order\plc.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\models\meal-order\TrayModel.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\models\userreward.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\models\usercardid.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\models\userwallet.model.ts" />

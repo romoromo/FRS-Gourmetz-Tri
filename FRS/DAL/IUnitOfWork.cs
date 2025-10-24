@@ -132,6 +132,7 @@ namespace DAL
         int? CurrentInstitutionId { get; }
         IFaqSubjectRepository FaqSubjects { get; }
         IFaqDetailRepository FaqDetails { get; }
+        IPLCRepository PLCRepository { get; }
 
         #region For token order payment processing
         ITokenPaymentRepository SubmittedPayments { get; }

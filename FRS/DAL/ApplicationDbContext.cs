@@ -138,7 +138,7 @@ namespace DAL
 
         public DbSet<DispenserOutlet> DispenserOutlets { get; set; }
         public DbSet<ClassLevel> ClassLevels { get; set; }
-        public DbSet<ClassBatch> ClassBatches { get; set; } 
+        public DbSet<ClassBatch> ClassBatches { get; set; }
         public DbSet<Class> Classes { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<StudentCard> StudentCards { get; set; }
@@ -270,6 +270,8 @@ namespace DAL
         public DbSet<FaqDetail> FaqDetails { get; set; }
         public DbSet<UserActivity> UserActivities { get; set; }
         public DbSet<VoucherDish> VoucherDishes { get; set; }
+        public DbSet<PLCModel> PLCs { get; set; }
+        public DbSet<TrayModel> Trays { get; set; }
         #region Stored Procedures
 
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
@@ -366,7 +368,7 @@ namespace DAL
             builder.Entity<ApplicationUser>().HasMany(s => s.Students).WithOne(s => s.User);
             builder.Entity<ApplicationUser>().HasMany(s => s.UserOrderAlerts).WithOne(s => s.User);
             builder.Entity<UserGroupMember>().HasKey(sc => new { sc.UserGroupId, sc.UserId });
-            
+
 
             builder.Entity<UserGroupMember>().HasOne(e => e.UserGroup).WithMany(e => e.Members).HasForeignKey(e => e.UserGroupId);
             builder.Entity<UserGroupMember>().HasOne(e => e.User).WithMany(e => e.UserGroupMembers).HasForeignKey(e => e.UserId);
@@ -436,9 +438,9 @@ namespace DAL
             builder.Entity<spGetFasTokenOrderSummary>().ToTable("spGetFasTokenOrderSummary");
             builder.Entity<spVoucherUtilisationReport>().ToTable("spVoucherUtilisationReport");
 
-        #region Audit Tables
+            #region Audit Tables
 
-        builder.Entity<Facility>().TrackAllProperties();
+            builder.Entity<Facility>().TrackAllProperties();
             builder.Entity<FacilityType>().TrackAllProperties();
             builder.Entity<Reservation>().TrackAllProperties();
             builder.Entity<Device>().TrackAllProperties();
@@ -639,7 +641,7 @@ namespace DAL
             builder.Entity<TransactionFee>().TrackAllProperties();
             builder.Entity<TransactionFeeDetail>().TrackAllProperties();
             builder.Entity<VoucherType>().TrackAllProperties();
-            
+
             #region Voucher
             builder.Entity<Voucher>().TrackAllProperties();
             builder.Entity<Voucher>().HasIndex(v => v.OutletProfileId);
@@ -679,7 +681,10 @@ namespace DAL
             builder.Entity<StudentAccountLinkRequest>().TrackAllProperties();
             builder.Entity<FaqSubject>().TrackAllProperties();
             builder.Entity<FaqDetail>().TrackAllProperties();
-
+            builder.Entity<PLCModel>().TrackAllProperties();
+            builder.Entity<PLCModel>().HasIndex(p => new { p.IPAddress, p.Framework, p.TotalNumber, p.OutletId, p.InstitutionId });
+            builder.Entity<TrayModel>().TrackAllProperties();
+            builder.Entity<TrayModel>().HasIndex(p => new { p.PLCId });
             #region UserActivity
             builder.Entity<UserActivity>()
                 .Property(x => x.Message)

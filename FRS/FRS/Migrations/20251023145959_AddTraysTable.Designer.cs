@@ -4,16 +4,17 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-
-//#nullable disable
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251023145959_AddTraysTable")]
+    partial class AddTraysTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3776,9 +3777,6 @@ namespace FRS.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MealSessionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -3799,8 +3797,6 @@ namespace FRS.Migrations
                     b.HasIndex("CreatedBy");
 
                     b.HasIndex("InstitutionId");
-
-                    b.HasIndex("MealSessionId");
 
                     b.HasIndex("OutletId");
 
@@ -9051,9 +9047,6 @@ namespace FRS.Migrations
 
                     b.Property<int>("PLCId")
                         .HasColumnType("int");
-
-                    b.Property<string>("TrayId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
@@ -14751,10 +14744,6 @@ namespace FRS.Migrations
                         .WithMany()
                         .HasForeignKey("InstitutionId");
 
-                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealSession")
-                        .WithMany()
-                        .HasForeignKey("MealSessionId");
-
                     b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
                         .WithMany("ClassLevels")
                         .HasForeignKey("OutletId");
@@ -14766,8 +14755,6 @@ namespace FRS.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("Institution");
-
-                    b.Navigation("MealSession");
 
                     b.Navigation("Outlet");
 

@@ -130,6 +130,12 @@
                 <dispenser-outlet-management [isHideHeader]="true" [outletId]="row.id"></dispenser-outlet-management>
               </div>
             </mat-tab>
+
+            <mat-tab label="PLC">
+              <div class="container-fluid" style="padding-top:20px">
+                <plc-management [isHideHeader]="true" [outletId]="row.id"></plc-management>
+              </div>
+            </mat-tab>
           </mat-tab-group>
         </div>
       </ng-template>
