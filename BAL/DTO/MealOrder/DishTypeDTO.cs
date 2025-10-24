@@ -21,5 +21,8 @@ namespace BAL.DTO.MealOrder
 
         public List<DishTypePeriodDTO> DishTypePeriods { get; set; }
         public int? OrderNumber { get; set; }
+        public int? FileId { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
     }
 }

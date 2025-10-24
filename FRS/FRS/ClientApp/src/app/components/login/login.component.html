@@ -33,7 +33,15 @@
                     <div class="form-group has-feedback">
                       <label class="control-label col-md-4" for="login-password">{{'app.Password' | translate}}:</label>
                       <div class="col-md-8" [ngClass]="{'has-success': f.submitted && password.valid, 'has-error' : f.submitted && !password.valid}">
-                        <input type="password" id="login-password" name="password" placeholder="{{'app.PasswordPlaceholder' | translate}}" autocomplete="current-password" class="form-control" [(ngModel)]="userLogin.password" #password="ngModel" required />
+                        <input matInput [type]="showPassword ? 'text' : 'password'" id="login-password" name="password" placeholder="{{'app.PasswordPlaceholder' | translate}}" autocomplete="current-password" class="form-control input-with-icon" [(ngModel)]="userLogin.password" #password="ngModel" required />
+                        <button mat-icon-button
+                                matSuffix
+                                type="button"
+                                (click)="togglePasswordVisibility()"
+                                [attr.aria-label]="'Toggle password visibility'"
+                                class="input-icon">
+                          <mat-icon>{{showPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        </button>
                         <span *ngIf="f.submitted" class="glyphicon form-control-feedback" [ngClass]="{'glyphicon-ok ': password.valid, 'glyphicon-remove' : !password.valid}" aria-hidden="true"></span>
                         <span class="errorMessage" *ngIf="f.submitted && !password.valid">
                           {{'app.PasswordRequired' | translate}}

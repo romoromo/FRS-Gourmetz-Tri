@@ -85,6 +85,7 @@ namespace FRS.ViewModels
         public List<UserCatererViewModel> UserCaterers { get; set; }
         public string DirectoryListingCode { get; set; }
         public string DirectoryListingLabel { get; set; }
+        public bool IsPasswordMustChange { get; set; }
     }
 
     public class UserSimpleViewModel
@@ -132,6 +133,8 @@ namespace FRS.ViewModels
         public int? DirectoryListingId { get; set; }
 
         public string FirebaseToken { get; set; }
+
+        public bool IsPasswordMustChange { get; set; }
     }
 
     public class ResetPasswordViewModel

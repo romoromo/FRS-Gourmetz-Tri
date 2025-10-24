@@ -82,6 +82,8 @@ namespace DAL.Repositories.MealOrder
 
             bool useVoucher = await _appContext.Vouchers.AnyAsync(x => x.Id == Payment.VoucherId);
 
+            bool useWallet = await _appContext.PaymentTypes.AnyAsync(x => x.Name == "Wallet" && x.Id >= Payment.PaymentTypeId);
+
             int resultSaveChange = 0;
             if (useVoucher)
             {
@@ -136,6 +138,63 @@ namespace DAL.Repositories.MealOrder
                     f = await AddAsync(Payment);
                     resultSaveChange = await _appContext.SaveChangesAsync();
                 }
+            } else if (useWallet)
+            {
+
+
+                var student = await this._appContext.Students
+                .FirstOrDefaultAsync(e => e.IsActive && e.Id == Payment.StudentId);
+
+                if (student == null)
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Student with Id={Payment.StudentId} not found or inactive.";
+                    return result;
+                }
+
+                if (student.WalletBalance - Decimal.ToDouble(Payment.total) < 0)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Insufficient balance.";
+                    return result;
+                }
+                else if (student.IsWalletFreeze)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Wallet is Freezed";
+                    return result;
+                }
+                else
+                {
+                    student.WalletBalance -= Decimal.ToDouble(Payment.total);
+
+                    _appContext.AuditUserActivityType = new AuditUserActivityType
+                    {
+                        GroupId = Common.GenerateUniqueStringId(),
+                        ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
+                        Remarks = "Payment was created."
+                    };
+
+                    f = await AddAsync(Payment);
+                    resultSaveChange = await _appContext.SaveChangesAsync();
+                }
+
+                //result = await this._uow.Students.UpdateAsync(student);
+                if (result.IsSuccess)
+                {
+                    var transaction = new StudentWalletTransaction
+                    {
+                        Amount = Decimal.ToDouble(Payment.total),
+                        TransactionType = WalletTransactionType.DEBIT.ToString(),
+                        StudentId = Payment.StudentId.Value,
+                        Description = $"Payment for Order with Invoice Number={Payment.InvoiceNumber}",
+                        CreatedBy = Payment.UserId,
+                        UpdatedBy = Payment.UserId
+                    };
+
+                    await _appContext.StudentWalletTransactions.AddAsync(transaction);
+                }
+                await _appContext.SaveChangesAsync();
             }
             else
             {

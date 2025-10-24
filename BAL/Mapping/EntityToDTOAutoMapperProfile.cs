@@ -391,8 +391,10 @@ namespace BAL.Mapping
                 .ForMember(e => e.RestrictionTypeCode, map => map.MapFrom(f => f.RestrictionType.Code));
             CreateMap<RestrictionDTO, Restriction>();
 
-            CreateMap<DishType, DishTypeDTO>();
-            CreateMap<DishTypeDTO, DishType>();
+            CreateMap<DishType, DishTypeDTO>()
+                .ForMember(d => d.FilePath, map => map.MapFrom(s => s.Icon.Path)); ;
+            CreateMap<DishTypeDTO, DishType>()
+                .ForMember(d => d.Icon, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() })); ;
 
             CreateMap<MealPlanOrder, MealPlanOrderDTO>()
                 .ForMember(e => e.StudentGroupCode, map => map.MapFrom(f => f.StudentGroup.Code))

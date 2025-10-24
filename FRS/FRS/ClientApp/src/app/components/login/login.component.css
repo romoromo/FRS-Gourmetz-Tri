@@ -65,3 +65,29 @@
     }
 }
 
+.input-wrapper {
+  position: relative; /* This is the anchor */
+}
+
+.input-with-icon {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box; /* Ensures padding doesn't add to the width */
+  /* * KEY STEP: Add padding to the right to make space for the icon.
+   * Adjust "40px" based on your icon's size and spacing.
+   */
+  padding-right: 40px;
+}
+
+/* 3. The icon/button */
+.input-icon {
+  position: absolute; /* This overlays the icon */
+  top: 50%; /* Moves it down 50% */
+  right: 15px; /* Positions it 10px from the right edge */
+  /* This trick perfectly centers the icon vertically */
+  transform: translateY(-50%);
+  cursor: pointer; /* Makes it feel clickable */
+  color: #555; /* Icon color */
+  user-select: none; /* Prevents selecting the icon text */
+}
+

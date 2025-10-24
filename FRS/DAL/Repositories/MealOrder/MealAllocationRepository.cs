@@ -206,16 +206,40 @@ namespace DAL.Repositories.MealOrder
 
         public IQueryable<MealAllocation> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter)
         {
-            IQueryable<MealAllocation> query = _appContext.MealAllocations
+            var today = DateTime.Today;
+
+            IQueryable<MealAllocation> baseQuery = _appContext.MealAllocations
                 .Include(e => e.tokens).ThenInclude(t => t.dishes)
-                .Include(e => e.MealSessionDetail)
-                .Where(e =>
-                          (filter.OutletId <= 0 || e.outletId == filter.OutletId) &&
-                          (!filter.DateFrom.HasValue || filter.DateFrom == DateTime.MinValue || e.deliveryDate >= filter.DateFrom.Value) &&
-                          (!filter.DateTo.HasValue || filter.DateTo == DateTime.MinValue || e.deliveryDate <= filter.DateTo.Value)
-                      );
-            
-            return query;
+                .Include(e => e.MealSessionDetail);
+
+            var todayQuery = baseQuery.Where(e => e.deliveryDate == today);
+
+
+            // Filtered data
+            bool hasDateFrom = filter.DateFrom.HasValue && filter.DateFrom.Value != DateTime.MinValue;
+            bool hasDateTo = filter.DateTo.HasValue && filter.DateTo.Value != DateTime.MinValue;
+            bool hasOutlet = filter.OutletId > 0;
+
+            IQueryable<MealAllocation> filterQuery = baseQuery;
+
+            if (hasDateFrom || hasDateTo || hasOutlet)
+            {
+                filterQuery = filterQuery.Where(e =>
+                    (!hasOutlet || e.outletId == filter.OutletId) &&
+                    (!hasDateFrom || e.deliveryDate >= filter.DateFrom.Value) &&
+                    (!hasDateTo || e.deliveryDate <= filter.DateTo.Value)
+                );
+            }
+            else
+            {
+                // If no filter at all, skip filterQuery (return only todayQuery)
+                return todayQuery;
+            }
+
+            // Combine today's data with filter data (and avoid duplicate if today is in filter)
+            return filterQuery
+                .Where(e => e.deliveryDate != today) // exclude today from filterQuery
+                .Union(todayQuery);
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
