@@ -196,26 +196,17 @@ export class DispenserOutletEditorComponent {
           this.dispenserOutletEdit.trays = [];
         }
 
-        const existingIndex = this.dispenserOutletEdit.trays.findIndex(
-          t => t.plcId === result.plcId
-        );
-
+        const existingIndex = this.dispenserOutletEdit.trays.findIndex(t => t.plcId === result.plcId && t.ledOutputNumber === result.ledOutputNumber && t.motorOutputNumber === result.motorOutputNumber);
+        
         if (existingIndex >= 0) {
-          // Update existing tray
-          this.dispenserOutletEdit.trays[existingIndex] = result;
-          this.alertService.showMessage(
-            'Tray Updated',
-            `Updated tray for PLC ${result.ipAddress}`,
-            MessageSeverity.success
-          );
+          this.alertService.showMessage('Information', `PLC ${result.ipAddress} already exists with the same output`, MessageSeverity.info);
         } else {
-          // Add new tray
-          this.dispenserOutletEdit.trays.push(result);
-          this.alertService.showMessage(
-            'Tray Added',
-            `Added tray for PLC ${result.ipAddress}`,
-            MessageSeverity.success
-          );
+        this.dispenserOutletEdit.trays.push(result);
+        this.alertService.showMessage(
+          'Tray Added',
+          `Added tray for PLC ${result.ipAddress}`,
+          MessageSeverity.success
+        );
         }
 
         console.log("Updated trays:", this.dispenserOutletEdit.trays);
