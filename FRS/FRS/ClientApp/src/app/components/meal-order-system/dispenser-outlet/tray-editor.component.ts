@@ -1,4 +1,5 @@
 import { Component, Inject, Input, OnInit } from "@angular/core";
+import { NgForm } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { PlcModel } from "../../../models/meal-order/plc.model";
 import { TrayModel } from "../../../models/meal-order/TrayModel";

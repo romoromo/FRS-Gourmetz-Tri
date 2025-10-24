@@ -7,7 +7,7 @@ namespace DAL.Models.MealOrder
     {
         [Key]
         public int Id { get; set; }
-
+        public string TrayId { get; set; }
         public int DispenserId { get; set; }
 
         [ForeignKey(nameof(DispenserId))]

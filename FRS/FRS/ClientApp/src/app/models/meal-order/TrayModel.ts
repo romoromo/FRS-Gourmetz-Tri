@@ -4,6 +4,7 @@ export class TrayModel {
   }
 
   public id: string;
+  public trayId: string;
   public plcId: string;
   public dispenserId: string;
   public ipAddress: string;

@@ -63,7 +63,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let tray of dispenserOutletEdit.trays; let i = index" class="text-center">
-                <td>{{ i + 1 }}</td>
+                <td>{{ tray.trayId }}</td>
                 <td>{{ tray.ipAddress }}</td>
                 <td>{{ tray.framework }}</td>
                 <td>{{ tray.motorOutputNumber }}</td>

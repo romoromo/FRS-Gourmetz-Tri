@@ -133,6 +133,7 @@ namespace DAL.Repositories.MealOrder
                     existingTray.PLCId = tray.PLCId;
                     existingTray.MotorOutputNumber = tray.MotorOutputNumber;
                     existingTray.LEDOutputNumber = tray.LEDOutputNumber;
+                    existingTray.TrayId = tray.TrayId;
                 }
                 else
                 {
@@ -140,7 +141,8 @@ namespace DAL.Repositories.MealOrder
                     {
                         PLCId = tray.PLCId,
                         MotorOutputNumber = tray.MotorOutputNumber,
-                        LEDOutputNumber = tray.LEDOutputNumber
+                        LEDOutputNumber = tray.LEDOutputNumber,
+                        TrayId = tray.TrayId
                     });
                 }
             }

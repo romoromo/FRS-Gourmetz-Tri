@@ -912,8 +912,10 @@ namespace BAL.Mapping
             CreateMap<PLCModel, PLCDTO>().ReverseMap();
             CreateMap<TrayModel, TrayDTO>()
                 .ForMember(dest => dest.IPAddress, opt => opt.MapFrom(src => src.PLC.IPAddress))
-                .ForMember(dest => dest.Framework, opt => opt.MapFrom(src => src.PLC.Framework))
-                .ReverseMap();
+                .ForMember(dest => dest.Framework, opt => opt.MapFrom(src => src.PLC.Framework));
+            CreateMap<TrayDTO, TrayModel>()
+                .ForMember(d => d.PLC, opt => opt.Ignore())
+                .ForMember(d => d.PLCId, opt => opt.MapFrom(src => src.PLCId));
         }
     }
 }

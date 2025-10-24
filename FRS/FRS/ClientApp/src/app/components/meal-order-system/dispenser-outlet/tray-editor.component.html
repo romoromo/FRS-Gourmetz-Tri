@@ -1,9 +1,18 @@
 <h1 mat-dialog-title>{{ data?.tray ? 'Edit Tray' : 'Add Tray' }}</h1>
 
 <ng-container *ngIf="!loadingIndicator; else loadingTpl">
-  <form class="form-horizontal" name="tryEditorForm" #f="ngForm" (ngSubmit)="save()">
+  <form class="form-horizontal" name="tryEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+        (!trayId.valid && showErrorAlert('Tray Id is required', 'Please enter Tray Id'))">
     <div mat-dialog-content>
       <div class="row">
+
+        <mat-form-field class="col-md-12">
+          <input matInput id="trayId" name="trayId"
+                 placeholder="Tray Id"
+                 [(ngModel)]="trayEdit.trayId" required />
+          <mat-error *ngIf="f.submitted && !trayEdit.trayId">Tray ID is required</mat-error>
+        </mat-form-field>
 
         <!-- PLC dropdown -->
         <mat-form-field class="col-md-12">
