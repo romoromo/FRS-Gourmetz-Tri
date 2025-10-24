@@ -30,7 +30,8 @@ namespace DAL.Repositories.MealOrder
         public async Task<PagedEntity<DispenserOutlet>> GetDispenserOutletsAsync(BaseFilter filter)
         {
             IQueryable<DispenserOutlet> query = _appContext.DispenserOutlets
-                .Include(e => e.Institution);
+                .Include(e => e.Institution)
+                .Include(e => e.Trays);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
             //int totalCount = query.Count();
@@ -94,7 +95,7 @@ namespace DAL.Repositories.MealOrder
                 var f = await GetSingleOrDefaultAsync(e => e.Id == dispenserOutlet.Id);
 
                 f.CopyFrom(dispenserOutlet);
-
+                UpdateTrays(f, dispenserOutlet.Trays);
                 Update(f);
                 if (await _appContext.SaveChangesAsync() > 0)
                 {
@@ -112,14 +113,56 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        private void UpdateTrays(DispenserOutlet dispenser, ICollection<TrayModel> trays)
+        {
+            if (trays == null)
+                return;
+
+            // Remove deleted trays
+            var existingIds = trays.Where(t => t.Id > 0).Select(t => t.Id).ToList();
+            var traysToRemove = dispenser.Trays.Where(t => !existingIds.Contains(t.Id)).ToList();
+            foreach (var tray in traysToRemove)
+                _appContext.Trays.Remove(tray);
+
+            // Update or add
+            foreach (var tray in trays)
+            {
+                var existingTray = dispenser.Trays.FirstOrDefault(t => t.Id == tray.Id);
+                if (existingTray != null)
+                {
+                    existingTray.PLCId = tray.PLCId;
+                    existingTray.MotorOutputNumber = tray.MotorOutputNumber;
+                    existingTray.LEDOutputNumber = tray.LEDOutputNumber;
+                    existingTray.TrayId = tray.TrayId;
+                }
+                else
+                {
+                    dispenser.Trays.Add(new TrayModel
+                    {
+                        PLCId = tray.PLCId,
+                        MotorOutputNumber = tray.MotorOutputNumber,
+                        LEDOutputNumber = tray.LEDOutputNumber,
+                        TrayId = tray.TrayId
+                    });
+                }
+            }
+        }
+
 
         public async Task<BaseOperationResponse> DeleteAsync(int dispenserOutletId)
         {
             var result = new BaseOperationResponse();
-            var dispenserOutlet = await GetSingleOrDefaultAsync(r => r.Id == dispenserOutletId);
+            var dispenserOutlet =  await _appContext.DispenserOutlets
+                .Include(m => m.Trays).FirstOrDefaultAsync(m => m.Id == dispenserOutletId);
 
             if (dispenserOutlet != null)
+            {
+                if (dispenserOutlet.Trays.Any())
+                {
+                    _appContext.Trays.RemoveRange(dispenserOutlet.Trays);
+                }
                 return await Delete(dispenserOutlet);
+            }
 
             result.IsSuccess = false;
             result.Message = "Class Level not found.";

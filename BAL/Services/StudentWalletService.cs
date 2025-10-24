@@ -42,14 +42,14 @@ namespace BAL.Services
             var result = new BaseOperationResponse();
             var student = await this._uow.Students.GetByIdAsync(dto.StudentId);
 
-            if (!student.ConcurrencyStamp.SequenceEqual(dto.ConcurrencyStamp))
-            {
-                result.IsSuccess = false;
-                result.Message = "Student is not the latest version. Please refresh.";
-                return result;
-            }
-            else
-            {
+            //if (!student.ConcurrencyStamp.SequenceEqual(dto.ConcurrencyStamp))
+            //{
+            //    result.IsSuccess = false;
+            //    result.Message = "Student is not the latest version. Please refresh.";
+            //    return result;
+            //}
+            //else
+            //{
                 if (string.IsNullOrEmpty(dto.TransactionType) ||
                     (!dto.TransactionType.Equals(RewardTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase) &&
                     !dto.TransactionType.Equals(RewardTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase)))
@@ -70,11 +70,16 @@ namespace BAL.Services
                         result.IsSuccess = false;
                         result.Message = "Insufficient balance.";
                         return result;
-                    }
+                    } else if (student.IsWalletFreeze)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Wallet is Freezed";
+                    return result;
+                }
                     else
-                    {
-                        student.WalletBalance -= dto.Amount;
-                    }
+                {
+                    student.WalletBalance -= dto.Amount;
+                }
                 }
 
                 result = await this._uow.Students.UpdateAsync(student);
@@ -94,7 +99,7 @@ namespace BAL.Services
 
                 var d = _mapper.Map<StudentDTO>(result.Data);
                 result.Data = d;
-            }
+            //}
 
             return result;
         }

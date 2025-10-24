@@ -909,6 +909,13 @@ namespace BAL.Mapping
             CreateMap<spGetUserActivityLogDetail, UserActivityLogDetailDTO>();
             CreateMap<spVoucherUtilisationReport, VoucherUtilisation>()
                 .ForMember(dest => dest.UtilisedDate, opt => opt.MapFrom(src => src.UtilisedDate.Date == DateTime.MinValue.Date ? (DateTime?)null : src.UtilisedDate));
+            CreateMap<PLCModel, PLCDTO>().ReverseMap();
+            CreateMap<TrayModel, TrayDTO>()
+                .ForMember(dest => dest.IPAddress, opt => opt.MapFrom(src => src.PLC.IPAddress))
+                .ForMember(dest => dest.Framework, opt => opt.MapFrom(src => src.PLC.Framework));
+            CreateMap<TrayDTO, TrayModel>()
+                .ForMember(d => d.PLC, opt => opt.Ignore())
+                .ForMember(d => d.PLCId, opt => opt.MapFrom(src => src.PLCId));
         }
     }
 }

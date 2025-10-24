@@ -1,3 +1,4 @@
+import { TrayModel } from "./TrayModel";
 
 export class DispenserOutlet {
 
@@ -5,6 +6,7 @@ export class DispenserOutlet {
 
     this.id = id;
     this.dispenserCode = dispenserCode;
+    this.trays = [];
   }
 
   public id: string;
@@ -22,4 +24,6 @@ export class DispenserOutlet {
   public institutionId: string;
   public outletId: string;
   public outletName: string;
+
+  public trays: TrayModel[];
 }
