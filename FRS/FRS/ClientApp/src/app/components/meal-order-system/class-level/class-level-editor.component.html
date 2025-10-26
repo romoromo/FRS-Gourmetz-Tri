@@ -20,11 +20,22 @@
               required minlength="2" maxlength="200" />
           </mat-form-field>
           <mat-form-field class="col-md-12">
-            <mat-label>Meal Session</mat-label>
-            <mat-select [disabled]="!canManageClassLevels" id="mealSessionId" name="mealSessionId"
-              [(ngModel)]="classLevelEdit.mealSessionId" #mealSessionId="ngModel">
+            <mat-label>Meal Period</mat-label>
+            <mat-select [disabled]="!canManageClassLevels || loadingLoadMealSession" id="mealSessionId"
+              name="mealSessionId" [(ngModel)]="classLevelEdit.mealSessionId" #mealSessionId="ngModel"
+              (selectionChange)="onChangeMealSession($event)">
               <mat-option [value]=""></mat-option>
               <mat-option *ngFor="let item of mealSessionsItems" [value]="item.id">
+                {{item.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="col-md-12">
+            <mat-label>Session</mat-label>
+            <mat-select [disabled]="!canManageClassLevels || loadingLoadMealSession" id="mealSessionDetailId"
+              name="mealSessionDetailId" [(ngModel)]="classLevelEdit.mealSessionDetailId"
+              #mealSessionDetailId="ngModel">
+              <mat-option *ngFor="let item of mealSessionsDetailItems" [value]="item.id">
                 {{item.name}}
               </mat-option>
             </mat-select>

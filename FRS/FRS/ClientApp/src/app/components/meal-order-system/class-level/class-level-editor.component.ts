@@ -26,8 +26,10 @@ export class ClassLevelEditorComponent {
   private allPermissions: Permission[] = [];
   outlets = [];
   mealSessionsItems = [];
+  mealSessionsDetailItems = [];
   private selectedValues: { [key: string]: boolean; } = {};
   public formResetToggle = true;
+  loadingLoadMealSession = false
 
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
@@ -38,14 +40,14 @@ export class ClassLevelEditorComponent {
   private form;
 
   constructor(private alertService: AlertService, private classService: ClassService, private accountService: AccountService,
-    public dialogRef: MatDialogRef<ClassLevelEditorComponent>, private deliveryService: DeliveryService,private mealService: MealService,
+    public dialogRef: MatDialogRef<ClassLevelEditorComponent>, private deliveryService: DeliveryService, private mealService: MealService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     this.editClassLevel(data.classLevel);
 
     this.getOutlets();
     const outletId = data.classLevel ? data.classLevel.outletId : null;
     this.getMealSessionLite(outletId);
-    
+
   }
 
   getOutlets() {
@@ -61,15 +63,34 @@ export class ClassLevelEditorComponent {
         })
   }
 
-  getMealSessionLite(outletId:string) {
+  getMealSessionLite(outletId: string) {
+    this.loadingLoadMealSession = true
     this.mealService.getMealSessionLite(outletId)
       .subscribe(results => {
         this.mealSessionsItems = results;
+        this.loadingLoadMealSession = false
+
+        if(this.classLevelEdit.mealSessionId){
+          this.getMealSessionDetailLite(this.classLevelEdit.mealSessionId);
+        }
       },
         error => {
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal session.\r\n"`,
             MessageSeverity.error);
-        })
+          this.loadingLoadMealSession = false
+        }),
+      () => {
+        this.loadingLoadMealSession = false
+      }
+  }
+
+  getMealSessionDetailLite(mealSessionId: string) {
+    const mealSession = this.mealSessionsItems.find(ms => ms.id === mealSessionId);
+    this.mealSessionsDetailItems = mealSession ? mealSession.details : [];
+  }
+
+  onChangeMealSession(event: any) {
+    this.getMealSessionDetailLite(event.value);
   }
 
   private showErrorAlert(caption: string, message: string) {

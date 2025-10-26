@@ -14,4 +14,5 @@ export class ClassLevel {
   public outletId: string;
   public outletName: string;
   public mealSessionId: string;
+  public mealSessionDetailId: string;
 }

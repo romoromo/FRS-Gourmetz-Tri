@@ -33,7 +33,8 @@ namespace DAL.Repositories.MealOrder
                 .AsNoTracking()
                 .AsSplitQuery()
                 .Include(e => e.Institution)
-                .Include(e => e.MealSession);
+                .Include(e => e.MealSession)
+                .Include(e => e.MealSessionDetail);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
             //int totalCount = query.Count();

@@ -20,5 +20,7 @@ namespace BAL.DTO.MealOrder
         public string OutletName { get; set; }
         public int? MealSessionId { get; set; }
         public string MealSessionName { get; set; }
+        public int? MealSessionDetailId { get; set; }
+        public string MealSessionDetailName { get; set; }
     }
 }

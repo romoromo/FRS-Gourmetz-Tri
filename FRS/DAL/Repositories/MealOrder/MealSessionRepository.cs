@@ -152,13 +152,23 @@ namespace DAL.Repositories.MealOrder
         public async Task<List<MealSessionLiteDto>> GetLiteByOutletId(int outletId)
         {
             var datas = await _appContext.MealSessions
+                .AsNoTracking()
+                .AsSplitQuery()
                 .Where(e => e.IsActive && e.OutletId == outletId)
                 .OrderBy(e => e.Sequence)
                 .Select(x => new MealSessionLiteDto
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    Sequence = x.Sequence
+                    Sequence = x.Sequence,
+                    Details = x.Details
+                                .Where(d => d.IsActive)
+                                .OrderBy(d => d.StartDate.TimeOfDay)
+                                .Select(d => new MealSessionDetailLiteDto
+                                {
+                                    Id = d.Id,
+                                    Name = d.Name
+                                }).ToList()
                 })
                 .ToListAsync();
             return datas;
