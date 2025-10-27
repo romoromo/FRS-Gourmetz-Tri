@@ -58,5 +58,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<List<DishCycleDTO>> GetMenuGroupDishCyclesAsync(int studentId, DateTime orderDate);
         Task<List<MenuGroupDTO>> GetActiveMenuGroupDishCyclesAsync(int studentId);
         Task<List<DishByDateDTO>> GetMenuGroupDishesByDateAsync(int studentId, DateTime startDate, DateTime endDate);
+        Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId, DateTime orderDate);
     }
 }

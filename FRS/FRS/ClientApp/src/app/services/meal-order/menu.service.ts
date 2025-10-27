@@ -61,6 +61,9 @@ export class MenuService {
   private readonly _menuGroupuUrl: string = "/api/menu/menugroups";
   get menuGroupUrl() { return this.configurations.baseUrl + this._menuGroupuUrl; }
 
+  private readonly _periodmealsessions: string = "/api/menu/outlets/periodmealsessions";
+  get outletPeriodMealSessionUrl() { return this.configurations.baseUrl + this._periodmealsessions; }
+
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
 
@@ -129,6 +132,9 @@ export class MenuService {
     return this.commonEndpoint.get<MealSessionDetail[]>(`${this.outletSessionUrl}?outletId=${outletId}&orderDate=${orderDate}&orderDateTo=${orderDateTo}`);
   }
 
+  getPeriodMealSession(outletId, orderDate) {
+    return this.commonEndpoint.get<MealSessionDetail[]>(`${this.outletPeriodMealSessionUrl}?outletId=${outletId}&orderDate=${orderDate}`);
+  }
 
   newMenuCycle(menuCycle: MenuCycle) {
     return this.commonEndpoint.getNewEndpoint<MenuCycle>(this.menuCycleUrl, menuCycle);

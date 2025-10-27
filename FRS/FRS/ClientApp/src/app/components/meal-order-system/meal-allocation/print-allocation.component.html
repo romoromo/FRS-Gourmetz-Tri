@@ -11,16 +11,16 @@
           <mat-datepicker #orderDatePicker></mat-datepicker>
         </mat-form-field>
         <mat-form-field class="col-xs-6">
-          <mat-label>Session</mat-label>
-          <mat-select (selectionChange)="onChangeSessions()" id="session" name="session" [(ngModel)]="allocation.mealSessionId" #session="ngModel" [disabled]="isSaving || filterLoading || isLoading">
+          <mat-label>Period</mat-label>
+          <mat-select (selectionChange)="onChangeSessions()" id="periodName" name="periodName" [(ngModel)]="allocation.mealSessionId" #periodName="ngModel" [disabled]="isSaving || filterLoading || isLoading">
             <mat-option *ngFor="let session of sessions" [value]="session.id">
-              {{session.name}}
+              {{session.mealPeriodName}}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="col-xs-6">
-          <mat-label>Period</mat-label>
-          <input matInput [disabled]="true" autocomplete="off" id="periodName" name="periodName" [(ngModel)]="selectedPeriodName" #periodName="ngModel" />
+          <mat-label>Session</mat-label>
+          <input matInput [disabled]="true" autocomplete="off" id="session" name="session" [(ngModel)]="selectedPeriodName" #session="ngModel" />
         </mat-form-field>
         <!--<button type="button" mat-button (click)="getOrderData()" style="margin-top:20px">
           <mat-icon>
