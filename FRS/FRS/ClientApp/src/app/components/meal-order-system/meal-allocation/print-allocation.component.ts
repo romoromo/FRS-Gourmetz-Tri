@@ -67,7 +67,7 @@ export class PrintAllocationComponent implements OnInit {
   ngOnInit() {
     this.getMenuDishes();
     this.getMealTypes();
-    this.getSessions();
+    //this.getSessions();
     this.getAllSessions();
     //this.getTokenOrder();
   }
@@ -92,7 +92,8 @@ export class PrintAllocationComponent implements OnInit {
     console.log("event value: ", moment(event.value))
     this.orderDate = new Date(event.value);
     this.allocation.deliveryDate = this.orderDate;
-    this.getSessions();
+    //this.getSessions();
+    this.getPeriodsByDate();
 
     if (this.allocation.mealSessionId) {
       console.log("allocation Id: ", this.allocation)
@@ -108,7 +109,7 @@ export class PrintAllocationComponent implements OnInit {
 
       this.allocation.outletId = sessionSelected.mealPeriodId;
       this.allocation.timePacked = sessionDetailSelected.routeTime;
-      this.selectedPeriodName = sessionSelected.mealPeriodName;
+      this.selectedPeriodName = sessionDetailSelected.name;
     }
   }
 
@@ -182,6 +183,39 @@ export class PrintAllocationComponent implements OnInit {
         })
   }
 
+  getPeriodsByDate() {
+    if (this.orderDate) {
+      var date = new Date(this.orderDate.getTime() - (this.orderDate.getTimezoneOffset() * 60000)).toJSON().split('T')
+      console.log("order date: ", date[0])
+      this.menuService.getPeriodMealSession(this.outletId, date[0])
+        .subscribe(results => {
+          this.sessions = results;
+          console.log("sessions1: ", this.sessions)
+
+          if (!this.isNewAllocation) {
+            this.token_count.forEach(t => {
+
+              if (t.timePacked == null) {
+                let sessionDetailSelected = this.sessions.find(x => x.id === this.allocation.mealSessionId);
+
+                t.timePacked = sessionDetailSelected.routeTime;
+                t.color = sessionDetailSelected.routeColor;
+              }
+
+            });
+          }
+
+          this.filterLoading = false;
+        },
+          error => {
+            this.filterLoading = false;
+            //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+            this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
+              MessageSeverity.error);
+          })
+    }
+  }
+
   getSessions() {
     if (this.orderDate) {
       var date = new Date(this.orderDate.getTime() - (this.orderDate.getTimezoneOffset() * 60000)).toJSON().split('T')
@@ -189,7 +223,7 @@ export class PrintAllocationComponent implements OnInit {
       this.menuService.getOutletSessionsByFilter(this.outletId, date[0])
         .subscribe(results => {
           this.sessions = results;
-          console.log("sessions: ", this.sessions)
+          console.log("sessions1: ", this.sessions)
 
           if (!this.isNewAllocation) {
             this.token_count.forEach(t => {
