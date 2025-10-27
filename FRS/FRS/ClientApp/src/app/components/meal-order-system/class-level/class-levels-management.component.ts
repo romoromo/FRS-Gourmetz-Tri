@@ -78,6 +78,8 @@ export class ClassLevelsManagementComponent implements OnInit {
     this.columns = [
       { prop: 'name', name: gT('common.Name'), width: 200 },
       { prop: 'outletName', name: 'Outlet', width: 200 },
+      { prop: 'mealSessionName', name: 'Meal Period', width: 200 },
+      { prop: 'mealSessionDetailName', name: 'Session', width: 200 },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
 

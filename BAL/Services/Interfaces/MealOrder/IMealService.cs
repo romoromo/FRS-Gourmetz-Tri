@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using BAL.DTO.MealOrder;
+﻿using BAL.DTO.MealOrder;
 using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BAL.Services.Interfaces.MealOrder
 {
@@ -29,5 +30,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<List<MealSessionMealPeriodDTO>> GetAllMealSessionsByMealPeriod(int outletId, int catererId, int outletProfileId);
         Task<List<MealSessionMealPeriodDTO>> GetMealSessionsByMealPeriodByOutlet(int outletId);
         Task<BaseOperationResponse> UpdateMealSessionAsync(MealSessionDTO dto);
+        Task<List<MealSessionLiteDto>> GetMealSessionLiteByOutletId(int outletId);
     }
 }
