@@ -109,8 +109,9 @@ namespace BAL.Services.MealOrder
         public async Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId)
         {
             var classSession = await _uow.ClassLevels.GetClassLevelsByOutletIdAsync(outletId);
-            var mealSessionDetail = classSession.Select(m => m.MealSessionDetail);
-            return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetail.DistinctBy(x => x.Id));
+            var mealSessionDetail = classSession.Select(m => m.MealSessionDetail)
+                .Where(m => m != null).DistinctBy(m => m.Id);
+            return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetail);
         }
 
         #endregion
