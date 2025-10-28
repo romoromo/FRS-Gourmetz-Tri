@@ -11,6 +11,7 @@ using Sieve.Services;
 using DAL.Filters;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
+using NPOI.OpenXmlFormats.Dml;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -146,6 +147,15 @@ namespace DAL.Repositories.MealOrder
             }
 
             return result;
+        }
+
+        public Task<List<ClassLevel>> GetClassLevelsByOutletIdAsync(int outletId)
+        {
+            return _appContext.ClassLevels
+                .AsNoTracking()
+                .Include(e => e.MealSessionDetail)
+                .Where(e => e.OutletId == outletId && e.IsActive)
+                .ToListAsync();
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

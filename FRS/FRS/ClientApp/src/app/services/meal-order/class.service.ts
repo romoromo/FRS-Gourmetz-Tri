@@ -196,4 +196,8 @@ export class ClassService {
       return this.commonEndpoint.getUpdateEndpoint(this.plcUrl, plc, plc.id);
     }
   }
+
+  getPeriodMealSession(outletId) {
+    return this.commonEndpoint.get<any>(`${this.classLevelUrl}/periodmealsession?outletId=${outletId}`);
+  }
 }

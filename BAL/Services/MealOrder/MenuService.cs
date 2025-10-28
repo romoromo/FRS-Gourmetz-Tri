@@ -254,14 +254,6 @@ namespace BAL.Services.MealOrder
             return _mapper.Map<List<MealSessionDetailDTO>>(listOfSessions);
         }
 
-        public async Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId, DateTime orderDate)
-        {
-            var orders = await _uow.TokenOrders.GetByOutletAndDeliveryDate(outletId, orderDate);
-            var mealSessionDetail = orders.Select(m => m.Session);
-            return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetail.Distinct());
-        }
-
-
         public async Task<List<MealSessionDetailDTO>> GetOutletMealSessions(int outletId, DateTime orderDate, DateTime? startDate, DateTime? endDate, DateTime? orderDateTo = null)
         {
             var students = await this._uow.MenuCycles.GetStudentsByOutletAsync(outletId);

@@ -501,15 +501,6 @@ namespace DAL.Repositories.MealOrder
             return await GetAsync(id);
         }
 
-        public async Task<List<TokenOrder>> GetByOutletAndDeliveryDate(int outletId, DateTime deliveryDate)
-        {
-            return await _appContext.TokenOrders.Where(m => 
-                    m.DeliveryDate == deliveryDate && 
-                    m.Session.MealSession.OutletId == outletId)
-                .Include(m => m.Session).ThenInclude(m => m.MealSession)
-                .ToListAsync();
-        }
-
         public async Task<BaseOperationResponse> CreateAsync( TokenOrder order, List<TokenOrdered> tokenOrders)
         {
             var result = new BaseOperationResponse();

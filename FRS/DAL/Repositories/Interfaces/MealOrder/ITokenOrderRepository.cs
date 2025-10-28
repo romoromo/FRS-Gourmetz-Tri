@@ -44,6 +44,5 @@ namespace DAL.Repositories.Interfaces.MealOrder
         //Task<List<spSalesOrderReport>> GetOrderCollection(SalesOrderReportFilter filter);
         Task<List<spVoucherUtilisationReport>> GetVoucherUtilisations(VoucherUtilisationReportFilter filter);
 
-        Task<List<TokenOrder>> GetByOutletAndDeliveryDate(int outletId, DateTime deliveryDate);
     }
 }

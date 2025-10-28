@@ -203,6 +203,7 @@ export class PackingAllocationssManagementComponent implements OnInit {
   newAllocation() {
     this.header = 'New Packing Allocations';
     this.editedAllocation = new PackingAllocation();
+    this.editedAllocation.packingDate = this.start;
     this.openDialog(this.editedAllocation);
   }
 

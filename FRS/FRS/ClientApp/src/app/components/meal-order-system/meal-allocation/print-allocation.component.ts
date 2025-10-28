@@ -20,6 +20,7 @@ import { DishService } from 'src/app/services/meal-order/dish.service';
 import { MealSessionDetail, MealSession } from 'src/app/models/meal-order/meal-session.model';
 
 import { DishSelectorComponent } from '../dishes/dish-selector/dish-selector.component';
+import { ClassService } from '../../../services/meal-order/class.service';
 
 @Component({
   selector: 'print-allocation',
@@ -51,6 +52,7 @@ export class PrintAllocationComponent implements OnInit {
 
   constructor(private http: HttpClient, private alertService: AlertService, private deliveryService: DeliveryService, public dialog: MatDialog,
     public dialogRef: MatDialogRef<PrintAllocationComponent>, private menuService: MenuService, private mealService: MealService, private dishService: DishService,
+    public classService: ClassService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.outletId) != typeof (undefined)) {
       this.outletId = data.outletId;
@@ -184,69 +186,32 @@ export class PrintAllocationComponent implements OnInit {
   }
 
   getPeriodsByDate() {
-    if (this.orderDate) {
-      var date = new Date(this.orderDate.getTime() - (this.orderDate.getTimezoneOffset() * 60000)).toJSON().split('T')
-      console.log("order date: ", date[0])
-      this.menuService.getPeriodMealSession(this.outletId, date[0])
-        .subscribe(results => {
-          this.sessions = results;
-          console.log("sessions1: ", this.sessions)
+    this.classService.getPeriodMealSession(this.outletId)
+      .subscribe(results => {
+        this.sessions = results;
+        console.log("sessions1: ", this.sessions)
 
-          if (!this.isNewAllocation) {
-            this.token_count.forEach(t => {
+        if (!this.isNewAllocation) {
+          this.token_count.forEach(t => {
 
-              if (t.timePacked == null) {
-                let sessionDetailSelected = this.sessions.find(x => x.id === this.allocation.mealSessionId);
+            if (t.timePacked == null) {
+              let sessionDetailSelected = this.sessions.find(x => x.id === this.allocation.mealSessionId);
 
-                t.timePacked = sessionDetailSelected.routeTime;
-                t.color = sessionDetailSelected.routeColor;
-              }
+              t.timePacked = sessionDetailSelected.routeTime;
+              t.color = sessionDetailSelected.routeColor;
+            }
 
-            });
-          }
+          });
+        }
 
+        this.filterLoading = false;
+      },
+        error => {
           this.filterLoading = false;
-        },
-          error => {
-            this.filterLoading = false;
-            //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-            this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
-              MessageSeverity.error);
-          })
-    }
-  }
-
-  getSessions() {
-    if (this.orderDate) {
-      var date = new Date(this.orderDate.getTime() - (this.orderDate.getTimezoneOffset() * 60000)).toJSON().split('T')
-      console.log("order date: ", date[0])
-      this.menuService.getOutletSessionsByFilter(this.outletId, date[0])
-        .subscribe(results => {
-          this.sessions = results;
-          console.log("sessions1: ", this.sessions)
-
-          if (!this.isNewAllocation) {
-            this.token_count.forEach(t => {
-
-              if (t.timePacked == null) {
-                let sessionDetailSelected = this.sessions.find(x => x.id === this.allocation.mealSessionId);
-
-                t.timePacked = sessionDetailSelected.routeTime;
-                t.color = sessionDetailSelected.routeColor;
-              }
-
-            });
-          }
-
-          this.filterLoading = false;
-        },
-          error => {
-            this.filterLoading = false;
-            //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-            this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
-              MessageSeverity.error);
-          })
-    }
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
+            MessageSeverity.error);
+        })
   }
 
   getTokenName(id) {
