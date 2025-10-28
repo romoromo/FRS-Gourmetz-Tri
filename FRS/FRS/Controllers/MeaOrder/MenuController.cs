@@ -438,17 +438,6 @@ namespace FRS.Controllers
             return Ok(results);
         }
 
-        [ApiKeyAuthorize]
-        [HttpGet("outlets/periodmealsessions")]
-        //[AllowAnonymous]
-        [ProducesResponseType(200, Type = typeof(List<MealSessionDetailDTO>))]
-        [ProducesResponseType(403)]
-        public async Task<IActionResult> GetOutletPeriodMealSessions(int outletId, DateTime orderDate)
-        {
-            var results = await this._service.GetOutletPeriodMealSessions(outletId, orderDate);
-            return Ok(results);
-        }
-
         [HttpGet("outlets/allmealsessions")]
         //[Authorize(Authorization.Policies.ViewAllMenuCyclesPolicy)]
         //[AllowAnonymous]
@@ -459,7 +448,6 @@ namespace FRS.Controllers
             var results = await this._service.GetOutleOnlyMealSessions(outletId, orderDate);
             return Ok(results);
         }
-
         #endregion
 
         #region Menu Cycle Calendars

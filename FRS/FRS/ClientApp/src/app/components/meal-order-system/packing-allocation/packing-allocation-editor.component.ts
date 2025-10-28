@@ -62,7 +62,7 @@ export class PackingAllocationEditorComponent implements OnInit {
       if (data.allocation.id) {
         this.editAllocation(data.allocation);
       } else {
-        this.newAllocation();
+        this.newAllocation(data.allocation.packingDate);
       }
     }
   }
@@ -70,7 +70,7 @@ export class PackingAllocationEditorComponent implements OnInit {
   ngOnInit() {
     this.getMenuDishes();
     //this.getMealTypes();
-    this.getSessions();
+    //this.getSessions();
     this.getRoutes();
     //this.getAllSessions();
     //this.getTokenOrder();
@@ -463,10 +463,12 @@ export class PackingAllocationEditorComponent implements OnInit {
     this.alertService.showStickyMessage(error, null, MessageSeverity.error);
   }
 
-  newAllocation() {
+  newAllocation(packingDate: Date) {
     this.isNewAllocation = true;
 
     this.allocation = new PackingAllocation();
+    if (packingDate)
+      this.orderDate = packingDate;
     //this.orderDate = moment().toDate();
     //this.orderDate.setHours(0, 0, 0, 0);
     //this.allocation.packingDate = this.orderDate;

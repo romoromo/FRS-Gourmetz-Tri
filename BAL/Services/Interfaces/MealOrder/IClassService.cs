@@ -50,5 +50,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreatePLCAsync(PLCDTO dto);
         Task<BaseOperationResponse> UpdatePLCAsync(PLCDTO dto);
         Task<BaseOperationResponse> DeletePLCAsync(int id);
+
+        Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId);
     }
 }

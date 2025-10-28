@@ -229,6 +229,17 @@ namespace FRS.Controllers
             return BadRequest(ModelState);
         }
 
+        [ApiKeyAuthorize]
+        [HttpGet("classlevels/periodmealsession")]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(List<MealSessionDetailDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetOutletPeriodMealSessions(int outletId)
+        {
+            var results = await this._service.GetOutletPeriodMealSessions(outletId);
+            return Ok(results);
+        }
+
         #endregion
 
         #region Classes
