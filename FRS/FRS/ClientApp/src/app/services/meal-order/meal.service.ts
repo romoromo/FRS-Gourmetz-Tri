@@ -100,6 +100,10 @@ export class MealService {
     return this.commonEndpoint.getSieve<PagedResult>(this.mealSessionUrl + '/sieve/list', filter);
   }
 
+  getMealSessionsSimpleByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.mealSessionUrl + '/simple/sieve/list', filter);
+  }
+
   updateMealSession(mealSessionModel: MealSession) {
     if (mealSessionModel.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.mealSessionUrl, mealSessionModel, mealSessionModel.id);

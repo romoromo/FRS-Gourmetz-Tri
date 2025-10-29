@@ -110,6 +110,12 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<PagedEntity<MealSessionSimpleDTO>> GetMealSessionsSimpleAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<MealSessionSimpleDTO>>(await this._uow.MealSessions.GetMealSessionsAsync(filter));
+            return result;
+        }
+
         public async Task<List<MealSessionMealPeriodDTO>> GetMealSessionsByMealPeriod(int outletId, int catererId, int outletProfileId)
         {
             var result = _mapper.Map<List<MealSessionMealPeriodDTO>>(this._uow.MealSessions.GetMealSessionsByMealPeriod(outletId, catererId, outletProfileId));

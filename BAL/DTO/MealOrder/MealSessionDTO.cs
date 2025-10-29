@@ -35,6 +35,21 @@ namespace BAL.DTO.MealOrder
         public List<OutletClassRosterDTO> ClassRosters { get; set; }
     }
 
+    public class MealSessionSimpleDTO
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+        public int? MealPeriodId { get; set; }
+        public List<MealSessionDetailSimpleDTO> Details { get; set; }
+    }
+
+    public class MealSessionDetailSimpleDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class MealSessionMealPeriodDTO
     {
         public MealPeriodDTO MealPeriod { get; set; }
