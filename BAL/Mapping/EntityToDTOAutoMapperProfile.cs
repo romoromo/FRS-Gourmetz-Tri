@@ -559,6 +559,9 @@ namespace BAL.Mapping
                 .ForMember(e => e.Details, map => map.MapFrom(f => f.Details.Where(x => x.IsActive)));
             CreateMap<MealSessionDTO, MealSession>();
 
+            CreateMap<MealSession, MealSessionSimpleDTO>()
+                .ForMember(e => e.Details, map => map.MapFrom(f => f.Details.Where(x => x.IsActive)));
+
             CreateMap<MealSessionMealPeriodDTO, MealSessionMealPeriod>();
             CreateMap<MealSessionMealPeriod, MealSessionMealPeriodDTO>();
 
@@ -583,6 +586,7 @@ namespace BAL.Mapping
                 //.ForMember(e => e.OverheadTime, map => map.MapFrom(f => DateTime.Parse(f.OTime)))
                 //.ForMember(e => e.CalSourceTime, map => map.MapFrom(f => DateTime.Parse(f.CTime)))
                 ;
+            CreateMap<MealSessionDetail, MealSessionDetailSimpleDTO>();
 
             CreateMap<Dish, DishDTO>()
                 .ForMember(e => e.DishTypeName, map => map.MapFrom(f => f.DishType.Name))

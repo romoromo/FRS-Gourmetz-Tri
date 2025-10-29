@@ -26,6 +26,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> DeleteMealSessionAsync(int id);
         Task<MealSessionDTO> GetMealSessionByIdAsync(int id);
         Task<PagedEntity<MealSessionDTO>> GetMealSessionsAsync(BaseFilter filter);
+        Task<PagedEntity<MealSessionSimpleDTO>> GetMealSessionsSimpleAsync(BaseFilter filter);
         Task<List<MealSessionMealPeriodDTO>> GetMealSessionsByMealPeriod(int outletId, int catererId, int outletProfileId);
         Task<List<MealSessionMealPeriodDTO>> GetAllMealSessionsByMealPeriod(int outletId, int catererId, int outletProfileId);
         Task<List<MealSessionMealPeriodDTO>> GetMealSessionsByMealPeriodByOutlet(int outletId);
