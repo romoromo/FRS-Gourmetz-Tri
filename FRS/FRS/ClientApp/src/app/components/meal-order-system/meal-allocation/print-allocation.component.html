@@ -12,7 +12,9 @@
         </mat-form-field>
         <mat-form-field class="col-xs-6">
           <mat-label>Period</mat-label>
-          <mat-select (selectionChange)="onChangeSessions()" id="periodName" name="periodName" [(ngModel)]="allocation.mealSessionId" #periodName="ngModel" [disabled]="isSaving || filterLoading || isLoading">
+          <mat-select (selectionChange)="onChangeSessions()" id="periodName" name="periodName" [(ngModel)]="allocation.mealSessionId"
+                      #periodName="ngModel" [disabled]="isSaving || filterLoading || isLoading"
+                      placeholder="{{ periodPlaceholder }}">
             <mat-option *ngFor="let session of sessions" [value]="session.id">
               {{session.mealPeriodName}}
             </mat-option>

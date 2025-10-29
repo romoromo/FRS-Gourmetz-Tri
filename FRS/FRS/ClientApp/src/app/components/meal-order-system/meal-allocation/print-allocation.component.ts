@@ -47,6 +47,7 @@ export class PrintAllocationComponent implements OnInit {
   filterLoading = true;
   isNewAllocation = false;
   selectedPeriodName = "";
+  periodPlaceholder = "Meal Period have not been setup";
 
   //dish_count: TokenDishLabel[] = [];
 
@@ -190,6 +191,11 @@ export class PrintAllocationComponent implements OnInit {
       .subscribe(results => {
         this.sessions = results;
         console.log("sessions1: ", this.sessions)
+        if (!this.sessions || this.sessions.length === 0) {
+          this.periodPlaceholder = 'Meal Period have not been setup';
+        } else {
+          this.periodPlaceholder = 'Select a Meal Period';
+        }
 
         if (!this.isNewAllocation) {
           this.token_count.forEach(t => {
