@@ -60,7 +60,7 @@ export class DishCycleEditorComponent implements OnInit, OnDestroy {
   private outletProfiles = [];
   private dishes: Dish[] = [];
   private dishTypes: DishType[] = [];
-  private cycleTypes = ['Ala Carte', 'Main Menu', 'Snacks', 'Light Meal', 'Full Meal', 'Premium Full Meal'];
+  private cycleTypes = ['Ala Carte', 'Main Menu', 'Dish Menu', 'Light Meal', 'Full Meal', 'Premium Full Meal'];
   private mealCycleTypes = ['Snacks', 'Light Meal', 'Full Meal', 'Premium Full Meal'];
   private dishCycles: DishCycle[] = [];
   private mealTypes: MealType[] = [];
