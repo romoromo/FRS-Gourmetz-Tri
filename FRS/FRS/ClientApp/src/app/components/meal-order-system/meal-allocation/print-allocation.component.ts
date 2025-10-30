@@ -490,6 +490,23 @@ export class PrintAllocationComponent implements OnInit {
             console.log("selected: ", selectedDish)
             console.log("token", this.tokens);
             console.log("token_count", this.token_count);
+
+            if (!this.token_count || this.token_count.length === 0) {
+              // Initialize from this.tokens
+              this.token_count = this.tokens.map(token => {
+                const newToken = new TokenLabel();
+                newToken.token_id = token.id;
+                newToken.token_name = token.name;
+                newToken.qty = 0;
+                newToken.qty_menus = 0;
+                newToken.qty_dishes = 0;
+                newToken.qty_tdishes = 0;
+                newToken.dishes = [];
+                return newToken;
+              });
+              console.log("Initialized token_count from tokens:", this.token_count);
+            }
+
             this.token_count.forEach(token => {
               // Find if the dish already exists for this token
               const dishIndex = token.dishes.findIndex(d => d.dish_id === selectedDish.id);
