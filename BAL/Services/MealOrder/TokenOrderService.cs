@@ -2006,6 +2006,501 @@ namespace BAL.Services.MealOrder
             }
         }
 
+        public async Task<byte[]> GenerateDeliveryAllocationReport(BaseFilter filter)
+        {
+            IQueryable<MealAllocation> query = _appContext.MealAllocations.AsNoTracking();
+
+            query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
+            var allocations = _mapper.Map<List<MealAllocation>>(await query.ToListAsync());
+
+            List<DOReportDTO> DOReports = new List<DOReportDTO>();
+            List<DOReportRouteDTO> AllRoutes = new List<DOReportRouteDTO>();
+            //List<DOReportSessionDTO> AllSessions = new List<DOReportSessionDTO>();
+
+            if (allocations != null)
+            {
+                var mealSessionDetails = new List<MealSessionDetailByOrderAndClass>();
+
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    foreach (var a in allocations)
+                    {
+                        if (a.MealSessionDetail != null)
+                        {
+                            var alr = AllRoutes.Find(r => r.routeId == a.MealSessionDetail.RouteId.Value);
+
+                            //route
+                            if (alr == null)
+                            {
+                                var rot = new DOReportRouteDTO();
+
+                                rot.routeId = a.MealSessionDetail.RouteId.Value;
+                                rot.routeLabel = a.MealSessionDetail.Route.Label;
+                                rot.startTime = a.MealSessionDetail.Route.Pickup.TimeOfDay;
+                                rot.isFas = false;
+
+                                rot.sessions = new List<DOReportSessionDTO>();
+
+                                var sess = new DOReportSessionDTO();
+                                sess.mealSessionDetailId = a.MealSessionDetail.Id;
+                                sess.startTime = a.MealSessionDetail.StartDate.ToString("HHmmss");
+                                sess.name = a.MealSessionDetail.Name;
+                                foreach (var tl in a.tokens)
+                                {
+                                    DOReportSessionDTO als = rot.
+                                        sessions.
+                                        Find(r => (r.mealSessionDetailId == 
+                                        a.MealSessionDetail.Id) 
+                                        && (!r.isFas));
+                                    sess.isFas = false;
+
+                                    if (tl.order_id != null && tl.Order.IsFAS)
+                                    {
+                                        als = alr.sessions.Find(r => (r.mealSessionDetailId == a.MealSessionDetail.Id) && (r.isFas));
+                                        sess.isFas = true;
+                                        rot.isFas = true;
+                                    }
+
+                                    if (als == null)
+                                    {
+                                        rot.sessions.Add(sess);
+                                    }
+                                }
+                                AllRoutes.Add(rot);
+                            }
+                            else
+                            {
+                                var sess = new DOReportSessionDTO();
+                                sess.mealSessionDetailId = a.MealSessionDetail.Id;
+                                sess.startTime = a.MealSessionDetail.StartDate.ToString("HHmmss");
+                                sess.name = a.MealSessionDetail.Name;
+                                foreach (var tl in a.tokens)
+                                {
+                                    DOReportSessionDTO als = alr.sessions.Find(r => (r.mealSessionDetailId == a.MealSessionDetail.Id) && (!r.isFas));
+                                    sess.isFas = false;
+
+                                    if (tl.order_id != null && tl.Order.IsFAS)
+                                    {
+                                        als = alr.sessions.Find(r => (r.mealSessionDetailId == a.MealSessionDetail.Id) && (r.isFas));
+                                        sess.isFas = true;
+                                        alr.isFas = true;
+                                    }
+
+                                    if (als == null)
+                                    {
+                                        alr.sessions.Add(sess);
+                                    }
+                                }
+                            }
+
+
+                            foreach (TokenLabel t in a.tokens)
+                            {
+                                var selectedDishes = t.dishes.ToArray();
+                                int j = 0;
+                                foreach (TokenDishLabel tod in selectedDishes)
+                                {
+                                    var rep = DOReports.Find(r => r.dishID == tod.dish_id);
+                                    if (rep == null)
+                                    {
+                                        var repDish = new DOReportDTO();
+                                        repDish.dishID = tod.dish_id.Value;
+                                        repDish.dishLabel = tod.dish_name;
+                                        repDish.tokenLabel = tod.Dish.DishType.Name;
+                                        repDish.totalQty = tod.t_qty ?? 0;
+                                        repDish.OrderNumber = tod?.Dish?.DishType?.OrderNumber;
+                                        repDish.routes = new List<DOReportRouteDTO>();
+                                        repDish.sessions = new List<DOReportSessionDTO>();
+
+                                        //route
+                                        var routeIn = new DOReportRouteDTO();
+                                        routeIn.isFas = false;
+                                        if(t.order_id != null && t.Order.IsFAS)
+                                        {
+                                            routeIn.isFas = true;
+                                        }
+
+                                        routeIn.routeId = a.MealSessionDetail.RouteId.Value;
+                                        routeIn.routeLabel = a.MealSessionDetail.Route.Label;
+
+                                        routeIn.qty = tod.t_qty ?? 0;
+
+                                        repDish.routes.Add(routeIn);
+
+                                        //session
+                                        var session = new DOReportSessionDTO();
+                                        session.mealSessionDetailId = a.MealSessionDetail.Id;
+                                        session.name = a.MealSessionDetail.Name;
+
+                                        session.isFas = false;
+                                        if (t.order_id != null && t.Order.IsFAS)
+                                        {
+                                            session.isFas = true;
+                                        }
+
+                                        session.qty = tod.t_qty ?? 0;
+
+                                        repDish.sessions.Add(session);
+
+
+                                        DOReports.Add(repDish);
+                                    }
+                                    else
+                                    {
+
+                                        //route
+                                        rep.totalQty += tod.t_qty ?? 0;
+                                        var isFas = false;
+                                        if (t.order_id != null && t.Order.IsFAS)
+                                        {
+                                            isFas = true;
+                                        }
+                                        var route = rep.routes.Find(r => (r.routeId == a.MealSessionDetail.RouteId) && (r.isFas == isFas));
+
+                                        if (route == null)
+                                        {
+                                            var routeIn = new DOReportRouteDTO();
+                                            routeIn.isFas = isFas;
+
+                                            routeIn.routeId = a.MealSessionDetail.RouteId.Value;
+                                            routeIn.routeLabel = a.MealSessionDetail.Route.Label;
+
+                                            routeIn.qty = tod.t_qty ?? 0;
+                                            rep.routes.Add(routeIn);
+                                        }
+                                        else
+                                        {
+                                            route.qty += tod.t_qty ?? 0;
+
+                                        }
+
+                                        //session
+                                        var session = rep.sessions.Find(r => (r.mealSessionDetailId == a.MealSessionDetail.Id) && (r.isFas == isFas));
+
+                                        if (session == null)
+                                        {
+                                            var sess = new DOReportSessionDTO();
+                                            sess.mealSessionDetailId = a.MealSessionDetail.Id;
+                                            sess.name = a.MealSessionDetail.Name;
+                                            sess.isFas = isFas;
+                                            sess.qty = tod.t_qty ?? 0;
+                                            rep.sessions.Add(sess);
+                                        }
+                                        else
+                                        {
+                                            session.qty += tod.t_qty ?? 0;
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    };
+
+                    //AllSessions = AllSessions.OrderBy(o => o.startTime).ToList();
+                    AllRoutes.Sort((x, y) => TimeSpan.Compare(x.startTime, y.startTime));
+                    foreach (var item in AllRoutes)
+                    {
+                        item.sessions = item.sessions.OrderBy(x => x.name).ThenBy(x => x.isFas).ToList();
+                    }
+
+                    var wb = new XSSFWorkbook();
+                    var rowCount = 0;
+                    var sheet = (XSSFSheet)wb.CreateSheet("Delivery");
+
+                    #region detail info
+
+                    var detailStyle = wb.CreateCellStyle();
+                    var detailFont = wb.CreateFont();
+                    detailFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                    detailStyle.SetFont(detailFont);
+                    detailStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Left;
+
+                    var row = sheet.CreateRow(++rowCount);
+                    ICell cell;
+
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue("OUTLET:");
+                    cell.CellStyle = detailStyle;
+
+
+                    if (allocations.Count > 0)
+                    {
+                        cell = row.CreateCell(1);
+                        cell.SetCellValue(allocations[0].Outlet.Name);
+                        cell.CellStyle = detailStyle;
+                    }
+
+                    row = sheet.CreateRow(++rowCount);
+
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue("DAY:");
+                    cell.CellStyle = detailStyle;
+
+                    cell = row.CreateCell(1);
+                    cell.SetCellValue(filter.Filters.Substring(33, 10));
+                    cell.CellStyle = detailStyle;
+
+                    rowCount += 2;
+
+                    #endregion
+
+                    #region Headers
+                    var defaultColor = HSSFColor.Aqua.Index;
+                    var headerStyle = wb.CreateCellStyle();
+                    var headerFont = wb.CreateFont();
+                    headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                    headerStyle.SetFont(headerFont);
+                    headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    row = sheet.CreateRow(++rowCount);
+                    var borderedHeaderStyle = wb.CreateCellStyle();
+                    borderedHeaderStyle.SetFont(headerFont);
+                    borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                    borderedHeaderStyle.FillBackgroundColor = defaultColor;
+                    borderedHeaderStyle.FillForegroundColor = defaultColor;
+                    borderedHeaderStyle.FillPattern = FillPattern.SolidForeground;
+
+                    var borderedHeaderStyleWrapText = wb.CreateCellStyle();
+                    borderedHeaderStyleWrapText.SetFont(headerFont);
+                    borderedHeaderStyleWrapText.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    borderedHeaderStyleWrapText.BorderTop = BorderStyle.Thin;
+                    borderedHeaderStyleWrapText.BorderBottom = BorderStyle.Thin;
+                    borderedHeaderStyleWrapText.BorderLeft = BorderStyle.Thin;
+                    borderedHeaderStyleWrapText.BorderRight = BorderStyle.Thin;
+                    borderedHeaderStyleWrapText.FillBackgroundColor = defaultColor;
+                    borderedHeaderStyleWrapText.FillForegroundColor = defaultColor;
+                    borderedHeaderStyleWrapText.FillPattern = FillPattern.SolidForeground;
+                    borderedHeaderStyleWrapText.WrapText = true;
+
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue("DISH CATEGORY");
+                    cell.CellStyle = borderedHeaderStyle;
+                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount + 1, 0, 0));
+
+                    cell = row.CreateCell(1);
+                    cell.SetCellValue("Pick-Up Time");
+                    cell.CellStyle = borderedHeaderStyle;
+
+                    var i = 2;
+
+                    AllRoutes.ForEach(ar =>
+                    {
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue(ar.routeLabel);
+                        int lengthColumn = i + ar.sessions.Count;
+                        lengthColumn = lengthColumn + 1;
+                        if (ar.isFas)
+                            lengthColumn = lengthColumn + 1;
+                        var cra = new CellRangeAddress(rowCount, rowCount, i, lengthColumn);
+                        cell.CellStyle = borderedHeaderStyle;
+                        GenerateBorderMergeCell(wb, sheet, cra);
+                        int isFasNumber = (ar.isFas ? 1 : 0);
+                        i += (ar.sessions.Count) + 2 + isFasNumber;
+                    });
+
+                    var grandTotalStyle = wb.CreateCellStyle();
+                    var craGrandTotal = new CellRangeAddress(rowCount, rowCount + 1, i, i);
+                    cell = row.CreateCell(i);
+                    cell.SetCellValue("Grand Total");
+                    cell.CellStyle = borderedHeaderStyle;
+                    GenerateBorderMergeCell(wb, sheet, craGrandTotal);
+
+                    row = sheet.CreateRow(++rowCount);
+
+                    cell = row.CreateCell(1);
+                    cell.SetCellValue("DISH NAME");
+                    cell.CellStyle = borderedHeaderStyle;
+
+                    i = 2;
+                    List<int> notAllowedAutoSize = new List<int>();
+                    AllRoutes.ForEach(ar =>
+                    {
+                        ar.sessions = ar.sessions.OrderBy(o => o.startTime).ToList();
+                        ar.sessions.ForEach(ars =>
+                        {
+                            cell = row.CreateCell(i);
+                            cell.SetCellValue(ars.name);
+                            if (ars.isFas)
+                            {
+                                notAllowedAutoSize.Add(i);
+                                sheet.SetColumnWidth(i, 25 * 256);
+                                cell.SetCellValue($"{ars.name}\n(FAS)");
+                            }
+                            cell.CellStyle = ars.isFas ? borderedHeaderStyleWrapText : borderedHeaderStyle;
+
+                            i += 1;
+
+                            //cell = row.CreateCell(i);
+                            //cell.SetCellValue(ars.name + " FAS");
+                            //cell.CellStyle = borderedHeaderStyle;
+                            //i += 1;
+                        });
+
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue("Total Meal (Regular)");
+                        cell.CellStyle = borderedHeaderStyle;
+                        i += 1;
+
+                        if (ar.isFas)
+                        {
+                            cell = row.CreateCell(i);
+                            cell.SetCellValue("Total Meal (FAS)");
+                            cell.CellStyle = borderedHeaderStyle;
+                            i += 1;
+                        }
+
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue("Total Meal (Regular & FAS)");
+                        cell.CellStyle = borderedHeaderStyle;
+                        row.Height = -1;
+                        i += 1;
+
+                    });
+
+
+
+                    //sheet.AutoSizeColumn(0);
+
+                    #endregion
+
+                    #region Content
+                    var contentStyle = wb.CreateCellStyle();
+                    contentStyle.BorderTop = BorderStyle.Thin;
+                    contentStyle.BorderBottom = BorderStyle.Thin;
+                    contentStyle.BorderLeft = BorderStyle.Thin;
+                    contentStyle.BorderRight = BorderStyle.Thin;
+                    contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentStyle.Alignment = HorizontalAlignment.Left;
+                    contentStyle.WrapText = true;
+                    var dataFormatCustom = wb.CreateDataFormat();
+
+                    var contentBackgroundStyle = wb.CreateCellStyle();
+                    contentBackgroundStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentBackgroundStyle.Alignment = HorizontalAlignment.Left;
+                    contentBackgroundStyle.WrapText = true;
+                    contentBackgroundStyle.BorderTop = BorderStyle.Thin;
+                    contentBackgroundStyle.BorderBottom = BorderStyle.Thin;
+                    contentBackgroundStyle.BorderLeft = BorderStyle.Thin;
+                    contentBackgroundStyle.BorderRight = BorderStyle.Thin;
+                    contentBackgroundStyle.FillBackgroundColor = defaultColor;
+                    contentBackgroundStyle.FillForegroundColor = defaultColor;
+                    contentBackgroundStyle.FillPattern = FillPattern.SolidForeground;
+
+                    DOReports.OrderBy(x => x.OrderNumber).ThenBy(x => x.dishLabel).ToList().ForEach(dor =>
+                    {
+                        int c = 0;
+                        row = sheet.CreateRow(++rowCount);
+
+                        cell = row.CreateCell(c++);
+                        cell.SetCellValue(dor.tokenLabel);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(c++);
+                        cell.SetCellValue(dor.dishLabel);
+                        cell.CellStyle = contentStyle;
+
+                        //route
+                        AllRoutes.ForEach(ar =>
+                        {
+
+                            ar.sessions.ForEach(ars =>
+                            {
+                                //non fas qty
+                                cell = row.CreateCell(c++);
+                                var qtyS = dor.sessions.Find(r => (r.mealSessionDetailId == ars.mealSessionDetailId) && (r.isFas == ars.isFas));
+                                if (qtyS != null)
+                                {
+                                    cell.SetCellValue(qtyS.qty);
+                                }
+                                else
+                                {
+                                    cell.SetCellValue(0);
+                                }
+                                cell.CellStyle = contentStyle;
+
+                                //fas qty
+                                //cell = row.CreateCell(c++);
+                                //var qtySF = dor.sessions.Find(r => (r.mealSessionDetailId == ars.mealSessionDetailId) && (r.isFas == true));
+                                //if (qtySF != null)
+                                //{
+                                //    cell.SetCellValue(qtySF.qty);
+                                //}
+                                //else
+                                //{
+                                //    cell.SetCellValue(0);
+                                //}
+                                //cell.CellStyle = contentStyle;
+
+
+                            });
+
+                            // non fas qty
+                            cell = row.CreateCell(c++);
+                            var qtyR = dor.routes.Find(r => (r.routeId == ar.routeId) && (r.isFas == false));
+                            if (qtyR != null)
+                            {
+                                cell.SetCellValue(qtyR.qty);
+                            }
+                            else
+                            {
+                                cell.SetCellValue(0);
+                            }
+                            cell.CellStyle = contentStyle;
+
+                            //fas qty
+                            int totalQtyFas = 0;
+                            if (ar.isFas)
+                            {
+                                cell = row.CreateCell(c++);
+                                var qtyF = dor.routes.Find(r => (r.routeId == ar.routeId) && (r.isFas == true));
+                                if (qtyF != null)
+                                {
+                                    cell.SetCellValue(qtyF.qty);
+                                    totalQtyFas = qtyF?.qty ?? 0;
+                                }
+                                else
+                                {
+                                    cell.SetCellValue(0);
+                                }
+                                cell.CellStyle = contentStyle;
+                            }
+
+                            cell = row.CreateCell(c++);
+                            cell.SetCellValue((qtyR?.qty ?? 0) + totalQtyFas);
+                            cell.CellStyle = contentBackgroundStyle;
+                        });
+
+                        cell = row.CreateCell(c++);
+                        cell.SetCellValue(dor.totalQty);
+                        cell.CellStyle = contentStyle;
+                    });
+
+                    #endregion
+
+                    for (var idx = 0; idx < 50; idx++)
+                    {
+                        if (!notAllowedAutoSize.Contains(idx))
+                        {
+                            sheet.AutoSizeColumn(idx, true);
+                        }
+                    }
+
+                    wb.Write(stream);
+
+                    return stream.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private void GenerateBorderMergeCell(XSSFWorkbook wb, XSSFSheet sheet, CellRangeAddress cra)
         {
             sheet.AddMergedRegion(cra);
