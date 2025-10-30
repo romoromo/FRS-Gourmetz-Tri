@@ -70,7 +70,7 @@ export class PrintAllocationComponent implements OnInit {
   ngOnInit() {
     this.getMenuDishes();
     this.getMealTypes();
-    //this.getSessions();
+    this.getPeriodsByDate();
     this.getAllSessions();
     //this.getTokenOrder();
   }
