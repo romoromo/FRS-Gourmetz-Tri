@@ -19,6 +19,8 @@ namespace DAL.Models.MealOrder
         public virtual MealType Token { get; set; }
         public string token_name { get; set; }
         public int? dish_id { get; set; }
+        [ForeignKey("dish_id")]
+        public virtual Dish Dish { get; set; }
         public string dish_name { get; set; }
         public string dish_code { get; set; }
         public int? o_qty { get; set; }
