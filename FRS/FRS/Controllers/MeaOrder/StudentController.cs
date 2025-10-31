@@ -1,33 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
 using DAL.Core;
 using DAL.Core.DTO;
+using DAL.Core.Helpers;
 using DAL.Core.Interfaces;
 using DAL.Filters;
+using DAL.Models.MealOrder;
 using FRS.Attributes;
 using FRS.Helpers;
 using FRS.ViewModels;
+using FRS.ViewModels.MealOrder;
+using MealOrderPayments.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using OpenIddict.Validation.AspNetCore;
-using Microsoft.Extensions.Configuration;
-using DAL.Core.Helpers;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
-using DAL.Models.MealOrder;
-using Newtonsoft.Json;
-using FRS.ViewModels.MealOrder;
-using MealOrderPayments.Controllers;
+using System.IO;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace FRS.Controllers
 {
@@ -1533,6 +1534,43 @@ namespace FRS.Controllers
             {
                 _logger.LogError($"Error PointTopupForStudent : {ex.Message}", ex);
                 _logger.LogError($"Error PointTopupForStudent : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+        #endregion
+
+        #region API Gourmetz
+        [HttpPost("students/v2")]
+        [ProducesResponseType(201, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateStudentV2([FromBody] CreateStudentLiteRequestDto dto)
+        {
+            try
+            {
+                string dataJson = JsonConvert.SerializeObject(dto);
+                _logger.LogInformation($"CreateStudentV2 CreateStudentLiteRequestDto : {dataJson}");
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                StudentDTO vm = _mapper.Map<CreateStudentLiteRequestDto, StudentDTO>(dto);
+                vm.StudentCards = new List<StudentCardDTO>();
+                if (!string.IsNullOrEmpty(dto.CardId))
+                    vm.StudentCards.Add(new StudentCardDTO { CardId = dto?.CardId, Status = "ACTIVE" });
+                var response = await _service.CreateStudentAsync(vm);
+                var studentData = (Student)response.Data;
+                var responseObject = new BaseOperationResponse
+                {
+                    IsSuccess = response.IsSuccess,
+                    Message = response.Message,
+                    Data = studentData?.Id ?? 0
+                };
+                return Ok(responseObject);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error CreateStudentV2 : {ex.Message}", ex);
+                _logger.LogError($"Error CreateStudentV2 : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
         }

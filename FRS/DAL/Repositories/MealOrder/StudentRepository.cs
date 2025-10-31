@@ -305,6 +305,8 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> CreateAsync(IAccountManager accountManager, Student student, ApplicationUser user, string newPassword, List<UserCardId> cards, List<StudentCard> studentCards)
         {
+            var validate = await ValidateCreateUser(student);
+            if (!validate.IsSuccess) return validate;
             var result = new BaseOperationResponse();
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
                             new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
@@ -363,6 +365,62 @@ namespace DAL.Repositories.MealOrder
             }
             return result;
 
+        }
+
+        private async Task<BaseOperationResponse> ValidateCreateUser(Student student)
+        {
+            var response = new BaseOperationResponse
+            {
+                IsSuccess = true
+            };
+            var readyOutlet = await _appContext.Outlets.AnyAsync(x => x.IsActive && x.Id == student.OutletId);
+            if (!readyOutlet)
+            {
+                response.Message = $"Outlet does not exist with id = {student.OutletId}";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            var readyClassLevel = await _appContext.ClassLevels.AnyAsync(x => x.IsActive && x.Id == student.ClassLevelId);
+            if (!readyClassLevel)
+            {
+                response.Message = $"Class Level does not exist with id = {student.ClassLevelId}";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            var readyClass = await _appContext.Classes.AnyAsync(x => x.IsActive && x.Id == student.ClassId);
+            if (!readyClass)
+            {
+                response.Message = $"Class does not exist with id = {student.ClassId}";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            var readyBatch = await _appContext.ClassBatches.AnyAsync(x => x.IsActive && x.Id == student.ClassBatchId);
+            if (!readyBatch)
+            {
+                response.Message = $"Batch does not exist with id = {student.ClassBatchId}";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            var inputIds = student.Restrictions.Select(x => x.RestrictionId);
+            var existingIds = await _appContext.Restrictions
+                .AsNoTracking()
+                .Where(e => inputIds.Contains(e.Id))
+                .Select(e => e.Id)
+                .ToListAsync();
+
+            var missingIds = inputIds.Except(existingIds).ToList();
+            if (missingIds.Any())
+            {
+                response.Message = $"Restriction does not exist with ids = {string.Join(",", missingIds)}";
+                response.IsSuccess = false;
+                return response;
+            }
+
+            return response;
         }
 
         public async Task<BaseOperationResponse> UpdateAsync(IAccountManager accountManager, Student student, ApplicationUser user, string currentPassword, string newPassword, List<UserCardId> cards, List<StudentCard> studentCards, List<StudentRestriction> restrictions, List<StudentInterestGroup> interestGroups)

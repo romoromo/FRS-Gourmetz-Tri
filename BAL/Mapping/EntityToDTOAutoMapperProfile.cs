@@ -217,6 +217,9 @@ namespace BAL.Mapping
             CreateMap<StudentInterestGroupDTO, StudentInterestGroup>();
             CreateMap<StudentInterestGroup, StudentInterestGroupDTO>();
 
+            CreateMap<CreateStudentLiteRequestDto, StudentDTO>()
+                .ForMember(e => e.Restrictions, map => map.MapFrom(e => e.RestrictionsIds.Select(x => new StudentRestrictionDTO { RestrictionId = x})));
+
             CreateMap<InterestGroup, InterestGroupDTO>();
             CreateMap<InterestGroupDTO, InterestGroup>();
 
