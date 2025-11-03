@@ -19,6 +19,7 @@ using BAL.Services.Interfaces.MealOrder;
 using BAL.DTO.MealOrder;
 using DAL.Models.MealOrder;
 using DAL.Core.Interfaces;
+using DAL.Core.DTO;
 
 namespace BAL.Services.MealOrder
 {
@@ -109,6 +110,12 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<PagedEntity<MealSessionSimpleDTO>> GetMealSessionsSimpleAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<MealSessionSimpleDTO>>(await this._uow.MealSessions.GetMealSessionsAsync(filter));
+            return result;
+        }
+
         public async Task<List<MealSessionMealPeriodDTO>> GetMealSessionsByMealPeriod(int outletId, int catererId, int outletProfileId)
         {
             var result = _mapper.Map<List<MealSessionMealPeriodDTO>>(this._uow.MealSessions.GetMealSessionsByMealPeriod(outletId, catererId, outletProfileId));
@@ -167,6 +174,11 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<List<MealSessionLiteDto>> GetMealSessionLiteByOutletId(int outletId)
+        {
+            var result = await this._uow.MealSessions.GetLiteByOutletId(outletId);
+            return result;
+        }
         public async Task<MealSessionDTO> GetMealSessionByIdAsync(int id)
         {
             return _mapper.Map<MealSessionDTO>(await this._uow.MealSessions.GetByIdAsync(id));

@@ -116,9 +116,8 @@ export class MealAllocationssManagementComponent implements OnInit {
 
   getAllSessions() {
     let filter = new Filter();
-    //let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
     filter.filters = '(IsActive)==true';
-    this.mealService.getMealSessionsByFilter(filter)
+    this.mealService.getMealSessionsSimpleByFilter(filter)
       .subscribe(results => {
         this.allSessions = results.pagedData;
         console.log("all sessions: ", this.allSessions);

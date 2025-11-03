@@ -43,5 +43,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> CreatePrepaidOrderAsync(PrepaidOrderDTO order);
         //Task<List<spSalesOrderReport>> GetOrderCollection(SalesOrderReportFilter filter);
         Task<List<spVoucherUtilisationReport>> GetVoucherUtilisations(VoucherUtilisationReportFilter filter);
+
     }
 }

@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+//#nullable disable
+
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
@@ -3774,6 +3776,12 @@ namespace FRS.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("MealSessionDetailId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MealSessionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -3794,6 +3802,10 @@ namespace FRS.Migrations
                     b.HasIndex("CreatedBy");
 
                     b.HasIndex("InstitutionId");
+
+                    b.HasIndex("MealSessionDetailId");
+
+                    b.HasIndex("MealSessionId");
 
                     b.HasIndex("OutletId");
 
@@ -6957,6 +6969,59 @@ namespace FRS.Migrations
                     b.ToTable("OutletTerms");
                 });
 
+            modelBuilder.Entity("DAL.Models.MealOrder.PLCModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Framework")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("IPAddress")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("InstitutionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("OutletId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("InstitutionId");
+
+                    b.HasIndex("OutletId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("IPAddress", "Framework", "TotalNumber", "OutletId", "InstitutionId");
+
+                    b.ToTable("PLCs");
+                });
+
             modelBuilder.Entity("DAL.Models.MealOrder.PackingAllocation", b =>
                 {
                     b.Property<int>("Id")
@@ -8961,6 +9026,57 @@ namespace FRS.Migrations
                     b.HasIndex("UpdatedBy");
 
                     b.ToTable("TransactionFeeDetails");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.TrayModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DispenserId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LEDOutputNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MotorOutputNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PLCId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TrayId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DispenserId");
+
+                    b.HasIndex("PLCId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.ToTable("Trays");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.UserCaterer", b =>
@@ -14640,6 +14756,14 @@ namespace FRS.Migrations
                         .WithMany()
                         .HasForeignKey("InstitutionId");
 
+                    b.HasOne("DAL.Models.MealOrder.MealSessionDetail", "MealSessionDetail")
+                        .WithMany()
+                        .HasForeignKey("MealSessionDetailId");
+
+                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealSession")
+                        .WithMany()
+                        .HasForeignKey("MealSessionId");
+
                     b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
                         .WithMany("ClassLevels")
                         .HasForeignKey("OutletId");
@@ -14651,6 +14775,10 @@ namespace FRS.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("Institution");
+
+                    b.Navigation("MealSession");
+
+                    b.Navigation("MealSessionDetail");
 
                     b.Navigation("Outlet");
 
@@ -16531,6 +16659,33 @@ namespace FRS.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
+            modelBuilder.Entity("DAL.Models.MealOrder.PLCModel", b =>
+                {
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.Institution", "Institution")
+                        .WithMany()
+                        .HasForeignKey("InstitutionId");
+
+                    b.HasOne("DAL.Models.MealOrder.Outlet", "Outlet")
+                        .WithMany()
+                        .HasForeignKey("OutletId");
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Institution");
+
+                    b.Navigation("Outlet");
+
+                    b.Navigation("UpdatedByUser");
+                });
+
             modelBuilder.Entity("DAL.Models.MealOrder.PackingAllocation", b =>
                 {
                     b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
@@ -17595,6 +17750,37 @@ namespace FRS.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("TransactionFee");
+
+                    b.Navigation("UpdatedByUser");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.TrayModel", b =>
+                {
+                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy");
+
+                    b.HasOne("DAL.Models.MealOrder.DispenserOutlet", "DispenserOutlet")
+                        .WithMany("Trays")
+                        .HasForeignKey("DispenserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Models.MealOrder.PLCModel", "PLC")
+                        .WithMany("Trays")
+                        .HasForeignKey("PLCId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("DispenserOutlet");
+
+                    b.Navigation("PLC");
 
                     b.Navigation("UpdatedByUser");
                 });
@@ -19351,6 +19537,11 @@ namespace FRS.Migrations
                     b.Navigation("DishTypePeriods");
                 });
 
+            modelBuilder.Entity("DAL.Models.MealOrder.DispenserOutlet", b =>
+                {
+                    b.Navigation("Trays");
+                });
+
             modelBuilder.Entity("DAL.Models.MealOrder.FaqSubject", b =>
                 {
                     b.Navigation("FaqDetails");
@@ -19468,6 +19659,11 @@ namespace FRS.Migrations
                     b.Navigation("MenuCycles");
 
                     b.Navigation("Outlets");
+                });
+
+            modelBuilder.Entity("DAL.Models.MealOrder.PLCModel", b =>
+                {
+                    b.Navigation("Trays");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.PackingAllocation", b =>

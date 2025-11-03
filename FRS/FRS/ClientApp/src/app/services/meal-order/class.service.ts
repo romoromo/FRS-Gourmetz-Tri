@@ -13,6 +13,7 @@ import { Class } from 'src/app/models/meal-order/class.model';
 import { ClassBatch } from 'src/app/models/meal-order/class-batch.model';
 import { OutletClassRoster } from 'src/app/models/meal-order/outlet-class-roster.model';
 import { DispenserOutlet } from '../../models/meal-order/dispenser-outlet.model';
+import { PlcModel } from '../../models/meal-order/plc.model';
 
 @Injectable()
 export class ClassService {
@@ -31,6 +32,9 @@ export class ClassService {
 
   private readonly _dispenserOutletUrl: string = "/api/class/dispenseroutlets";
   get dispenserOutletUrl() { return this.configurations.baseUrl + this._dispenserOutletUrl; }
+
+  private readonly _plcUrl: string = "/api/class/plc";
+  get plcUrl() { return this.configurations.baseUrl + this._plcUrl; }
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
@@ -173,5 +177,27 @@ export class ClassService {
 
   deleteDispenserOutlet(dispenserOutletOrDispneserOutletId: string | DispenserOutlet): Observable<DispenserOutlet> {
     return this.commonEndpoint.getDeleteEndpoint<DispenserOutlet>(this.dispenserOutletUrl, <string>dispenserOutletOrDispneserOutletId);
+  }
+
+  getPLCByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.plcUrl + '/sieve/list', filter);
+  }
+
+  deletePLC(plcId: string | PlcModel): Observable<PlcModel> {
+    return this.commonEndpoint.getDeleteEndpoint<PlcModel>(this.plcUrl, <string>plcId);
+  }
+
+  newPLC(plc: PlcModel) {
+    return this.commonEndpoint.getNewEndpoint<PlcModel>(this.plcUrl, plc);
+  }
+
+  updatePLC(plc: PlcModel) {
+    if (plc.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.plcUrl, plc, plc.id);
+    }
+  }
+
+  getPeriodMealSession(outletId) {
+    return this.commonEndpoint.get<any>(`${this.classLevelUrl}/periodmealsession?outletId=${outletId}`);
   }
 }

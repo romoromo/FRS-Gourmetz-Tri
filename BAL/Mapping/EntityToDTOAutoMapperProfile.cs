@@ -149,7 +149,9 @@ namespace BAL.Mapping
             CreateMap<ClassBatch, ClassBatchDTO>();
             CreateMap<ClassLevelDTO, ClassLevel>();
             CreateMap<ClassLevel, ClassLevelDTO>()
-                .ForMember(e => e.OutletName, map => map.MapFrom(f => f.Outlet.Name));
+                .ForMember(e => e.OutletName, map => map.MapFrom(f => f.Outlet.Name))
+                .ForMember(e => e.MealSessionName, map => map.MapFrom(f => f.MealSession.Name))
+                .ForMember(e => e.MealSessionDetailName, map => map.MapFrom(f => f.MealSessionDetail.Name));
 
             CreateMap<DispenserOutletDTO, DispenserOutlet>();
             CreateMap<DispenserOutlet, DispenserOutletDTO>()
@@ -214,6 +216,9 @@ namespace BAL.Mapping
 
             CreateMap<StudentInterestGroupDTO, StudentInterestGroup>();
             CreateMap<StudentInterestGroup, StudentInterestGroupDTO>();
+
+            CreateMap<CreateStudentLiteRequestDto, StudentDTO>()
+                .ForMember(e => e.Restrictions, map => map.MapFrom(e => e.RestrictionsIds.Select(x => new StudentRestrictionDTO { RestrictionId = x})));
 
             CreateMap<InterestGroup, InterestGroupDTO>();
             CreateMap<InterestGroupDTO, InterestGroup>();
@@ -557,6 +562,9 @@ namespace BAL.Mapping
                 .ForMember(e => e.Details, map => map.MapFrom(f => f.Details.Where(x => x.IsActive)));
             CreateMap<MealSessionDTO, MealSession>();
 
+            CreateMap<MealSession, MealSessionSimpleDTO>()
+                .ForMember(e => e.Details, map => map.MapFrom(f => f.Details.Where(x => x.IsActive)));
+
             CreateMap<MealSessionMealPeriodDTO, MealSessionMealPeriod>();
             CreateMap<MealSessionMealPeriod, MealSessionMealPeriodDTO>();
 
@@ -581,6 +589,7 @@ namespace BAL.Mapping
                 //.ForMember(e => e.OverheadTime, map => map.MapFrom(f => DateTime.Parse(f.OTime)))
                 //.ForMember(e => e.CalSourceTime, map => map.MapFrom(f => DateTime.Parse(f.CTime)))
                 ;
+            CreateMap<MealSessionDetail, MealSessionDetailSimpleDTO>();
 
             CreateMap<Dish, DishDTO>()
                 .ForMember(e => e.DishTypeName, map => map.MapFrom(f => f.DishType.Name))
@@ -909,6 +918,13 @@ namespace BAL.Mapping
             CreateMap<spGetUserActivityLogDetail, UserActivityLogDetailDTO>();
             CreateMap<spVoucherUtilisationReport, VoucherUtilisation>()
                 .ForMember(dest => dest.UtilisedDate, opt => opt.MapFrom(src => src.UtilisedDate.Date == DateTime.MinValue.Date ? (DateTime?)null : src.UtilisedDate));
+            CreateMap<PLCModel, PLCDTO>().ReverseMap();
+            CreateMap<TrayModel, TrayDTO>()
+                .ForMember(dest => dest.IPAddress, opt => opt.MapFrom(src => src.PLC.IPAddress))
+                .ForMember(dest => dest.Framework, opt => opt.MapFrom(src => src.PLC.Framework));
+            CreateMap<TrayDTO, TrayModel>()
+                .ForMember(d => d.PLC, opt => opt.Ignore())
+                .ForMember(d => d.PLCId, opt => opt.MapFrom(src => src.PLCId));
         }
     }
 }

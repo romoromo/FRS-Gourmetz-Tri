@@ -12,6 +12,7 @@ using BAL.Services.Interfaces.MealOrder;
 using BAL.Services.MealOrder;
 using DAL;
 using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 using FRS.Attributes;
@@ -247,6 +248,16 @@ namespace FRS.Controllers
             return Ok(_mapper.Map<PagedEntityViewModel<MealSessionDTO>>(results));
         }
 
+        [ApiKeyAuthorize]
+        [HttpGet("mealsessions/simple/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetMealSessionsSimple(BaseFilter filter)
+        {
+            var results = await this._service.GetMealSessionsSimpleAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<MealSessionSimpleDTO>>(results));
+        }
+
         #endregion
 
 
@@ -300,6 +311,16 @@ namespace FRS.Controllers
         {
             var results = await this._service.GetMealSessionsByMealPeriodByOutlet(outletId);
             return Ok(_mapper.Map<List<MealSessionMealPeriodDTO>>(results));
+        }
+
+        [ApiKeyAuthorize]
+        [HttpGet("mealsessions/outlet-lite")]
+        [ProducesResponseType(200, Type = typeof(List<MealSessionLiteDto>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetMealSessionLiteByOutletId(int outletId)
+        {
+            var results = await this._service.GetMealSessionLiteByOutletId(outletId);
+            return Ok(results);
         }
 
         [HttpPost("mealsessions")]

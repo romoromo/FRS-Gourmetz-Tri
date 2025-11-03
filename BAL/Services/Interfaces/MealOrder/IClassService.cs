@@ -44,5 +44,13 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<DispenserOutletDTO> GetDispenserOutletByIdAsync(int id);
         Task<PagedEntity<DispenserOutletDTO>> GetDispenserOutletsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateDispenserOutletAsync(DispenserOutletDTO dto);
+
+        Task<PagedEntity<PLCDTO>> GetPLCPagedAsync(BaseFilter filter);
+        Task<PLCDTO> GetPLCByIdAsync(int id);
+        Task<BaseOperationResponse> CreatePLCAsync(PLCDTO dto);
+        Task<BaseOperationResponse> UpdatePLCAsync(PLCDTO dto);
+        Task<BaseOperationResponse> DeletePLCAsync(int id);
+
+        Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId);
     }
 }

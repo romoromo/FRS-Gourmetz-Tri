@@ -106,6 +106,14 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId)
+        {
+            var classSession = await _uow.ClassLevels.GetClassLevelsByOutletIdAsync(outletId);
+            var mealSessionDetail = classSession.Select(m => m.MealSessionDetail)
+                .Where(m => m != null).DistinctBy(m => m.Id);
+            return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetail);
+        }
+
         #endregion
 
         #region Classes
@@ -356,6 +364,40 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        #endregion
+
+        #region PLC
+        public async Task<PagedEntity<PLCDTO>> GetPLCPagedAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<PLCDTO>>(await this._uow.PLCRepository.GetPaged(filter));
+            return result;
+        }
+
+        public async Task<PLCDTO> GetPLCByIdAsync(int id)
+        {
+            return _mapper.Map<PLCDTO>(await this._uow.PLCRepository.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreatePLCAsync(PLCDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.PLCRepository.CreateAsync(_mapper.Map<PLCModel>(dto));
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdatePLCAsync(PLCDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.PLCRepository.UpdateAsync(_mapper.Map<PLCModel>(dto));
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> DeletePLCAsync(int id)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.PLCRepository.DeleteAsync(id);
+            return result;
+        }
         #endregion
 
     }

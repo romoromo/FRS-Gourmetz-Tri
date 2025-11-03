@@ -160,7 +160,7 @@ import { FaqDetailsManagementComponent } from './components/meal-order-system/fa
 import { VoucherUtilisationsReportManagementComponent } from './components/reports/voucher-utilisation/voucher-utilisations-management.component';
 import { VouchersUnassignManagementComponent } from './components/meal-order-system/voucher-unassign/vouchers-unassign-management.component';
 import { WalletTransactionLogManagementComponent } from './components/meal-order-system/wallet-transaction-log/wallet-transaction-log-management.component';
-
+import { PlcManagementComponent } from './components/meal-order-system/outlet/plc/plc-management.component';
  
 
 
@@ -331,6 +331,7 @@ const routes: Routes = [
       { path: "outletterms", component: OutletTermsManagementComponent, canActivate: [AuthGuard], data: { title: "Terms" } },
       { path: "faqsubjects", component: FaqSubjectsManagementComponent, canActivate: [AuthGuard], data: { title: "FAQ Subjects" } },
       { path: "faqdetails", component: FaqDetailsManagementComponent, canActivate: [AuthGuard], data: { title: "FAQ Details" } },
+      { path: "plcs", component: PlcManagementComponent, canActivate: [AuthGuard], data: { title: "PLCs" } },
       //{ path: "orderportalcontents", component: OrderPortalContentComponent, canActivate: [AuthGuard], data: { title: "Order Portal Content" } },
 
       //{ path: "display/:mac", redirectTo: "/display/:mac" },

@@ -26,5 +26,15 @@ namespace DAL.Models.MealOrder
 
         [ForeignKey("OutletId")]
         public virtual Outlet Outlet { get; set; }
+
+        public int? MealSessionId { get; set; }
+
+        [ForeignKey("MealSessionId")]
+        public virtual MealSession MealSession { get; set; }
+
+        public int? MealSessionDetailId { get; set; }
+
+        [ForeignKey("MealSessionDetailId")]
+        public virtual MealSessionDetail MealSessionDetail { get; set; }
     }
 }

@@ -20,6 +20,7 @@ import { DishService } from 'src/app/services/meal-order/dish.service';
 import { MealSessionDetail, MealSession } from 'src/app/models/meal-order/meal-session.model';
 
 import { DishSelectorComponent } from '../dishes/dish-selector/dish-selector.component';
+import { ClassService } from '../../../services/meal-order/class.service';
 
 @Component({
   selector: 'print-allocation',
@@ -46,11 +47,13 @@ export class PrintAllocationComponent implements OnInit {
   filterLoading = true;
   isNewAllocation = false;
   selectedPeriodName = "";
+  periodPlaceholder = "Meal Period have not been setup";
 
   //dish_count: TokenDishLabel[] = [];
 
   constructor(private http: HttpClient, private alertService: AlertService, private deliveryService: DeliveryService, public dialog: MatDialog,
     public dialogRef: MatDialogRef<PrintAllocationComponent>, private menuService: MenuService, private mealService: MealService, private dishService: DishService,
+    public classService: ClassService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.outletId) != typeof (undefined)) {
       this.outletId = data.outletId;
@@ -67,7 +70,7 @@ export class PrintAllocationComponent implements OnInit {
   ngOnInit() {
     this.getMenuDishes();
     this.getMealTypes();
-    this.getSessions();
+    this.getPeriodsByDate();
     this.getAllSessions();
     //this.getTokenOrder();
   }
@@ -92,7 +95,8 @@ export class PrintAllocationComponent implements OnInit {
     console.log("event value: ", moment(event.value))
     this.orderDate = new Date(event.value);
     this.allocation.deliveryDate = this.orderDate;
-    this.getSessions();
+    //this.getSessions();
+    this.getPeriodsByDate();
 
     if (this.allocation.mealSessionId) {
       console.log("allocation Id: ", this.allocation)
@@ -108,7 +112,7 @@ export class PrintAllocationComponent implements OnInit {
 
       this.allocation.outletId = sessionSelected.mealPeriodId;
       this.allocation.timePacked = sessionDetailSelected.routeTime;
-      this.selectedPeriodName = sessionSelected.mealPeriodName;
+      this.selectedPeriodName = sessionDetailSelected.name;
     }
   }
 
@@ -124,7 +128,7 @@ export class PrintAllocationComponent implements OnInit {
     let filter = new Filter();
     //let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
     filter.filters = '(IsActive)==true';
-    this.mealService.getMealSessionsByFilter(filter)
+    this.mealService.getMealSessionsSimpleByFilter(filter)
       .subscribe(results => {
         this.allSessions = results.pagedData;
         console.log("all sessions: ", this.allSessions);
@@ -182,37 +186,38 @@ export class PrintAllocationComponent implements OnInit {
         })
   }
 
-  getSessions() {
-    if (this.orderDate) {
-      var date = new Date(this.orderDate.getTime() - (this.orderDate.getTimezoneOffset() * 60000)).toJSON().split('T')
-      console.log("order date: ", date[0])
-      this.menuService.getOutletSessionsByFilter(this.outletId, date[0])
-        .subscribe(results => {
-          this.sessions = results;
-          console.log("sessions: ", this.sessions)
+  getPeriodsByDate() {
+    this.classService.getPeriodMealSession(this.outletId)
+      .subscribe(results => {
+        this.sessions = results;
+        console.log("sessions1: ", this.sessions)
+        if (!this.sessions || this.sessions.length === 0) {
+          this.periodPlaceholder = 'Meal Period have not been setup';
+        } else {
+          this.periodPlaceholder = 'Select a Meal Period';
+        }
 
-          if (!this.isNewAllocation) {
-            this.token_count.forEach(t => {
+        if (!this.isNewAllocation) {
+          this.token_count.forEach(t => {
 
-              if (t.timePacked == null) {
-                let sessionDetailSelected = this.sessions.find(x => x.id === this.allocation.mealSessionId);
+            if (t.timePacked == null) {
+              let sessionDetailSelected = this.sessions.find(x => x.id === this.allocation.mealSessionId);
 
-                t.timePacked = sessionDetailSelected.routeTime;
-                t.color = sessionDetailSelected.routeColor;
-              }
+              t.timePacked = sessionDetailSelected.routeTime;
+              t.color = sessionDetailSelected.routeColor;
+            }
 
-            });
-          }
+          });
+        }
 
+        this.filterLoading = false;
+      },
+        error => {
           this.filterLoading = false;
-        },
-          error => {
-            this.filterLoading = false;
-            //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-            this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
-              MessageSeverity.error);
-          })
-    }
+          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
+            MessageSeverity.error);
+        })
   }
 
   getTokenName(id) {
@@ -485,6 +490,23 @@ export class PrintAllocationComponent implements OnInit {
             console.log("selected: ", selectedDish)
             console.log("token", this.tokens);
             console.log("token_count", this.token_count);
+
+            if (!this.token_count || this.token_count.length === 0) {
+              // Initialize from this.tokens
+              this.token_count = this.tokens.map(token => {
+                const newToken = new TokenLabel();
+                newToken.token_id = token.id;
+                newToken.token_name = token.name;
+                newToken.qty = 0;
+                newToken.qty_menus = 0;
+                newToken.qty_dishes = 0;
+                newToken.qty_tdishes = 0;
+                newToken.dishes = [];
+                return newToken;
+              });
+              console.log("Initialized token_count from tokens:", this.token_count);
+            }
+
             this.token_count.forEach(token => {
               // Find if the dish already exists for this token
               const dishIndex = token.dishes.findIndex(d => d.dish_id === selectedDish.id);

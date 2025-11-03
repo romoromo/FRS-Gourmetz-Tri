@@ -11,6 +11,7 @@ using Sieve.Services;
 using DAL.Filters;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
+using NPOI.OpenXmlFormats.Dml;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -30,7 +31,11 @@ namespace DAL.Repositories.MealOrder
         public async Task<PagedEntity<ClassLevel>> GetClassLevelsAsync(BaseFilter filter)
         {
             IQueryable<ClassLevel> query = _appContext.ClassLevels
-                .Include(e => e.Institution);
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Include(e => e.Institution)
+                .Include(e => e.MealSession)
+                .Include(e => e.MealSessionDetail);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
             //int totalCount = query.Count();
@@ -142,6 +147,15 @@ namespace DAL.Repositories.MealOrder
             }
 
             return result;
+        }
+
+        public Task<List<ClassLevel>> GetClassLevelsByOutletIdAsync(int outletId)
+        {
+            return _appContext.ClassLevels
+                .AsNoTracking()
+                .Include(e => e.MealSessionDetail)
+                .Where(e => e.OutletId == outletId && e.IsActive)
+                .ToListAsync();
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

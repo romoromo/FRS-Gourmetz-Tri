@@ -100,6 +100,10 @@ export class MealService {
     return this.commonEndpoint.getSieve<PagedResult>(this.mealSessionUrl + '/sieve/list', filter);
   }
 
+  getMealSessionsSimpleByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.mealSessionUrl + '/simple/sieve/list', filter);
+  }
+
   updateMealSession(mealSessionModel: MealSession) {
     if (mealSessionModel.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.mealSessionUrl, mealSessionModel, mealSessionModel.id);
@@ -122,5 +126,9 @@ export class MealService {
 
   getFasMealOrderSummary(outletId: string, storeId: string, mealSessionId: string, deliveryDate: Date) {
     return this.commonEndpoint.get<any>(`${this.mealSessionUrl}/fas/ordersummary?outletId=${outletId}&storeId=${storeId}&mealSessionId=${mealSessionId}&deliveryDate=${deliveryDate}`);
+  }
+
+  getMealSessionLite(outletId: string) {
+    return this.commonEndpoint.get<any>(`${this.mealSessionUrl}/outlet-lite?outletId=${outletId}`);
   }
 }

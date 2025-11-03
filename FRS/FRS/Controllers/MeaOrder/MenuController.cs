@@ -448,7 +448,6 @@ namespace FRS.Controllers
             var results = await this._service.GetOutleOnlyMealSessions(outletId, orderDate);
             return Ok(results);
         }
-
         #endregion
 
         #region Menu Cycle Calendars
