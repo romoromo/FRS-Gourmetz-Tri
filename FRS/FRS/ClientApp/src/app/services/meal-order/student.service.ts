@@ -208,6 +208,10 @@ export class StudentService {
     return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/student`, param);
   }
 
+  getStudentPointTransactionsByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.pointUrl + '/transactions/sieve/list', filter);
+  }
+
   pointTopupForStudentGroup(studentGroupId: string, amount: number, userId: string) {
     const param = {
       studentGroupId: studentGroupId,

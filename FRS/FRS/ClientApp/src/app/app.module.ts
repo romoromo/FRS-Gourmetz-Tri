@@ -508,6 +508,7 @@ import { ClassTransferComponent } from './components/meal-order-system/class/cla
 import { DishPreviewErrorComponent } from './components/meal-order-system/dishes/dish-preview-error/dish-preview-error.component';
 import { VoucherDishComponent } from './components/meal-order-system/voucher/voucher-dish/vouhcer-dish.component';
 import { WalletTransactionLogManagementComponent } from './components/meal-order-system/wallet-transaction-log/wallet-transaction-log-management.component';
+import { PointTransactionLogManagementComponent } from './components/meal-order-system/point-transaction-log/point-transaction-log-management.component';
 import { PlcManagementComponent } from './components/meal-order-system/outlet/plc/plc-management.component';
 import { PlcEditorComponent } from './components/meal-order-system/outlet/plc/plc-editor.component';
 import { TrayEditorComponent } from './components/meal-order-system/dispenser-outlet/tray-editor.component'; 
@@ -718,7 +719,7 @@ export const configFactory = (configService: ConfigurationService) => {
     DishCycleEditorComponent, DishCyclesManagementComponent, DishCycleCalendarComponent, ViewDishCycleMenuComponent, OutletDishCycleCalendarComponent, OutletViewDishCycleMenuComponent,
     PaymentTypesManagementComponent, PaymentTypeEditorComponent,
     TransactionFeesManagementComponent, TransactionFeeEditorComponent,
-    VoucherTypesManagementComponent, VoucherTypeEditorComponent, VouchersManagementComponent, VouchersUnassignManagementComponent, VoucherEditorComponent, VoucherDishComponent, WalletTransactionLogManagementComponent,
+    VoucherTypesManagementComponent, VoucherTypeEditorComponent, VouchersManagementComponent, VouchersUnassignManagementComponent, VoucherEditorComponent, VoucherDishComponent, WalletTransactionLogManagementComponent, PointTransactionLogManagementComponent,
     WaiversManagementComponent, WaiverEditorComponent,
     ContactUsDetailsManagementComponent, ContactUsDetailEditorComponent,
     ContactUsSubjectEditorComponent, ContactUsSubjectsManagementComponent,
