@@ -2280,9 +2280,17 @@ namespace BAL.Services.MealOrder
 
                                 string cleanDate = Regex.Replace(dto[i].deliveryDate, "[^a-zA-Z0-9]", "");
 
+                                var dtoOO = dto;
+
                                 string uniqueCode = "B" + cleanDate + dto[i].meal_allocation_id.ToString().PadLeft(5, '0') + dto[i].dishes[j].dish_id.ToString().PadLeft(4, '0') + dto[i].dishes[j].token_id.ToString().PadLeft(3, '0') + k.ToString().PadLeft(3, '0');
 
-                                string qrCodeData = uniqueCode + " Dish : " + dto[i].dishes[j].dish_name + "', Packed: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.ToString("hh:mm tt") + ", Consume By: " + dto[i].deliveryDate + " " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt") + "\n";
+                                
+                                string qrCodeData = uniqueCode + 
+                                    " Dish : " + dto[i].dishes[j].dish_name 
+                                    + "', Packed: " + dto[i].deliveryDate + " " + 
+                                    dto[i].timePacked.Value.ToString("hh:mm tt") + ", Consume By: " + 
+                                    dto[i].deliveryDate + " " + 
+                                    dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt") + "\n";
                                 BarcodeQRCode barcodeQRCode = new BarcodeQRCode(qrCodeData, 15, 15, null); // width, height, parameters
 
                                 iTextSharp.text.Image qrCodeImage = barcodeQRCode.GetImage();

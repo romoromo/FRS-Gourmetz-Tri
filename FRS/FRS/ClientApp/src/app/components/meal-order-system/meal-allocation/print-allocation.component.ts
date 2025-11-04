@@ -113,6 +113,8 @@ export class PrintAllocationComponent implements OnInit {
       this.allocation.outletId = sessionSelected.mealPeriodId;
       this.allocation.timePacked = sessionDetailSelected.routeTime;
       this.selectedPeriodName = sessionDetailSelected.name;
+
+      console.log("Allocation : ", this.allocation);
     }
   }
 
@@ -485,6 +487,8 @@ export class PrintAllocationComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (!result.isCancel) {
+        var strDate = moment(this.orderDate).format().split('T');
+
         result.selectedDishes.forEach((selectedDish, index, ps) => {
           if (selectedDish.checked) {
             console.log("selected: ", selectedDish)
@@ -501,6 +505,8 @@ export class PrintAllocationComponent implements OnInit {
                 newToken.qty_menus = 0;
                 newToken.qty_dishes = 0;
                 newToken.qty_tdishes = 0;
+                newToken.deliveryDate = strDate[0];
+                newToken.timePacked = this.allocation.timePacked;
                 newToken.dishes = [];
                 return newToken;
               });
