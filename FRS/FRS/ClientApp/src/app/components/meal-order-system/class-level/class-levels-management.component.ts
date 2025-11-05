@@ -34,6 +34,8 @@ export class ClassLevelsManagementComponent implements OnInit {
 
   @Input() outletId: string;
 
+  @Input() mealCollectionType: string|number;
+
   @ViewChild('actionsTemplate')
   actionsTemplate: TemplateRef<any>;
 
@@ -46,8 +48,8 @@ export class ClassLevelsManagementComponent implements OnInit {
 
   openDialog(classLevel: ClassLevel): void {
     const dialogRef = this.dialog.open(ClassLevelEditorComponent, {
-      data: { header: this.header, classLevel: classLevel },
-      width: '400px',
+      data: { header: this.header, classLevel: classLevel, mealCollectionType: this.mealCollectionType },
+      width: '1000px',
       disableClose: true
     });
 
@@ -62,7 +64,7 @@ export class ClassLevelsManagementComponent implements OnInit {
     this.filter.filters = '';
     this.filter.page = 1;
 
-    
+    console.log('mealCollectionType : ', this.mealCollectionType);
   }
 
   initializePagedResult() {
@@ -128,7 +130,7 @@ export class ClassLevelsManagementComponent implements OnInit {
 
         this.rowsCache = [...classLevels];
         this.rows = classLevels;
-
+        console.log(this.rows);
       },
         error => {
           this.alertService.stopLoadingMessage();

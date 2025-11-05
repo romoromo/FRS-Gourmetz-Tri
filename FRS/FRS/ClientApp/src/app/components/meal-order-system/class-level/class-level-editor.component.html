@@ -1,58 +1,91 @@
-<h1 mat-dialog-title>{{data.header}}</h1>
+<h1 mat-dialog-title>{{ data.header }}</h1>
 <div>
-  <form *ngIf="formResetToggle" class="form-horizontal" name="classLevelEditorForm" #f="ngForm" novalidate
-    (ngSubmit)="f.form.valid ? save() :
-          (!classLevelName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+  <form *ngIf="formResetToggle" class="form-horizontal" name="classLevelEditorForm" #f="ngForm" novalidate (ngSubmit)="
+      f.form.valid
+        ? save()
+        : !classLevelName.valid &&
+          showErrorAlert(
+            'Name is required',
+            'Please enter name (minimum of 2 and maximum of 200 characters)'
+          )
+    ">
     <div mat-dialog-content>
       <div class="row">
         <div class="col-sm-12">
-          <!--<mat-form-field class="col-xs-12">
-            <mat-label>Outlet</mat-label>
-            <mat-select [disabled]="!canManageClassLevels" id="outlet" name="outlet" [(ngModel)]="classLevelEdit.outletId" #outlet="ngModel" required>
-              <mat-option *ngFor="let outlet of outlets" [value]="outlet.id">
-                {{outlet.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>-->
           <mat-form-field class="col-md-12">
             <input matInput autocomplete="off" [disabled]="!canManageClassLevels" type="text" id="classLevelName"
               name="classLevelName" placeholder="Enter name" [(ngModel)]="classLevelEdit.name" #classLevelName="ngModel"
               required minlength="2" maxlength="200" />
           </mat-form-field>
-          <mat-form-field class="col-md-12">
-            <mat-label>Meal Period</mat-label>
-            <mat-select [disabled]="!canManageClassLevels || loadingLoadMealSession" id="mealSessionId"
-              name="mealSessionId" [(ngModel)]="classLevelEdit.mealSessionId" #mealSessionId="ngModel"
-              (selectionChange)="onChangeMealSession($event)">
-              <mat-option [value]=""></mat-option>
-              <mat-option *ngFor="let item of mealSessionsItems" [value]="item.id">
-                {{item.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="col-md-12">
-            <mat-label>Session</mat-label>
-            <mat-select [disabled]="!canManageClassLevels || loadingLoadMealSession" id="mealSessionDetailId"
-              name="mealSessionDetailId" [(ngModel)]="classLevelEdit.mealSessionDetailId"
-              #mealSessionDetailId="ngModel">
-              <mat-option *ngFor="let item of mealSessionsDetailItems" [value]="item.id">
-                {{item.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+          <div *ngIf="mealCollectionType !== 3">
+            <mat-form-field class="col-md-12">
+              <mat-label>Meal Period</mat-label>
+              <mat-select [disabled]="!canManageClassLevels || loadingLoadMealSession" id="mealSessionId"
+                name="mealSessionId" [(ngModel)]="classLevelEdit.mealSessionId" #mealSessionId="ngModel"
+                (selectionChange)="onChangeMealSession($event)">
+                <mat-option [value]=""></mat-option>
+                <mat-option *ngFor="let item of mealSessionsItems" [value]="item.id">
+                  {{ item.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="col-md-12">
+              <mat-label>Session</mat-label>
+              <mat-select [disabled]="!canManageClassLevels || loadingLoadMealSession" id="mealSessionDetailId"
+                name="mealSessionDetailId" [(ngModel)]="classLevelEdit.mealSessionDetailId"
+                #mealSessionDetailId="ngModel">
+                <mat-option *ngFor="let item of mealSessionsDetailItems" [value]="item.id">
+                  {{ item.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div *ngIf="mealCollectionType == 3">
+            <button type="button" mat-button style="margin-top:20px" (click)="openAddDetailDialog()">
+              <mat-icon>
+                add
+              </mat-icon> Add Session Period
+            </button>
+            <table class="table table-bordered mt-3" *ngIf="classLevelEdit.detail.length > 0">
+              <thead>
+                <tr>
+                  <th>Meal Period</th>
+                  <th>Session</th>
+                  <th style="width: 100px;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let d of classLevelEdit.detail">
+                  <td>{{ d.periodName }}</td>
+                  <td>{{ d.sessionName }}</td>
+                  <td>
+                    <a class="btn btn-link btn-xs" href="javascript:;"
+                      (click)="removeDetail(d)"><i class="fa fa-trash-o" aria-hidden="true"></i>
+                      {{'common.RowAction.Delete' | translate}}</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">
-      <button *ngIf="!canManageClassLevels" type="button" mat-button (click)="cancel()">{{'common.editor.Close' |
-        translate}}</button>
-      <button *ngIf="canManageClassLevels" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i
-          class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="!canManageClassLevels" type="button" mat-button (click)="cancel()">
+        {{ "common.editor.Close" | translate }}
+      </button>
+      <button *ngIf="canManageClassLevels" type="button" mat-button (click)="cancel()" [disabled]="isSaving">
+        <i class="fa fa-times"></i> {{ "common.editor.Cancel" | translate }}
+      </button>
       <button *ngIf="canManageClassLevels" type="submit" mat-button [disabled]="isSaving">
-        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i>
-        {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+        <i *ngIf="!isSaving" class="fa fa-save"></i><i *ngIf="isSaving" class="fa fa-circle-o-notch fa-spin"></i>
+        {{
+        isSaving
+        ? ("common.editor.Saving" | translate)
+        : ("common.editor.Save" | translate)
+        }}
       </button>
     </div>
   </form>
