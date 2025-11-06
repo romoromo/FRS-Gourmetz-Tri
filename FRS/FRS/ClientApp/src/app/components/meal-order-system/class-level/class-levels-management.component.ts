@@ -49,7 +49,7 @@ export class ClassLevelsManagementComponent implements OnInit {
   openDialog(classLevel: ClassLevel): void {
     const dialogRef = this.dialog.open(ClassLevelEditorComponent, {
       data: { header: this.header, classLevel: classLevel, mealCollectionType: this.mealCollectionType },
-      width: '1000px',
+      width: '500px',
       disableClose: true
     });
 

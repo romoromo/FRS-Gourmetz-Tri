@@ -16,34 +16,7 @@
             <input matInput autocomplete="off" [disabled]="!canManageClassLevels" type="text" id="classLevelName"
               name="classLevelName" placeholder="Enter name" [(ngModel)]="classLevelEdit.name" #classLevelName="ngModel"
               required minlength="2" maxlength="200" />
-          </mat-form-field>          
-          <div>
-            <button type="button" mat-button style="margin-top:20px" (click)="openAddDetailDialog()">
-              <mat-icon>
-                add
-              </mat-icon> Add Session Period
-            </button>
-            <table class="table table-bordered mt-3" *ngIf="classLevelEdit.detail.length > 0">
-              <thead>
-                <tr>
-                  <th>Meal Period</th>
-                  <th>Session</th>
-                  <th style="width: 100px;">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let d of classLevelEdit.detail">
-                  <td>{{ d.periodName }}</td>
-                  <td>{{ d.sessionName }}</td>
-                  <td>
-                    <a class="btn btn-link btn-xs" href="javascript:;"
-                      (click)="removeDetail(d)"><i class="fa fa-trash-o" aria-hidden="true"></i>
-                      {{'common.RowAction.Delete' | translate}}</a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          </mat-form-field>
         </div>
       </div>
 

@@ -9,7 +9,6 @@ import { ClassService } from "src/app/services/meal-order/class.service";
 import { DeliveryService } from "src/app/services/meal-order/delivery.service";
 import { Filter } from "src/app/models/sieve-filter.model";
 import { MealService } from "src/app/services/meal-order/meal.service";
-import { ClassLevelDetailComponent } from "./class-level-detail.components";
 
 @Component({
   selector: "class-level-editor",
@@ -55,12 +54,6 @@ export class ClassLevelEditorComponent {
     const outletId = data.classLevel ? data.classLevel.outletId : null;
     this.mealCollectionType = data.mealCollectionType;
     this.getMealSessionLite(outletId);
-  }
-
-  ngOnInit() {
-    if (!this.classLevelEdit.detail) {
-      this.classLevelEdit.detail = [];
-    }
   }
 
   getOutlets() {
@@ -121,15 +114,6 @@ export class ClassLevelEditorComponent {
   }
 
   private save() {
-    if (this.mealCollectionType == 3 && (!this.classLevelEdit.detail || this.classLevelEdit.detail.length === 0)) {
-    this.alertService.showMessage(
-      "Validation Error",
-      "Please add at least one Session Period before saving.",
-      MessageSeverity.error
-    );
-    return;
-  }
-  
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
     this.classLevelEdit.institutionId =
@@ -248,28 +232,5 @@ export class ClassLevelEditorComponent {
     return this.accountService.userHasPermission(
       Permission.manageMOSOutletMgtClassLevelsPermission
     );
-  }
-
-  openAddDetailDialog(): void {
-    const dialogRef = this.dialog.open(ClassLevelDetailComponent, {
-      width: "600px",
-      data: {
-        classLevel: this.classLevelEdit,
-        existingDetails: this.classLevelEdit.detail,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.classLevelEdit.detail.push(result);
-      }
-    });
-  }
-
-  removeDetail(row: any): void {
-    const index = this.classLevelEdit.detail.indexOf(row);
-    if (index !== -1) {
-      this.classLevelEdit.detail.splice(index, 1);
-    }
   }
 }
