@@ -15,17 +15,4 @@ export class ClassLevel {
   public outletName: string;
   public mealSessionId: string;
   public mealSessionDetailId: string;
-  public detail: ClassLevelDetail[];
-}
-
-
-export class ClassLevelDetail{
-  constructor() {    
-  }
-  public id: string;
-  public classLevelId: string;
-  public sessionId: string;
-  public sessionName: string;
-  public periodId: string;
-  public periodName: string;
 }
