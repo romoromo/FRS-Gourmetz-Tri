@@ -68,7 +68,7 @@
     </div>
   </div>
 
-  <ngx-datatable #studentsTable class="material expandable colored-header students"
+  <ngx-datatable #studentsTable class="material expandable my-custom-header-table students"
     [loadingIndicator]="loadingIndicator" [rows]="rows" [rowHeight]="'auto'" [headerHeight]="'auto'" [footerHeight]="35"
     [columns]="columns" [columnMode]="'force'" [externalPaging]="true" [externalSorting]="true"
     [count]="pagedResult.totalCount" [limit]="pagedResult.filter.pageSize" (page)="loadData($event)"

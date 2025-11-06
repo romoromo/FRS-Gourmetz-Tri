@@ -380,6 +380,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background-color: #54C5CD !important;
 }
 
+.my-custom-header-table .datatable-header-inner {
+  background-color: #965BA4 !important;
+  color: white;
+}
+
 .ngx-datatable.material .datatable-header .datatable-header-cell
 {
   color: #fff;

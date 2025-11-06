@@ -33,3 +33,7 @@
 datatable-body-row:last-of-type .datatable-body-cell {
   font-weight: bold !important;
 }
+
+.ngx-datatable.material.colored-header .datatable-header, .ngx-datatable.material .datatable-header .datatable-row-left {
+  background-color: #965BA4 !important;
+}

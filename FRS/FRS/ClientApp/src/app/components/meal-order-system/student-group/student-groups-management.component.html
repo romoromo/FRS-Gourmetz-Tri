@@ -21,7 +21,7 @@
     </div>
   </div>
 
-  <ngx-datatable class="material colored-header" [loadingIndicator]="loadingIndicator" [rows]="rows"
+  <ngx-datatable class="my-custom-header-table" [loadingIndicator]="loadingIndicator" [rows]="rows"
     [rowHeight]="'auto'" [headerHeight]="'auto'" [footerHeight]="35" [columns]="columns" [columnMode]="'force'"
     [externalPaging]="true" [externalSorting]="true" [count]="pagedResult.totalCount"
     [offset]="pagedResult.filter.pageNumber" [limit]="pagedResult.filter.pageSize" (page)="loadData($event)"

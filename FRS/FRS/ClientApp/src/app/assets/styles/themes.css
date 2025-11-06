@@ -193,6 +193,10 @@ NOTE: SASS is already configured in this project template. To use SASS change yo
   background-color: red;  /*#027FF4;*/
 }
 
+.inside-outlet .ngx-datatable.material.colored-header .datatable-header {
+  background-color: #965BA4 !important; /*#027FF4;*/
+}
+
 .red-theme-option {
   background: red;
   color: white;
