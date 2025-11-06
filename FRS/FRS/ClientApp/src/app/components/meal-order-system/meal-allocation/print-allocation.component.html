@@ -16,7 +16,7 @@
                       #periodName="ngModel" [disabled]="isSaving || filterLoading || isLoading"
                       placeholder="{{ periodPlaceholder }}">
             <mat-option *ngFor="let session of sessions" [value]="session.id">
-              {{session.mealPeriodName}}
+              {{session.mealPeriodName}} - {{session.name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -49,17 +49,17 @@
                 <tr>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input type="text" matInput [disabled]="true" id="token{{tc.token_id}}{{i}}" name="token{{tc.token_id}}{{i}}" autocomplete="off" [value]="getTokenName(tc.token_id)" minlength="1" maxlength="200" />
+                      <input type="text" matInput [disabled]="true" id="token{{tc.token_id}}{{i}}" name="token{{tc.token_id}}{{i}}" autocomplete="off" [value]="getTokenName(tc.token_id)" min="1" max="200" />
                     </mat-form-field>
                   </td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="qty-menu-token{{tc.token_id}}{{i}}" name="qty-menu-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_menus" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="true" type="number" id="qty-menu-token{{tc.token_id}}{{i}}" name="qty-menu-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_menus" min="1" max="200" />
                     </mat-form-field>
                   </td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="qty-token{{tc.token_id}}{{i}}" name="qty-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="true" type="number" id="qty-token{{tc.token_id}}{{i}}" name="qty-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty" min="1" max="200" />
                     </mat-form-field>
                   </td>
                   <td></td>

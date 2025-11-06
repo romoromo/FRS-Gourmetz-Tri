@@ -10,7 +10,7 @@ export const environment = {
   registerUrl: "/register",
   resetPasswordUrl: "/resetpassword",
   multifactorUrl: "/multifactor",
-  domainUrl: "http://smv360.com"
+  domainUrl: ""
 };
 
 /*

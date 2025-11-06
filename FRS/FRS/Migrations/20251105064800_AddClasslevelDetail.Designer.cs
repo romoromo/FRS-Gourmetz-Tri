@@ -4,15 +4,17 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251105064800_AddClasslevelDetail")]
+    partial class AddClasslevelDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3836,9 +3838,9 @@ namespace FRS.Migrations
 
                     b.HasIndex("PeriodId");
 
-                    b.HasIndex("SessionId", "PeriodId");
+                    b.HasIndex("SessionId");
 
-                    b.ToTable("ClassLevelDetails");
+                    b.ToTable("ClassLevelDetail");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ContactUsDetail", b =>

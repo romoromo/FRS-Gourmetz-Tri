@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>{{ data?.tray ? 'Edit Session Period' : 'Add Session Period' }}</h2>
+<div class="form-horizontal">
+  <div mat-dialog-content>
+    <div class="row">
+      <mat-form-field appearance="fill" class="col-md-12">
+        <mat-label>Meal Period</mat-label>
+        <mat-select [(ngModel)]="selectedPeriodId" name="periodId" (selectionChange)="onChangeMealSession($event)" required>
+          <mat-option *ngFor="let p of mealPeriods" [value]="p.id">{{ p.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="col-md-12">
+        <mat-label>Session</mat-label>
+        <mat-select [(ngModel)]="selectedSessionId" name="sessionId" required>
+          <mat-option *ngFor="let s of mealSessions" [value]="s.id">{{ s.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+   <div mat-dialog-actions align="center">
+      <button type="button" mat-button (click)="cancel()">{{ 'common.editor.Cancel' | translate }}</button>
+      <button type="submit" mat-button color="primary" [disabled]="isSaving" (click)="save()">
+        <i *ngIf="!isSaving" class='fa fa-save'></i>
+        <i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i>
+        {{ isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate) }}
+      </button>
+    </div>
+</div>

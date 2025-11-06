@@ -44,7 +44,7 @@
             </mat-tab>
             <mat-tab label="Class Levels" *ngIf="canViewClassLevels">
               <div class="container-fluid" style="padding-top:20px">
-                <class-levels-management [isHideHeader]="true" [outletId]="row.id"></class-levels-management>
+                <class-levels-management [isHideHeader]="true" [outletId]="row.id" [mealCollectionType]="row?.mealCollectionType"></class-levels-management>
               </div>
             </mat-tab>
             <mat-tab label="Classes" *ngIf="canViewClasses">

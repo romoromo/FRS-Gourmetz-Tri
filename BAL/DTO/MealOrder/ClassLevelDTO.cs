@@ -22,5 +22,18 @@ namespace BAL.DTO.MealOrder
         public string MealSessionName { get; set; }
         public int? MealSessionDetailId { get; set; }
         public string MealSessionDetailName { get; set; }
+
+        public List<ClassLevelDetailDTO> Detail { get; set; }
+    }
+
+    public class ClassLevelDetailDTO
+    {
+        public int Id { get; set; }
+        public int ClassLevelId { get; set; }
+        public int? PeriodId { get; set; }
+        public string PeriodName { get; set; }
+
+        public int? SessionId { get; set; }
+        public string SessionName { get; set; }
     }
 }

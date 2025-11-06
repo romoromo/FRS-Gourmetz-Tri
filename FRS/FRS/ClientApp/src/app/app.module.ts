@@ -511,6 +511,7 @@ import { WalletTransactionLogManagementComponent } from './components/meal-order
 import { PlcManagementComponent } from './components/meal-order-system/outlet/plc/plc-management.component';
 import { PlcEditorComponent } from './components/meal-order-system/outlet/plc/plc-editor.component';
 import { TrayEditorComponent } from './components/meal-order-system/dispenser-outlet/tray-editor.component'; 
+import { ClassLevelDetailComponent } from './components/meal-order-system/class-level/class-level-detail.components'
 
 export const configFactory = (configService: ConfigurationService) => {
   return () => {
@@ -749,7 +750,7 @@ export const configFactory = (configService: ConfigurationService) => {
 
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
     FaqDetailsManagementComponent, FaqDetailEditorComponent,
-    VoucherUtilisationsReportManagementComponent, PlcManagementComponent, PlcEditorComponent, TrayEditorComponent
+    VoucherUtilisationsReportManagementComponent, PlcManagementComponent, PlcEditorComponent, TrayEditorComponent, ClassLevelDetailComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },
@@ -933,7 +934,7 @@ export const configFactory = (configService: ConfigurationService) => {
     PaymentsReportManagementComponent,
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
     FaqDetailsManagementComponent, FaqDetailEditorComponent,
-    VoucherUtilisationsReportManagementComponent, DishPreviewErrorComponent, VoucherDishComponent, PlcEditorComponent, TrayEditorComponent
+    VoucherUtilisationsReportManagementComponent, DishPreviewErrorComponent, VoucherDishComponent, PlcEditorComponent, TrayEditorComponent, ClassLevelDetailComponent
   ],
 })
 export class AppModule {

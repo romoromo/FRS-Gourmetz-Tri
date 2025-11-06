@@ -35,7 +35,9 @@ namespace DAL.Repositories.MealOrder
                 .AsSplitQuery()
                 .Include(e => e.Institution)
                 .Include(e => e.MealSession)
-                .Include(e => e.MealSessionDetail);
+                .Include(e => e.MealSessionDetail)
+                .Include(e => e.ClassLevelDetails).ThenInclude(e => e.MealSession)
+                .Include(e => e.ClassLevelDetails).ThenInclude(e => e.MealPeriod);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
             //int totalCount = query.Count();
@@ -99,7 +101,7 @@ namespace DAL.Repositories.MealOrder
                 var f = await GetSingleOrDefaultAsync(e => e.Id == classLevel.Id);
 
                 f.CopyFrom(classLevel);
-
+                UpdateDetail(f, classLevel.ClassLevelDetails);
                 Update(f);
                 if (await _appContext.SaveChangesAsync() > 0)
                 {
@@ -117,6 +119,38 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        private void UpdateDetail(ClassLevel classLevel, ICollection<ClassLevelDetail> detail)
+        {
+            if (detail == null)
+                return;
+
+            // Remove deleted trays
+            var existingIds = detail.Where(t => t.Id > 0).Select(t => t.Id).ToList();
+            var detailsToRemove = classLevel.ClassLevelDetails.Where(t => !existingIds.Contains(t.Id)).ToList();
+            foreach (var data in detailsToRemove)
+                _appContext.ClassLevelDetails.Remove(data);
+
+            // Update or add
+            foreach (var classLevelDetail in detail)
+            {
+                var existingTray = classLevel.ClassLevelDetails.FirstOrDefault(t => t.Id == classLevelDetail.Id);
+                if (existingTray != null)
+                {
+                    existingTray.ClassLevelId = classLevelDetail.ClassLevelId;
+                    existingTray.SessionId = classLevelDetail.SessionId;
+                    existingTray.PeriodId = classLevelDetail.PeriodId;
+                }
+                else
+                {
+                    classLevel.ClassLevelDetails.Add(new ClassLevelDetail
+                    {
+                        ClassLevelId = classLevelDetail.ClassLevelId,
+                        SessionId = classLevelDetail.SessionId,
+                        PeriodId = classLevelDetail.PeriodId
+                    });
+                }
+            }
+        }
 
         public async Task<BaseOperationResponse> DeleteAsync(int classLevelId)
         {
