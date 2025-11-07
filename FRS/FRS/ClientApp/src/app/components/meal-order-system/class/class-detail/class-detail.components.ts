@@ -33,7 +33,6 @@ export class ClassDetailComponent {
 
       const existing = (this.existingDetails || []).map((d: any) => ({
         periodId: Number(d.periodId ? d.periodId : d["periodId"]),
-        sessionId: Number(d.sessionId ? d.sessionId : d["sessionId"]),
       }));
 
       console.log("mealPeriods", this.mealPeriods);
@@ -45,10 +44,7 @@ export class ClassDetailComponent {
             const filteredDetails = (period.details || []).filter(
               (session: any) => {
                 const pid = Number(period.id);
-                const sid = Number(session.id);
-                const used = existing.some(
-                  (e: any) => e.periodId === pid && e.sessionId === sid
-                );
+                const used = existing.some((e: any) => e.periodId === pid);
 
                 return !used;
               }
