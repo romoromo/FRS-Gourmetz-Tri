@@ -206,6 +206,11 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<List<MealSessionDetailDTO>> GetMealSessionByOutletId(int outletId)
+        {
+            return _mapper.Map<List<MealSessionDetailDTO>>(await this._uow.MealSessions.GetMealSessionByOutletId(outletId));
+        }
+
         #endregion
     }
 }

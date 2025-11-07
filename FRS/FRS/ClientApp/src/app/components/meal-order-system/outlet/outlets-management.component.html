@@ -69,7 +69,7 @@
             </mat-tab>
             <mat-tab label="Student Groups" *ngIf="canViewStudentGroups">
               <div class="container-fluid" style="padding-top:20px">
-                <student-groups-management [isHideHeader]="true" [outletId]="row.id"></student-groups-management>
+                <student-groups-management [isHideHeader]="true" [outletId]="row.id" [mealCollectionType]="row?.mealCollectionType"></student-groups-management>
               </div>
             </mat-tab>
             <mat-tab label="Order Cancellation" *ngIf="canViewCancellations">

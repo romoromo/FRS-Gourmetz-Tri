@@ -128,7 +128,7 @@ namespace DAL.Repositories.MealOrder
             foreach (var tray in trays)
             {
                 var existingTray = dispenser.Trays.FirstOrDefault(t => t.Id == tray.Id);
-                if (existingTray != null)
+                if (existingTray != null && existingTray.Id != 0)
                 {
                     existingTray.PLCId = tray.PLCId;
                     existingTray.MotorOutputNumber = tray.MotorOutputNumber;

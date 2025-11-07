@@ -40,6 +40,9 @@ export class MenuService {
   private readonly _outletSessionUrl: string = "/api/menu/outlets/mealsessions";
   get outletSessionUrl() { return this.configurations.baseUrl + this._outletSessionUrl; }
 
+  private readonly _mealsessionsByCollectionType: string = "/api/menu/outlets/mealsessionsByCollectionType";
+  get mealsessionsByCollectionTypeUrl() { return this.configurations.baseUrl + this._mealsessionsByCollectionType; }
+
   private readonly _menuCycleCalendarUrl: string = "/api/menu/menucyclecalendars";
   get menuCycleCalendarUrl() { return this.configurations.baseUrl + this._menuCycleCalendarUrl; }
 
@@ -126,6 +129,10 @@ export class MenuService {
 
   getOutletSessionsByFilter(outletId, orderDate, orderDateTo?) {
     return this.commonEndpoint.get<MealSessionDetail[]>(`${this.outletSessionUrl}?outletId=${outletId}&orderDate=${orderDate}&orderDateTo=${orderDateTo}`);
+  }
+
+  getMealsessionsByCollectionType(outletId, orderDate, orderDateTo?) {
+    return this.commonEndpoint.get<MealSessionDetail[]>(`${this.mealsessionsByCollectionTypeUrl}?outletId=${outletId}&orderDate=${orderDate}&orderDateTo=${orderDateTo}`);
   }
 
   newMenuCycle(menuCycle: MenuCycle) {

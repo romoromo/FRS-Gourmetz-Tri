@@ -106,14 +106,6 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        public async Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId)
-        {
-            var classSession = await _uow.ClassLevels.GetClassLevelsByOutletIdAsync(outletId);
-            var mealSessionDetail = classSession.Select(m => m.MealSessionDetail)
-                .Where(m => m != null).DistinctBy(m => m.Id);
-            return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetail);
-        }
-
         #endregion
 
         #region Classes
@@ -148,6 +140,19 @@ namespace BAL.Services.MealOrder
             var result = new BaseOperationResponse();
             result = await this._uow.Classes.DeleteAsync(id);
             return result;
+        }
+
+        public async Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId)
+        {
+            var result = new List<MealSessionDetail>();
+            var classes = await this._uow.Classes.GetByOutlet(outletId);
+            var classDetails = classes.SelectMany(m => m.ClassDetails);
+            foreach (var item in classDetails)
+            {
+                result.Add(item.MealSession);
+            }
+
+            return _mapper.Map<List<MealSessionDetailDTO>>(result.DistinctBy(m => m.Id));
         }
 
         #endregion

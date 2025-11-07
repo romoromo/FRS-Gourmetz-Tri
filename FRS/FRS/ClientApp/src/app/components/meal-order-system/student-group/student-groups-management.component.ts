@@ -46,6 +46,8 @@ export class StudentGroupsManagementComponent implements OnInit {
 
   @Input() outletId: string;
 
+  @Input() mealCollectionType: string;
+
   @ViewChild('fileImport')
   fileImport: ElementRef;
 
@@ -126,6 +128,8 @@ export class StudentGroupsManagementComponent implements OnInit {
     this.initializePagedResult();
     this.initializeTableDefinition();
     this.loadData();
+
+    console.log('mealCollectionType',this.mealCollectionType);
   }
 
 
@@ -242,7 +246,7 @@ export class StudentGroupsManagementComponent implements OnInit {
 
   openStudentGroupSummary(row) {
     const dialogRef = this.dialog.open(StudentGroupOrderSummaryComponent, {
-      data: { header: "Student Group Order", group: row, outletId: this.outletId },
+      data: { header: "Student Group Order", group: row, outletId: this.outletId, mealCollectionType: this.mealCollectionType },
       width: '1200px',
       disableClose: true
     });

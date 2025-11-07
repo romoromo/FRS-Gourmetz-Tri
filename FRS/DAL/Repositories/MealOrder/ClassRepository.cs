@@ -105,38 +105,37 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        private void UpdateDetail(Class classLevel, ICollection<ClassDetail> detail)
+        private void UpdateDetail(Class classModel, ICollection<ClassDetail> details)
         {
-            if (detail == null)
+            if (details == null)
                 return;
+            
+            var existingIds = details.Where(d => d.Id > 0).Select(d => d.Id).ToList();
+            var detailsToRemove = classModel.ClassDetails.Where(d => !existingIds.Contains(d.Id)).ToList();
 
-            // Remove deleted trays
-            var existingIds = detail.Where(t => t.Id > 0).Select(t => t.Id).ToList();
-            var detailsToRemove = classLevel.ClassDetails.Where(t => !existingIds.Contains(t.Id)).ToList();
             foreach (var data in detailsToRemove)
                 _appContext.ClassDetails.Remove(data);
 
-            // Update or add
-            foreach (var classLevelDetail in detail)
+            foreach (var detail in details)
             {
-                var existingTray = classLevel.ClassDetails.FirstOrDefault(t => t.Id == classLevelDetail.Id);
-                if (existingTray != null)
+                var existing = classModel.ClassDetails.FirstOrDefault(d => d.Id == detail.Id);
+
+                if (existing != null && existing.Id != 0)
                 {
-                    existingTray.ClassId = classLevelDetail.ClassId;
-                    existingTray.SessionId = classLevelDetail.SessionId;
-                    existingTray.PeriodId = classLevelDetail.PeriodId;
+                    existing.SessionId = detail.SessionId;
+                    existing.PeriodId = detail.PeriodId;
                 }
                 else
                 {
-                    classLevel.ClassDetails.Add(new ClassDetail
+                    classModel.ClassDetails.Add(new ClassDetail
                     {
-                        ClassId = classLevelDetail.ClassId,
-                        SessionId = classLevelDetail.SessionId,
-                        PeriodId = classLevelDetail.PeriodId
+                        SessionId = detail.SessionId,
+                        PeriodId = detail.PeriodId
                     });
                 }
             }
         }
+
 
         public async Task<BaseOperationResponse> DeleteAsync(int classModelId)
         {
@@ -167,6 +166,13 @@ namespace DAL.Repositories.MealOrder
             }
 
             return result;
+        }
+
+        public async Task<List<Class>> GetByOutlet(int outletId)
+        {
+            return await _appContext.Classes
+                .Include(m => m.ClassDetails)
+                .Where(m => m.IsActive && m.ClassLevel.IsActive && m.ClassLevel.OutletId == outletId).ToListAsync();
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

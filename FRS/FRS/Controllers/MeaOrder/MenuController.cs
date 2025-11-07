@@ -39,14 +39,17 @@ namespace FRS.Controllers
         private readonly IMapper _mapper;
         private IStudentService _studentService;
         private IDeliveryService _deliveryService;
+        private IOutletMealSessionResolver _outletMealSessionResolver;
 
-        public MenuController(IMenuService service, ILogger<MenuController> logger, IMapper mapper, IStudentService studentService, IDeliveryService deliveryService)
+        public MenuController(IMenuService service, ILogger<MenuController> logger, IMapper mapper, IStudentService studentService, IDeliveryService deliveryService,
+            IOutletMealSessionResolver outletMealSessionResolver)
         {
             _service = service;
             _logger = logger;
             _mapper = mapper;
             _studentService = studentService;
             _deliveryService = deliveryService;
+            _outletMealSessionResolver = outletMealSessionResolver;
         }
 
         #region Menus
@@ -446,6 +449,23 @@ namespace FRS.Controllers
         public async Task<IActionResult> GetAllOutletMealSessions(int outletId, DateTime orderDate)
         {
             var results = await this._service.GetOutleOnlyMealSessions(outletId, orderDate);
+            return Ok(results);
+        }
+
+        [ApiKeyAuthorize]
+        [HttpGet("outlets/mealsessionsByCollectionType")]
+        //[Authorize(Authorization.Policies.ViewAllMenuCyclesPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(List<MealSessionDetailDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetOutletMealSessionsByMealCollectionType(int outletId, DateTime orderDate, DateTime? orderDateTo = null)
+        {
+            var results = await this._outletMealSessionResolver.GetOutletMealSessions(new OutletMealSessionInput
+            {
+                OutletId = outletId,
+                OrderDate = orderDate,
+                OrderDateTo = orderDateTo
+            });
             return Ok(results);
         }
         #endregion
