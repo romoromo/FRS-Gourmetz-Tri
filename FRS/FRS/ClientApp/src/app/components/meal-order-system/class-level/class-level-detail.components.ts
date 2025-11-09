@@ -1,13 +1,14 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
+import { ClassLevelDetail } from "src/app/models/meal-order/class-level.model";
 import { MealService } from "src/app/services/meal-order/meal.service";
 
 @Component({
-  selector: "class-detail",
-  templateUrl: "./class-detail.components.html",
-  styleUrls: ["./class-detail.components.css"],
+  selector: "class-level-detail",
+  templateUrl: "./class-level-detail.components.html",
+  styleUrls: ["./class-level-detail.components.css"],
 })
-export class ClassDetailComponent {
+export class ClassLevelDetailComponent {
   mealPeriods: any[];
   mealSessions: any[];
 
@@ -15,32 +16,32 @@ export class ClassDetailComponent {
   selectedSessionId: string;
   existingDetails = [];
   constructor(
-    public dialogRef: MatDialogRef<ClassDetailComponent>,
+    public dialogRef: MatDialogRef<ClassLevelDetailComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private mealService: MealService
   ) {
     this.existingDetails = data.existingDetails || [];
-    const outletId = data.outletId;
+    const outletId = data.classLevel ? data.classLevel.outletId : null;
     this.getMealSessionLite(outletId);
   }
 
-  getMealSessionLite(outletId: string) {
-    this.mealService.getMealSessionLite(outletId).subscribe((r) => {
-      this.mealPeriods = (r || []).map((p: any) => ({
-        ...p,
-        details: p.details || [],
-      }));
+getMealSessionLite(outletId: string) {
+  this.mealService.getMealSessionLite(outletId).subscribe((r) => {
+    this.mealPeriods = (r || []).map((p: any) => ({
+      ...p,
+      details: p.details || [],
+    }));
 
-       const existing = (this.existingDetails || []).map((d: any) => ({
+    const existing = (this.existingDetails || []).map((d: any) => ({
         periodId: Number(d.periodId ? d.periodId : d["periodId"]),
       }));
 
-      console.log("mealPeriods", this.mealPeriods);
-      console.log("existing details (normalized)", existing);
+    console.log('mealPeriods', this.mealPeriods);
+    console.log('existing details (normalized)', existing);
 
-      if (existing.length > 0) {
+    if (existing.length > 0) {
       this.mealPeriods = this.mealPeriods
-        .map((period) => {
+          .map((period) => {
             const filteredDetails = (period.details || []).filter(
               (session: any) => {
                 const pid = Number(period.id);
@@ -55,11 +56,11 @@ export class ClassDetailComponent {
           .filter((period) => (period.details || []).length > 0);
     }
 
-      if (this.selectedPeriodId) {
-        this.getMealSessionDetailLite(this.selectedPeriodId);
-      }
-    });
-  }
+    if (this.selectedPeriodId) {
+      this.getMealSessionDetailLite(this.selectedPeriodId);
+    }
+  });
+}
 
   getMealSessionDetailLite(mealSessionId: string) {
     const mealSession = this.mealPeriods.find((ms) => ms.id === mealSessionId);

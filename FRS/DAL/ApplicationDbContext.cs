@@ -273,6 +273,7 @@ namespace DAL
         public DbSet<PLCModel> PLCs { get; set; }
         public DbSet<TrayModel> Trays { get; set; }
         public DbSet<ClassDetail> ClassDetails { get; set; }
+        public DbSet<ClassLevelDetail> ClassLevelDetails { get; set; }
         #region Stored Procedures
 
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
@@ -688,6 +689,8 @@ namespace DAL
             builder.Entity<TrayModel>().HasIndex(p => new { p.PLCId });
             builder.Entity<ClassDetail>().TrackAllProperties();
             builder.Entity<ClassDetail>().HasIndex(p => new { p.SessionId, p.PeriodId });
+            builder.Entity<ClassLevelDetail>().TrackAllProperties();
+            builder.Entity<ClassLevelDetail>().HasIndex(p => new { p.SessionId, p.PeriodId });
             #region UserActivity
             builder.Entity<UserActivity>()
                 .Property(x => x.Message)

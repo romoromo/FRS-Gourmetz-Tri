@@ -35,7 +35,9 @@ namespace DAL.Repositories.MealOrder
                 .AsSplitQuery()
                 .Include(e => e.Institution)
                 .Include(e => e.MealSession)
-                .Include(e => e.MealSessionDetail);
+                .Include(e => e.MealSessionDetail)
+                .Include(e => e.ClassLevelDetails).ThenInclude(e => e.MealSession)
+                .Include(e => e.ClassLevelDetails).ThenInclude(e => e.MealPeriod);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
             //int totalCount = query.Count();
@@ -99,6 +101,7 @@ namespace DAL.Repositories.MealOrder
                 var f = await GetSingleOrDefaultAsync(e => e.Id == classLevel.Id);
 
                 f.CopyFrom(classLevel);
+                UpdateDetail(f, classLevel.ClassLevelDetails);
                 Update(f);
                 if (await _appContext.SaveChangesAsync() > 0)
                 {
@@ -114,6 +117,37 @@ namespace DAL.Repositories.MealOrder
             }
 
             return result;
+        }
+
+        private void UpdateDetail(ClassLevel classLevelModel, ICollection<ClassLevelDetail> details)
+        {
+            if (details == null)
+                return;
+
+            var existingIds = details.Where(d => d.Id > 0).Select(d => d.Id).ToList();
+            var detailsToRemove = classLevelModel.ClassLevelDetails.Where(d => !existingIds.Contains(d.Id)).ToList();
+
+            foreach (var data in detailsToRemove)
+                _appContext.ClassLevelDetails.Remove(data);
+
+            foreach (var detail in details)
+            {
+                var existing = classLevelModel.ClassLevelDetails.FirstOrDefault(d => d.Id == detail.Id);
+
+                if (existing != null && existing.Id != 0)
+                {
+                    existing.SessionId = detail.SessionId;
+                    existing.PeriodId = detail.PeriodId;
+                }
+                else
+                {
+                    classLevelModel.ClassLevelDetails.Add(new ClassLevelDetail
+                    {
+                        SessionId = detail.SessionId,
+                        PeriodId = detail.PeriodId
+                    });
+                }
+            }
         }
 
         public async Task<BaseOperationResponse> DeleteAsync(int classLevelId)
