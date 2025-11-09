@@ -554,7 +554,6 @@ import { WalletTransactionLogManagementComponent } from "./components/meal-order
 import { PlcManagementComponent } from "./components/meal-order-system/outlet/plc/plc-management.component";
 import { PlcEditorComponent } from "./components/meal-order-system/outlet/plc/plc-editor.component";
 import { TrayEditorComponent } from "./components/meal-order-system/dispenser-outlet/tray-editor.component";
-import { ClassDetailComponent } from "./components/meal-order-system/class/class-detail/class-detail.components";
 import { ClassLevelDetailComponent } from "./components/meal-order-system/class-level/class-level-detail.components";
 
 export const configFactory = (configService: ConfigurationService) => {
@@ -1017,7 +1016,6 @@ export const configFactory = (configService: ConfigurationService) => {
     PlcManagementComponent,
     PlcEditorComponent,
     TrayEditorComponent,
-    ClassDetailComponent,
     ClassLevelDetailComponent
   ],
   providers: [
@@ -1379,7 +1377,6 @@ export const configFactory = (configService: ConfigurationService) => {
     VoucherDishComponent,
     PlcEditorComponent,
     TrayEditorComponent,
-    ClassDetailComponent,
     ClassLevelDetailComponent
   ],
 })

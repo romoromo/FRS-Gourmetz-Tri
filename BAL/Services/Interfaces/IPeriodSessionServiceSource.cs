@@ -40,6 +40,8 @@ namespace BAL.Services.Interfaces
             var outlet = await _deliveryService.GetOutletByIdAsync(input.OutletId);
             if (outlet == null)
                 throw new InvalidOperationException($"GetOutletMealSessions - Outlet NOT FOUND.");
+            //TBD: Handle null meal collection type
+            outlet.MealCollectionType = MealCollectionType.BY_CLASS_ROASTER;
 
             IPeriodSessionServiceSource service = outlet.MealCollectionType switch
             {

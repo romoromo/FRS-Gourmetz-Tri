@@ -158,17 +158,11 @@ namespace BAL.Mapping
                 .ForMember(e => e.PeriodName, map => map.MapFrom(f => f.MealPeriod.Name))
                 .ForMember(e => e.SessionName, map => map.MapFrom(f => f.MealSession.Name));
             CreateMap<ClassLevelDetailDTO, ClassLevelDetail>();
-            CreateMap<ClassDetail, ClassDetailDTO>()
-                .ForMember(e => e.PeriodName, map => map.MapFrom(f => f.MealPeriod.Name))
-                .ForMember(e => e.SessionName, map => map.MapFrom(f => f.MealSession.Name));
-            CreateMap<ClassDetailDTO, ClassDetail>();
-
             CreateMap<DispenserOutletDTO, DispenserOutlet>();
             CreateMap<DispenserOutlet, DispenserOutletDTO>()
                 .ForMember(e => e.OutletName, map => map.MapFrom(f => f.Outlet.Name));
 
-            CreateMap<ClassDTO, Class>()
-                .ForMember(e => e.ClassDetails, map => map.MapFrom(f => f.Detail));
+            CreateMap<ClassDTO, Class>();
             CreateMap<StudentDTO, Student>();
             CreateMap<StudentDTO, ApplicationUser>()
                 .ForMember(e => e.Id, map => map.MapFrom(e => e.UserId))
@@ -373,8 +367,7 @@ namespace BAL.Mapping
 
             CreateMap<Class, ClassDTO>()
                 //.ForMember(e => e.ClassLevelName, map => map.MapFrom(e => e.Class.ClassLevel.Name))
-                .ForMember(e => e.ClassLevelName, map => map.MapFrom(e => e.ClassLevel.Name))
-                .ForMember(e => e.Detail, map => map.MapFrom(f => f.ClassDetails));
+                .ForMember(e => e.ClassLevelName, map => map.MapFrom(e => e.ClassLevel.Name));
 
             CreateMap<StaffType, StaffTypeDTO>();
             CreateMap<StaffTypeDTO, StaffType>();

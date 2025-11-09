@@ -146,12 +146,6 @@ namespace BAL.Services.MealOrder
         {
             var result = new List<MealSessionDetail>();
             var classes = await this._uow.Classes.GetByOutlet(outletId);
-            var classDetails = classes.SelectMany(m => m.ClassDetails);
-            foreach (var item in classDetails)
-            {
-                result.Add(item.MealSession);
-            }
-
             return _mapper.Map<List<MealSessionDetailDTO>>(result.DistinctBy(m => m.Id));
         }
 

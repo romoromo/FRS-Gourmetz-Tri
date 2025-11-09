@@ -29,9 +29,7 @@ namespace DAL.Repositories.MealOrder
         #region Sieved
         public async Task<PagedEntity<Class>> GetClassesAsync(BaseFilter filter)
         {
-            IQueryable<Class> query = _appContext.Classes
-                .Include(e => e.ClassDetails).ThenInclude(e => e.MealSession)
-                .Include(e => e.ClassDetails).ThenInclude(e => e.MealPeriod);
+            IQueryable<Class> query = _appContext.Classes;
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
 
@@ -87,7 +85,6 @@ namespace DAL.Repositories.MealOrder
                 var f = await GetSingleOrDefaultAsync(e => e.Id == classModel.Id);
 
                 f.CopyFrom(classModel);
-                UpdateDetail(f, classModel.ClassDetails);
                 Update(f);
                 if (await _appContext.SaveChangesAsync() > 0)
                 {
@@ -104,38 +101,6 @@ namespace DAL.Repositories.MealOrder
 
             return result;
         }
-
-        private void UpdateDetail(Class classModel, ICollection<ClassDetail> details)
-        {
-            if (details == null)
-                return;
-            
-            var existingIds = details.Where(d => d.Id > 0).Select(d => d.Id).ToList();
-            var detailsToRemove = classModel.ClassDetails.Where(d => !existingIds.Contains(d.Id)).ToList();
-
-            foreach (var data in detailsToRemove)
-                _appContext.ClassDetails.Remove(data);
-
-            foreach (var detail in details)
-            {
-                var existing = classModel.ClassDetails.FirstOrDefault(d => d.Id == detail.Id);
-
-                if (existing != null && existing.Id != 0)
-                {
-                    existing.SessionId = detail.SessionId;
-                    existing.PeriodId = detail.PeriodId;
-                }
-                else
-                {
-                    classModel.ClassDetails.Add(new ClassDetail
-                    {
-                        SessionId = detail.SessionId,
-                        PeriodId = detail.PeriodId
-                    });
-                }
-            }
-        }
-
 
         public async Task<BaseOperationResponse> DeleteAsync(int classModelId)
         {
@@ -171,7 +136,6 @@ namespace DAL.Repositories.MealOrder
         public async Task<List<Class>> GetByOutlet(int outletId)
         {
             return await _appContext.Classes
-                .Include(m => m.ClassDetails)
                 .Where(m => m.IsActive && m.ClassLevel.IsActive && m.ClassLevel.OutletId == outletId).ToListAsync();
         }
 
