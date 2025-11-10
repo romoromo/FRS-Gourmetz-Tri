@@ -25,6 +25,11 @@ namespace FRS.ViewModels
         public string Email { get; set; }
     }
 
+    public class UserConfirmViewModel
+    {
+        public string ConfirmationCode { get; set; }
+    }
+
     public class StudentEditEmailViewModel
     {
         public string NewEmail { get; set; }

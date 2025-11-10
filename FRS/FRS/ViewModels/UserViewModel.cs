@@ -86,6 +86,8 @@ namespace FRS.ViewModels
         public string DirectoryListingCode { get; set; }
         public string DirectoryListingLabel { get; set; }
         public bool IsPasswordMustChange { get; set; }
+
+        public string ConfirmationCode { get; set; }
     }
 
     public class UserSimpleViewModel
@@ -135,6 +137,8 @@ namespace FRS.ViewModels
         public string FirebaseToken { get; set; }
 
         public bool IsPasswordMustChange { get; set; }
+
+        public string ConfirmationCode { get; set; }
     }
 
     public class ResetPasswordViewModel

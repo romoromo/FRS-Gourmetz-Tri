@@ -793,6 +793,163 @@ namespace FRS.Controllers
             }
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpPost("usersv2")]
+        [AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllUsersPolicy)]
+        [ProducesResponseType(201, Type = typeof(UserViewModel))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> RegisterV2([FromBody] UserEditViewModel user)
+        {
+            string userRequest = JsonConvert.SerializeObject(user);
+            _logger.LogInformation($"UserEditViewModel requested by : {this.User.Identity.Name}");
+            _logger.LogInformation($"UserEditViewModel object : {userRequest}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (user == null)
+                        return BadRequest($"{nameof(user)} cannot be null");
+
+                    if (string.IsNullOrEmpty(user.UserName)) user.UserName = user.Email;
+                    ApplicationUser appUser = _mapper.Map<ApplicationUser>(user);
+
+                    user.IsChangePassword = true;
+                    appUser.IsPasswordMustChange = false;
+
+                    Random generator = new Random();
+                    String r = generator.Next(0, 1000000).ToString("D6");
+
+                    user.ConfirmationCode = r;
+                    appUser.ConfirmationCode = r;
+
+                    user.IsEnabled = false;
+                    //appUser.IsActive = false;
+                    appUser.IsEnabled = false;
+
+                    var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
+                    if (result.Item1)
+                    {
+                        appUser = await _userManager.FindByEmailAsync(user.Email);
+                        UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
+
+                        //broadcast newly added user
+                        await _userHub.Clients.All.SendAsync("BroadcastAddedUser", userVM);
+
+                        if (!appUser.EmailConfirmed)
+                        {
+                            //send email confirmation
+                            string enableOnboardingEmail = _configuration["AppSettings:ONBOARDING_EMAIL_ENABLED"];
+                            if (enableOnboardingEmail == "Y")
+                            {
+                                var code = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                                string baseUrl = _configuration["AppSettings:ONBOARDING_BASE_URL"];
+                                var callbackUrl = Url.Action("ConfirmEmail", "Authorization", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme, host: baseUrl);
+                                var portalUrl = _configuration["AppSettings:ORDER_PORTAL_URL"];
+                                var imgUrl = _configuration["AppSettings:ORDER_PORTAL_ONBOARDING_IMG_URL"];
+                                await _emailSender.SendEmailAsync(user.FullName, user.Email, "Confirm your account",
+                                    EmailTemplates.GetConfirmationEmail(portalUrl, user.Email, callbackUrl, imgUrl));
+                            }
+                        }
+
+                        _logger.LogInformation($"User Successfully created");
+                        return CreatedAtAction(GetUserByIdActionName, new { id = userVM.Id }, userVM);
+                    }
+
+                    AddErrors(result.Item2);
+                }
+                _logger.LogInformation($"Error Model State");
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Register : {ex.Message}", ex);
+                _logger.LogError($"Error Register : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpPut("userConfirm/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> ConfirmUserToken(int id, [FromBody] UserConfirmViewModel user)
+        {
+            string dataUserJson = JsonConvert.SerializeObject(user);
+            _logger.LogInformation($"UpdateUser UserEditViewModel : {dataUserJson}");
+            _logger.LogInformation($"UpdateUser Id : {id}");
+
+            try
+            {
+                ApplicationUser appUser = await _accountManager.GetUserByIdAsync(id);
+                bool sendEmail = appUser != null && !appUser.IsEnabled;//(!appUser.DepartmentId.HasValue || !appUser.Roles.Any() ||);
+                string[] currentRoles = appUser != null ? (await _accountManager.GetUserRolesAsync(appUser)).ToArray() : null;
+
+                var manageUsersPolicy = _authorizationService.AuthorizeAsync(this.User, id, AccountManagementOperations.Update);               
+
+
+                if (ModelState.IsValid)
+                {
+                    if (user == null)
+                        return BadRequest($"{nameof(user)} cannot be null");
+
+                    if (appUser == null)
+                        return NotFound(id);
+
+                    bool isValid = true;
+
+                    if (appUser.ConfirmationCode != user.ConfirmationCode)
+                    {
+                        isValid = false;
+                        AddErrors(new string[] { "The confirmation code is invalid." });
+                    }
+
+                    if (isValid)
+                    {
+                        if (sendEmail) appUser.IsEnabled = true;
+
+                        appUser.IsEnabled = true;
+                        appUser.IsActive =  true;
+
+                        var result = await _accountManager.UpdateUserAsync(appUser);
+                        if (result.Item1)
+                        {
+                            //broadcast newly updated user
+                            UserViewModel userVM = await GetUserViewModelHelper(appUser.Id);
+                            await _userHub.Clients.All.SendAsync("BroadcastUpdatedUser", userVM);
+
+                            if (result.Item1)
+                            {
+                                //send email
+                                //if (sendEmail)
+                                //{
+                                //    var url = _configuration["AppSettings:baseUrl"];
+                                //    await _emailSender.SendEmailAsync(user.FullName, user.Email, "FRS Account Ready",
+                                //        EmailTemplates.GetAccountReadyEmail(user.Email, url));
+                                //}
+                                return NoContent();
+                            }
+                        }
+
+                        AddErrors(result.Item2);
+                    }
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error UpdateUser : {ex.Message}", ex);
+                _logger.LogError($"Error UpdateUser : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
 
         [HttpDelete("users/{id}")]
         //[AllowAnonymous]
