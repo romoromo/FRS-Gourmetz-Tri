@@ -1557,6 +1557,16 @@ namespace FRS.Controllers
                 vm.StudentCards = new List<StudentCardDTO>();
                 if (!string.IsNullOrEmpty(dto.CardId))
                     vm.StudentCards.Add(new StudentCardDTO { CardId = dto?.CardId, Status = "ACTIVE" });
+
+                if (dto.CurrentUserId != null)
+                {
+                    vm.Users = new List<StudentManageAccountDTO>();
+                    vm.Users.Add(new StudentManageAccountDTO()
+                    {
+                        UserId = dto.CurrentUserId
+                    });
+                }
+
                 var response = await _service.CreateStudentAsync(vm);
                 var studentData = (Student)response.Data;
                 var responseObject = new BaseOperationResponse

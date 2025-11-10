@@ -19,5 +19,6 @@ namespace BAL.DTO.MealOrder
         public string CardId { get; set; }
         [Required]
         public int OutletId { get; set; }
+        public int CurrentUserId { get; set; }
     }
 }
