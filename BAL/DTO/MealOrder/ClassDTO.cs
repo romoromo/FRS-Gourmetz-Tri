@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using DAL.Core;
 
 namespace BAL.DTO.MealOrder
 {
@@ -11,5 +11,6 @@ namespace BAL.DTO.MealOrder
         public int ClassLevelId { get; set; }
 
         public string ClassLevelName { get; set; }
+        public MealCollectionType? MealCollectionType { get; set; }
     }
 }

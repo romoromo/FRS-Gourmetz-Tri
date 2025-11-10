@@ -8,6 +8,7 @@ import { Class } from "src/app/models/meal-order/class.model";
 import { ClassService } from "src/app/services/meal-order/class.service";
 import { Filter } from "src/app/models/sieve-filter.model";
 import { Subscription } from "rxjs";
+import { MealCollectionTypeList } from 'src/app/helpers/enums';
 
 @Component({
   selector: "class-editor",
@@ -33,7 +34,7 @@ export class ClassEditorComponent implements OnInit, OnDestroy {
 
   @ViewChild("f")
   private form;
-
+  mealCollectionTypeList = MealCollectionTypeList;
   constructor(
     private alertService: AlertService,
     private classService: ClassService,

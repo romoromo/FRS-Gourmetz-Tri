@@ -18,6 +18,15 @@
             </mat-select>
             <mat-error *ngIf="showValidationErrors && f.submitted">Class Level is required</mat-error>
           </mat-form-field>
+          <mat-form-field class="col-md-12">
+          <mat-label>Meal Collection</mat-label>
+          <mat-select id="mealCollectionType" name="mealCollectionType"
+            [(ngModel)]="classEdit.mealCollectionType" #mealCollectionType="ngModel" required>
+            <mat-option *ngFor="let item of mealCollectionTypeList" [value]="item.id">
+              {{item.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
         </div>
       </div>
 
