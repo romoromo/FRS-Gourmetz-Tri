@@ -41,15 +41,16 @@ namespace BAL.Services.Interfaces
             if (outlet == null)
                 throw new InvalidOperationException($"GetOutletMealSessions - Outlet NOT FOUND.");
             //TBD: Handle null meal collection type
-            outlet.MealCollectionType = MealCollectionType.BY_CLASS_ROASTER;
-
-            IPeriodSessionServiceSource service = outlet.MealCollectionType switch
-            {
-                MealCollectionType.BY_CLASS_LEVEL => _periodSessionByClassLevel,
-                MealCollectionType.BY_CLASS_ROASTER => _periodSessionByClassRoaster,
-                MealCollectionType.STUDENT_SELECTS => _periodSessionByStudentSelect,
-                _ => throw new InvalidOperationException($"Unknown source type: {outlet.MealCollectionType}")
-            };
+            IPeriodSessionServiceSource service = _periodSessionByClassRoaster;
+            //outlet.MealCollectionType = MealCollectionType.BY_CLASS_ROASTER;
+            //
+            //IPeriodSessionServiceSource service = outlet.MealCollectionType switch
+            //{
+            //    MealCollectionType.BY_CLASS_LEVEL => _periodSessionByClassLevel,
+            //    MealCollectionType.BY_CLASS_ROASTER => _periodSessionByClassRoaster,
+            //    MealCollectionType.STUDENT_SELECTS => _periodSessionByStudentSelect,
+            //    _ => throw new InvalidOperationException($"Unknown source type: {outlet.MealCollectionType}")
+            //};
             return await service.GetOutletMealSessions(input);
         }
     }

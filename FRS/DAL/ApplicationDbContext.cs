@@ -591,7 +591,6 @@ namespace DAL
             builder.Entity<OutletProfile>().TrackAllProperties();
             #region Outlet
             builder.Entity<Outlet>().TrackAllProperties();
-            builder.Entity<Outlet>().HasIndex(x => x.MealCollectionType);
             #endregion
             builder.Entity<CatererOutlet>().TrackAllProperties();
             builder.Entity<Driver>().TrackAllProperties();

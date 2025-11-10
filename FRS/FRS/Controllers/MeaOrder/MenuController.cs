@@ -406,11 +406,11 @@ namespace FRS.Controllers
 
             var results = new List<MealSessionDetailDTO>();
 
-            if(student != null && outlet != null && outlet.MealCollectionType == MealCollectionType.STUDENT_SELECTS)
-            {
-                results = await this._service.GetOutleOnlyMealSessions(student.OutletId.Value, orderDate);
-                return Ok(results);
-            }
+            //if(student != null && outlet != null && outlet.MealCollectionType == MealCollectionType.STUDENT_SELECTS)
+            //{
+            //    results = await this._service.GetOutleOnlyMealSessions(student.OutletId.Value, orderDate);
+            //    return Ok(results);
+            //}
 
             results = await this._service.GetStudentSessions(studentId, orderDate);
             return Ok(results);

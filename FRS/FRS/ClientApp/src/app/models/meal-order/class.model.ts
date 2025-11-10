@@ -1,3 +1,4 @@
+import { MealCollectionType } from "../enums";
 
 export class Class {
 
@@ -11,4 +12,5 @@ export class Class {
   public name: string;
   public classLevelId: string;
   public classLevelName: string;
+  public mealCollectionType: MealCollectionType|number;
 }
