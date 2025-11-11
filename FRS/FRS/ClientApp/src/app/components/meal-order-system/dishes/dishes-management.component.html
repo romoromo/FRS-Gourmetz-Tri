@@ -37,7 +37,7 @@
     </div>
   </div>
 
-  <ngx-datatable class="material colored-header" #dishesTable [loadingIndicator]="loadingIndicator" [rows]="rows"
+  <ngx-datatable class="material my-custom-header-table" #dishesTable [loadingIndicator]="loadingIndicator" [rows]="rows"
     [rowHeight]="'auto'" [headerHeight]="'auto'" [footerHeight]="35" [columns]="columns" [columnMode]="'force'"
     [externalPaging]="true" [externalSorting]="true" [count]="pagedResult.totalCount"
     [limit]="pagedResult.filter.pageSize" (page)="loadData($event)" (sort)="loadData($event)">
