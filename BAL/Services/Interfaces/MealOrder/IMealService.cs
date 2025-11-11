@@ -32,5 +32,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<List<MealSessionMealPeriodDTO>> GetMealSessionsByMealPeriodByOutlet(int outletId);
         Task<BaseOperationResponse> UpdateMealSessionAsync(MealSessionDTO dto);
         Task<List<MealSessionLiteDto>> GetMealSessionLiteByOutletId(int outletId);
+        Task<List<MealSessionDetailDTO>> GetMealSessionByOutletId(int outletId);
     }
 }

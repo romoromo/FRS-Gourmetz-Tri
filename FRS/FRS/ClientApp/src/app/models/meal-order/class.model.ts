@@ -1,3 +1,4 @@
+import { MealCollectionType } from "../enums";
 
 export class Class {
 
@@ -11,16 +12,5 @@ export class Class {
   public name: string;
   public classLevelId: string;
   public classLevelName: string;
-  public detail: ClassDetail[]
-}
-
-export class ClassDetail{
-  constructor() {    
-  }
-  public id: string;
-  public classLevelId: string;
-  public sessionId: string;
-  public sessionName: string;
-  public periodId: string;
-  public periodName: string;
+  public mealCollectionType: MealCollectionType|number;
 }

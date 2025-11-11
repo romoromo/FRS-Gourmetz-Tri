@@ -20,5 +20,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         List<MealSessionMealPeriod> GetMealSessionsByMealPeriodByOutlet(int outletId);
         Task<BaseOperationResponse> UpdateAsync(MealSession mealSession);
         Task<List<MealSessionLiteDto>> GetLiteByOutletId(int outletId);
+        Task<List<MealSessionDetail>> GetMealSessionByOutletId(int outletId);
     }
 }

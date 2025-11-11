@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using DAL.Core;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
+using iTextSharp.text;
 
 namespace DAL.Repositories.Interfaces.MealOrder
 {
@@ -14,5 +16,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<Class> GetByIdAsync(int id);
         Task<PagedEntity<Class>> GetClassesAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateAsync(Class classModel);
+        Task<List<Class>> GetByOutlet(int outletId);
     }
 }

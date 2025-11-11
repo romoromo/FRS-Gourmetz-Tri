@@ -58,6 +58,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
 
   @Input() isHideHeader: boolean;
   @Input() outletId: string;
+  @Input() mealCollectionType: number;
 
   @ViewChild('actionsTemplate')
   actionsTemplate: TemplateRef<any>;
@@ -81,6 +82,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
       this.title += ` (${data.group.mealSessionName})`;
     }
     this.outletId = data.outletId;
+    this.mealCollectionType = data.mealCollectionType;
   }
 
   getDeliveryLocations() {
@@ -150,7 +152,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
     this.cancelPreviousRequests.next();
     this.isLoadingMealSessions = true;
     this.alertService.startLoadingMessage("Loading Meal Sessions...");
-    this.menuService.getOutletSessionsByFilter(this.outletId, (d).toDateString(), (dTo).toDateString())
+    this.menuService.getMealsessionsByCollectionType(this.outletId, (d).toDateString(), (dTo).toDateString())
       .pipe(
         takeUntil(this.cancelPreviousRequests),
         switchMap(results => {

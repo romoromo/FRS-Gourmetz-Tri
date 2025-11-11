@@ -36,5 +36,25 @@ namespace DAL.Models.MealOrder
 
         [ForeignKey("MealSessionDetailId")]
         public virtual MealSessionDetail MealSessionDetail { get; set; }
+
+        public virtual ICollection<ClassLevelDetail> ClassLevelDetails { get; set; } = new HashSet<ClassLevelDetail>();
+    }
+
+    public class ClassLevelDetail
+    {
+        [Key]
+        public int Id { get; set; }
+        public int ClassLevelId { get; set; }
+
+        [ForeignKey(nameof(ClassLevelId))]
+        public virtual ClassLevel ClassLevel { get; set; }
+
+        public int? PeriodId { get; set; }
+        [ForeignKey(nameof(PeriodId))]
+        public virtual MealSession MealPeriod { get; set; }
+
+        public int? SessionId { get; set; }
+        [ForeignKey(nameof(SessionId))]
+        public virtual MealSessionDetail MealSession { get; set; }
     }
 }
