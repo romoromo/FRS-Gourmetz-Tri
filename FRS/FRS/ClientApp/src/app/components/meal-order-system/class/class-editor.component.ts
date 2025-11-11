@@ -8,7 +8,7 @@ import { Class } from "src/app/models/meal-order/class.model";
 import { ClassService } from "src/app/services/meal-order/class.service";
 import { Filter } from "src/app/models/sieve-filter.model";
 import { Subscription } from "rxjs";
-import { ClassDetailComponent } from "./class-detail/class-detail.components";
+import { MealCollectionTypeList } from 'src/app/helpers/enums';
 
 @Component({
   selector: "class-editor",
@@ -34,7 +34,7 @@ export class ClassEditorComponent implements OnInit, OnDestroy {
 
   @ViewChild("f")
   private form;
-
+  mealCollectionTypeList = MealCollectionTypeList;
   constructor(
     private alertService: AlertService,
     private classService: ClassService,
@@ -54,9 +54,6 @@ export class ClassEditorComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.alertService.resetStickyMessage();
-    if (!this.classEdit.detail) {
-      this.classEdit.detail = [];
-    }
   }
 
   ngOnDestroy() {
@@ -210,29 +207,5 @@ export class ClassEditorComponent implements OnInit, OnDestroy {
     return this.accountService.userHasPermission(
       Permission.manageMOSOutletMgtClassesPermission
     );
-  }
-
-  openAddDetailDialog(): void {
-    const dialogRef = this.dialog.open(ClassDetailComponent, {
-      width: "600px",
-      data: {
-        class: this.classEdit,
-        existingDetails: this.classEdit.detail,
-        outletId: this.outletId
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.classEdit.detail.push(result);
-      }
-    });
-  }
-
-  removeDetail(row: any): void {
-    const index = this.classEdit.detail.indexOf(row);
-    if (index !== -1) {
-      this.classEdit.detail.splice(index, 1);
-    }
   }
 }

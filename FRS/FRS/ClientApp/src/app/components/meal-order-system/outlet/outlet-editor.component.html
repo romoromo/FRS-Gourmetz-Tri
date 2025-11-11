@@ -29,16 +29,7 @@
           <input matInput autocomplete="off" [disabled]="!canManageOutlets" type="number" id="daysToFreezeOrdering"
             name="daysToFreezeOrdering" placeholder="No. of days before ordering is freezed"
             [(ngModel)]="outletEdit.daysToFreezeOrdering" #amount="ngModel" required />
-        </mat-form-field>
-        <mat-form-field class="col-md-12">
-          <mat-label>Meal Collection</mat-label>
-          <mat-select [disabled]="!canManageOutlets" id="mealCollectionType" name="mealCollectionType"
-            [(ngModel)]="outletEdit.mealCollectionType" #mealCollectionType="ngModel" required>
-            <mat-option *ngFor="let item of mealCollectionTypeList" [value]="item.id">
-              {{item.label}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+        </mat-form-field>        
       </div>
 
       <div class="clearfix"></div>

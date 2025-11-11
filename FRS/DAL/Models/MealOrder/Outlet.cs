@@ -17,7 +17,6 @@ namespace DAL.Models.MealOrder
         //public virtual OutletProfile OutletProfile { get; set; }
         public int DaysToFreezeOrdering { get; set; }
         public int? LocationId { get; set; }
-        public MealCollectionType? MealCollectionType { get; set; }
         public virtual Location Location { get; set; }
 
         public virtual List<CatererOutlet> CatererOutlets { get; set; }

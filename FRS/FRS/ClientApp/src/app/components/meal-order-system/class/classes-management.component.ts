@@ -12,7 +12,7 @@ import { Class } from 'src/app/models/meal-order/class.model';
 import { ClassEditorComponent } from './class-editor.component';
 import { ClassService } from 'src/app/services/meal-order/class.service';
 import { ClassTransferComponent } from './class-transfer/class-transfer.component';
-
+import { MealCollectionTypeList } from 'src/app/helpers/enums';
 
 @Component({
   selector: 'classes-management',
@@ -41,6 +41,11 @@ export class ClassesManagementComponent implements OnInit {
   @ViewChild('classModelEditor')
   classModelEditor: ClassEditorComponent;
   header: string;
+
+  @ViewChild('mealCollectionTypeTemplate')
+  mealCollectionTypeTemplate: TemplateRef<any>;
+
+  mealCollectionTypes = MealCollectionTypeList;
 
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private classService: ClassService, public dialog: MatDialog) {
@@ -92,6 +97,11 @@ export class ClassesManagementComponent implements OnInit {
     this.columns = [
       { prop: 'name', name: gT('common.Name'), width: 200 },
       { prop: 'classLevelName', name: 'Class Level', width: 200 },
+      {
+        prop: 'mealCollectionType',
+        name: 'Meal Colection',
+        cellTemplate: this.mealCollectionTypeTemplate
+      },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
 
@@ -198,6 +208,11 @@ export class ClassesManagementComponent implements OnInit {
 
   get canManageClasses() {
     return this.accountService.userHasPermission(Permission.manageMOSOutletMgtClassesPermission)
+  }
+
+  getMealCollectionTypeLabel(id: number): string {
+    const type = this.mealCollectionTypes.find(t => t.id == id);
+    return type ? type.label : '-';
   }
 
 }

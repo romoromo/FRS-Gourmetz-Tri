@@ -130,7 +130,8 @@ namespace DAL.Repositories.MealOrder
                 }
                 else
                 {
-                    mealSessions.ForEach(e => {
+                    mealSessions.ForEach(e =>
+                    {
                         e.Name = mealPeriod.Name;
                         e.StartDate = mealPeriod.StartDate;
                         e.EndDate = mealPeriod.EndDate;
@@ -235,7 +236,7 @@ namespace DAL.Repositories.MealOrder
                 //_appContext.MealSessions.RemoveRange(oldMealSessions);
 
                 //then add/update
-                foreach(var e in mealSessions)
+                foreach (var e in mealSessions)
                 {
                     var ms = this._appContext.MealSessions.FirstOrDefault(f => f.Id == e.Id);
                     if (ms != null)
@@ -365,6 +366,42 @@ namespace DAL.Repositories.MealOrder
             }
 
             return result;
+        }
+
+        public async Task<List<MealSessionDetail>> GetMealSessionByOutletId(int outletId)
+        {
+            return await _appContext.MealSessionDetails
+                .Where(m => m.MealSession.OutletId == outletId && m.IsActive && m.MealSession.IsActive)
+                .Select(m => new MealSessionDetail
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Sequence = m.Sequence,
+                    StartDate = m.StartDate,
+                    EndDate = m.EndDate,
+                    MealSessionId = m.MealSessionId,
+                    MealSessionName = m.MealSessionName,
+                    IsActive = m.IsActive,
+                    RouteTime = m.RouteTime,
+                    OverheadTime = m.OverheadTime,
+                    CalSourceTime = m.CalSourceTime,
+                    RouteId = m.RouteId,
+                    Route = new Route
+                    {
+                        Label = m.Route.Label,
+                        Color = m.Route.Color
+                    },
+                    MealSession = new MealSession
+                    {
+                        MealPeriodId = m.MealSession.MealPeriodId,
+                        MealPeriod = new MealPeriod
+                        {
+                            Name = m.MealSession.MealPeriod.Name
+                        },
+                        Name = m.MealSession.Name
+                    }
+                })
+                .ToListAsync();
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
