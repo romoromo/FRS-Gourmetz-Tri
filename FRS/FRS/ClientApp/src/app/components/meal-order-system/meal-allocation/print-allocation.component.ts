@@ -1,31 +1,56 @@
-import { Component, OnInit, Output, EventEmitter, Input, Inject } from '@angular/core';
-import { HttpEventType, HttpClient, HttpEvent } from '@angular/common/http';
-import { DateAdapter, MatDatepickerInputEvent, MatDialog, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Utilities } from 'src/app/services/utilities';
-import { Filter } from 'src/app/models/sieve-filter.model';
-import { CatererInfo, CatererOutlet } from 'src/app/models/meal-order/caterer-info.model';
-import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
-import { Outlet } from 'src/app/models/meal-order/outlet.model';
-import { StoreInfo } from 'src/app/models/meal-order/store-info.model';
-import { TokenOrder, TokenLabel, TokenDishLabel, MealAllocation } from 'src/app/models/meal-order/token-order.model';
-import { AlertService, MessageSeverity } from 'src/app/services/alert.service';
-import * as moment from 'moment';
-import { saveAs } from 'file-saver';
-import { MenuService } from '../../../services/meal-order/menu.service';
-import { Dish } from '../../../models/meal-order/dish.model';
-import { MealType } from '../../../models/meal-order/meal-type.model';
-import { MealService } from 'src/app/services/meal-order/meal.service';
-import { DishService } from 'src/app/services/meal-order/dish.service';
-import { MealSessionDetail, MealSession } from 'src/app/models/meal-order/meal-session.model';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  Inject,
+} from "@angular/core";
+import { HttpEventType, HttpClient, HttpEvent } from "@angular/common/http";
+import {
+  DateAdapter,
+  MatDatepickerInputEvent,
+  MatDialog,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+} from "@angular/material";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
+import { Utilities } from "src/app/services/utilities";
+import { Filter } from "src/app/models/sieve-filter.model";
+import {
+  CatererInfo,
+  CatererOutlet,
+} from "src/app/models/meal-order/caterer-info.model";
+import { DeliveryService } from "src/app/services/meal-order/delivery.service";
+import { Outlet } from "src/app/models/meal-order/outlet.model";
+import { StoreInfo } from "src/app/models/meal-order/store-info.model";
+import {
+  TokenOrder,
+  TokenLabel,
+  TokenDishLabel,
+  MealAllocation,
+} from "src/app/models/meal-order/token-order.model";
+import { AlertService, MessageSeverity } from "src/app/services/alert.service";
+import * as moment from "moment";
+import { saveAs } from "file-saver";
+import { MenuService } from "../../../services/meal-order/menu.service";
+import { Dish } from "../../../models/meal-order/dish.model";
+import { MealType } from "../../../models/meal-order/meal-type.model";
+import { MealService } from "src/app/services/meal-order/meal.service";
+import { DishService } from "src/app/services/meal-order/dish.service";
+import {
+  MealSessionDetail,
+  MealSession,
+} from "src/app/models/meal-order/meal-session.model";
 
-import { DishSelectorComponent } from '../dishes/dish-selector/dish-selector.component';
-import { ClassService } from '../../../services/meal-order/class.service';
+import { DishSelectorComponent } from "../dishes/dish-selector/dish-selector.component";
+import { ClassService } from "../../../services/meal-order/class.service";
+import { EBADF } from "constants";
 
 @Component({
-  selector: 'print-allocation',
-  templateUrl: './print-allocation.component.html',
-  styleUrls: ['./print-allocation.component.css']
+  selector: "print-allocation",
+  templateUrl: "./print-allocation.component.html",
+  styleUrls: ["./print-allocation.component.css"],
 })
 export class PrintAllocationComponent implements OnInit {
   stores: StoreInfo[];
@@ -47,18 +72,28 @@ export class PrintAllocationComponent implements OnInit {
   filterLoading = true;
   isNewAllocation = false;
   selectedPeriodName = "";
+  selectedPeriodId: string | null = null;
   periodPlaceholder = "Meal Period have not been setup";
-
+  mealPeriods: any[];
+  mealSessions: any[];
   //dish_count: TokenDishLabel[] = [];
 
-  constructor(private http: HttpClient, private alertService: AlertService, private deliveryService: DeliveryService, public dialog: MatDialog,
-    public dialogRef: MatDialogRef<PrintAllocationComponent>, private menuService: MenuService, private mealService: MealService, private dishService: DishService,
+  constructor(
+    private http: HttpClient,
+    private alertService: AlertService,
+    private deliveryService: DeliveryService,
+    public dialog: MatDialog,
+    public dialogRef: MatDialogRef<PrintAllocationComponent>,
+    private menuService: MenuService,
+    private mealService: MealService,
+    private dishService: DishService,
     public classService: ClassService,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-    if (typeof (data.outletId) != typeof (undefined)) {
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    if (typeof data.outletId != typeof undefined) {
       this.outletId = data.outletId;
     }
-    if (typeof (data.allocation) != typeof (undefined)) {
+    if (typeof data.allocation != typeof undefined) {
       if (data.allocation.id) {
         this.editAllocation(data.allocation);
       } else {
@@ -80,26 +115,26 @@ export class PrintAllocationComponent implements OnInit {
     this.selectedCaterers.forEach((caterer, i) => {
       if (caterer.status == "APPROVED") {
         if (filterCaterer != "") {
-          filterCaterer += '|'
+          filterCaterer += "|";
         }
-        filterCaterer += caterer.catererInfoId
+        filterCaterer += caterer.catererInfoId;
       }
     });
-    console.log("caterer filter = ", filterCaterer)
+    console.log("caterer filter = ", filterCaterer);
 
     //this.getStore(filterCaterer);
   }
 
   onChangeDate(type: string, event: MatDatepickerInputEvent<Date>) {
     this.filterLoading = true;
-    console.log("event value: ", moment(event.value))
+    console.log("event value: ", moment(event.value));
     this.orderDate = new Date(event.value);
     this.allocation.deliveryDate = this.orderDate;
     //this.getSessions();
     this.getPeriodsByDate();
 
     if (this.allocation.mealSessionId) {
-      console.log("allocation Id: ", this.allocation)
+      console.log("allocation Id: ", this.allocation);
       //this.getTokenOrder();
       this.allocation.mealSessionId = null;
     }
@@ -107,8 +142,12 @@ export class PrintAllocationComponent implements OnInit {
 
   sessionSelect() {
     if (this.allocation.mealSessionId) {
-      let sessionDetailSelected = this.sessions.find(x => x.id === this.allocation.mealSessionId);
-      let sessionSelected = this.allSessions.find(x => x.id === sessionDetailSelected.mealSessionId);
+      let sessionDetailSelected = this.sessions.find(
+        (x) => x.id === this.allocation.mealSessionId
+      );
+      let sessionSelected = this.allSessions.find(
+        (x) => x.id === sessionDetailSelected.mealSessionId
+      );
 
       this.allocation.outletId = sessionSelected.mealPeriodId;
       this.allocation.timePacked = sessionDetailSelected.routeTime;
@@ -121,17 +160,26 @@ export class PrintAllocationComponent implements OnInit {
   onChangeSessions() {
     this.sessionSelect();
     if (this.allocation.mealSessionId) {
-      console.log("allocation Id: ", this.allocation)
+      console.log("allocation Id: ", this.allocation);
       this.getTokenOrder();
     }
+  }
+
+  onChangePeriod(event: any) {
+    const selectedPeriodId = event.value;
+    this.selectedPeriodId = selectedPeriodId;
+    this.mealSessions = this.sessions.filter(
+      (s) => s.mealPeriodId === selectedPeriodId
+    );
+    this.allocation.mealSessionId = null;
   }
 
   getAllSessions() {
     let filter = new Filter();
     //let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
-    filter.filters = '(IsActive)==true';
-    this.mealService.getMealSessionsSimpleByFilter(filter)
-      .subscribe(results => {
+    filter.filters = "(IsActive)==true";
+    this.mealService.getMealSessionsSimpleByFilter(filter).subscribe(
+      (results) => {
         this.allSessions = results.pagedData;
         console.log("all sessions: ", this.allSessions);
         if (this.allocation.mealSessionId) {
@@ -139,11 +187,15 @@ export class PrintAllocationComponent implements OnInit {
         }
         this.filterLoading = false;
       },
-        error => {
-          this.filterLoading = false;
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal type.\r\n"`,
-            MessageSeverity.error);
-        })
+      (error) => {
+        this.filterLoading = false;
+        this.alertService.showStickyMessage(
+          "Get Error",
+          `An error occured while retrieving meal type.\r\n"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 
   private cancel() {
@@ -151,105 +203,144 @@ export class PrintAllocationComponent implements OnInit {
   }
 
   onSearchChanged(value: string) {
-    this.stores = this.storesCache.filter(r => Utilities.searchArray(value, false, r.name));
+    this.stores = this.storesCache.filter((r) =>
+      Utilities.searchArray(value, false, r.name)
+    );
   }
 
   getOrderData() {
-    console.log("clicked")
+    console.log("clicked");
     this.getTokenOrder();
   }
 
   getMealTypes() {
     let filter = new Filter();
-    filter.sorts = 'name';
+    filter.sorts = "name";
     //let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
-    filter.filters = '(IsActive)==true';
-    this.mealService.getMealTypesByFilter(filter)
-      .subscribe(results => {
+    filter.filters = "(IsActive)==true";
+    this.mealService.getMealTypesByFilter(filter).subscribe(
+      (results) => {
         this.tokens = results.pagedData;
       },
-        error => {
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal type.\r\n"`,
-            MessageSeverity.error);
-        })
+      (error) => {
+        this.alertService.showStickyMessage(
+          "Get Error",
+          `An error occured while retrieving meal type.\r\n"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 
   getMenuDishes() {
     let filter = new Filter();
     //let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
-    filter.filters = '(IsActive)==true';
-    this.dishService.getDishesByFilter(filter)
-      .subscribe(results => {
+    filter.filters = "(IsActive)==true";
+    this.dishService.getDishesByFilter(filter).subscribe(
+      (results) => {
         this.dishes = results.pagedData;
       },
-        error => {
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dishes.\r\n"`,
-            MessageSeverity.error);
-        })
+      (error) => {
+        this.alertService.showStickyMessage(
+          "Get Error",
+          `An error occured while retrieving dishes.\r\n"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 
   getPeriodsByDate() {
-    this.classService.getPeriodMealSession(this.outletId)
-      .subscribe(results => {
+    this.classService.getPeriodMealSession(this.outletId).subscribe(
+      (results) => {
         this.sessions = results;
-        console.log("sessions1: ", this.sessions)
+        console.log("sessions1: ", this.sessions);
+
+        this.mealPeriods = Array.from(
+          new Map(
+            results.map((item) => [
+              item.mealPeriodId,
+              {
+                mealPeriodId: item.mealPeriodId,
+                mealPeriodName: item.mealPeriodName,
+              },
+            ])
+          ).values()
+        );
+
+        if (!this.isNewAllocation && this.allocation.mealSessionId) {
+          const selectedSession = this.sessions.find(
+            (s) => s.id === this.allocation.mealSessionId
+          );
+          if (selectedSession) {
+            this.selectedPeriodId = selectedSession.mealPeriodId;
+            // auto-select period based on session
+            this.mealSessions = this.sessions.filter(
+              (s) => s.mealPeriodId === selectedSession.mealPeriodId
+            );
+          }
+        }
+
         if (!this.sessions || this.sessions.length === 0) {
-          this.periodPlaceholder = 'Meal Period have not been setup';
+          this.periodPlaceholder = "Meal Period have not been setup";
         } else {
-          this.periodPlaceholder = 'Select a Meal Period';
+          this.periodPlaceholder = "Select a Meal Period";
         }
 
         if (!this.isNewAllocation) {
-          this.token_count.forEach(t => {
-
+          this.token_count.forEach((t) => {
             if (t.timePacked == null) {
-              let sessionDetailSelected = this.sessions.find(x => x.id === this.allocation.mealSessionId);
+              let sessionDetailSelected = this.sessions.find(
+                (x) => x.id === this.allocation.mealSessionId
+              );
 
               t.timePacked = sessionDetailSelected.routeTime;
               t.color = sessionDetailSelected.routeColor;
             }
-
           });
         }
 
         this.filterLoading = false;
       },
-        error => {
-          this.filterLoading = false;
-          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
-            MessageSeverity.error);
-        })
+      (error) => {
+        this.filterLoading = false;
+        //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+        this.alertService.showStickyMessage(
+          "Get Error",
+          `An error occured while retrieving meal sessions.\r\n"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 
   getTokenName(id) {
-    let token = this.tokens.find(x => x.id === id);
+    if (!this.tokens || this.tokens.length === 0) return '';
+    let token = this.tokens.find((x) => x.id === id);
     if (token) {
-      return token.name
+      return token.name;
     } else {
-      return ''
+      return "";
     }
   }
 
   getDishName(id) {
-    let dish = this.dishes.find(x => x.id === id);
+    let dish = this.dishes.find((x) => x.id === id);
     if (dish) {
-      return dish.label
+      return dish.label;
     } else {
-      return ''
+      return "";
     }
   }
 
   getDishCode(id) {
-    let dish = this.dishes.find(x => x.id === id);
+    let dish = this.dishes.find((x) => x.id === id);
     if (dish) {
-      return dish.code
+      return dish.code;
     } else {
-      return ''
+      return "";
     }
   }
-
-
 
   onChangeQty(event, detail?: TokenDishLabel, token?: TokenLabel) {
     if (detail.a_qty > 0) {
@@ -260,17 +351,14 @@ export class PrintAllocationComponent implements OnInit {
 
     token.qty_tdishes = 0;
 
-    token.dishes.forEach(d => {
+    token.dishes.forEach((d) => {
       token.qty_tdishes += d.t_qty;
-
-    })
+    });
   }
 
-  private showErrorAlert(caption: string, message: string) {
+  public showErrorAlert(caption: string, message: string) {
     this.alertService.showMessage(caption, message, MessageSeverity.error);
   }
-
-
 
   getTokenOrder() {
     this.isLoading = true;
@@ -278,107 +366,121 @@ export class PrintAllocationComponent implements OnInit {
 
     this.token_count = [];
 
-    var strDate = moment(this.orderDate).format().split('T');
-    let f = this.allocation.mealSessionId ? '(OrderCurrentSession)==' + this.allocation.mealSessionId + ',' : '';
-    insideFilter.filters = f + '(IsActive)==true,(outletId)==' + this.outletId + ',(DeliveryDate)==' + strDate[0];
-    insideFilter.filters += ',(Status)==paid';
-    console.log("filters: ", insideFilter.filters)
+    var strDate = moment(this.orderDate).format().split("T");
+    let f = this.allocation.mealSessionId
+      ? "(OrderCurrentSession)==" + this.allocation.mealSessionId + ","
+      : "";
+    insideFilter.filters =
+      f +
+      "(IsActive)==true,(outletId)==" +
+      this.outletId +
+      ",(DeliveryDate)==" +
+      strDate[0];
+    insideFilter.filters += ",(Status)==paid";
+    console.log("filters: ", insideFilter.filters);
 
-    this.menuService.getOrderwithCurrentSession(insideFilter).subscribe(results => {
-      console.log("results: ", results)
-      this.orders = results;
+    this.menuService.getOrderwithCurrentSession(insideFilter).subscribe(
+      (results) => {
+        console.log("results: ", results);
+        this.orders = results;
 
-      console.log("order : ", this.orders)
+        console.log("order : ", this.orders);
 
-      //Order Loop
-      this.orders.forEach(o => {
+        //Order Loop
+        this.orders.forEach((o) => {
+          console.log("order: ", o);
 
-        console.log("order: ", o)
+          //Token Loop
+          o.tokens.forEach((t) => {
+            if (t.qty == 0) t.qty = 1;
 
-        //Token Loop
-        o.tokens.forEach(t => {
-
-          if (t.qty == 0) t.qty = 1;
-
-          var tokenIndex = this.token_count.findIndex(x => x.token_id === t.tokenId)
-          if (tokenIndex < 0) {
-            var token = new TokenLabel;
-            token.order_id = o.id;
-            token.token_id = t.tokenId;
-            token.meal_allocation_id = this.allocation.id;
-            token.timePacked = this.allocation.timePacked;
-            token.token_name = this.getTokenName(t.tokenId);
-            console.log("combined dish: ", t.selectedCombinedDishes.length)
-            if (t.selectedCombinedDishes.length > 0) {
-              console.log("menuqty: ", t.selectedCombinedDishes[0].menuQty)
-              token.qty = t.qty * t.selectedCombinedDishes[0].menuQty;
+            var tokenIndex = this.token_count.findIndex(
+              (x) => x.token_id === t.tokenId
+            );
+            if (tokenIndex < 0) {
+              var token = new TokenLabel();
+              token.order_id = o.id;
+              token.token_id = t.tokenId;
+              token.meal_allocation_id = this.allocation.id;
+              token.timePacked = this.allocation.timePacked;
+              token.token_name = this.getTokenName(t.tokenId);
+              console.log("combined dish: ", t.selectedCombinedDishes.length);
+              if (t.selectedCombinedDishes.length > 0) {
+                console.log("menuqty: ", t.selectedCombinedDishes[0].menuQty);
+                token.qty = t.qty * t.selectedCombinedDishes[0].menuQty;
+              } else {
+                token.qty = t.qty;
+              }
+              token.qty_menus = t.qty;
+              token.qty_dishes = 0;
+              token.qty_pdishes = 0;
+              token.qty_tdishes = 0;
+              token.deliveryDate = strDate[0];
+              token.dishes = [];
+              this.token_count.push(token);
+              tokenIndex = this.token_count.findIndex(
+                (x) => x.token_id === t.tokenId
+              );
             } else {
-              token.qty = t.qty;
+              if (t.selectedCombinedDishes.length > 0) {
+                this.token_count[tokenIndex].qty +=
+                  t.qty * t.selectedCombinedDishes[0].menuQty;
+              } else {
+                this.token_count[tokenIndex].qty += t.qty;
+              }
+              this.token_count[tokenIndex].qty_menus += t.qty;
             }
-            token.qty_menus = t.qty;
-            token.qty_dishes = 0;
-            token.qty_pdishes = 0;
-            token.qty_tdishes = 0;
-            token.deliveryDate = strDate[0];
-            token.dishes = [];
-            this.token_count.push(token);
-            tokenIndex = this.token_count.findIndex(x => x.token_id === t.tokenId)
-          } else {
-            if (t.selectedCombinedDishes.length > 0) {
-              this.token_count[tokenIndex].qty += (t.qty * t.selectedCombinedDishes[0].menuQty);
-            } else {
-              this.token_count[tokenIndex].qty += t.qty;
-            }
-            this.token_count[tokenIndex].qty_menus += t.qty;
-          }
 
-          // Selected dishes loop
-          t.selectedDishes.forEach(d => {
-            var dishIndex = this.token_count[tokenIndex].dishes.findIndex(y => y.dish_id === d.dishId)
-            if (dishIndex < 0) {
-              var dish = new TokenDishLabel;
-              //dish.token_lable_id = t.id;
-              dish.token_id = t.tokenId;
-              dish.token_name = this.getTokenName(t.tokenId);
-              dish.dish_id = d.dishId;
-              dish.dish_name = this.getDishName(d.dishId);
-              dish.dish_code = this.getDishCode(d.dishId);
-              dish.o_qty = d.qty;
-              this.token_count[tokenIndex].dishes.push(dish);
-            } else {
-              this.token_count[tokenIndex].dishes[dishIndex].o_qty += d.qty;
-            }
-            this.token_count[tokenIndex].qty_dishes += d.qty;
+            // Selected dishes loop
+            t.selectedDishes.forEach((d) => {
+              var dishIndex = this.token_count[tokenIndex].dishes.findIndex(
+                (y) => y.dish_id === d.dishId
+              );
+              if (dishIndex < 0) {
+                var dish = new TokenDishLabel();
+                //dish.token_lable_id = t.id;
+                dish.token_id = t.tokenId;
+                dish.token_name = this.getTokenName(t.tokenId);
+                dish.dish_id = d.dishId;
+                dish.dish_name = this.getDishName(d.dishId);
+                dish.dish_code = this.getDishCode(d.dishId);
+                dish.o_qty = d.qty;
+                this.token_count[tokenIndex].dishes.push(dish);
+              } else {
+                this.token_count[tokenIndex].dishes[dishIndex].o_qty += d.qty;
+              }
+              this.token_count[tokenIndex].qty_dishes += d.qty;
+            });
+          });
+        });
 
-          })
+        //count proposed allocation
+        this.token_count.forEach((t) => {
+          t.qty_pdishes = 0;
+          t.qty_tdishes = 0;
+          t.dishes.forEach((d) => {
+            console.log(
+              "hasil awal: ",
+              (d.o_qty / t.qty_dishes) * (t.qty - t.qty_dishes)
+            );
+            var p_allocation = Math.ceil(
+              (d.o_qty / t.qty_dishes) * (t.qty - t.qty_dishes)
+            );
+            console.log("ceiling: ", p_allocation);
+            d.p_qty = p_allocation;
+            d.t_qty = d.o_qty + d.p_qty;
+            t.qty_pdishes += p_allocation;
+            t.qty_tdishes += d.t_qty;
+          });
+        });
 
-        })
-
-      })
-
-      //count proposed allocation
-      this.token_count.forEach(t => {
-        t.qty_pdishes = 0;
-        t.qty_tdishes = 0;
-        t.dishes.forEach(d => {
-          console.log("hasil awal: ", d.o_qty / t.qty_dishes * (t.qty - t.qty_dishes))
-          var p_allocation = Math.ceil(d.o_qty / t.qty_dishes * (t.qty - t.qty_dishes))
-          console.log("ceiling: ", p_allocation)
-          d.p_qty = p_allocation;
-          d.t_qty = d.o_qty + d.p_qty;
-          t.qty_pdishes += p_allocation;
-          t.qty_tdishes += d.t_qty;
-
-        })
-
-      })
-
-      this.isLoading = false;
-      console.log("token count: ", this.token_count);
-
-    }, error => {
-      this.isLoading = false;
-    });
+        this.isLoading = false;
+        console.log("token count: ", this.token_count);
+      },
+      (error) => {
+        this.isLoading = false;
+      }
+    );
   }
 
   save() {
@@ -386,42 +488,56 @@ export class PrintAllocationComponent implements OnInit {
     this.alertService.startLoadingMessage("Saving changes...");
     this.allocation.outletId = this.outletId;
     this.allocation.tokens = this.token_count;
-    this.allocation.deliveryDate = (new Date(this.orderDate.getTime() - (this.orderDate.getTimezoneOffset() * 60000)));
-    console.log("saving: ", this.allocation)
+    this.allocation.deliveryDate = new Date(
+      this.orderDate.getTime() - this.orderDate.getTimezoneOffset() * 60000
+    );
+    console.log("saving: ", this.allocation);
 
     if (this.isNewAllocation) {
-      this.menuService.newMealAllocation(this.allocation).subscribe(allocation => this.saveSuccessHelper(allocation), error => this.saveFailedHelper(error));
+      this.menuService.newMealAllocation(this.allocation).subscribe(
+        (allocation) => this.saveSuccessHelper(allocation),
+        (error) => this.saveFailedHelper(error)
+      );
+    } else {
+      this.menuService.updateMealAllocation(this.allocation).subscribe(
+        (response) => this.saveSuccessHelper(),
+        (error) => this.saveFailedHelper(error)
+      );
     }
-    else {
-      this.menuService.updateMealAllocation(this.allocation).subscribe(response => this.saveSuccessHelper(), error => this.saveFailedHelper(error));
-    }
-
   }
 
-
   private saveSuccessHelper(allocation?: MealAllocation) {
-    if (allocation)
-      Object.assign(this.allocation, allocation);
+    if (allocation) Object.assign(this.allocation, allocation);
 
     this.isSaving = false;
     this.alertService.stopLoadingMessage();
 
     if (this.isNewAllocation)
-      this.alertService.showMessage("Success", `Meal Allocation was created successfully`, MessageSeverity.success);
+      this.alertService.showMessage(
+        "Success",
+        `Meal Allocation was created successfully`,
+        MessageSeverity.success
+      );
     else
-      this.alertService.showMessage("Success", `Changes to Meal Allocations was saved successfully`, MessageSeverity.success);
-
+      this.alertService.showMessage(
+        "Success",
+        `Changes to Meal Allocations was saved successfully`,
+        MessageSeverity.success
+      );
 
     this.allocation = new MealAllocation();
 
     this.dialogRef.close();
   }
 
-
   private saveFailedHelper(error: any) {
     this.isSaving = false;
     this.alertService.stopLoadingMessage();
-    this.alertService.showStickyMessage("Save Error", "The below errors occured while saving your changes:", MessageSeverity.error);
+    this.alertService.showStickyMessage(
+      "Save Error",
+      "The below errors occured while saving your changes:",
+      MessageSeverity.error
+    );
     this.alertService.showStickyMessage(error, null, MessageSeverity.error);
   }
 
@@ -440,7 +556,7 @@ export class PrintAllocationComponent implements OnInit {
     if (allocation) {
       this.isNewAllocation = false;
 
-      console.log("allocation inside: ", allocation)
+      console.log("allocation inside: ", allocation);
 
       this.allocation = new MealAllocation();
       Object.assign(this.allocation, allocation);
@@ -448,8 +564,7 @@ export class PrintAllocationComponent implements OnInit {
       this.token_count = this.allocation.tokens;
 
       return this.allocation;
-    }
-    else {
+    } else {
       return this.allocation;
     }
   }
@@ -461,17 +576,17 @@ export class PrintAllocationComponent implements OnInit {
 
   downloadLabel() {
     this.isLoading = true;
-    const fileName = moment().format('DDMMYYYY_hhmmss') + '_OrderLabel.pdf';
+    const fileName = moment().format("DDMMYYYY_hhmmss") + "_OrderLabel.pdf";
 
-    console.log("token sent: ", this.token_count)
+    console.log("token sent: ", this.token_count);
 
     this.menuService.downloadOrderLabel(this.token_count).subscribe(
-      data => {
+      (data) => {
         console.log(data);
         this.isLoading = false;
         saveAs(data, fileName);
       },
-      err => {
+      (err) => {
         this.isLoading = false;
         alert("Problem while downloading the file.");
         console.error(err);
@@ -481,23 +596,23 @@ export class PrintAllocationComponent implements OnInit {
 
   addDish() {
     const dialogRef = this.dialog.open(DishSelectorComponent, {
-      width: '1000px',
-      data: { header: "Sub Dishes", dishes: this.dishes, catererId: '' },
+      width: "1000px",
+      data: { header: "Sub Dishes", dishes: this.dishes, catererId: "" },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (!result.isCancel) {
-        var strDate = moment(this.orderDate).format().split('T');
+        var strDate = moment(this.orderDate).format().split("T");
 
         result.selectedDishes.forEach((selectedDish, index, ps) => {
           if (selectedDish.checked) {
-            console.log("selected: ", selectedDish)
+            console.log("selected: ", selectedDish);
             console.log("token", this.tokens);
             console.log("token_count", this.token_count);
 
             if (!this.token_count || this.token_count.length === 0) {
               // Initialize from this.tokens
-              this.token_count = this.tokens.map(token => {
+              this.token_count = this.tokens.map((token) => {
                 const newToken = new TokenLabel();
                 newToken.token_id = token.id;
                 newToken.token_name = token.name;
@@ -510,12 +625,17 @@ export class PrintAllocationComponent implements OnInit {
                 newToken.dishes = [];
                 return newToken;
               });
-              console.log("Initialized token_count from tokens:", this.token_count);
+              console.log(
+                "Initialized token_count from tokens:",
+                this.token_count
+              );
             }
 
-            this.token_count.forEach(token => {
+            this.token_count.forEach((token) => {
               // Find if the dish already exists for this token
-              const dishIndex = token.dishes.findIndex(d => d.dish_id === selectedDish.id);
+              const dishIndex = token.dishes.findIndex(
+                (d) => d.dish_id === selectedDish.id
+              );
 
               if (dishIndex < 0) {
                 // New dish — create a new TokenDishLabel entry
@@ -530,21 +650,27 @@ export class PrintAllocationComponent implements OnInit {
                 token.dishes.push(dish);
               } else {
                 // Existing dish — increase its ordered quantity
-                token.dishes[dishIndex].o_qty += selectedDish.qty ? selectedDish.qty : 0;
+                token.dishes[dishIndex].o_qty += selectedDish.qty
+                  ? selectedDish.qty
+                  : 0;
               }
 
               // Update total quantities per token
-              token.qty_dishes = token.dishes.reduce((sum, d) => sum + (d.o_qty || 0), 0);
-              token.qty_tdishes = token.dishes.reduce((sum, d) => sum + (d.t_qty || 0), 0);
+              token.qty_dishes = token.dishes.reduce(
+                (sum, d) => sum + (d.o_qty || 0),
+                0
+              );
+              token.qty_tdishes = token.dishes.reduce(
+                (sum, d) => sum + (d.t_qty || 0),
+                0
+              );
             });
           }
-
         });
 
         console.log("token", this.tokens);
         console.log("token_count", this.token_count);
       }
     });
-
   }
 }

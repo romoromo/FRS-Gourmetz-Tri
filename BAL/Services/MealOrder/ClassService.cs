@@ -145,8 +145,8 @@ namespace BAL.Services.MealOrder
         public async Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId)
         {
             var result = new List<MealSessionDetail>();
-            var classes = await this._uow.Classes.GetByOutlet(outletId);
-            return _mapper.Map<List<MealSessionDetailDTO>>(result.DistinctBy(m => m.Id));
+            var mealSessionDetails = await this._uow.MealSessions.GetMealSessionByOutletId(outletId);
+            return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetails.DistinctBy(m => m.Id));
         }
 
         #endregion
