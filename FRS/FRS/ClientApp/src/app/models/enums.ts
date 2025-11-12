@@ -41,3 +41,8 @@ export enum MealCollectionType {
   STUDENT_SELECTS = 2,
   BY_CLASS_LEVEL = 3
 }
+
+export enum WalletType {
+  BASIC = "BASIC",
+  FAS = "FAS"
+}

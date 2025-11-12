@@ -1,4 +1,4 @@
-import { MealCollectionType } from "../models/enums";
+import { MealCollectionType, WalletType } from "../models/enums";
 
 export enum ModulePath {
   PibDisplay = "/pibdisplay",
@@ -22,4 +22,10 @@ export const MealCollectionTypeList = [{
   id: MealCollectionType.STUDENT_SELECTS, label: "Student selects a collection slot"
 }, {
   id: MealCollectionType.BY_CLASS_LEVEL, label: "By Class Level"
+}]
+
+export const WalletTypeList = [{
+  id: WalletType.BASIC, label: "Basic"
+}, {
+  id: WalletType.FAS, label: "Fas"
 }]

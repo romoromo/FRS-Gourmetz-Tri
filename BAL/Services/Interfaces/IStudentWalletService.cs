@@ -16,7 +16,7 @@ namespace BAL.Services.Interfaces
         Task<BaseOperationResponse> StudentWalletTransactionAsync(StudentWalletTransactionDTO dto);
         Task<List<StudentWalletTransactionDTO>> GetWalletTransactionByIdAsync(int id);
         Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId);
-        Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userid);
+        Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userid, WalletType walletType);
         Task<BaseOperationResponse> OffBoardingStudent(int studentId, int userId);
     }
 }

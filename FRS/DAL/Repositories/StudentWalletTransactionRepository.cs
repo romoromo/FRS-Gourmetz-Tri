@@ -269,7 +269,11 @@ namespace DAL.Repositories
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userId)
+        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(
+            int studentId,
+            double amount,
+            int userId,
+            WalletType walletTypeData)
         {
             var result = new BaseOperationResponse();
 
@@ -277,6 +281,14 @@ namespace DAL.Repositories
             {
                 result.IsSuccess = false;
                 result.Message = $"Invalid top-up amount: {amount}. Amount must be greater than zero.";
+                return result;
+            }
+
+            string walletType = walletTypeData.ToString();
+            if (string.IsNullOrWhiteSpace(walletType))
+            {
+                result.IsSuccess = false;
+                result.Message = "Wallet type must be provided.";
                 return result;
             }
 
@@ -292,29 +304,57 @@ namespace DAL.Repositories
                     return result;
                 }
 
-                var oldBalance = studentData.WalletBalance;
-                studentData.WalletBalance += amount;
+                var wallet = await _appContext.StudentWallets
+                    .FirstOrDefaultAsync(w => w.StudentId == studentId && w.Type == walletType);
+
+                double oldBalance = 0;
+                if (wallet == null)
+                {
+                    wallet = new StudentWallet
+                    {
+                        StudentId = studentId,
+                        Balance = amount,
+                        Type = walletType,
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    };
+                    await _appContext.StudentWallets.AddAsync(wallet);
+                }
+                else
+                {
+                    oldBalance = wallet.Balance;
+                    wallet.Balance += amount;
+                    wallet.UpdatedBy = userId;
+                }
 
                 var transaction = new StudentWalletTransaction
                 {
                     Amount = amount,
                     TransactionType = WalletTransactionType.CREDIT.ToString(),
-                    StudentId = studentData.Id,
-                    Description = $"Top-up by Student Id={studentData.Id}, Name={studentData.Name}",
+                    StudentId = studentId,
+                    Description = $"Top-up {walletType} wallet by {amount:C} for student '{studentData.Name}' (ID={studentId}). " +
+                                  $"Old Balance: {oldBalance:C}, New Balance: {wallet.Balance:C}.",
                     CreatedBy = userId,
                     UpdatedBy = userId
                 };
+
+                var totalWalletBalance = await _appContext.StudentWallets
+                    .AsNoTracking()
+                    .Where(w => w.StudentId == studentId && w.Type != walletType)
+                    .SumAsync(w => (double?)w.Balance) ?? 0;
+                studentData.WalletBalance = totalWalletBalance + wallet.Balance;
 
                 await _appContext.StudentWalletTransactions.AddAsync(transaction);
                 await _appContext.SaveChangesAsync();
 
                 result.IsSuccess = true;
-                result.Message = $"Successfully topped up {amount:C} for students : '{studentData.Name}'";
+                result.Message = $"Successfully topped up {amount:C} to '{walletType}' wallet for student '{studentData.Name}'. " +
+                                 $"New balance: {wallet.Balance:C}";
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
-                result.Message = $"Error while topping up wallet for StudentId={studentId}. Details: {ex.Message}";
+                result.Message = $"Error while topping up '{walletType}' wallet for StudentId={studentId}. Details: {ex.Message}";
             }
 
             return result;
