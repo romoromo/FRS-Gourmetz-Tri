@@ -1,34 +1,32 @@
 <h1 mat-dialog-title>{{data.header}}</h1>
 <div>
-  <form class="form-horizontal" name="printLabelEditorForm" #f="ngForm" novalidate
-        (ngSubmit)="save()">
+  <form class="form-horizontal" name="printLabelEditorForm" #f="ngForm" novalidate (ngSubmit)="save()">
     <div mat-dialog-content>
       <div class="row">
         <mat-form-field class="col-xs-6">
-          <input matInput [matDatepicker]="orderDatePicker" placeholder="Order Date" [value]="orderDate"
-                 (dateChange)="onChangeDate('order', $event)" required [disabled]="isSaving || filterLoading || isLoading">
+          <input required matInput [matDatepicker]="orderDatePicker" placeholder="Order Date" [value]="orderDate"
+            (dateChange)="onChangeDate('order', $event)" [disabled]="isSaving || filterLoading || isLoading">
           <mat-datepicker-toggle matSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
           <mat-datepicker #orderDatePicker></mat-datepicker>
         </mat-form-field>
         <mat-form-field class="col-xs-6">
           <mat-label>Period</mat-label>
-          <mat-select (selectionChange)="onChangeSessions()" id="periodName" name="periodName" [(ngModel)]="allocation.mealSessionId"
-                      #periodName="ngModel" [disabled]="isSaving || filterLoading || isLoading"
-                      placeholder="{{ periodPlaceholder }}">
-            <mat-option *ngFor="let session of sessions" [value]="session.id">
-              {{session.mealPeriodName}} - {{session.name}}
+          <mat-select required (selectionChange)="onChangePeriod($event)" id="periodName" name="periodName" [(ngModel)]="selectedPeriodId"
+            [disabled]="isSaving || filterLoading || isLoading" placeholder="{{ periodPlaceholder }}">
+            <mat-option *ngFor="let session of mealPeriods" [value]="session.mealPeriodId">
+              {{session.mealPeriodName}}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="col-xs-6">
           <mat-label>Session</mat-label>
-          <input matInput [disabled]="true" autocomplete="off" id="session" name="session" [(ngModel)]="selectedPeriodName" #session="ngModel" />
+          <mat-select required [(ngModel)]="allocation.mealSessionId" name="sessionId" [disabled]="isSaving || filterLoading || isLoading" (selectionChange)="onChangeSessions()">
+            <mat-option *ngFor="let session of mealSessions" [value]="session.id">
+              {{ session.name }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
-        <!--<button type="button" mat-button (click)="getOrderData()" style="margin-top:20px">
-          <mat-icon>
-            input
-          </mat-icon> Get Order
-        </button>-->
+
       </div>
       <div class="clearfix"></div>
       <div class="row">
@@ -49,17 +47,23 @@
                 <tr>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input type="text" matInput [disabled]="true" id="token{{tc.token_id}}{{i}}" name="token{{tc.token_id}}{{i}}" autocomplete="off" [value]="getTokenName(tc.token_id)" min="1" max="200" />
+                      <input type="text" matInput [disabled]="true" id="token{{tc.token_id}}{{i}}"
+                        name="token{{tc.token_id}}{{i}}" autocomplete="off" [value]="getTokenName(tc.token_id)" min="1"
+                        max="200" />
                     </mat-form-field>
                   </td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="qty-menu-token{{tc.token_id}}{{i}}" name="qty-menu-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_menus" min="1" max="200" />
+                      <input matInput [disabled]="true" type="number" id="qty-menu-token{{tc.token_id}}{{i}}"
+                        name="qty-menu-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_menus" min="1"
+                        max="200" />
                     </mat-form-field>
                   </td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="qty-token{{tc.token_id}}{{i}}" name="qty-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty" min="1" max="200" />
+                      <input matInput [disabled]="true" type="number" id="qty-token{{tc.token_id}}{{i}}"
+                        name="qty-token{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty" min="1"
+                        max="200" />
                     </mat-form-field>
                   </td>
                   <td></td>
@@ -78,22 +82,30 @@
                   <td></td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="qty-dish{{dc.dish_id}}{{i}}" name="qty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.o_qty" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="true" type="number" id="qty-dish{{dc.dish_id}}{{i}}"
+                        name="qty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.o_qty" minlength="1"
+                        maxlength="200" />
                     </mat-form-field>
                   </td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="pqty-dish{{dc.dish_id}}{{i}}" name="pqty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.p_qty" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="true" type="number" id="pqty-dish{{dc.dish_id}}{{i}}"
+                        name="pqty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.p_qty" minlength="1"
+                        maxlength="200" />
                     </mat-form-field>
                   </td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="false" (change)="onChangeQty($event,dc,tc)" type="number" id="aqty-dish{{dc.dish_id}}{{i}}" name="aqty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.a_qty" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="false" (change)="onChangeQty($event,dc,tc)" type="number"
+                        id="aqty-dish{{dc.dish_id}}{{i}}" name="aqty-dish{{dc.dish_id}}{{i}}" autocomplete="off"
+                        [(ngModel)]="dc.a_qty" minlength="1" maxlength="200" />
                     </mat-form-field>
                   </td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="tqty-dish{{dc.dish_id}}{{i}}" name="tqty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.t_qty" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="true" type="number" id="tqty-dish{{dc.dish_id}}{{i}}"
+                        name="tqty-dish{{dc.dish_id}}{{i}}" autocomplete="off" [(ngModel)]="dc.t_qty" minlength="1"
+                        maxlength="200" />
                     </mat-form-field>
                   </td>
                 </tr>
@@ -101,23 +113,31 @@
                   <td></td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="text" id="total{{tc.token_id}}{{i}}" name="total{{tc.token_id}}{{i}}" autocomplete="off" value="Total" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="true" type="text" id="total{{tc.token_id}}{{i}}"
+                        name="total{{tc.token_id}}{{i}}" autocomplete="off" value="Total" minlength="1"
+                        maxlength="200" />
                     </mat-form-field>
                   </td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="qty-dishes{{tc.token_id}}{{i}}" name="qty-dishes{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_dishes" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="true" type="number" id="qty-dishes{{tc.token_id}}{{i}}"
+                        name="qty-dishes{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_dishes"
+                        minlength="1" maxlength="200" />
                     </mat-form-field>
                   </td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="qty-pdishes{{tc.token_id}}{{i}}" name="qty-pdishes{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_pdishes" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="true" type="number" id="qty-pdishes{{tc.token_id}}{{i}}"
+                        name="qty-pdishes{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_pdishes"
+                        minlength="1" maxlength="200" />
                     </mat-form-field>
                   </td>
                   <td></td>
                   <td>
                     <mat-form-field class="col-md-12">
-                      <input matInput [disabled]="true" type="number" id="qty-tdishes{{tc.token_id}}{{i}}" name="qty-tdishes{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_tdishes" minlength="1" maxlength="200" />
+                      <input matInput [disabled]="true" type="number" id="qty-tdishes{{tc.token_id}}{{i}}"
+                        name="qty-tdishes{{tc.token_id}}{{i}}" autocomplete="off" [(ngModel)]="tc.qty_tdishes"
+                        minlength="1" maxlength="200" />
                     </mat-form-field>
                   </td>
                 </tr>
@@ -135,12 +155,16 @@
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">
-      <button type="button" mat-button [disabled]="isSaving || isLoading || filterLoading" (click)="addDish()"><i class='fa fa-plus-circle'></i>Add Dish</button>
-      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
-      <button type="submit" mat-button [disabled]="isSaving || isLoading || filterLoading">
-        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      <button type="button" mat-button [disabled]="isSaving || isLoading || filterLoading" (click)="addDish()"><i
+          class='fa fa-plus-circle'></i>Add Dish</button>
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i>
+        {{'common.editor.Cancel' | translate}}</button>
+      <button type="submit" mat-button [disabled]="f.invalid || isSaving || isLoading || filterLoading">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i>
+        {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
       </button>
-      <button type="button" mat-button (click)="print()" [disabled]="isSaving || isLoading || filterLoading"><i class="fa fa-print"></i> Print</button>
+      <button type="button" mat-button (click)="print()" [disabled]="isSaving || isLoading || filterLoading"><i
+          class="fa fa-print"></i> Print</button>
     </div>
   </form>
 </div>

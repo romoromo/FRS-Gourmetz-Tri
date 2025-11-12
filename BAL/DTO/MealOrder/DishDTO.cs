@@ -76,6 +76,9 @@ namespace BAL.DTO.MealOrder
         public List<DishRestrictionDTO> Restrictions { get; set; }
         public List<DishDetailDTO> SubDishes { get; set; }
         public List<DishComponentDTO> DishComponents { get; set; }
+
+        public float PointsType { get; set; }
+        public float Points { get; set; }        
     }
 
     public class DishComponentDTO

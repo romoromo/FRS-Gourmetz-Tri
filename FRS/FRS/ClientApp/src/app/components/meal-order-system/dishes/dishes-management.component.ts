@@ -200,7 +200,7 @@ export class DishesManagementComponent implements OnInit {
   }
 
   newDish() {
-    this.header = 'New Dish';
+    this.header = 'New Product';
     this.editedDish = new Dish();
     this.openDialog(this.editedDish);
   }
@@ -208,13 +208,13 @@ export class DishesManagementComponent implements OnInit {
 
   editDish(row: Dish) {
     this.editedDish = row;
-    this.header = 'Edit Dish';
+    this.header = 'Edit Product';
     this.editedDish.catererId = this.catererId;
     this.openDialog(this.editedDish);
   }
 
   deleteDish(row: Dish) {
-    this.alertService.showDialog('Are you sure you want to delete the \"' + row.label + '\" dish?', DialogType.confirm, () => this.deleteDishHelper(row));
+    this.alertService.showDialog('Are you sure you want to delete the \"' + row.label + '\" Product?', DialogType.confirm, () => this.deleteDishHelper(row));
   }
 
 
@@ -234,7 +234,7 @@ export class DishesManagementComponent implements OnInit {
           this.alertService.stopLoadingMessage();
           this.loadingIndicator = false;
 
-          this.alertService.showStickyMessage("Delete Error", `An error occured while deleting the dish.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+          this.alertService.showStickyMessage("Delete Error", `An error occured while deleting the Product.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
             MessageSeverity.error);
         });
   }
