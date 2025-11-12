@@ -56,7 +56,7 @@ namespace BAL.Services
         /// <param name="attachments"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public async Task<(bool success, string errorMsg)> SendEmailOldAsync(
+        public async Task<(bool success, string errorMsg)> SendEmailAsync(
             string recepientName,
             string recepientEmail,
             string subject,
@@ -90,7 +90,7 @@ namespace BAL.Services
             return await SendEmailAsync(from, new MailboxAddress[] { to }, subject, body, config, isHtml, attachments);
         }
 
-        public async Task<(bool success, string errorMsg)> SendEmailAsync(
+        public async Task<(bool success, string errorMsg)> SendEmailOauthAsync(
             string recepientName,
             string recepientEmail,
             string subject,
@@ -157,7 +157,7 @@ namespace BAL.Services
             }
         }
 
-        public async Task<(bool success, string errorMsg)> SendEmailAsync(
+        public async Task<(bool success, string errorMsg)> SendEmailOauthAsync(
             string senderName,
             string senderEmail,
             string recepientName,
@@ -168,12 +168,12 @@ namespace BAL.Services
             bool isHtml = true,
             List<EmailAttachment> attachments = null)
         {
-            return await SendEmailAsync(recepientName, recepientEmail, subject, body, config, isHtml, attachments);
+            return await SendEmailOauthAsync(recepientName, recepientEmail, subject, body, config, isHtml, attachments);
         }
 
 
 
-        public async Task<(bool success, string errorMsg)> SendEmailOldAsync(
+        public async Task<(bool success, string errorMsg)> SendEmailAsync(
             string senderName,
             string senderEmail,
             string recepientName,
