@@ -46,7 +46,7 @@ export class Dish {
   public subDishes: DishDetail[];
   public restrictions: DishRestriction[];
   public dishComponents: DishComponent[];
-  public pointsType: number;
+  public pointsType: string;
   public points: number;
 }
 
