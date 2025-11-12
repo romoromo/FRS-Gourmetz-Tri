@@ -130,9 +130,9 @@ export class DishEditorComponent {
     this.showValidationErrors = false;
 
     if (this.isNewDish)
-      this.alertService.showMessage("Success", `Dish \"${this.dishEdit.label}\" was created successfully`, MessageSeverity.success);
+      this.alertService.showMessage("Success", `Product \"${this.dishEdit.label}\" was created successfully`, MessageSeverity.success);
     else
-      this.alertService.showMessage("Success", `Changes to dish \"${this.dishEdit.label}\" was saved successfully`, MessageSeverity.success);
+      this.alertService.showMessage("Success", `Changes to Product \"${this.dishEdit.label}\" was saved successfully`, MessageSeverity.success);
 
 
     this.dishEdit = new Dish();
@@ -292,7 +292,7 @@ export class DishEditorComponent {
       },
         error => {
           //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dish types.\r\n"`,
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving Dish types.\r\n"`,
             MessageSeverity.error);
         })
   }
