@@ -28,4 +28,9 @@ export const WalletTypeList = [{
   id: WalletType.BASIC, label: "Basic"
 }, {
   id: WalletType.FAS, label: "Fas"
-}]
+  }]
+
+export const PointsTypeOptions = [
+  { id: PointsType.GCP, label: "Good Conduct Points" },
+  { id: PointsType.HCP, label: "Healthy Choices Points" },
+];

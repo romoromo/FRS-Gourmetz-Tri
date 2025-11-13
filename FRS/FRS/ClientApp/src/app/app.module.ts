@@ -1016,7 +1016,7 @@ export const configFactory = (configService: ConfigurationService) => {
     FaqDetailsManagementComponent,
     FaqDetailEditorComponent,
     VoucherUtilisationsReportManagementComponent, PlcManagementComponent, PlcEditorComponent, TrayEditorComponent,
-    StudentWalletTopupComponent
+    StudentWalletTopupComponent,
     VoucherUtilisationsReportManagementComponent,
     PlcManagementComponent,
     PlcEditorComponent,
@@ -1376,7 +1376,7 @@ export const configFactory = (configService: ConfigurationService) => {
     FaqSubjectsManagementComponent,
     FaqSubjectEditorComponent,
     VoucherUtilisationsReportManagementComponent, DishPreviewErrorComponent, VoucherDishComponent, PlcEditorComponent, TrayEditorComponent,
-    StudentWalletTopupComponent
+    StudentWalletTopupComponent,
     FaqDetailsManagementComponent,
     FaqDetailEditorComponent,
     VoucherUtilisationsReportManagementComponent,
