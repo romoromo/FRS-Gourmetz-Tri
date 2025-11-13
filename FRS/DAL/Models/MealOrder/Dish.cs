@@ -66,7 +66,7 @@ namespace DAL.Models.MealOrder
         public virtual ICollection<DishComponent> DishComponents { get; set; }
         public virtual ICollection<VoucherDish> VoucherDishes { get; set; }
 
-        public float PointsType { get; set; }
+        public string PointsType { get; set; }
         public float Points { get; set; }
     }
 }
