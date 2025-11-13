@@ -69,6 +69,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<byte[]> GenerateMealSummaryReport(BaseFilter filter);
 
         Task<byte[]> GenerateDeliveryOrderReport(BaseFilter filter);
+        Task<byte[]> GenerateDeliveryAllocationReport(BaseFilter filter);
 
         Task<byte[]> GenerateOrderLabel(TokenLabelDTO[] dto);
 

@@ -12,12 +12,18 @@
             <mat-datepicker #startDate></mat-datepicker>
           </mat-form-field>
           <!--<mat-form-field class="col-xs-6">
-            <input matInput [matDatepicker]="endDate" placeholder="End Date" [value]="endDate"
-                   (dateChange)="onChangeDate('end', $event)" required>
-            <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
-            <mat-datepicker #endDate></mat-datepicker>
-          </mat-form-field>-->
-          <button type="button" mat-button (click)="downloadReport()" style="margin-top:20px">
+    <input matInput [matDatepicker]="endDate" placeholder="End Date" [value]="endDate"
+           (dateChange)="onChangeDate('end', $event)" required>
+    <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+    <mat-datepicker #endDate></mat-datepicker>
+  </mat-form-field>-->
+          <!--<button type="button" mat-button (click)="downloadReport()" style="margin-top:20px">
+            <mat-icon>
+              save
+            </mat-icon> Save Report
+          </button>-->
+
+          <button type="button" mat-button (click)="downloadAllocationReport()" style="margin-top:20px">
             <mat-icon>
               save
             </mat-icon> Save Report

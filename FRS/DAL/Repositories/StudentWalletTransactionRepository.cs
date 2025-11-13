@@ -4,9 +4,9 @@ using DAL.Models;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using NPOI.SS.Formula.Functions;
 using Sieve.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -196,7 +196,11 @@ namespace DAL.Repositories
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId)
+        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(
+            int studentGroupId, 
+            double amount, 
+            int userId,
+            WalletType walletTypeData)
         {
             var result = new BaseOperationResponse();
 
@@ -204,6 +208,14 @@ namespace DAL.Repositories
             {
                 result.IsSuccess = false;
                 result.Message = $"Invalid top-up amount: {amount}. Amount must be greater than zero.";
+                return result;
+            }
+
+            string walletType = walletTypeData.ToString();
+            if (string.IsNullOrWhiteSpace(walletType))
+            {
+                result.IsSuccess = false;
+                result.Message = "Wallet type must be provided.";
                 return result;
             }
 
@@ -235,41 +247,76 @@ namespace DAL.Repositories
                 return result;
             }
 
-            var studentData = await _appContext.Students
+            var studentDatas = await _appContext.Students
                 .Where(e => e.IsActive && studentIds.Contains(e.Id))
                 .ToListAsync();
 
-            if (!studentData.Any())
+            if (!studentDatas.Any())
             {
                 result.IsSuccess = false;
                 result.Message = $"No active students matched in Students table for Student Group Id={studentGroupData.Id}.";
                 return result;
             }
 
-            foreach (var student in studentData)
+            var wallets = await _appContext.StudentWallets
+                .Where(w => studentIds.Contains(w.StudentId))
+                .ToListAsync();
+            var transactions = new List<StudentWalletTransaction>();
+            foreach (var studentData in studentDatas)
             {
-                student.WalletBalance += amount;
+                var studentId = studentData.Id;
+                var wallet = wallets.FirstOrDefault(w => w.StudentId == studentId && w.Type == walletType); ;
 
-                var transaction = new StudentWalletTransaction
+                double oldBalance = 0;
+                if (wallet == null)
+                {
+                    wallet = new StudentWallet
+                    {
+                        StudentId = studentId,
+                        Balance = amount,
+                        Type = walletType,
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    };
+                    await _appContext.StudentWallets.AddAsync(wallet);
+                    wallets.Add(wallet);
+                }
+                else
+                {
+                    oldBalance = wallet.Balance;
+                    wallet.Balance += amount;
+                    wallet.UpdatedBy = userId;
+                }
+
+                transactions.Add(new StudentWalletTransaction
                 {
                     Amount = amount,
                     TransactionType = WalletTransactionType.CREDIT.ToString(),
-                    StudentId = student.Id,
-                    Description = $"Top-up by Student Group Id={studentGroupData.Id}, Group Name={studentGroupData.Name}",
+                    StudentId = studentId,
+                    Description = $"Top-up {walletType} wallet by {amount:C} for student '{studentData.Name}' (ID={studentId}). " +
+                                  $"Old Balance: {oldBalance:C}, New Balance: {wallet.Balance:C}, via Group Id={studentGroupData.Id} ({studentGroupData.Name}).",
                     CreatedBy = userId,
                     UpdatedBy = userId
-                };
-                await _appContext.StudentWalletTransactions.AddAsync(transaction);
+                });
+
+                studentData.WalletBalance = wallets
+                    .Where(w => w.StudentId == studentId)
+                    .Sum(w => w.Balance);
             }
 
+            await _appContext.StudentWalletTransactions.AddRangeAsync(transactions);
             await _appContext.SaveChangesAsync();
 
             result.IsSuccess = true;
-            result.Message = $"Successfully topped up {amount:C} to {studentData.Count} students in group '{studentGroupData.Name}'";
+            result.Message = $"Successfully topped up {amount:C} to {studentDatas.Count} students in group '{studentGroupData.Name}'";
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userId)
+        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(
+            int studentId,
+            double amount,
+            int userId,
+            WalletType walletTypeData)
         {
             var result = new BaseOperationResponse();
 
@@ -277,6 +324,14 @@ namespace DAL.Repositories
             {
                 result.IsSuccess = false;
                 result.Message = $"Invalid top-up amount: {amount}. Amount must be greater than zero.";
+                return result;
+            }
+
+            string walletType = walletTypeData.ToString();
+            if (string.IsNullOrWhiteSpace(walletType))
+            {
+                result.IsSuccess = false;
+                result.Message = "Wallet type must be provided.";
                 return result;
             }
 
@@ -292,29 +347,57 @@ namespace DAL.Repositories
                     return result;
                 }
 
-                var oldBalance = studentData.WalletBalance;
-                studentData.WalletBalance += amount;
+                var wallet = await _appContext.StudentWallets
+                    .FirstOrDefaultAsync(w => w.StudentId == studentId && w.Type == walletType);
+
+                double oldBalance = 0;
+                if (wallet == null)
+                {
+                    wallet = new StudentWallet
+                    {
+                        StudentId = studentId,
+                        Balance = amount,
+                        Type = walletType,
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    };
+                    await _appContext.StudentWallets.AddAsync(wallet);
+                }
+                else
+                {
+                    oldBalance = wallet.Balance;
+                    wallet.Balance += amount;
+                    wallet.UpdatedBy = userId;
+                }
 
                 var transaction = new StudentWalletTransaction
                 {
                     Amount = amount,
                     TransactionType = WalletTransactionType.CREDIT.ToString(),
-                    StudentId = studentData.Id,
-                    Description = $"Top-up by Student Id={studentData.Id}, Name={studentData.Name}",
+                    StudentId = studentId,
+                    Description = $"Top-up {walletType} wallet by {amount:C} for student '{studentData.Name}' (ID={studentId}). " +
+                                  $"Old Balance: {oldBalance:C}, New Balance: {wallet.Balance:C}.",
                     CreatedBy = userId,
                     UpdatedBy = userId
                 };
+
+                var totalWalletBalance = await _appContext.StudentWallets
+                    .AsNoTracking()
+                    .Where(w => w.StudentId == studentId && w.Type != walletType)
+                    .SumAsync(w => (double?)w.Balance) ?? 0;
+                studentData.WalletBalance = totalWalletBalance + wallet.Balance;
 
                 await _appContext.StudentWalletTransactions.AddAsync(transaction);
                 await _appContext.SaveChangesAsync();
 
                 result.IsSuccess = true;
-                result.Message = $"Successfully topped up {amount:C} for students : '{studentData.Name}'";
+                result.Message = $"Successfully topped up {amount:C} to '{walletType}' wallet for student '{studentData.Name}'. " +
+                                 $"New balance: {wallet.Balance:C}";
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
-                result.Message = $"Error while topping up wallet for StudentId={studentId}. Details: {ex.Message}";
+                result.Message = $"Error while topping up '{walletType}' wallet for StudentId={studentId}. Details: {ex.Message}";
             }
 
             return result;

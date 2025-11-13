@@ -4,14 +4,19 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
+//#nullable disable
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251107132825_AddTableStudentWallet")]
+    partial class AddTableStudentWallet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3686,9 +3691,6 @@ namespace FRS.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MealCollectionType")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -3813,34 +3815,6 @@ namespace FRS.Migrations
                     b.HasIndex("UpdatedBy");
 
                     b.ToTable("ClassLevels");
-                });
-
-            modelBuilder.Entity("DAL.Models.MealOrder.ClassLevelDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClassLevelId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PeriodId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SessionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassLevelId");
-
-                    b.HasIndex("PeriodId");
-
-                    b.HasIndex("SessionId", "PeriodId");
-
-                    b.ToTable("ClassLevelDetails");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ContactUsDetail", b =>
@@ -4420,12 +4394,6 @@ namespace FRS.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Label")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float>("Points")
-                        .HasColumnType("real");
-
-                    b.Property<string>("PointsType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductionDescription")
@@ -6518,6 +6486,9 @@ namespace FRS.Migrations
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("MealCollectionType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -6535,6 +6506,8 @@ namespace FRS.Migrations
                     b.HasIndex("CreatedBy");
 
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("MealCollectionType");
 
                     b.HasIndex("OutletProfileId");
 
@@ -8420,9 +8393,9 @@ namespace FRS.Migrations
 
                     b.HasIndex("CreatedBy");
 
-                    b.HasIndex("UpdatedBy");
+                    b.HasIndex("StudentId");
 
-                    b.HasIndex("StudentId", "Type");
+                    b.HasIndex("UpdatedBy");
 
                     b.ToTable("StudentWallets");
                 });
@@ -14863,29 +14836,6 @@ namespace FRS.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
-            modelBuilder.Entity("DAL.Models.MealOrder.ClassLevelDetail", b =>
-                {
-                    b.HasOne("DAL.Models.MealOrder.ClassLevel", "ClassLevel")
-                        .WithMany("ClassLevelDetails")
-                        .HasForeignKey("ClassLevelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DAL.Models.MealOrder.MealSession", "MealPeriod")
-                        .WithMany()
-                        .HasForeignKey("PeriodId");
-
-                    b.HasOne("DAL.Models.MealOrder.MealSessionDetail", "MealSession")
-                        .WithMany()
-                        .HasForeignKey("SessionId");
-
-                    b.Navigation("ClassLevel");
-
-                    b.Navigation("MealPeriod");
-
-                    b.Navigation("MealSession");
-                });
-
             modelBuilder.Entity("DAL.Models.MealOrder.ContactUsDetail", b =>
                 {
                     b.HasOne("DAL.Models.MealOrder.ContactUsSubject", "ContactUsSubject")
@@ -19595,11 +19545,6 @@ namespace FRS.Migrations
             modelBuilder.Entity("DAL.Models.MealOrder.Class", b =>
                 {
                     b.Navigation("Periods");
-                });
-
-            modelBuilder.Entity("DAL.Models.MealOrder.ClassLevel", b =>
-                {
-                    b.Navigation("ClassLevelDetails");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ContactUsSubject", b =>

@@ -245,6 +245,11 @@ export class MenuService {
     return this.commonEndpoint.getFile<any>(this.tokenOrderReportUrl + '/deliveryorderreport', filter);
   }
 
+  //download delivery allocation
+  downloadDeliveryAllocationReport(filter: Filter) {
+    return this.commonEndpoint.getFile<any>(this.tokenOrderReportUrl + '/deliveryallocationreport', filter);
+  }
+
   downloadMealSummaryReport(filter: Filter) {
     return this.commonEndpoint.getFile<any>(this.tokenOrderReportUrl + '/mealsummaryreport', filter);
   }

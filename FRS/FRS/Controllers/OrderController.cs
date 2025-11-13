@@ -37,6 +37,7 @@ using System.Security.Policy;
 using System.Web;
 using DAL.Models.MealOrder;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using DAL.Core;
 
 namespace MealOrderPayments.Controllers
 {
@@ -2161,7 +2162,7 @@ namespace MealOrderPayments.Controllers
 
                                 if (!p.invoiceSent && p.Status == "SUCCESS")
                                 {
-                                    await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value);
+                                    await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value,WalletType.BASIC);
                                     await SendWalletInvoice(p);
                                     emailSent = true;
                                     p.invoiceSent = true;

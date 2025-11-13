@@ -18,6 +18,7 @@ import { MealPlanSummaryComponent } from './meal-plan/meal-plans-summary.compone
 import { StudentGroupOrderSummaryComponent } from './individual-order/individual-orders-summary.component';
 import * as moment from 'moment';
 import { saveAs } from 'file-saver';
+import { StudentWalletTopupComponent } from '../student/student-wallet-topup/student-wallet-topup.component';
 
 
 @Component({
@@ -361,45 +362,18 @@ export class StudentGroupsManagementComponent implements OnInit {
     });
   }
 
-  addWalletTopup(studentGroupId: string) {
-    this.alertService.showDialog('Enter Top up Amount:', DialogType.prompt, (val: string) => {
-      if (!val) return;
-      const normalized = val.replace(',', '.');
-      const amount = parseFloat(normalized);
-      if (isNaN(amount) || amount <= 0) {
-        this.alertService.showStickyMessage(
-          "Invalid Input",
-          "Please enter a valid positive amount (numbers only, decimals allowed).",
-          MessageSeverity.error
-        );
-        return;
-      }
+  addWalletTopup(studentId: string) {
+    const dialogRef = this.dialog.open(StudentWalletTopupComponent, {
+      data: {
+        studentId: studentId,
+        isStudentGroup: true
+      },
+      width: '350px',
+      disableClose: true
+    });
 
-      this.alertService.startLoadingMessage("Processing top-up...");
-      this.studentService.walletTopupForStudentGroup(studentGroupId, amount, this.accountService.currentUser.id)
-        .subscribe({
-          next: (response) => {
-            this.alertService.stopLoadingMessage();
-            this.loadingIndicator = false;
-            this.alertService.showMessage(response.message);
+    dialogRef.afterClosed().subscribe(result => {
 
-            if (response.data && response.data.length > 0) {
-              const messageData = response.data.join("<br/><br/>");
-              this.alertService.showStickyMessage("Top-up Info", messageData, MessageSeverity.info);
-            }
-          },
-          error: () => {
-            this.alertService.stopLoadingMessage();
-            this.loadingIndicator = false;
-            this.alertService.showStickyMessage(
-              "Wallet Top-up Error",
-              "Unable to add amount.",
-              MessageSeverity.error
-            );
-          }
-        });
-    }, () => {
-      // Cancel callback
     });
   }
 
@@ -418,7 +392,7 @@ export class StudentGroupsManagementComponent implements OnInit {
       }
 
       this.alertService.startLoadingMessage("Processing top-up...");
-      this.studentService.pointTopupForStudentGroup(studentGroupId, amount,this.accountService.currentUser.id)
+      this.studentService.pointTopupForStudentGroup(studentGroupId, amount, this.accountService.currentUser.id)
         .subscribe({
           next: (response) => {
             this.alertService.stopLoadingMessage();

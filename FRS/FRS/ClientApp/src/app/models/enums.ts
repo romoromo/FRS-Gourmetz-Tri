@@ -46,3 +46,7 @@ export enum PointsType{
   GCP = "GCP",
   HCP = "HCP"
 }
+export enum WalletType {
+  BASIC = "BASIC",
+  FAS = "FAS"
+}

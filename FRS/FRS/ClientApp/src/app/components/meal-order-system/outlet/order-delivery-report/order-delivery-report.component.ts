@@ -96,4 +96,27 @@ export class OrderDeliveryReportComponent implements OnInit {
       }
     );
   }
+
+  downloadAllocationReport() {
+    const fileName = moment().format('DDMMYYYY_hhmmss') + '_PrductionDeliveryReport.xlsx';
+
+    var insideFilter = new Filter();
+
+    var strStartDate = this.startDate.format().split('T');
+    //var strEndDate = this.endDate.format().split('T');
+    insideFilter.filters = '(IsActive)==true,(DeliveryDate)==' + strStartDate[0] + ',(outletId)==' + this.editOutlet.id;
+    console.log("filters: ", insideFilter.filters)
+    insideFilter.sorts = "DeliveryDate";
+
+    this.menuService.downloadDeliveryAllocationReport(insideFilter).subscribe(
+      data => {
+        console.log(data);
+        saveAs(data, fileName);
+      },
+      err => {
+        alert("Problem while downloading the file.");
+        console.error(err);
+      }
+    );
+  }
 }

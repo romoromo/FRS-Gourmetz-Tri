@@ -273,6 +273,7 @@ namespace DAL
         public DbSet<PLCModel> PLCs { get; set; }
         public DbSet<TrayModel> Trays { get; set; }
         public DbSet<ClassLevelDetail> ClassLevelDetails { get; set; }
+        public DbSet<StudentWallet> StudentWallets { get; set; }
         #region Stored Procedures
 
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
@@ -695,6 +696,21 @@ namespace DAL
             builder.Entity<UserActivity>().HasIndex(x => x.CreatedBy);
             builder.Entity<UserActivity>().HasIndex(x => x.CreatedDate);
             builder.Entity<UserActivity>().TrackAllProperties();
+            #endregion
+
+            #region StudentWallet
+            builder.Entity<StudentWallet>()
+                .Property(x => x.Balance)
+                .IsRequired();
+
+            builder.Entity<StudentWallet>()
+                .Property(x => x.Type)
+                .HasMaxLength(255);
+
+            builder.Entity<StudentWallet>()
+                .HasIndex(x => new { x.StudentId,x.Type });
+
+            builder.Entity<StudentWallet>().TrackAllProperties();
             #endregion
 
             #endregion

@@ -120,17 +120,11 @@
                 <packing-tags-management [isHideHeader]="true" [outletId]="row.id"></packing-tags-management>
               </div>
             </mat-tab>
-            <mat-tab label="Dispensers Update" *ngIf="canViewClassLevels">
+            <mat-tab label="Dispensers" *ngIf="canViewClassLevels">
               <div class="container-fluid" style="padding-top:20px">
                 <dispenser-outlet-management [isHideHeader]="true" [outletId]="row.id"></dispenser-outlet-management>
               </div>
             </mat-tab>
-            <mat-tab label="CICI " *ngIf="canViewClassLevels">
-              <div class="container-fluid" style="padding-top:20px">
-                <dispenser-outlet-management [isHideHeader]="true" [outletId]="row.id"></dispenser-outlet-management>
-              </div>
-            </mat-tab>
-
             <mat-tab label="PLC">
               <div class="container-fluid" style="padding-top:20px">
                 <plc-management [isHideHeader]="true" [outletId]="row.id"></plc-management>

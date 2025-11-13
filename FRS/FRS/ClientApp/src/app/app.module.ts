@@ -536,10 +536,12 @@ import {
 } from "./components/meal-order-system/student/student-order/student-orders-management.component";
 import { StudentOrderDetailComponent } from "./components/meal-order-system/student/student-order/student-order-details.component";
 import { DefaultPipe } from "./pipes/default-string-val.pipe";
+import { PointTransactionLogManagementComponent } from './components/meal-order-system/point-transaction-log/point-transaction-log-management.component';
 import { StudentOrderEditorComponent } from "./components/meal-order-system/student/student-order/student-order-editor.component";
 import { OrderCollectionLogsManagementComponent } from "./components/meal-order-system/student-group/order-log/order-logs-management.component";
 import { OrderByPipe } from "./pipes/order-by.pipe";
 import { PaymentsReportManagementComponent } from "./components/reports/payment/payments-management.component";
+import { StudentWalletTopupComponent } from './components/meal-order-system/student/student-wallet-topup/student-wallet-topup.component';
 import { FaqSubjectsManagementComponent } from "./components/meal-order-system/faq-subject/faq-subjects-management.component";
 import { FaqSubjectEditorComponent } from "./components/meal-order-system/faq-subject/faq-subject-editor.component";
 import { FaqDetailsManagementComponent } from "./components/meal-order-system/faq-detail/faq-details-management.component";
@@ -874,6 +876,7 @@ export const configFactory = (configService: ConfigurationService) => {
     OutletsManagementComponent,
     OutletProfileEditorComponent,
     OutletProfilesManagementComponent,
+    VoucherTypesManagementComponent, VoucherTypeEditorComponent, VouchersManagementComponent, VouchersUnassignManagementComponent, VoucherEditorComponent, VoucherDishComponent, WalletTransactionLogManagementComponent, PointTransactionLogManagementComponent,
     BentoAssetEditorComponent,
     BentoAssetsManagementComponent,
     DishingProcesssManagementComponent,
@@ -1012,6 +1015,8 @@ export const configFactory = (configService: ConfigurationService) => {
     FaqSubjectEditorComponent,
     FaqDetailsManagementComponent,
     FaqDetailEditorComponent,
+    VoucherUtilisationsReportManagementComponent, PlcManagementComponent, PlcEditorComponent, TrayEditorComponent,
+    StudentWalletTopupComponent
     VoucherUtilisationsReportManagementComponent,
     PlcManagementComponent,
     PlcEditorComponent,
@@ -1370,6 +1375,8 @@ export const configFactory = (configService: ConfigurationService) => {
     PaymentsReportManagementComponent,
     FaqSubjectsManagementComponent,
     FaqSubjectEditorComponent,
+    VoucherUtilisationsReportManagementComponent, DishPreviewErrorComponent, VoucherDishComponent, PlcEditorComponent, TrayEditorComponent,
+    StudentWalletTopupComponent
     FaqDetailsManagementComponent,
     FaqDetailEditorComponent,
     VoucherUtilisationsReportManagementComponent,

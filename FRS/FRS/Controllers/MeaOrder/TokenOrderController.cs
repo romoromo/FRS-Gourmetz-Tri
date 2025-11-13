@@ -1410,6 +1410,27 @@ namespace FRS.Controllers
             );
         }
 
+        [HttpPost("deliveryallocationreport")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllDirectoryListingsPolicy)]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateDeliveryAllocationReport(BaseFilter filter)
+        {
+            var pdf = await this._service.GenerateDeliveryAllocationReport(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_OrderReport.xlsx";
+
+            if (pdf == null || pdf.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: pdf,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
+
         [HttpPost("mealsummaryreport")]
         //[AllowAnonymous]
         //[Authorize(Authorization.Policies.ManageAllDirectoryListingsPolicy)]

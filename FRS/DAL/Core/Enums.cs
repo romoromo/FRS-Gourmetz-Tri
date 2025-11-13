@@ -213,4 +213,10 @@ namespace DAL.Core
         STUDENT_SELECTS = 2,
         BY_CLASS_LEVEL = 3
     }
+
+    public enum WalletType
+    {
+        BASIC,
+        FAS
+    }
 }
