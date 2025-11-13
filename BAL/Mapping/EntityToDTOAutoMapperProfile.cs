@@ -322,7 +322,8 @@ namespace BAL.Mapping
             CreateMap<TokenOrderCombinedDishDTO, TokenOrderCombinedDish>();
             CreateMap<TokenOrderCombinedDish, TokenOrderCombinedDishDTO>();
 
-            CreateMap<TokenLabelDTO, TokenLabel>();
+            CreateMap<TokenLabelDTO, TokenLabel>()
+                .ForMember(dest => dest.order_id, opt => opt.MapFrom(src => src.order_id == 0 ? (int?)null : (int?)src.order_id));
             CreateMap<TokenLabel, TokenLabelDTO>();
 
             CreateMap<TokenDishLabelDTO, TokenDishLabel>();
