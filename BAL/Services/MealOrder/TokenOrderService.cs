@@ -2054,7 +2054,7 @@ namespace BAL.Services.MealOrder
                                         && (!r.isFas));
                                     sess.isFas = false;
 
-                                    if (tl.order_id != null && tl.Order.IsFAS)
+                                    if (tl.order_id != 0 && tl.Order.IsFAS)
                                     {
                                         als = alr.sessions.Find(r => (r.mealSessionDetailId == a.MealSessionDetail.Id) && (r.isFas));
                                         sess.isFas = true;
@@ -2079,7 +2079,7 @@ namespace BAL.Services.MealOrder
                                     DOReportSessionDTO als = alr.sessions.Find(r => (r.mealSessionDetailId == a.MealSessionDetail.Id) && (!r.isFas));
                                     sess.isFas = false;
 
-                                    if (tl.order_id != null && tl.Order.IsFAS)
+                                    if (tl.order_id != 0 && tl.Order.IsFAS)
                                     {
                                         als = alr.sessions.Find(r => (r.mealSessionDetailId == a.MealSessionDetail.Id) && (r.isFas));
                                         sess.isFas = true;
@@ -2115,7 +2115,7 @@ namespace BAL.Services.MealOrder
                                         //route
                                         var routeIn = new DOReportRouteDTO();
                                         routeIn.isFas = false;
-                                        if(t.order_id != null && t.Order.IsFAS)
+                                        if(t.order_id != 0 && t.Order.IsFAS)
                                         {
                                             routeIn.isFas = true;
                                         }
@@ -2133,7 +2133,7 @@ namespace BAL.Services.MealOrder
                                         session.name = a.MealSessionDetail.Name;
 
                                         session.isFas = false;
-                                        if (t.order_id != null && t.Order.IsFAS)
+                                        if (t.order_id != 0 && t.Order.IsFAS)
                                         {
                                             session.isFas = true;
                                         }
@@ -2151,7 +2151,7 @@ namespace BAL.Services.MealOrder
                                         //route
                                         rep.totalQty += tod.t_qty ?? 0;
                                         var isFas = false;
-                                        if (t.order_id != null && t.Order.IsFAS)
+                                        if (t.order_id != 0 && t.Order.IsFAS)
                                         {
                                             isFas = true;
                                         }
