@@ -88,82 +88,91 @@ namespace DAL.Repositories.MealOrder
                             new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
                             TransactionScopeAsyncFlowOption.Enabled))
             {
-                var f = await GetSingleOrDefaultAsync(e => e.Id == allocation.Id);
-
-
-                var tokensToDelete = this._appContext.TokenLabels.Where(x => x.meal_allocation_id == f.Id);
-
-                this._appContext.TokenLabels.RemoveRange(tokensToDelete);
-
-                if (tokens != null)
+                try
                 {
-                    tokens.ForEach(e =>
+                    var f = await GetSingleOrDefaultAsync(e => e.Id == allocation.Id);
+
+
+                    var tokensToDelete = this._appContext.TokenLabels.Where(x => x.meal_allocation_id == f.Id);
+
+                    this._appContext.TokenLabels.RemoveRange(tokensToDelete);
+
+                    if (tokens != null)
                     {
-                        if (e.token_id != null && e.token_id > 0)
+                        tokens.ForEach(e =>
                         {
-                            var sc = this._appContext.TokenLabels.FirstOrDefault(x => x.Id == e.Id);
-                            if (sc != null)
+                            if (e.token_id != null && e.token_id > 0)
                             {
-                                //sc.meal_allocation_id = allocation.Id;
-                                sc.token_id = e.token_id;
-                                sc.token_name = e.token_name;
-                                sc.deliveryDate = e.deliveryDate;
-                                sc.qty = e.qty;
-                                sc.qty_dishes = e.qty_dishes;
-                                sc.qty_pdishes = e.qty_pdishes;
-                                sc.qty_tdishes = e.qty_tdishes;
-
-                                e.dishes.ToList().ForEach(d =>
+                                var sc = this._appContext.TokenLabels.FirstOrDefault(x => x.Id == e.Id);
+                                if (sc != null)
                                 {
-                                    var tdl = this._appContext.TokenDishLabels.FirstOrDefault(x => x.Id == d.Id);
-                                    if (tdl != null)
+                                    //sc.meal_allocation_id = allocation.Id;
+                                    sc.token_id = e.token_id;
+                                    sc.token_name = e.token_name;
+                                    sc.deliveryDate = e.deliveryDate;
+                                    sc.qty = e.qty;
+                                    sc.qty_dishes = e.qty_dishes;
+                                    sc.qty_pdishes = e.qty_pdishes;
+                                    sc.qty_tdishes = e.qty_tdishes;
+
+                                    e.dishes.ToList().ForEach(d =>
                                     {
-                                        //tdl.token_label_id = e.Id;
-                                        tdl.token_id = d.token_id;
-                                        tdl.token_name = d.token_name;
-                                        tdl.a_qty = d.a_qty;
-                                        tdl.o_qty = d.o_qty;
-                                        tdl.p_qty = d.p_qty;
-                                        tdl.t_qty = d.t_qty;
-                                        tdl.dish_id = d.dish_id;
-                                        tdl.dish_code = d.dish_code;
-                                        tdl.dish_name = d.dish_name;
-                                        tdl.token_label_id = sc.Id;
-                                        this._appContext.TokenDishLabels.Update(tdl);
-                                    }
-                                    else
-                                    {
-                                        d.token_label_id = sc?.Id ?? e.Id;
-                                        this._appContext.TokenDishLabels.Add(d);
-                                    }
+                                        var tdl = this._appContext.TokenDishLabels.FirstOrDefault(x => x.Id == d.Id);
+                                        if (tdl != null)
+                                        {
+                                            //tdl.token_label_id = e.Id;
+                                            tdl.token_id = d.token_id;
+                                            tdl.token_name = d.token_name;
+                                            tdl.a_qty = d.a_qty;
+                                            tdl.o_qty = d.o_qty;
+                                            tdl.p_qty = d.p_qty;
+                                            tdl.t_qty = d.t_qty;
+                                            tdl.dish_id = d.dish_id;
+                                            tdl.dish_code = d.dish_code;
+                                            tdl.dish_name = d.dish_name;
+                                            tdl.token_label_id = sc.Id;
+                                            this._appContext.TokenDishLabels.Update(tdl);
+                                        }
+                                        else
+                                        {
+                                            d.token_label_id = sc?.Id ?? e.Id;
+                                            this._appContext.TokenDishLabels.Add(d);
+                                        }
 
 
-                                });
+                                    });
 
-                                this._appContext.TokenLabels.Update(sc);
+                                    this._appContext.TokenLabels.Update(sc);
+                                }
+                                else
+                                {
+                                    e.meal_allocation_id = allocation.Id;
+                                    this._appContext.TokenLabels.Add(e);
+                                }
                             }
-                            else
-                            {
-                                //e.meal_allocation_id = allocation.Id;
-                                this._appContext.TokenLabels.Add(e);
-                            }
-                        }
-                    });
+                        });
+                    }
+
+                    f.CopyFrom(allocation);
+
+                    Update(f);
+                    if (await _appContext.SaveChangesAsync() > 0)
+                    {
+                        result.Message = "Successfully saved!";
+                        result.IsSuccess = true;
+                        result.Data = f;
+
+                        scope.Complete();
+                    }
+                    else
+                    {
+                        result.Message = "Failed to save!";
+                        result.IsSuccess = false;
+                    }
                 }
-
-                f.CopyFrom(allocation);
-
-                Update(f);
-                if (await _appContext.SaveChangesAsync() > 0)
+                catch (Exception ex)
                 {
-                    result.Message = "Successfully saved!";
-                    result.IsSuccess = true;
-                    result.Data = f;
-
-                    scope.Complete();
-                }
-                else
-                {
+                    var asdasdas = ex;
                     result.Message = "Failed to save!";
                     result.IsSuccess = false;
                 }
@@ -240,6 +249,14 @@ namespace DAL.Repositories.MealOrder
             return filterQuery
                 .Where(e => e.deliveryDate != today) // exclude today from filterQuery
                 .Union(todayQuery);
+        }
+
+        public async Task<List<MealAllocation>> GetMealAllocations(int outletId, DateTime orderDate)
+        {
+            return await _appContext.MealAllocations.Where(m => m.outletId == outletId && m.deliveryDate == orderDate)
+                .AsNoTracking()
+                .Include(m => m.MealSessionDetail)
+                .ToListAsync();
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

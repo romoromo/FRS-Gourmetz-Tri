@@ -441,6 +441,18 @@ namespace FRS.Controllers
             return Ok(results);
         }
 
+        [ApiKeyAuthorize]
+        [HttpGet("outlets/mealsessionsFromMealAllocation")]
+        //[Authorize(Authorization.Policies.ViewAllMenuCyclesPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(List<MealSessionDetailDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetMealAllocationSessionDetail(int outletId, DateTime orderDate, DateTime? orderDateTo = null)
+        {
+            var results = await this._service.GetMealAllocationSessionDetail(outletId, orderDate);
+            return Ok(results);
+        }
+
         [HttpGet("outlets/allmealsessions")]
         //[Authorize(Authorization.Policies.ViewAllMenuCyclesPolicy)]
         //[AllowAnonymous]

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DAL.Core;
@@ -20,5 +21,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<PagedEntity<MealAllocation>> GetMealAllocationsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateAsync(MealAllocation allocation, List<TokenLabel> tokens);
         IQueryable<MealAllocation> GetKioskOrderDish(MealAllocationAdditionalDishFilter filter);
+        Task<List<MealAllocation>> GetMealAllocations(int outletId, DateTime orderDate); 
     }
 }

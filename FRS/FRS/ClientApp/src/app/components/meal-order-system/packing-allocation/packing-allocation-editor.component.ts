@@ -1,30 +1,56 @@
-import { Component, OnInit, Output, EventEmitter, Input, Inject } from '@angular/core';
-import { HttpEventType, HttpClient, HttpEvent } from '@angular/common/http';
-import { DateAdapter, MatDatepickerInputEvent, MatDialog, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Utilities } from 'src/app/services/utilities';
-import { Filter } from 'src/app/models/sieve-filter.model';
-import { CatererInfo, CatererOutlet } from 'src/app/models/meal-order/caterer-info.model';
-import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
-import { Outlet } from 'src/app/models/meal-order/outlet.model';
-import { StoreInfo } from 'src/app/models/meal-order/store-info.model';
-import { TokenOrder, TokenLabel, TokenDishLabel, MealAllocation, PackingAllocation, DishAllocation } from 'src/app/models/meal-order/token-order.model';
-import { AlertService, MessageSeverity } from 'src/app/services/alert.service';
-import * as moment from 'moment';
-import { saveAs } from 'file-saver';
-import { MenuService } from '../../../services/meal-order/menu.service';
-import { Dish } from '../../../models/meal-order/dish.model';
-import { MealType } from '../../../models/meal-order/meal-type.model';
-import { MealService } from 'src/app/services/meal-order/meal.service';
-import { DishService } from 'src/app/services/meal-order/dish.service';
-import { MealSessionDetail, MealSession } from 'src/app/models/meal-order/meal-session.model';
-import { Route } from 'src/app/models/meal-order/route.model';
-
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  Inject,
+} from "@angular/core";
+import { HttpEventType, HttpClient, HttpEvent } from "@angular/common/http";
+import {
+  DateAdapter,
+  MatDatepickerInputEvent,
+  MatDialog,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+} from "@angular/material";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
+import { Utilities } from "src/app/services/utilities";
+import { Filter } from "src/app/models/sieve-filter.model";
+import {
+  CatererInfo,
+  CatererOutlet,
+} from "src/app/models/meal-order/caterer-info.model";
+import { DeliveryService } from "src/app/services/meal-order/delivery.service";
+import { Outlet } from "src/app/models/meal-order/outlet.model";
+import { StoreInfo } from "src/app/models/meal-order/store-info.model";
+import {
+  TokenOrder,
+  TokenLabel,
+  TokenDishLabel,
+  MealAllocation,
+  PackingAllocation,
+  DishAllocation,
+} from "src/app/models/meal-order/token-order.model";
+import { AlertService, MessageSeverity } from "src/app/services/alert.service";
+import * as moment from "moment";
+import { saveAs } from "file-saver";
+import { MenuService } from "../../../services/meal-order/menu.service";
+import { Dish } from "../../../models/meal-order/dish.model";
+import { MealType } from "../../../models/meal-order/meal-type.model";
+import { MealService } from "src/app/services/meal-order/meal.service";
+import { DishService } from "src/app/services/meal-order/dish.service";
+import {
+  MealSessionDetail,
+  MealSession,
+} from "src/app/models/meal-order/meal-session.model";
+import { Route } from "src/app/models/meal-order/route.model";
+import { THIS_EXPR } from "@angular/compiler/src/output/output_ast";
 
 @Component({
-  selector: 'packing-allocation-editor',
-  templateUrl: './packing-allocation-editor.component.html',
-  styleUrls: ['./packing-allocation-editor.component.css']
+  selector: "packing-allocation-editor",
+  templateUrl: "./packing-allocation-editor.component.html",
+  styleUrls: ["./packing-allocation-editor.component.css"],
 })
 export class PackingAllocationEditorComponent implements OnInit {
   stores: StoreInfo[];
@@ -52,17 +78,27 @@ export class PackingAllocationEditorComponent implements OnInit {
 
   //dish_count: TokenDishLabel[] = [];
 
-  constructor(private http: HttpClient, private alertService: AlertService, private deliveryService: DeliveryService, public dialog: MatDialog,
-    public dialogRef: MatDialogRef<PackingAllocationEditorComponent>, private menuService: MenuService, private mealService: MealService, private dishService: DishService,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-    if (typeof (data.outletId) != typeof (undefined)) {
+  constructor(
+    private http: HttpClient,
+    private alertService: AlertService,
+    private deliveryService: DeliveryService,
+    public dialog: MatDialog,
+    public dialogRef: MatDialogRef<PackingAllocationEditorComponent>,
+    private menuService: MenuService,
+    private mealService: MealService,
+    private dishService: DishService,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    if (typeof data.outletId != typeof undefined) {
       this.outletId = data.outletId;
     }
-    if (typeof (data.allocation) != typeof (undefined)) {
+    if (typeof data.allocation != typeof undefined) {
       if (data.allocation.id) {
         this.editAllocation(data.allocation);
+        this.getSessions();
       } else {
         this.newAllocation(data.allocation.packingDate);
+        if (data.allocation.packingDate) this.getSessions();
       }
     }
   }
@@ -81,19 +117,19 @@ export class PackingAllocationEditorComponent implements OnInit {
     this.selectedCaterers.forEach((caterer, i) => {
       if (caterer.status == "APPROVED") {
         if (filterCaterer != "") {
-          filterCaterer += '|'
+          filterCaterer += "|";
         }
-        filterCaterer += caterer.catererInfoId
+        filterCaterer += caterer.catererInfoId;
       }
     });
-    console.log("caterer filter = ", filterCaterer)
+    console.log("caterer filter = ", filterCaterer);
 
     //this.getStore(filterCaterer);
   }
 
   onChangeDate(type: string, event: MatDatepickerInputEvent<Date>) {
     this.filterLoading = true;
-    console.log("event value: ", moment(event.value))
+    console.log("event value: ", moment(event.value));
     this.orderDate = new Date(event.value);
     this.allocation.packingDate = this.orderDate;
     this.getSessions();
@@ -101,6 +137,7 @@ export class PackingAllocationEditorComponent implements OnInit {
     if (this.allocation.routeId) {
       //this.getMealAllocation();
       this.allocation.routeId = null;
+      this.orders = null;
     }
   }
 
@@ -122,16 +159,20 @@ export class PackingAllocationEditorComponent implements OnInit {
 
   getRoutes() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
-    this.deliveryService.getRoutesByFilter(filter)
-      .subscribe(results => {
+    filter.filters = "(IsActive)==true";
+    this.deliveryService.getRoutesByFilter(filter).subscribe(
+      (results) => {
         this.routes = results.pagedData;
-        console.log("routes: ", this.routes)
+        console.log("routes: ", this.routes);
       },
-        error => {
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving routes.\r\n"`,
-            MessageSeverity.error);
-        })
+      (error) => {
+        this.alertService.showStickyMessage(
+          "Get Error",
+          `An error occured while retrieving routes.\r\n"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 
   //getAllSessions() {
@@ -154,104 +195,121 @@ export class PackingAllocationEditorComponent implements OnInit {
   }
 
   onSearchChanged(value: string) {
-    this.stores = this.storesCache.filter(r => Utilities.searchArray(value, false, r.name));
+    this.stores = this.storesCache.filter((r) =>
+      Utilities.searchArray(value, false, r.name)
+    );
   }
 
   getOrderData() {
-    console.log("clicked")
+    console.log("clicked");
     this.getMealAllocation();
   }
 
   getMealTypes() {
     let filter = new Filter();
-    filter.sorts = 'name';
+    filter.sorts = "name";
     //let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
-    filter.filters ='(IsActive)==true';
-    this.mealService.getMealTypesByFilter(filter)
-      .subscribe(results => {
+    filter.filters = "(IsActive)==true";
+    this.mealService.getMealTypesByFilter(filter).subscribe(
+      (results) => {
         this.tokens = results.pagedData;
       },
-        error => {
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal type.\r\n"`,
-            MessageSeverity.error);
-        })
+      (error) => {
+        this.alertService.showStickyMessage(
+          "Get Error",
+          `An error occured while retrieving meal type.\r\n"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 
   getMenuDishes() {
     let filter = new Filter();
     //let f = this.catererId ? '(CatererId)==' + this.catererId + ',' : '';
-    filter.filters ='(IsActive)==true';
-    this.dishService.getDishesByFilter(filter)
-      .subscribe(results => {
+    filter.filters = "(IsActive)==true";
+    this.dishService.getDishesByFilter(filter).subscribe(
+      (results) => {
         this.dishes = results.pagedData;
-        console.log("dishes: ", this.dishes)
+        console.log("dishes: ", this.dishes);
         this.filterLoading = false;
       },
-        error => {
-          this.filterLoading = false;
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving dishes.\r\n"`,
-            MessageSeverity.error);
-        })
+      (error) => {
+        this.filterLoading = false;
+        this.alertService.showStickyMessage(
+          "Get Error",
+          `An error occured while retrieving dishes.\r\n"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 
   getSessions() {
     if (this.orderDate) {
-      var date = new Date(this.orderDate.getTime() - (this.orderDate.getTimezoneOffset() * 60000)).toJSON().split('T')
-      console.log("order date: ", date[0])
-      this.menuService.getOutletSessionsByFilter(this.outletId, date[0])
-        .subscribe(results => {
-          this.sessions = results;
-          console.log("sessions: ", this.sessions)
-          this.sessions.forEach(s => {
-            let route = this.newRoutes.find(x => x.id === s.routeId);
-            if (route == null) {
-              var newRoute = new Route();
-              newRoute.id = s.routeId;
-              newRoute.label = s.routeName;
-              this.newRoutes.push(newRoute)
-            }
+      var date = new Date(
+        this.orderDate.getTime() - this.orderDate.getTimezoneOffset() * 60000
+      )
+        .toJSON()
+        .split("T");
+      console.log("order date: ", date[0]);
+      this.menuService
+        .getMealsessionsFromMealAllocation(this.outletId, date[0])
+        .subscribe(
+          (results) => {
+            this.sessions = results;
+            console.log("sessions: ", this.sessions);
+            this.sessions.forEach((s) => {
+              let route = this.newRoutes.find((x) => x.id === s.routeId);
+              if (route == null) {
+                var newRoute = new Route();
+                newRoute.id = s.routeId;
+                newRoute.label = s.routeName;
+                this.newRoutes.push(newRoute);
+              }
+            });
 
-          })
-
-          this.filterLoading = false;
-        },
-          error => {
+            this.filterLoading = false;
+          },
+          (error) => {
             this.filterLoading = false;
             //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-            this.alertService.showStickyMessage("Get Error", `An error occured while retrieving meal sessions.\r\n"`,
-              MessageSeverity.error);
-          })
+            this.alertService.showStickyMessage(
+              "Get Error",
+              `An error occured while retrieving meal sessions.\r\n"`,
+              MessageSeverity.error
+            );
+          }
+        );
     }
   }
 
   getTokenName(id) {
-    let token = this.tokens.find(x => x.id === id);
+    let token = this.tokens.find((x) => x.id === id);
     if (token) {
-      return token.name
+      return token.name;
     } else {
-      return ''
+      return "";
     }
   }
 
   getDishName(id) {
-    let dish = this.dishes.find(x => x.id === id);
+    let dish = this.dishes.find((x) => x.id === id);
     if (dish) {
-      return dish.label
+      return dish.label;
     } else {
-      return ''
+      return "";
     }
   }
 
   getDishCode(id) {
-    let dish = this.dishes.find(x => x.id === id);
+    let dish = this.dishes.find((x) => x.id === id);
     if (dish) {
-      return dish.code
+      return dish.code;
     } else {
-      return ''
+      return "";
     }
   }
-
-  
 
   onChangeQty(event, detail?: TokenDishLabel, token?: TokenLabel) {
     if (detail.a_qty > 0) {
@@ -262,17 +320,14 @@ export class PackingAllocationEditorComponent implements OnInit {
 
     token.qty_tdishes = 0;
 
-    token.dishes.forEach(d => {
+    token.dishes.forEach((d) => {
       token.qty_tdishes += d.t_qty;
-
-    })
+    });
   }
 
   private showErrorAlert(caption: string, message: string) {
     this.alertService.showMessage(caption, message, MessageSeverity.error);
   }
-
-
 
   //getTokenOrder() {
   //  var insideFilter = new Filter();
@@ -366,7 +421,6 @@ export class PackingAllocationEditorComponent implements OnInit {
 
   //    })
 
-
   //    console.log("token count: ", this.token_count);
 
   //  }, error => { });
@@ -378,45 +432,53 @@ export class PackingAllocationEditorComponent implements OnInit {
 
     this.dish_count = [];
 
-    var strDate = moment(this.orderDate).format().split('T');
-    let f = this.allocation.routeId ? '(routeId)==' + this.allocation.routeId + ',' : '';
-    insideFilter.filters = f + '(IsActive)==true,(outletId)==' + this.outletId + ',(DeliveryDate)==' + strDate[0];
-    console.log("filters: ", insideFilter.filters)
+    var strDate = moment(this.orderDate).format().split("T");
+    let f = this.allocation.routeId
+      ? "(routeId)==" + this.allocation.routeId + ","
+      : "";
+    insideFilter.filters =
+      f +
+      "(IsActive)==true,(outletId)==" +
+      this.outletId +
+      ",(DeliveryDate)==" +
+      strDate[0];
+    console.log("filters: ", insideFilter.filters);
 
-    this.menuService.getMealAllocationsByFilter(insideFilter).subscribe(results => {
-      this.orders = results.pagedData;
+    this.menuService.getMealAllocationsByFilter(insideFilter).subscribe(
+      (results) => {
+        this.orders = results.pagedData;
 
-      console.log("Allocations : ", this.orders)
+        console.log("Allocations : ", this.orders);
 
-      this.allocation.allocations = this.orders;
+        this.allocation.allocations = this.orders;
 
-      //Order Loop
-      this.orders.forEach(o => {
+        //Order Loop
+        this.orders.forEach((o) => {
+          //Token Loop
+          o.tokens.forEach((t) => {
+            t.dishes.forEach((d) => {
+              var dishIndex = this.dish_count.findIndex(
+                (x) => x.dishId === d.dish_id
+              );
+              if (dishIndex < 0) {
+                var dish = new DishAllocation();
+                dish.dishId = d.dish_id;
+                dish.packingId = this.allocation.id;
+                dish.qty = d.t_qty;
+                this.dish_count.push(dish);
+              } else {
+                this.dish_count[dishIndex].qty += d.t_qty;
+              }
+            });
+          });
+        });
 
-        //Token Loop
-        o.tokens.forEach(t => {
-          t.dishes.forEach(d => {
-            var dishIndex = this.dish_count.findIndex(x => x.dishId === d.dish_id)
-            if (dishIndex < 0) {
-              var dish = new DishAllocation;
-              dish.dishId = d.dish_id;
-              dish.packingId = this.allocation.id;
-              dish.qty = d.t_qty;
-              this.dish_count.push(dish);
-            } else {
-              this.dish_count[dishIndex].qty += d.t_qty;
-            }
-          })
-
-        })
-
-      })
-
-      this.isLoading = false;
-
-    }, error => {
-      this.isLoading = false;
-    });
+        this.isLoading = false;
+      },
+      (error) => {
+        this.isLoading = false;
+      }
+    );
   }
 
   save() {
@@ -424,42 +486,56 @@ export class PackingAllocationEditorComponent implements OnInit {
     this.alertService.startLoadingMessage("Saving changes...");
     this.allocation.outletId = this.outletId;
     this.allocation.dishes = this.dish_count;
-    this.allocation.packingDate = (new Date(this.orderDate.getTime() - (this.orderDate.getTimezoneOffset() * 60000)));
-    console.log("saving: ", this.allocation)
+    this.allocation.packingDate = new Date(
+      this.orderDate.getTime() - this.orderDate.getTimezoneOffset() * 60000
+    );
+    console.log("saving: ", this.allocation);
 
     if (this.isNewAllocation) {
-      this.menuService.newPackingAllocation(this.allocation).subscribe(allocation => this.saveSuccessHelper(allocation), error => this.saveFailedHelper(error));
+      this.menuService.newPackingAllocation(this.allocation).subscribe(
+        (allocation) => this.saveSuccessHelper(allocation),
+        (error) => this.saveFailedHelper(error)
+      );
+    } else {
+      this.menuService.updatePackingAllocation(this.allocation).subscribe(
+        (response) => this.saveSuccessHelper(),
+        (error) => this.saveFailedHelper(error)
+      );
     }
-    else {
-      this.menuService.updatePackingAllocation(this.allocation).subscribe(response => this.saveSuccessHelper(), error => this.saveFailedHelper(error));
-    }
-
   }
 
-
   private saveSuccessHelper(allocation?: PackingAllocation) {
-    if (allocation)
-      Object.assign(this.allocation, allocation);
+    if (allocation) Object.assign(this.allocation, allocation);
 
     this.isSaving = false;
     this.alertService.stopLoadingMessage();
 
     if (this.isNewAllocation)
-      this.alertService.showMessage("Success", `Packing Allocation was created successfully`, MessageSeverity.success);
+      this.alertService.showMessage(
+        "Success",
+        `Packing Allocation was created successfully`,
+        MessageSeverity.success
+      );
     else
-      this.alertService.showMessage("Success", `Changes to Packing Allocations was saved successfully`, MessageSeverity.success);
-
+      this.alertService.showMessage(
+        "Success",
+        `Changes to Packing Allocations was saved successfully`,
+        MessageSeverity.success
+      );
 
     this.allocation = new PackingAllocation();
 
     this.dialogRef.close();
   }
 
-
   private saveFailedHelper(error: any) {
     this.isSaving = false;
     this.alertService.stopLoadingMessage();
-    this.alertService.showStickyMessage("Save Error", "The below errors occured while saving your changes:", MessageSeverity.error);
+    this.alertService.showStickyMessage(
+      "Save Error",
+      "The below errors occured while saving your changes:",
+      MessageSeverity.error
+    );
     this.alertService.showStickyMessage(error, null, MessageSeverity.error);
   }
 
@@ -467,8 +543,7 @@ export class PackingAllocationEditorComponent implements OnInit {
     this.isNewAllocation = true;
 
     this.allocation = new PackingAllocation();
-    if (packingDate)
-      this.orderDate = packingDate;
+    if (packingDate) this.orderDate = packingDate;
     //this.orderDate = moment().toDate();
     //this.orderDate.setHours(0, 0, 0, 0);
     //this.allocation.packingDate = this.orderDate;
@@ -480,7 +555,7 @@ export class PackingAllocationEditorComponent implements OnInit {
     if (allocation) {
       this.isNewAllocation = false;
 
-      console.log("allocation inside: ", allocation)
+      console.log("allocation inside: ", allocation);
 
       this.allocation = new PackingAllocation();
       Object.assign(this.allocation, allocation);
@@ -488,8 +563,7 @@ export class PackingAllocationEditorComponent implements OnInit {
       this.dish_count = this.allocation.dishes;
 
       return this.allocation;
-    }
-    else {
+    } else {
       return this.allocation;
     }
   }
@@ -500,16 +574,16 @@ export class PackingAllocationEditorComponent implements OnInit {
   }
 
   downloadLabel() {
-    const fileName = moment().format('DDMMYYYY_hhmmss') + '_OrderLabel.pdf';
+    const fileName = moment().format("DDMMYYYY_hhmmss") + "_OrderLabel.pdf";
 
-    console.log("token sent: ", this.token_count)
+    console.log("token sent: ", this.token_count);
 
     this.menuService.downloadOrderLabel(this.token_count).subscribe(
-      data => {
+      (data) => {
         console.log(data);
         saveAs(data, fileName);
       },
-      err => {
+      (err) => {
         alert("Problem while downloading the file.");
         console.error(err);
       }
