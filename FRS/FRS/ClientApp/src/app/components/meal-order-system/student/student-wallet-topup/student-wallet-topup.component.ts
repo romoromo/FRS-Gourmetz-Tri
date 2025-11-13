@@ -19,6 +19,7 @@ export class StudentWalletTopupComponent {
   isSaving: boolean;
   walletTypes = WalletTypeList
   private studentId: string;
+  private isStudentGroup: boolean;
 
   constructor(
     public dialogRef: MatDialogRef<StudentWalletTopupComponent>,
@@ -26,8 +27,14 @@ export class StudentWalletTopupComponent {
     private alertService: AlertService,
     private studentService: StudentService,
     @Inject(MAT_DIALOG_DATA) public dataParent: any) {
-    if (dataParent && dataParent.studentId) {
-      this.studentId = dataParent.studentId;
+    if (dataParent) {
+      if (dataParent.studentId) {
+        this.studentId = dataParent.studentId;
+      }
+
+      if (dataParent.isStudentGroup) {
+        this.isStudentGroup = dataParent.isStudentGroup;
+      }
     }
   }
 
@@ -49,29 +56,55 @@ export class StudentWalletTopupComponent {
     }
     this.isSaving = true;
     this.alertService.startLoadingMessage("Processing top-up...");
-    this.studentService.walletTopupForStudent(studentId, amount, this.accountService.currentUser.id, type)
-      .subscribe({
-        next: (response) => {
-          this.alertService.stopLoadingMessage();
-          this.isSaving = false;
-          this.alertService.showMessage(response.message);
+    if (this.isStudentGroup) {
+      this.studentService.walletTopupForStudentGroup(studentId, amount, this.accountService.currentUser.id, type)
+        .subscribe({
+          next: (response) => {
+            this.alertService.stopLoadingMessage();
+            this.isSaving = false;
+            this.alertService.showMessage(response.message);
 
-          if (response.data && response.data.length > 0) {
-            const messageData = response.data.join("<br/><br/>");
-            this.alertService.showStickyMessage("Top-up Info", messageData, MessageSeverity.info);
+            if (response.data && response.data.length > 0) {
+              const messageData = response.data.join("<br/><br/>");
+              this.alertService.showStickyMessage("Top-up Info", messageData, MessageSeverity.info);
+            }
+            this.dialogRef.close(this.data);
+          },
+          error: () => {
+            this.alertService.stopLoadingMessage();
+            this.isSaving = false;
+            this.alertService.showStickyMessage(
+              "Wallet Top-up Error",
+              "Unable to add amount.",
+              MessageSeverity.error
+            );
           }
-          this.dialogRef.close(this.data);
-        },
-        error: () => {
-          this.alertService.stopLoadingMessage();
-          this.isSaving = false;
-          this.alertService.showStickyMessage(
-            "Wallet Top-up Error",
-            "Unable to add amount.",
-            MessageSeverity.error
-          );
-        }
-      });
+        });
+    } else {
+      this.studentService.walletTopupForStudent(studentId, amount, this.accountService.currentUser.id, type)
+        .subscribe({
+          next: (response) => {
+            this.alertService.stopLoadingMessage();
+            this.isSaving = false;
+            this.alertService.showMessage(response.message);
+
+            if (response.data && response.data.length > 0) {
+              const messageData = response.data.join("<br/><br/>");
+              this.alertService.showStickyMessage("Top-up Info", messageData, MessageSeverity.info);
+            }
+            this.dialogRef.close(this.data);
+          },
+          error: () => {
+            this.alertService.stopLoadingMessage();
+            this.isSaving = false;
+            this.alertService.showStickyMessage(
+              "Wallet Top-up Error",
+              "Unable to add amount.",
+              MessageSeverity.error
+            );
+          }
+        });
+    }
   }
 
   close() {
