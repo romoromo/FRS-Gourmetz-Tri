@@ -1,4 +1,4 @@
-import { MealCollectionType, PointType, WalletType } from "../models/enums";
+import { MealCollectionType, PointType, PointsType,WalletType } from "../models/enums";
 
 export enum ModulePath {
   PibDisplay = "/pibdisplay",
