@@ -50,7 +50,7 @@ namespace FRS.Controllers
             {
                 var emailBody = EmailTemplates.GetPlainTextTestEmail(DateTime.Now);
                 //var isSuccess = await _emailSender.SendEmailAsync("Test Recipient", string.IsNullOrEmpty(email) ? "smv.notification@gmail.com" : email, "Test Email", emailBody);
-                var isSuccess = await _emailSender.SendEmailAsync("Test Recipient", "smv.notification@gmail.com", "Test", email, "Test Email", emailBody);
+                var isSuccess = await _emailSender.SendEmailAsync("Test Recipient", "smv_noreply@realtimesys.my.id", "Test", email, "Test Email", emailBody);
                 return Ok(isSuccess.success ? "Success - " + isSuccess.errorMsg : "Failed - " + isSuccess.errorMsg);
             }
             catch (Exception ex)

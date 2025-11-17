@@ -23,6 +23,7 @@ using System.Text;
 using System.Net.Http.Headers;
 using iTextSharp.text;
 using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 
 namespace BAL.Services
 {
@@ -33,14 +34,54 @@ namespace BAL.Services
         private IApplicationSettingService _appSetting;
         private IEmailQueueService _emailQueue;
         private ILogger _logger;
+        private readonly IConfiguration _configuration;
 
-        public EmailSender(IOptions<SmtpConfig> config, IOptions<SmtpOauth2Config> configOauth, IApplicationSettingService appSetting, IEmailQueueService emailQueue)
+        public EmailSender(IOptions<SmtpConfig> config, IOptions<SmtpOauth2Config> configOauth, IApplicationSettingService appSetting, IEmailQueueService emailQueue, IConfiguration configuration)
         {
             _config = config.Value;
             _configOauth = configOauth.Value;
             _appSetting = appSetting;
             _emailQueue = emailQueue;
+            _configuration = configuration;
             _logger = Logger.CreateLogger<EmailSender>();
+        }
+
+        public async Task<(bool success, string errorMsg)> SendEmailAsync(
+            string recepientName,
+            string recepientEmail,
+            string subject,
+            string body, SmtpConfig config = null, bool isHtml = true, List<EmailAttachment> attachments = null, string action = null)
+        {
+            var useOldEmailProtocol = _configuration["AppSettings:UseOldEmailProtocol"];
+
+            if (useOldEmailProtocol == "Y")
+            {
+                return await SendEmailOldAsync(recepientName, recepientEmail, subject, body, null, true, attachments, null);
+            }
+            else
+            {
+                return await SendEmailOauthAsync(recepientName, recepientEmail, subject, body, null, true, attachments, null);
+            }
+        }
+
+        public async Task<(bool success, string errorMsg)> SendEmailAsync(
+            string senderName,
+            string senderEmail,
+            string recepientName,
+            string recepientEmail,
+            string subject,
+            string body)
+        {
+            var useOldEmailProtocol = _configuration["AppSettings:UseOldEmailProtocol"];
+
+            if (useOldEmailProtocol == "Y")
+            {
+                return await SendEmailOldAsync(senderName, senderEmail, recepientName, recepientEmail, subject, body);
+            }
+            else
+            {
+                return await SendEmailOauthAsync(senderName, senderEmail, recepientName, recepientEmail, subject, body);
+            }
         }
 
 
@@ -56,7 +97,7 @@ namespace BAL.Services
         /// <param name="attachments"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public async Task<(bool success, string errorMsg)> SendEmailAsync(
+        public async Task<(bool success, string errorMsg)> SendEmailOldAsync(
             string recepientName,
             string recepientEmail,
             string subject,
@@ -87,8 +128,10 @@ namespace BAL.Services
             var from = new MailboxAddress(_config.Name, _config.EmailAddress);
             var to = new MailboxAddress(recepientName, recepientEmail);
 
-            return await SendEmailAsync(from, new MailboxAddress[] { to }, subject, body, config, isHtml, attachments);
+            return await SendEmailOldAsync(from, new MailboxAddress[] { to }, subject, body, config, isHtml, attachments);
         }
+
+
 
         public async Task<(bool success, string errorMsg)> SendEmailOauthAsync(
             string recepientName,
@@ -173,7 +216,7 @@ namespace BAL.Services
 
 
 
-        public async Task<(bool success, string errorMsg)> SendEmailAsync(
+        public async Task<(bool success, string errorMsg)> SendEmailOldAsync(
             string senderName,
             string senderEmail,
             string recepientName,
@@ -200,12 +243,12 @@ namespace BAL.Services
             var from = new MailboxAddress(senderName, senderEmail);
             var to = new MailboxAddress(recepientName, recepientEmail);
 
-            return await SendEmailAsync(from, new MailboxAddress[] { to }, subject, body, config, isHtml, attachments);
+            return await SendEmailOldAsync(from, new MailboxAddress[] { to }, subject, body, config, isHtml, attachments);
         }
 
 
 
-        public async Task<(bool success, string errorMsg)> SendEmailAsync(
+        public async Task<(bool success, string errorMsg)> SendEmailOldAsync(
             MailboxAddress sender,
             MailboxAddress[] recepients,
             string subject,
