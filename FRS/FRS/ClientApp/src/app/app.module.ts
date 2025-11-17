@@ -542,6 +542,7 @@ import { OrderCollectionLogsManagementComponent } from "./components/meal-order-
 import { OrderByPipe } from "./pipes/order-by.pipe";
 import { PaymentsReportManagementComponent } from "./components/reports/payment/payments-management.component";
 import { StudentWalletTopupComponent } from './components/meal-order-system/student/student-wallet-topup/student-wallet-topup.component';
+import { StudentPointTopupComponent } from './components/meal-order-system/student/student-point-topup/student-point-topup.component';
 import { FaqSubjectsManagementComponent } from "./components/meal-order-system/faq-subject/faq-subjects-management.component";
 import { FaqSubjectEditorComponent } from "./components/meal-order-system/faq-subject/faq-subject-editor.component";
 import { FaqDetailsManagementComponent } from "./components/meal-order-system/faq-detail/faq-details-management.component";
@@ -1016,7 +1017,7 @@ export const configFactory = (configService: ConfigurationService) => {
     FaqDetailsManagementComponent,
     FaqDetailEditorComponent,
     VoucherUtilisationsReportManagementComponent, PlcManagementComponent, PlcEditorComponent, TrayEditorComponent,
-    StudentWalletTopupComponent,
+    StudentWalletTopupComponent,StudentPointTopupComponent,
     VoucherUtilisationsReportManagementComponent,
     PlcManagementComponent,
     PlcEditorComponent,
@@ -1376,7 +1377,7 @@ export const configFactory = (configService: ConfigurationService) => {
     FaqSubjectsManagementComponent,
     FaqSubjectEditorComponent,
     VoucherUtilisationsReportManagementComponent, DishPreviewErrorComponent, VoucherDishComponent, PlcEditorComponent, TrayEditorComponent,
-    StudentWalletTopupComponent,
+    StudentWalletTopupComponent,StudentPointTopupComponent,
     FaqDetailsManagementComponent,
     FaqDetailEditorComponent,
     VoucherUtilisationsReportManagementComponent,

@@ -1,12 +1,14 @@
-﻿using System;
+﻿using DAL.Core;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Sieve.Services;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Repositories.Interfaces;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
 
 namespace DAL.Repositories
 {
@@ -114,14 +116,26 @@ namespace DAL.Repositories
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount,int userId)
+        public async Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(
+            int studentGroupId,
+            double amount,
+            int userId,
+            PointType pointTypeData)
         {
             var result = new BaseOperationResponse();
 
             if (amount <= 0)
             {
                 result.IsSuccess = false;
-                result.Message = $"Invalid top-up point: {amount}. Point must be greater than zero.";
+                result.Message = $"Invalid top-up point: {amount}. point must be greater than zero.";
+                return result;
+            }
+
+            string pointType = pointTypeData.ToString();
+            if (string.IsNullOrWhiteSpace(pointType))
+            {
+                result.IsSuccess = false;
+                result.Message = "point type must be provided.";
                 return result;
             }
 
@@ -153,48 +167,91 @@ namespace DAL.Repositories
                 return result;
             }
 
-            var studentData = await _appContext.Students
+            var studentDatas = await _appContext.Students
                 .Where(e => e.IsActive && studentIds.Contains(e.Id))
                 .ToListAsync();
 
-            if (!studentData.Any())
+            if (!studentDatas.Any())
             {
                 result.IsSuccess = false;
                 result.Message = $"No active students matched in Students table for Student Group Id={studentGroupData.Id}.";
                 return result;
             }
 
-            foreach (var student in studentData)
+            var points = await _appContext.StudentPoints
+                .Where(w => studentIds.Contains(w.StudentId))
+                .ToListAsync();
+            var transactions = new List<StudentPointTransaction>();
+            foreach (var studentData in studentDatas)
             {
-                student.PointBalance += amount;
+                var studentId = studentData.Id;
+                var point = points.FirstOrDefault(w => w.StudentId == studentId && w.Type == pointType); ;
 
-                var transaction = new StudentPointTransaction
+                double oldBalance = 0;
+                if (point == null)
+                {
+                    point = new StudentPoint
+                    {
+                        StudentId = studentId,
+                        Balance = amount,
+                        Type = pointType,
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    };
+                    await _appContext.StudentPoints.AddAsync(point);
+                    points.Add(point);
+                }
+                else
+                {
+                    oldBalance = point.Balance;
+                    point.Balance += amount;
+                    point.UpdatedBy = userId;
+                }
+
+                transactions.Add(new StudentPointTransaction
                 {
                     Amount = amount,
                     TransactionType = WalletTransactionType.CREDIT.ToString(),
-                    StudentId = student.Id,
-                    Description = $"Top-up Point by Student Group Id={studentGroupData.Id}, Group Name={studentGroupData.Name}",
+                    StudentId = studentId,
+                    Description = $"Top-up {pointType} point by {amount} for student '{studentData.Name}' (ID={studentId}). " +
+                                  $"via Group Id={studentGroupData.Id} ({studentGroupData.Name}).",
                     CreatedBy = userId,
                     UpdatedBy = userId
-                };
-                await _appContext.StudentPointTransactions.AddAsync(transaction);
+                });
+
+                studentData.PointBalance = points
+                    .Where(w => w.StudentId == studentId)
+                    .Sum(w => w.Balance);
             }
 
+            await _appContext.StudentPointTransactions.AddRangeAsync(transactions);
             await _appContext.SaveChangesAsync();
 
             result.IsSuccess = true;
-            result.Message = $"Successfully topped up {amount} point to {studentData.Count} students in group '{studentGroupData.Name}'";
+            result.Message = $"Successfully topped up point {amount} to {studentDatas.Count} students in group '{studentGroupData.Name}'";
             return result;
         }
 
-        public async Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount,int userId)
+        public async Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(
+            int studentId,
+            double amount,
+            int userId,
+            PointType pointTypeData)
         {
             var result = new BaseOperationResponse();
 
             if (amount <= 0)
             {
                 result.IsSuccess = false;
-                result.Message = $"Invalid top-up point amount: {amount}. point must be greater than zero.";
+                result.Message = $"Invalid top-up point: {amount}. point must be greater than zero.";
+                return result;
+            }
+
+            string pointType = pointTypeData.ToString();
+            if (string.IsNullOrWhiteSpace(pointType))
+            {
+                result.IsSuccess = false;
+                result.Message = "Point type must be provided.";
                 return result;
             }
 
@@ -210,29 +267,55 @@ namespace DAL.Repositories
                     return result;
                 }
 
-                var oldBalance = studentData.PointBalance;
-                studentData.PointBalance += amount;
+                var point = await _appContext.StudentPoints
+                    .FirstOrDefaultAsync(w => w.StudentId == studentId && w.Type == pointType);
+
+                double oldPoint = 0;
+                if (point == null)
+                {
+                    point = new StudentPoint
+                    {
+                        StudentId = studentId,
+                        Balance = amount,
+                        Type = pointType,
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    };
+                    await _appContext.StudentPoints.AddAsync(point);
+                }
+                else
+                {
+                    oldPoint = point.Balance;
+                    point.Balance += amount;
+                    point.UpdatedBy = userId;
+                }
 
                 var transaction = new StudentPointTransaction
                 {
                     Amount = amount,
                     TransactionType = WalletTransactionType.CREDIT.ToString(),
-                    StudentId = studentData.Id,
-                    Description = $"Top-up point by Student Id={studentData.Id}, Name={studentData.Name}",
+                    StudentId = studentId,
+                    Description = $"Top-up {pointType} point by {amount} for student '{studentData.Name}' (ID={studentId}). ",
                     CreatedBy = userId,
                     UpdatedBy = userId
                 };
+
+                var totalPointBalance = await _appContext.StudentPoints
+                    .AsNoTracking()
+                    .Where(w => w.StudentId == studentId && w.Type != pointType)
+                    .SumAsync(w => (double?)w.Balance) ?? 0;
+                studentData.PointBalance = totalPointBalance + point.Balance;
 
                 await _appContext.StudentPointTransactions.AddAsync(transaction);
                 await _appContext.SaveChangesAsync();
 
                 result.IsSuccess = true;
-                result.Message = $"Successfully topped up {amount} point for students : '{studentData.Name}'";
+                result.Message = $"Successfully topped up {amount} to '{pointType}' point for student '{studentData.Name}'.";
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
-                result.Message = $"Error while topping up Point for StudentId={studentId}. Details: {ex.Message}";
+                result.Message = $"Error while topping up '{pointType}' point for StudentId={studentId}. Details: {ex.Message}";
             }
 
             return result;

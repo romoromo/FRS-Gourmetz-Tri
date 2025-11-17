@@ -1473,10 +1473,10 @@ namespace FRS.Controllers
         [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> PointTopupForStudentGroup([FromBody] StudentGroupWalletRequestViewModel model)
+        public async Task<IActionResult> PointTopupForStudentGroup([FromBody] StudentGroupPointRequestViewModel model)
         {
             string dataJSON = JsonConvert.SerializeObject(model);
-            _logger.LogInformation($"PointTopupForStudentGroup StudentGroupWalletRequestViewModel : {dataJSON}");
+            _logger.LogInformation($"PointTopupForStudentGroup StudentGroupPointRequestViewModel : {dataJSON}");
 
             try
             {
@@ -1488,7 +1488,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._pointService.TopupPointBalanceByStudentGroupIdAsync(model.StudentGroupId, model.Amount,model.UserId);
+                    var result = await this._pointService.TopupPointBalanceByStudentGroupIdAsync(model.StudentGroupId, model.Amount,model.UserId, model.Type);
                     return Ok(result);
 
                 }
@@ -1508,7 +1508,7 @@ namespace FRS.Controllers
         [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> PointTopupForStudent([FromBody] StudentGroupWalletRequestViewModel model)
+        public async Task<IActionResult> PointTopupForStudent([FromBody] StudentGroupPointRequestViewModel model)
         {
             string dataJSON = JsonConvert.SerializeObject(model);
             _logger.LogInformation($"PointTopupForStudent StudentGroupPointRequestViewModel : {dataJSON}");
@@ -1523,7 +1523,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._pointService.TopupPointBalanceByStudentIdAsync(model.StudentGroupId, model.Amount,model.UserId);
+                    var result = await this._pointService.TopupPointBalanceByStudentIdAsync(model.StudentGroupId, model.Amount,model.UserId,model.Type);
                     return Ok(result);
 
                 }
