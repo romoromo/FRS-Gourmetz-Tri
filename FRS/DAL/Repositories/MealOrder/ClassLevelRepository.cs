@@ -186,6 +186,15 @@ namespace DAL.Repositories.MealOrder
                 .ToListAsync();
         }
 
+        public Task<List<MealSessionDetail>> GetMealSessionDetail(int id, int outletId)
+        {
+            var query = _appContext.ClassLevels
+                .AsNoTracking()
+                .Include(m => m.ClassLevelDetails).ThenInclude(msd => msd.MealSession)
+                .Where(m => m.Id == id && m.OutletId == outletId && m.IsActive);
+            return query.SelectMany(m => m.ClassLevelDetails.Select(msd => msd.MealSession)).ToListAsync();
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }

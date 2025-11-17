@@ -39,10 +39,10 @@ namespace FRS.Controllers
         private readonly IMapper _mapper;
         private IStudentService _studentService;
         private IDeliveryService _deliveryService;
-        private IOutletMealSessionResolver _outletMealSessionResolver;
+        private IMealSessionResolver _outletMealSessionResolver;
 
         public MenuController(IMenuService service, ILogger<MenuController> logger, IMapper mapper, IStudentService studentService, IDeliveryService deliveryService,
-            IOutletMealSessionResolver outletMealSessionResolver)
+            IMealSessionResolver outletMealSessionResolver)
         {
             _service = service;
             _logger = logger;
@@ -472,9 +472,27 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetOutletMealSessionsByMealCollectionType(int outletId, DateTime orderDate, DateTime? orderDateTo = null)
         {
-            var results = await this._outletMealSessionResolver.GetOutletMealSessions(new OutletMealSessionInput
+            var results = await this._outletMealSessionResolver.GetMealSessionsByOutlet(new MealSessionByOutletInput
             {
                 OutletId = outletId,
+                OrderDate = orderDate,
+                OrderDateTo = orderDateTo
+            });
+            return Ok(results);
+        }
+
+        [ApiKeyAuthorize]
+        [HttpGet("outlets/getMealsessionsByStudentGroup")]
+        //[Authorize(Authorization.Policies.ViewAllMenuCyclesPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(List<MealSessionDetailDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> getMealsessionsByStudentGroup(int outletId, int studentGroupId, DateTime orderDate, DateTime? orderDateTo = null)
+        {
+            var results = await this._outletMealSessionResolver.GetMealSessionsByStudentGroup(new MealSessionByStudentGrouptInput
+            {
+                OutletId = outletId,
+                StudentGroupId = studentGroupId,
                 OrderDate = orderDate,
                 OrderDateTo = orderDateTo
             });

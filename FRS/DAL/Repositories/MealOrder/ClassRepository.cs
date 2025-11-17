@@ -139,6 +139,17 @@ namespace DAL.Repositories.MealOrder
                 .Where(m => m.IsActive && m.ClassLevel.IsActive && m.ClassLevel.OutletId == outletId).ToListAsync();
         }
 
+        public async Task<List<Class>> GetClassByStudentGroupId(int studentGroupId)
+        {
+            var classList = await (from sg in _appContext.StudentGroups
+                                   join sgd in _appContext.StudentGroupDetails on sg.Id equals sgd.StudentGroupId
+                                   join st in _appContext.Students on sgd.StudentId equals st.Id
+                                   join c in _appContext.Classes on st.ClassId equals c.Id
+                                   where sg.Id == studentGroupId && sg.IsActive && sgd.IsActive && st.IsActive && c.IsActive
+                                   select c).Distinct().ToListAsync();
+            return classList;
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }

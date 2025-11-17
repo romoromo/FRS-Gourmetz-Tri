@@ -106,6 +106,13 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<List<MealSessionDetailDTO>> GetMealSessionsByClassLevel(int classLevelId, int outletId)
+        {
+            var result = new List<MealSessionDetail>();
+            var mealSessionDetails = await this._uow.ClassLevels.GetMealSessionDetail(classLevelId, outletId);
+            return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetails.DistinctBy(m => m.Id));
+        }
+
         #endregion
 
         #region Classes
@@ -147,6 +154,12 @@ namespace BAL.Services.MealOrder
             var result = new List<MealSessionDetail>();
             var mealSessionDetails = await this._uow.MealSessions.GetMealSessionByOutletId(outletId);
             return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetails.DistinctBy(m => m.Id));
+        }
+
+        public async Task<List<ClassDTO>> GetClassByStudentGroupId(int studentGroupId)
+        {
+            var classes = await this._uow.Classes.GetClassByStudentGroupId(studentGroupId);
+            return _mapper.Map<List<ClassDTO>>(classes);
         }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BAL.DTO;
 using BAL.DTO.MealOrder;
@@ -51,5 +52,9 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdatePLCAsync(PLCDTO dto);
         Task<BaseOperationResponse> DeletePLCAsync(int id);
         Task<List<MealSessionDetailDTO>> GetOutletPeriodMealSessions(int outletId);
+
+        Task<List<ClassDTO>> GetClassByStudentGroupId(int studentGroupId);
+
+        Task<List<MealSessionDetailDTO>> GetMealSessionsByClassLevel(int classLevelId, int outletId);
     }
 }
