@@ -838,21 +838,24 @@ namespace FRS.Controllers
                         //broadcast newly added user
                         await _userHub.Clients.All.SendAsync("BroadcastAddedUser", userVM);
 
-                        if (!appUser.EmailConfirmed)
-                        {
-                            //send email confirmation
-                            string enableOnboardingEmail = _configuration["AppSettings:ONBOARDING_EMAIL_ENABLED"];
-                            if (enableOnboardingEmail == "Y")
-                            {
-                                var code = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
-                                string baseUrl = _configuration["AppSettings:ONBOARDING_BASE_URL"];
-                                var callbackUrl = Url.Action("ConfirmEmail", "Authorization", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme, host: baseUrl);
-                                var portalUrl = _configuration["AppSettings:ORDER_PORTAL_URL"];
-                                var imgUrl = _configuration["AppSettings:ORDER_PORTAL_ONBOARDING_IMG_URL"];
-                                await _emailSender.SendEmailAsync(user.FullName, user.Email, "Confirm your account",
-                                    EmailTemplates.GetConfirmationEmail(portalUrl, user.Email, callbackUrl, imgUrl));
-                            }
-                        }
+                        //if (!appUser.EmailConfirmed)
+                        //{
+                        //    //send email confirmation
+                        //    string enableOnboardingEmail = _configuration["AppSettings:ONBOARDING_EMAIL_ENABLED"];
+                        //    if (enableOnboardingEmail == "Y")
+                        //    {
+                        //        var code = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                        //        string baseUrl = _configuration["AppSettings:ONBOARDING_BASE_URL"];
+                        //        var callbackUrl = Url.Action("ConfirmEmail", "Authorization", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme, host: baseUrl);
+                        //        var portalUrl = _configuration["AppSettings:ORDER_PORTAL_URL"];
+                        //        var imgUrl = _configuration["AppSettings:ORDER_PORTAL_ONBOARDING_IMG_URL"];
+                        //        await _emailSender.SendEmailAsync(user.FullName, user.Email, "Confirm your account",
+                        //            EmailTemplates.GetConfirmationEmail(portalUrl, user.Email, callbackUrl, imgUrl));
+                        //    }
+                        //}
+
+                        var isSuccess = await _emailSender.SendEmailAsync("Gourmetz meal system", "smv_noreply@realtimesys.my.id", user.FullName, user.Email, "Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+
 
                         _logger.LogInformation($"User Successfully created");
                         return CreatedAtAction(GetUserByIdActionName, new { id = userVM.Id }, userVM);

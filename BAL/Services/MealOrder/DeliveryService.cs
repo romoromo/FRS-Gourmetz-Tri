@@ -477,8 +477,8 @@ namespace BAL.Services.MealOrder
             var asset = await this._uow.CartonAssets.GetByIdAsync(id);
             var tagId = asset?.Code ?? string.Empty;
 
-            var catererName = "SFS Commercial Catering";
-            var catererAddress = "234 Pandan Loop\nSingapore 128422";
+            var catererName = "Gourmetz Catering Pte Lt";
+            var catererAddress = "";
 
             if (asset.CartonType != null && asset.CartonType.CatererInfo != null)
             {
@@ -500,7 +500,7 @@ namespace BAL.Services.MealOrder
                 var logoImagePath = Path.Combine(Directory.GetCurrentDirectory(), imageFolderName);
 
                 var fullPath = Path.Combine(pathToSave, "Aller_Bd.ttf");
-                var fullImagePath = Path.Combine(logoImagePath, "sats_logo.png");
+                var fullImagePath = Path.Combine(logoImagePath, "company_logo.png");
 
                 BaseFont allerfont = BaseFont.CreateFont(fullPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
                 Font aller = new Font(allerfont, 12);
