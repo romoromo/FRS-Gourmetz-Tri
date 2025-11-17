@@ -15,7 +15,7 @@ namespace DAL.Repositories.Interfaces
         Task<StudentPointTransaction> GetByIdAsync(int id);
         Task<BaseOperationResponse> UpdateAsync(StudentPointTransaction pointTransaction);
         Task<PagedEntity<StudentPointTransaction>> GetPointTransactionsAsync(BaseFilter filter);
-        Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId);
-        Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount, int userId);
+        Task<BaseOperationResponse> TopupPointBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId, PointType pointTypeData);
+        Task<BaseOperationResponse> TopupPointBalanceByStudentIdAsync(int studentId, double amount, int userId, PointType pointTypeData);
     }
 }

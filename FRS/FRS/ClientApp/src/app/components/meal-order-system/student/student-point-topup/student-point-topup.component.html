@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>Point Topup</h2>
+
+<mat-dialog-content>
+    <mat-form-field class="col-md-12">
+        <mat-label>Type</mat-label>
+        <mat-select [(ngModel)]="data.type" required>
+            <mat-option *ngFor="let item of pointTypes" [value]="item.id">
+                {{item.label}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="col-md-12">
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" min="0" [(ngModel)]="data.amount" required>
+    </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button type="button" mat-button (click)="close()" [disabled]="isSaving"><i class='fa fa-times'></i>
+        {{'common.editor.Cancel' | translate}}</button>
+    <button type="button" (click)="save()" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i>
+        {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+    </button>
+</mat-dialog-actions>

@@ -19,6 +19,7 @@ import { StudentGroupOrderSummaryComponent } from './individual-order/individual
 import * as moment from 'moment';
 import { saveAs } from 'file-saver';
 import { StudentWalletTopupComponent } from '../student/student-wallet-topup/student-wallet-topup.component';
+import { StudentPointTopupComponent } from '../student/student-point-topup/student-point-topup.component';
 
 
 @Component({
@@ -373,45 +374,18 @@ export class StudentGroupsManagementComponent implements OnInit {
     });
   }
 
-  addPointTopup(studentGroupId: string) {
-    this.alertService.showDialog('Enter Top up Point:', DialogType.prompt, (val: string) => {
-      if (!val) return;
-      const normalized = val.replace(',', '.');
-      const amount = parseFloat(normalized);
-      if (isNaN(amount) || amount <= 0) {
-        this.alertService.showStickyMessage(
-          "Invalid Input",
-          "Please enter a valid positive point.",
-          MessageSeverity.error
-        );
-        return;
-      }
+  addPointTopup(studentId: string) {
+    const dialogRef = this.dialog.open(StudentPointTopupComponent, {
+      data: {
+        studentId: studentId,
+        isStudentGroup: true
+      },
+      width: '350px',
+      disableClose: true
+    });
 
-      this.alertService.startLoadingMessage("Processing top-up...");
-      this.studentService.pointTopupForStudentGroup(studentGroupId, amount, this.accountService.currentUser.id)
-        .subscribe({
-          next: (response) => {
-            this.alertService.stopLoadingMessage();
-            this.loadingIndicator = false;
-            this.alertService.showMessage(response.message);
+    dialogRef.afterClosed().subscribe(result => {
 
-            if (response.data && response.data.length > 0) {
-              const messageData = response.data.join("<br/><br/>");
-              this.alertService.showStickyMessage("Top-up Info", messageData, MessageSeverity.info);
-            }
-          },
-          error: () => {
-            this.alertService.stopLoadingMessage();
-            this.loadingIndicator = false;
-            this.alertService.showStickyMessage(
-              "Point Top-up Error",
-              "Unable to add Point.",
-              MessageSeverity.error
-            );
-          }
-        });
-    }, () => {
-      // Cancel callback
     });
   }
 
