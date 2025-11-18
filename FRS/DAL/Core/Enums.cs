@@ -219,4 +219,10 @@ namespace DAL.Core
         BASIC,
         FAS
     }
+
+    public enum PointType
+    {
+        GCP,
+        HCP
+    }
 }

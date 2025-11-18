@@ -214,20 +214,22 @@ export class StudentService {
     return this.commonEndpoint.getSieve<PagedResult>(this.pointUrl + '/transactions/sieve/list', filter);
   }
 
-  pointTopupForStudentGroup(studentGroupId: string, amount: number, userId: string) {
+  pointTopupForStudentGroup(studentGroupId: string, amount: number, userId: string,type:string) {
     const param = {
       studentGroupId: studentGroupId,
       amount: amount,
-      userId
+      userId,
+      type
     }
     return this.commonEndpoint.getNewEndpoint<any>(this.pointUrl + `/studentgroup`, param);
   }
 
-  pointTopupForStudent(studentId: string, amount: number, userId: string) {
+  pointTopupForStudent(studentId: string, amount: number, userId: string,type:string) {
     const param = {
       studentGroupId: studentId,
       amount: amount,
-      userId
+      userId,
+      type
     }
     return this.commonEndpoint.getNewEndpoint<any>(this.pointUrl + `/student`, param);
   }

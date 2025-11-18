@@ -273,6 +273,7 @@ namespace DAL
         public DbSet<PLCModel> PLCs { get; set; }
         public DbSet<TrayModel> Trays { get; set; }
         public DbSet<StudentWallet> StudentWallets { get; set; }
+        public DbSet<StudentPoint> StudentPoints { get; set; }
         #region Stored Procedures
 
         public DbSet<spSalesOrderReport> spSalesOrderReport { get; set; }
@@ -709,6 +710,21 @@ namespace DAL
                 .HasIndex(x => new { x.StudentId,x.Type });
 
             builder.Entity<StudentWallet>().TrackAllProperties();
+            #endregion
+
+            #region StudentPoint
+            builder.Entity<StudentPoint>()
+                .Property(x => x.Balance)
+                .IsRequired();
+
+            builder.Entity<StudentPoint>()
+                .Property(x => x.Type)
+                .HasMaxLength(255);
+
+            builder.Entity<StudentPoint>()
+                .HasIndex(x => new { x.StudentId, x.Type });
+
+            builder.Entity<StudentPoint>().TrackAllProperties();
             #endregion
 
             #endregion

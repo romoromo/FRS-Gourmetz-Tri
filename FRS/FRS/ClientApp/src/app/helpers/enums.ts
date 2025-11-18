@@ -1,4 +1,4 @@
-import { MealCollectionType, WalletType } from "../models/enums";
+import { MealCollectionType, PointType, WalletType } from "../models/enums";
 
 export enum ModulePath {
   PibDisplay = "/pibdisplay",
@@ -28,4 +28,10 @@ export const WalletTypeList = [{
   id: WalletType.BASIC, label: "Basic"
 }, {
   id: WalletType.FAS, label: "Fas"
+}]
+
+export const PointTypeList = [{
+  id: PointType.GCP, label: "Good Conduct Point"
+}, {
+  id: PointType.HCP, label: "Healty Choices Point"
 }]

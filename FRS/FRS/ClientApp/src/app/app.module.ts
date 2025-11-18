@@ -513,6 +513,7 @@ import { PlcManagementComponent } from './components/meal-order-system/outlet/pl
 import { PlcEditorComponent } from './components/meal-order-system/outlet/plc/plc-editor.component';
 import { TrayEditorComponent } from './components/meal-order-system/dispenser-outlet/tray-editor.component'; 
 import { StudentWalletTopupComponent } from './components/meal-order-system/student/student-wallet-topup/student-wallet-topup.component';
+import { StudentPointTopupComponent } from './components/meal-order-system/student/student-point-topup/student-point-topup.component';
 
 export const configFactory = (configService: ConfigurationService) => {
   return () => {
@@ -752,7 +753,7 @@ export const configFactory = (configService: ConfigurationService) => {
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
     FaqDetailsManagementComponent, FaqDetailEditorComponent,
     VoucherUtilisationsReportManagementComponent, PlcManagementComponent, PlcEditorComponent, TrayEditorComponent,
-    StudentWalletTopupComponent
+    StudentWalletTopupComponent,StudentPointTopupComponent
   ],
   providers: [
     { provide: 'BASE_URL', useFactory: getBaseUrl },
@@ -937,7 +938,7 @@ export const configFactory = (configService: ConfigurationService) => {
     FaqSubjectsManagementComponent, FaqSubjectEditorComponent,
     FaqDetailsManagementComponent, FaqDetailEditorComponent,
     VoucherUtilisationsReportManagementComponent, DishPreviewErrorComponent, VoucherDishComponent, PlcEditorComponent, TrayEditorComponent,
-    StudentWalletTopupComponent
+    StudentWalletTopupComponent,StudentPointTopupComponent
   ],
 })
 export class AppModule {
