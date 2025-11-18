@@ -885,10 +885,18 @@ namespace DAL.Filters
                 .CanSort()
                 .HasName("classBatchName");
 
+            mapper.Property<Student>(p => p.ClassLevelId)
+                .CanFilter()
+                .CanSort();
+
             mapper.Property<Student>(p => p.Class.ClassLevel.Name)
                 .CanFilter()
                 .CanSort()
                 .HasName("classLevelName");
+
+            mapper.Property<Student>(p => p.ClassId)
+               .CanFilter()
+               .CanSort();
 
             mapper.Property<Student>(p => p.Class.Name)
                 .CanFilter()
