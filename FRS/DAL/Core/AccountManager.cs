@@ -302,6 +302,113 @@ namespace DAL.Core
             return Tuple.Create(true, new string[] { });
         }
 
+
+        public async Task<Tuple<bool, string[]>> CreateUserAsyncV2(ApplicationUser user, IEnumerable<string> roles, string password, bool findByEmail = true)
+        {
+            var existingUser = findByEmail ? await _userManager.FindByEmailAsync(user.Email) : await _userManager.FindByNameAsync(user.UserName);
+
+            if (existingUser != null)
+            {
+                existingUser.CopyFrom(user);
+                if (existingUser.IsActive)
+                {
+                    if (existingUser.IsAD) existingUser.EmailConfirmed = true;
+                    return await UpdateUserAsyncV2(existingUser, roles, password);
+                }
+                else
+                {
+                    existingUser.UserName = user.UserName;
+                    existingUser.IsActive = true;
+                    return await UpdateUserAsyncV2(existingUser, roles, password);
+                }
+            }
+            else
+            {
+                existingUser = await _appContext.Users.SingleOrDefaultAsync(e => e.Email == user.Email && e.InstitutionId == user.InstitutionId);
+            }
+
+            if (existingUser == null)
+            {
+                existingUser = user;
+            }
+
+            if (existingUser.IsAD) existingUser.EmailConfirmed = true;
+
+            var result = existingUser.IsAD ? await _userManager.CreateOrUpdatePassAsync(existingUser, password) : await _userManager.CreateAsync(existingUser, password);
+            if (!result.Succeeded)
+                return Tuple.Create(false, result.Errors.Select(e => e.Description).ToArray());
+
+
+            existingUser = await _userManager.FindByNameAsync(user.UserName);
+
+            if (existingUser == null)
+            {
+                existingUser = await _appContext.Users.SingleOrDefaultAsync(e => e.Email == user.Email && e.InstitutionId == user.InstitutionId);
+            }
+
+            if (roles != null && roles.Any())
+            {
+                try
+                {
+                    result = await this._userManager.AddToRolesAsync(user, roles.Distinct());
+                }
+                catch
+                {
+                    await DeleteUserAsync(existingUser);
+                    throw;
+                }
+            }
+            else
+            {
+                var defaultRole = await _appContext.Roles.FirstOrDefaultAsync(e => e.IsActive && e.IsDefault);
+                try
+                {
+                    result = await this._userManager.AddToRolesAsync(user, new List<string> { defaultRole.Name });
+                }
+                catch
+                {
+                }
+            }
+
+            //check if user has a wallet
+            try
+            {
+                var wallet = await this._appContext.Wallets.FirstOrDefaultAsync(e => e.IsActive && e.UserId == existingUser.Id);
+                if (wallet == null)
+                {
+                    wallet = new Wallet { UserId = existingUser.Id, Balance = 0 };
+                    await this._appContext.Wallets.AddAsync(wallet);
+                    await _appContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            //check if user has reward
+            try
+            {
+                var reward = await this._appContext.Rewards.FirstOrDefaultAsync(e => e.IsActive && e.UserId == existingUser.Id);
+                if (reward == null)
+                {
+                    reward = new Reward { UserId = existingUser.Id, Balance = 0 };
+                    await this._appContext.Rewards.AddAsync(reward);
+                    await _appContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            if (!result.Succeeded)
+            {
+                await DeleteUserAsync(existingUser);
+                return Tuple.Create(false, result.Errors.Select(e => e.Description).ToArray());
+            }
+
+            return Tuple.Create(true, new string[] { });
+        }
+
         public async Task<Tuple<bool, string[]>> CreateUserWithPasswordAsync(ApplicationUser user, IEnumerable<string> roles, string password)
         {
             if (user.IsAD) user.EmailConfirmed = true;
@@ -589,6 +696,214 @@ namespace DAL.Core
             //            return Tuple.Create(false, result.Errors.Select(e => e.Description).ToArray());
             //    }
             //}
+
+            return Tuple.Create(true, new string[] { });
+        }
+
+        public async Task<Tuple<bool, string[]>> UpdateUserAsyncV2(ApplicationUser user, IEnumerable<string> roles, string password)
+        {
+            if (user.UserVehicles != null)
+            {
+                var userVehicles = new List<UserVehicle>();
+                foreach (var v in user.UserVehicles)
+                {
+                    var vehicle = await _appContext.UserVehicles.FirstOrDefaultAsync(e => e.Id == v.Id);
+                    if (vehicle == null)
+                    {
+                        vehicle = v;
+                        vehicle.VehicleStatus = VehicleStatus.PENDING.ToString();
+                    }
+
+                    userVehicles.Add(vehicle);
+                }
+                user.UserVehicles = userVehicles;
+            }
+
+            if (user.UserCardIds != null)
+            {
+                var userCardIds = new List<UserCardId>();
+                foreach (var c in user.UserCardIds)
+                {
+                    var cardId = await _appContext.UserCardIds.FirstOrDefaultAsync(e => e.Id == c.Id);
+                    if (cardId != null)
+                    {
+                        cardId.CardId = c.CardId;
+                        if (c.Status != null)
+                        {
+                            cardId.Status = c.Status;
+                        }
+                        else
+                        {
+                            cardId.Status = CardIdStatus.INACTIVE.ToString();
+                        }
+                        cardId.Remarks = c.Remarks;
+                    }
+                    else
+                    {
+                        cardId = c;
+                    }
+
+                    userCardIds.Add(cardId);
+                }
+                user.UserCardIds = userCardIds;
+            }
+
+            if (user.UserGroupMembers != null)
+            {
+                var userGroupMembers = new List<UserGroupMember>();
+                foreach (var ug in user.UserGroupMembers)
+                {
+                    var userGroup = await _appContext.UserGroupMembers.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.UserGroupId == ug.UserGroupId);
+                    if (userGroup == null)
+                    {
+                        userGroup = ug;
+                    }
+
+                    userGroupMembers.Add(userGroup);
+                }
+                user.UserGroupMembers = userGroupMembers;
+            }
+
+            if (user.Icon != null)
+            {
+                var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == user.FileId);
+                if (icon != null)
+                {
+                    user.Icon = icon;
+                    user.FileId = icon.Id;
+                }
+
+                user.Icon.FileName = System.IO.Path.GetFileName(user.Icon.Path);
+                user.Icon.Type = FileType.Icon.ToString();
+            }
+
+            if (!user.UserWallets.Any())
+            {
+                //check if user has a wallet
+                var wallet = await this._appContext.Wallets.FirstOrDefaultAsync(e => e.IsActive && e.UserId == user.Id);
+                if (wallet == null)
+                {
+                    wallet = new Wallet { UserId = user.Id, Balance = 0 };
+                    user.UserWallets.Add(wallet);
+                }
+            }
+            else
+            {
+                if (user.UserWallets != null)
+                {
+                    var userWallets = new List<Wallet>();
+                    foreach (var ug in user.UserWallets)
+                    {
+                        var uw = await _appContext.Wallets.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.Id == ug.Id);
+                        if (uw == null)
+                        {
+                            uw = ug;
+                        }
+
+                        userWallets.Add(uw);
+                    }
+                    user.UserWallets = userWallets;
+                }
+            }
+
+            if (!user.UserRewards.Any())
+            {
+                //check if user has a wallet
+                var reward = await this._appContext.Rewards.FirstOrDefaultAsync(e => e.IsActive && e.UserId == user.Id);
+                if (reward == null)
+                {
+                    reward = new Reward { UserId = user.Id, Balance = 0 };
+                    user.UserRewards.Add(reward);
+                }
+            }
+            else
+            {
+                if (user.UserRewards != null)
+                {
+                    var userRewards = new List<Reward>();
+                    foreach (var ug in user.UserRewards)
+                    {
+                        var uw = await _appContext.Rewards.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.Id == ug.Id);
+                        if (uw == null)
+                        {
+                            uw = ug;
+                        }
+
+                        userRewards.Add(uw);
+                    }
+                    user.UserRewards = userRewards;
+                }
+            }
+
+            if (user.Students != null)
+            {
+                var stus = new List<StudentManageAccount>();
+                foreach (var ug in user.Students)
+                {
+                    if (ug.Id == 0 && ug.IsActive == false) continue;
+
+                    var uw = await _appContext.StudentManageAccounts.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.Id == ug.Id);
+                    if (uw == null) uw = ug;
+                    else uw.IsActive = ug.IsActive;
+
+
+                    stus.Add(uw);
+                }
+                user.Students = stus;
+            }
+
+            if (user.UserOutlets != null)
+            {
+                var stus = new List<UserOutlet>();
+                foreach (var ug in user.UserOutlets)
+                {
+                    var uw = await _appContext.UserOutlets.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.OutletId == ug.OutletId);
+                    if (uw == null) uw = ug;
+                    stus.Add(uw);
+                }
+
+                user.UserOutlets = stus;
+            }
+
+            if (user.UserCaterers != null)
+            {
+                var stus = new List<UserCaterer>();
+                foreach (var ug in user.UserCaterers)
+                {
+                    var uw = await _appContext.UserCaterers.FirstOrDefaultAsync(e => e.UserId == ug.UserId && e.CatererId == ug.CatererId);
+                    if (uw == null) uw = ug;
+                    stus.Add(uw);
+                }
+
+                user.UserCaterers = stus;
+            }
+
+            var result = await _userManager.UpdateWithPassAsync(user, password);
+            if (!result.Succeeded)
+                return Tuple.Create(false, result.Errors.Select(e => e.Description).ToArray());
+
+
+            if (roles != null)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                var rolesToRemove = userRoles.Except(roles).ToArray();
+                var rolesToAdd = roles.Except(userRoles).Distinct().ToArray();
+
+                if (rolesToRemove.Any())
+                {
+                    result = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+                    if (!result.Succeeded)
+                        return Tuple.Create(false, result.Errors.Select(e => e.Description).ToArray());
+                }
+
+                if (rolesToAdd.Any())
+                {
+                    result = await _userManager.AddToRolesAsync(user, rolesToAdd);
+                    if (!result.Succeeded)
+                        return Tuple.Create(false, result.Errors.Select(e => e.Description).ToArray());
+                }
+            }
 
             return Tuple.Create(true, new string[] { });
         }

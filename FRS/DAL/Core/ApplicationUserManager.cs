@@ -66,12 +66,44 @@ namespace DAL.Core
             {
                 existingUser.CopyFrom(user);
                 existingUser.IsActive = true;
+
                 return await UpdateAsync(existingUser);
             }
             else
             {
                 return await base.CreateAsync(user);
             }
+
+        }
+
+        public async Task<IdentityResult> CreateOrUpdatePassAsync(ApplicationUser user,string password)
+        {
+            var existingUser = await FindByEmailAsync(user.Email);
+            if (existingUser != null && !existingUser.IsActive)
+            {
+                existingUser.CopyFrom(user);
+                existingUser.IsActive = true;
+
+                var remove = await base.RemovePasswordAsync(existingUser);
+
+                var add = await base.AddPasswordAsync(existingUser, password);
+
+                return await UpdateAsync(existingUser);
+            }
+            else
+            {
+                return await base.CreateAsync(user, password);
+            }
+
+        }
+
+        public async Task<IdentityResult> UpdateWithPassAsync(ApplicationUser user, string password)
+        {
+            var remove = await base.RemovePasswordAsync(user);
+
+            var add = await base.AddPasswordAsync(user, password);
+
+            return await UpdateAsync(user);
 
         }
 

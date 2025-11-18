@@ -29,6 +29,7 @@ using BAL.Services.Interfaces.MealOrder;
 using Microsoft.Extensions.Logging;
 using DAL.Core.Logging;
 using Newtonsoft.Json;
+using NuGet.Protocol.Plugins;
 
 namespace FRS.Controllers
 {
@@ -813,6 +814,11 @@ namespace FRS.Controllers
                     if (user == null)
                         return BadRequest($"{nameof(user)} cannot be null");
 
+                    ApplicationUser existingUser = await _accountManager.GetUserByEmailAsync(user.Email);
+
+                    if (existingUser != null && existingUser.IsActive)
+                        return BadRequest($"{user.Email} already registered on the system, please use forgot password option");
+
                     if (string.IsNullOrEmpty(user.UserName)) user.UserName = user.Email;
                     ApplicationUser appUser = _mapper.Map<ApplicationUser>(user);
 
@@ -829,7 +835,7 @@ namespace FRS.Controllers
                     //appUser.IsActive = false;
                     appUser.IsEnabled = false;
 
-                    var result = await _accountManager.CreateUserAsync(appUser, user.Roles, user.NewPassword);
+                    var result = await _accountManager.CreateUserAsyncV2(appUser, user.Roles, user.NewPassword);
                     if (result.Item1)
                     {
                         appUser = await _userManager.FindByEmailAsync(user.Email);
