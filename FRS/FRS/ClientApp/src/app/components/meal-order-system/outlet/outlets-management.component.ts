@@ -144,6 +144,7 @@ export class OutletsManagementComponent implements OnInit {
       { prop: 'name', name: 'Name' },
       { prop: 'address', name: 'Address' },
       { prop: 'daysToFreezeOrdering', name: 'Cut-off in Days' },
+      { prop: 'passcode', name: 'Passcode' },
       { name: '', width: 350, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
   }

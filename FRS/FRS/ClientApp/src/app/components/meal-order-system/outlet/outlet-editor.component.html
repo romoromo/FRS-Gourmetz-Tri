@@ -29,7 +29,12 @@
           <input matInput autocomplete="off" [disabled]="!canManageOutlets" type="number" id="daysToFreezeOrdering"
             name="daysToFreezeOrdering" placeholder="No. of days before ordering is freezed"
             [(ngModel)]="outletEdit.daysToFreezeOrdering" #amount="ngModel" required />
-        </mat-form-field>        
+        </mat-form-field>  
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageOutlets" type="text" id="passcode"
+            name="outletPasscode" placeholder="Passcode" [(ngModel)]="outletEdit.passcode" #passcode="ngModel"
+            required />
+        </mat-form-field>      
       </div>
 
       <div class="clearfix"></div>
