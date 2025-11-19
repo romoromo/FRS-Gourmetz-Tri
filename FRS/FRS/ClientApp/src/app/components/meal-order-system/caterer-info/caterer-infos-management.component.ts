@@ -214,11 +214,11 @@ export class CatererInfosManagementComponent implements OnInit {
   }
 
   openCalendar(row) {
-    window.open(getBaseUrl() + '/menucyclecalendars/' + row.id, '_blank');
+    window.open(getBaseUrl() + 'menucyclecalendars/' + row.id, '_blank');
   }
 
   openDishCalendar(row) {
-    window.open(getBaseUrl() + '/dishcyclecalendars/' + row.id + '/' + row.name, '_blank');
+    window.open(getBaseUrl() + 'dishcyclecalendars/' + row.id + '/' + row.name, '_blank');
   }
 
   get canManageCatererInfos() {
