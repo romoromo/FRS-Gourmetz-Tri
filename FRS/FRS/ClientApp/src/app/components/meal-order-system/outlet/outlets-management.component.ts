@@ -144,11 +144,11 @@ export class OutletsManagementComponent implements OnInit {
       { prop: 'name', name: 'Name' },
       { prop: 'address', name: 'Address' },
       { prop: 'daysToFreezeOrdering', name: 'Cut-off in Days' },
-      {
-        prop: 'mealCollectionType',
-        name: 'Meal Colection',
-        cellTemplate: this.mealCollectionTypeTemplate
-      },
+      //{
+      //  prop: 'mealCollectionType',
+      //  name: 'Meal Colection',
+      //  cellTemplate: this.mealCollectionTypeTemplate
+      //},
       //{ prop: 'outletProfileName', name: 'Outlet Profile Name' },
       { name: '', width: 350, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
