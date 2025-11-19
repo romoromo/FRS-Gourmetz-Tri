@@ -1,12 +1,20 @@
 ﻿using AutoMapper;
 using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces;
+using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
+using BAL.Services.MealOrder;
 using DAL;
+using DAL.Core;
+using DAL.Core.Logging;
 using DAL.Models;
+using DAL.Models.MealOrder;
+using FRS.Controllers;
+using FRS.Helpers;
 using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
@@ -17,27 +25,21 @@ using SMV.FOMOPay.CommonHelper;
 using SMV.FOMOPay.LoggerHelper;
 using SMV.FOMOPay.MessageHelper;
 using SMV.FOMOPay.Model;
+using Stripe;
+using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BAL.Services.Interfaces;
-using DAL.Core.Logging;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using BAL.Services.MealOrder;
-using FRS.Controllers;
-using FRS.Helpers;
-using LoggingEvents = DAL.Core.Logging.LoggingEvents;
-using System.Security.Policy;
 using System.Web;
-using DAL.Models.MealOrder;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using DAL.Core;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using LoggingEvents = DAL.Core.Logging.LoggingEvents;
 
 namespace MealOrderPayments.Controllers
 {
@@ -569,6 +571,127 @@ namespace MealOrderPayments.Controllers
             EventLogger.CreateEventEntry(strPrefix + ":" + strErrorMessage, EventLogEntryType.Warning);
         }
 
+        [HttpPost("create-checkout-session")]
+        public string CreateCheckoutSession()
+        {
+            StripeConfiguration.ApiKey= _configuration.GetSection("StripeConfiguration:ApiKey").Value;
+
+
+            var options = new SessionCreateOptions
+            {
+                LineItems = new List<SessionLineItemOptions>
+                {
+                  new SessionLineItemOptions
+                  {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                      UnitAmount = 44900,
+                      Currency = "usd",
+                      ProductData = new SessionLineItemPriceDataProductDataOptions
+                      {
+                        Name = "dimaz test product",
+                      },
+                    },
+                    Quantity = 1,
+                  },
+                },
+                Mode = "payment",
+                SuccessUrl = "http://localhost:4242/success",
+            };
+
+            var service = new SessionService();
+            Session session = service.Create(options);
+
+            //Response.Headers.Add("Location", session.Url);
+            return session.Url ;
+        }
+
+
+
+        /// <summary>
+        /// We have to do a query on the order status and update our database table.
+        /// </summary>
+        /// <param name="orderID"></param>
+        /// <returns></returns>
+        private String QueryOrderStatusStripe(string orderID)
+        {
+            string authorizationString = string.Empty;
+            string apiDestination = string.Empty;
+            string baseFOMOPayUR = string.Empty;
+            string strOrderStatus = string.Empty;
+            string strQueryOrderURL = string.Empty;
+
+            RestClient client;
+            RestRequest request;
+
+            QueryOrderResponse queryOrderResponse = null;
+            RestResponse getRequestResponse;
+            PaymentResult paymentResult;
+
+
+            paymentResult = new PaymentResult();
+            queryOrderResponse = new QueryOrderResponse();
+
+            //  Quick check ...
+            if (!String.IsNullOrEmpty(orderID))
+            {
+
+                try
+                {
+                    authorizationString = _configuration.GetSection("FOMOPaySettings:AuthorizationType").Value + " " + getBasicCreditals();
+                    baseFOMOPayUR = _configuration.GetSection("FOMOPaySettings:BaseFOMOPayURL").Value;
+                    apiDestination = _configuration.GetSection("FOMOPaySettings:Orders").Value;
+
+                    strQueryOrderURL = apiDestination + "/" + orderID;
+
+                    //RestClient should be thread-safe
+                    client = new RestClient(baseFOMOPayUR);
+                    request = new RestRequest(strQueryOrderURL, Method.Get);
+
+                    request.AddHeader("Access-Control-Allow-Origin", _configuration.GetSection("FOMOPayAPIHeader:AccessControlAllowOrigin").Value);
+                    request.AddHeader("Access-Control-Allow-Methods", _configuration.GetSection("FOMOPayAPIHeader:AccessControlAllowMethods").Value);
+                    request.AddHeader("Accept", _configuration.GetSection("FOMOPayAPIHeader:Accept").Value);
+                    request.AddHeader("Referer", _configuration.GetSection("FOMOPayAPIHeader:Referer").Value);
+                    request.AddHeader("Authorization", authorizationString);
+
+                    request.RequestFormat = DataFormat.Json;
+
+                    // Main part of method
+                    getRequestResponse = client.ExecuteGet<RestResponse>(request);
+
+                    queryOrderResponse = JsonConvert.DeserializeObject<QueryOrderResponse>(getRequestResponse.Content);
+
+                    //// NB Normally, RestSharp doesn't throw an exception if the
+                    // request fails (for ExecutePostAsync and related commands)
+                    if (getRequestResponse.IsSuccessful == true)
+                    {
+                        strOrderStatus = queryOrderResponse.Status;
+                        paymentResult.responseStatus = getRequestResponse.ResponseStatus.ToString();
+                    }
+                    //else
+                    //{
+                    //    strOrderStatus = orderID + " " + getRequestResponse.Content;
+                    //}
+                } catch (Exception ex)
+                {
+                    WriteToEventLog("Exception", ex.Message);
+                } finally
+                {
+                    // Do clean up code....
+                    queryOrderResponse = null;
+                    getRequestResponse = null;
+                    paymentResult = null;
+                    client = null;
+                    request = null;
+
+                }
+
+            }  // if ...
+
+            //returns order status
+            return strOrderStatus;
+
+        }
 
         /// <summary>
         /// We have to do a query on the order status and update our database table.
@@ -1484,7 +1607,7 @@ namespace MealOrderPayments.Controllers
             TransactionOptions transactionOptions = null;
             PaymentItem[] paymentItems = null;
             Amount paymentAmount = null;
-            Address shipAddrs = null;
+            SMV.FOMOPay.Model.Address shipAddrs = null;
             PaymentDiscount[] paymentDiscountList = null;
             bool successfulConvert = false;
             PaymentResult dataReturnedObject = default;
