@@ -152,7 +152,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
     this.cancelPreviousRequests.next();
     this.isLoadingMealSessions = true;
     this.alertService.startLoadingMessage("Loading Meal Sessions...");
-    this.menuService.getMealsessionsByCollectionType(this.outletId, (d).toDateString(), (dTo).toDateString())
+    this.menuService.getMealsessionsByStudentGroup(this.outletId, this.group.id, (d).toDateString(), (dTo).toDateString())
       .pipe(
         takeUntil(this.cancelPreviousRequests),
         switchMap(results => {
@@ -161,9 +161,14 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
           let mealSessions = [];
           if (this.mealSessionDetails) {
             this.mealSessionDetails.forEach((d, i, details) => {
-              let indx = mealSessions && mealSessions.length > 0 ? mealSessions.findIndex(e => e.mealSessionId == d.mealSessionId) : -1;
+              let indx = mealSessions && mealSessions.length > 0 ? mealSessions.findIndex(e => e.mealSessionId == d.mealSessionId && e.id == d.id) : -1;
               if (indx < 0) {
-                mealSessions.push({ mealSessionId: d.mealSessionId, mealSessionName: d.mealSessionName });
+                mealSessions.push(
+                  { 
+                    mealSessionId: d.mealSessionId, 
+                    mealSessionName: d.mealSessionName + " - " + d.name,
+                    id: d.id
+                  });
               }
             });
           }
