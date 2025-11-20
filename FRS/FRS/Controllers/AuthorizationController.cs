@@ -894,6 +894,8 @@ namespace FRS.Controllers
                 
                     identity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin ? "true" : "false" + "", OpenIddictConstants.Destinations.IdentityToken);
 
+                identity.AddClaim(CustomClaimTypes.StudentNumber, user.Students.Where(s => s.IsActive).Count(), OpenIddictConstants.Destinations.IdentityToken);
+
 
                 if (!string.IsNullOrWhiteSpace(user.JobTitle))
                     identity.AddClaim(CustomClaimTypes.JobTitle, user.JobTitle, OpenIddictConstants.Destinations.IdentityToken);
@@ -1063,6 +1065,8 @@ namespace FRS.Controllers
 
 
                 principalIdentity.AddClaim(CustomClaimTypes.NotFirstLogin, user.NotFirstLogin ? "true" : "false", OpenIddictConstants.Destinations.IdentityToken);
+
+                principalIdentity.AddClaim(CustomClaimTypes.StudentNumber, user.Students.Where(s => s.IsActive).Count(), OpenIddictConstants.Destinations.IdentityToken);
 
 
                 if (!string.IsNullOrWhiteSpace(user.JobTitle))

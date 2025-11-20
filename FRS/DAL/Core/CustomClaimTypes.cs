@@ -31,6 +31,7 @@ namespace DAL.Core
         public const string InstitutionId = "institutionId";
         public const string ConfirmationCode = "confirmationCode";
         public const string NotFirstLogin = "notFirstLogin";
+        public const string StudentNumber = "studentNumber";
 
         public const string UserId = "userId";
     }

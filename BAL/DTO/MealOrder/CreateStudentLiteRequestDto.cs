@@ -25,5 +25,7 @@ namespace BAL.DTO.MealOrder
         [Required]
         public int OutletId { get; set; }
         public int CurrentUserId { get; set; }
+
+        public string Email { get; set; }
     }
 }
