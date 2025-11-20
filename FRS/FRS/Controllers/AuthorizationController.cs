@@ -318,6 +318,7 @@ namespace FRS.Controllers
                         FirebaseToken = user.FirebaseToken,
                         ConfirmationCode = needConfirmationCode ? user.ConfirmationCode : "",
                         NotFirstLogin = user.NotFirstLogin,
+                        StudentNumber = user.Students.Where(s => s.IsActive).Count(),
                         ConfirmReadTermsConditions = user.ConfirmReadTermsConditions,
                         ConsentDataCollection = user.ConsentDataCollection,
                         ReceivePromotionalMaterials = user.ReceivePromotionalMaterials
@@ -1115,6 +1116,7 @@ namespace FRS.Controllers
                 }
                 else if (claim.Type == CustomClaimTypes.UserId || claim.Type == CustomClaimTypes.ConfirmationCode ||
                     claim.Type == CustomClaimTypes.NotFirstLogin ||
+                    claim.Type == CustomClaimTypes.StudentNumber ||
                     claim.Type == CustomClaimTypes.JobTitle ||
                     claim.Type == CustomClaimTypes.FullName ||
                     claim.Type == CustomClaimTypes.Configuration ||
