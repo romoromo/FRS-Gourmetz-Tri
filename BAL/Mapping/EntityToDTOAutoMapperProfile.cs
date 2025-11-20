@@ -687,7 +687,7 @@ namespace BAL.Mapping
 
             CreateMap<Route, RouteDTO>();
             CreateMap<RouteDTO, Route>();
-            CreateMap<RouteNodeDTO, RouteNode>();
+            CreateMap<RouteNodeDTO, RouteNode>().ReverseMap();
 
             CreateMap<OutletClassRoster, OutletClassRosterDTO>()
                 .ForMember(e => e.Days, map => map.MapFrom(f => f.Schedules.Where(x => x.IsActive).Select(s => s.Day).Distinct()))

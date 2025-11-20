@@ -47,7 +47,7 @@ export class RoutesManagementComponent implements OnInit {
   openDialog(route: Route): void {
     const dialogRef = this.dialog.open(RouteEditorComponent, {
       data: { header: this.header, route: route },
-      width: '400px',
+      width: '500px',
       disableClose: true
     });
 
