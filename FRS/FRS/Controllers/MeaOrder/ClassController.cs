@@ -47,7 +47,7 @@ namespace FRS.Controllers
         [ApiKeyAuthorize]
         [HttpGet("classbatches/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllClassBatchesPolicy)]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetClassBatches(BaseFilter filter)
@@ -142,7 +142,7 @@ namespace FRS.Controllers
         [ApiKeyAuthorize]
         [HttpGet("classlevels/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllClassLevelsPolicy)]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetClassLevels(BaseFilter filter)
@@ -248,7 +248,7 @@ namespace FRS.Controllers
         [ApiKeyAuthorize]
         [HttpGet("classes/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllClasssPolicy)]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetClasss(BaseFilter filter)

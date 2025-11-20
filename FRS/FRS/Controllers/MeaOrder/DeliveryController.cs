@@ -183,7 +183,7 @@ namespace FRS.Controllers
         [ApiKeyAuthorize]
         [HttpGet("outlets/simple/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllOutletsPolicy)]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetOutletsSimple(BaseFilter filter)
