@@ -7,10 +7,12 @@ using BAL.Services.MealOrder;
 using DAL;
 using DAL.Core;
 using DAL.Core.Logging;
+using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
 using FRS.Controllers;
 using FRS.Helpers;
+using FRS.Middleware;
 using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -581,16 +583,17 @@ namespace MealOrderPayments.Controllers
             EventLogger.CreateEventEntry(strPrefix + ":" + strErrorMessage, EventLogEntryType.Warning);
         }
 
-         
+
 
 
 
         /// <summary>
         /// We have to do a query on the order status and update our database table.
         /// </summary>
-        /// <param name="orderID"></param>
-        /// <returns></returns>
-        private String QueryOrderStatusStripe(string orderID)
+        /// <param name="sessionId">stripe session id</param>
+        /// <param name="fromWebhook">from webhook</param>
+        /// <returns>order status</returns>
+        private String QueryOrderStatusStripe(string sessionId, bool fromWebhook=false)
         {
             string authorizationString = string.Empty;
             string apiDestination = string.Empty;
@@ -610,45 +613,47 @@ namespace MealOrderPayments.Controllers
             queryOrderResponse = new QueryOrderResponse();
 
             //  Quick check ...
-            if (!String.IsNullOrEmpty(orderID))
+            if (!String.IsNullOrEmpty(sessionId))
             {
 
                 try
                 {
-                    authorizationString = _configuration.GetSection("FOMOPaySettings:AuthorizationType").Value + " " + getBasicCreditals();
-                    baseFOMOPayUR = _configuration.GetSection("FOMOPaySettings:BaseFOMOPayURL").Value;
-                    apiDestination = _configuration.GetSection("FOMOPaySettings:Orders").Value;
+                    // Set your secret key. Remember to switch to your live secret key in production.
+                    // See your keys here: https://dashboard.stripe.com/apikeys
+                    StripeConfiguration.ApiKey = _configuration.GetSection("StripeConfiguration:ApiKey").Value;
+                    Console.WriteLine("Fulfilling Checkout Session " + sessionId);
 
-                    strQueryOrderURL = apiDestination + "/" + orderID;
+                    // TODO: Make this function safe to run multiple times,
+                    // even concurrently, with the same session ID
 
-                    //RestClient should be thread-safe
-                    client = new RestClient(baseFOMOPayUR);
-                    request = new RestRequest(strQueryOrderURL, Method.Get);
+                    // TODO: Make sure fulfillment hasn't already been
+                    // performed for this Checkout Session
 
-                    request.AddHeader("Access-Control-Allow-Origin", _configuration.GetSection("FOMOPayAPIHeader:AccessControlAllowOrigin").Value);
-                    request.AddHeader("Access-Control-Allow-Methods", _configuration.GetSection("FOMOPayAPIHeader:AccessControlAllowMethods").Value);
-                    request.AddHeader("Accept", _configuration.GetSection("FOMOPayAPIHeader:Accept").Value);
-                    request.AddHeader("Referer", _configuration.GetSection("FOMOPayAPIHeader:Referer").Value);
-                    request.AddHeader("Authorization", authorizationString);
-
-                    request.RequestFormat = DataFormat.Json;
-
-                    // Main part of method
-                    getRequestResponse = client.ExecuteGet<RestResponse>(request);
-
-                    queryOrderResponse = JsonConvert.DeserializeObject<QueryOrderResponse>(getRequestResponse.Content);
-
-                    //// NB Normally, RestSharp doesn't throw an exception if the
-                    // request fails (for ExecutePostAsync and related commands)
-                    if (getRequestResponse.IsSuccessful == true)
+                    // Retrieve the Checkout Session from the API with line_items expanded
+                    var options = new SessionGetOptions
                     {
-                        strOrderStatus = queryOrderResponse.Status;
-                        paymentResult.responseStatus = getRequestResponse.ResponseStatus.ToString();
-                    }
-                    //else
+                        Expand = new List<string> { "line_items" },
+                         
+                    };
+
+                    var service = new SessionService();
+                    var checkoutSession = service.Get(sessionId, options);
+
+                    // Check the Checkout Session's payment_status property
+                    // to determine if fulfillment should be performed
+                    //if (checkoutSession.PaymentStatus != "unpaid")
                     //{
-                    //    strOrderStatus = orderID + " " + getRequestResponse.Content;
-                    //}
+                    if (checkoutSession!=null )
+                    {
+                        if (fromWebhook) // or checkoutSession.PaymentStatus != "unpaid", but no api support yet. need to find another way.
+                        {
+                            return "SUCCESS";
+                        }
+                    }
+                     
+                   // Console.WriteLine(checkoutSession.ToString());
+
+                    
                 } catch (Exception ex)
                 {
                     WriteToEventLog("Exception", ex.Message);
@@ -663,9 +668,8 @@ namespace MealOrderPayments.Controllers
 
                 }
 
-            }  // if ...
-
-            //returns order status
+            }   
+ 
             return strOrderStatus;
 
         }
@@ -1556,78 +1560,36 @@ namespace MealOrderPayments.Controllers
             return BadRequest(); //  return bad request 
 
         }
-        public void FulfillCheckout(String sessionId)
-        {
-            // Set your secret key. Remember to switch to your live secret key in production.
-            // See your keys here: https://dashboard.stripe.com/apikeys
-            StripeConfiguration.ApiKey = _configuration.GetSection("StripeConfiguration:ApiKey").Value;
-            Console.WriteLine("Fulfilling Checkout Session " + sessionId);
-
-            // TODO: Make this function safe to run multiple times,
-            // even concurrently, with the same session ID
-
-            // TODO: Make sure fulfillment hasn't already been
-            // performed for this Checkout Session
-
-            // Retrieve the Checkout Session from the API with line_items expanded
-            var options = new SessionGetOptions
-            {
-                Expand = new List<string> { "line_items" },
-            };
-
-            var service = new SessionService();
-            var checkoutSession = service.Get(sessionId, options);
-
-            // Check the Checkout Session's payment_status property
-            // to determine if fulfillment should be performed
-            //if (checkoutSession.PaymentStatus != "unpaid")
-            //{
-                // TODO: Perform fulfillment of the line items
-                Console.WriteLine(checkoutSession.ToString());
-
-                // TODO: Record/save fulfillment status for this checkout Session
-
-            //}
-        }
 
         [Route("[action]")]
         [HttpPost]
-        public async Task<IActionResult> stripewebhook()
+        public async Task<IActionResult> NotifyStripe()
         {
             // Use the secret provided by Stripe CLI for local testing
             // or your webhook endpoint's secret.
-            const string secret = "whsec_61087efbff052822a79f5f4a3443ad8d160278c00746b7f3df8b92dcf4cecd83";
+            var secret = _configuration.GetSection("StripeConfiguration:WebhookSecret").Value;
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 
             try
             {
-                var stripeEvent = EventUtility.ConstructEvent(
-                  json,
-                  Request.Headers["Stripe-Signature"],
-                  secret
-                );
+                var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], secret);
 
                 // If on SDK version < 46, use class Events instead of EventTypes
-                if (                  stripeEvent.Type == Events.CheckoutSessionCompleted) {
-                     
-                    Stripe.Checkout.Session sess = (Session)stripeEvent.Data.Object;
-                    //return BadRequest();
-                    FulfillCheckout(sess.Id);
+                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
+                {
+                    var sess = stripeEvent.Data.Object as Stripe.Checkout.Session;
+                    await QueryAndUpdatePaymentStatusStripe(sess.Id);
                     return Ok();
-                } 
-                  else if (stripeEvent.Type == Events.ChargeSucceeded  )
+                } else if (stripeEvent.Type == Events.ChargeSucceeded)
                 {
                     var scharge = stripeEvent.Data.Object as Stripe.Charge;
-
-                    FulfillCheckout(scharge.Id); 
+                    await QueryAndUpdatePaymentStatusStripe(scharge.Id);
                     return Ok();
                 } else
                 {
                     EventLogger.CreateEventEntry("Not the stripe event type we check", EventLogEntryType.Error);
-                    return BadRequest( );
+                    return BadRequest();
                 }
-
-               
             } catch (StripeException sec)
             {
                 EventLogger.CreateEventEntry(sec.StripeError.ToString(), EventLogEntryType.Error);
@@ -1649,12 +1611,10 @@ namespace MealOrderPayments.Controllers
             // validate total here
             long amt = 0;
             try
-            { 
+            {
                 var damt = decimal.Parse(order.amount);
+                // old stripe api versions cant use decimal
                 amt = (long)damt;
-                //https://docs.stripe.com/currencies#minor-units
-                //Debug.WriteLine("Payment amt after converted is "+amt);
-                //amt *= 100;
             } catch (Exception ex)
             {
                 //TODO want to fail here
@@ -1663,7 +1623,7 @@ namespace MealOrderPayments.Controllers
 
                 // Show user friendly error message
                 ProcessMessage(false);
-                var erm = "Exception occurred in OrderController POSTStripe method of API";
+                var erm = "Exception occurred in OrderController PostStripe method of API";
                 EventLogger.CreateEventEntry(erm + "." + ex.Message, EventLogEntryType.Error);
                 throw new Exception(erm, ex);
             }
@@ -1699,24 +1659,23 @@ namespace MealOrderPayments.Controllers
                     //    }
                     //  },
                     //},
-                    Amount=amt,
+                    Amount = amt,
                     Currency = order.currencyCode,
                     Quantity = 1,
-                   Name = order.subject, //subject: 'Token Meal Payment',
-                    Description = order.description,// description: `Payment for ${student.name}`,
+                    Name = order.subject, //subject: 'Token Meal Payment',
+                    Description = order.description, // description: `Payment for ${student.name}`,
                   },
                 },
                 Mode = "payment",
                 //SuccessUrl = order.returnUrl,
                 SuccessUrl = order.returnUrl + "?&session_id={CHECKOUT_SESSION_ID}",
                 CancelUrl = order.backUrl,
-                
             };
 
             var service = new SessionService();
             Session session = service.Create(options);
-            // OLD API VERSION CANNOT USE THIS DIRECTLY, WTF??
-            //Response.Headers.Add("Location", session.Url);
+            // old Stripe API version cant use `Session.Url` directly. 
+            // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#39540---2021-06-16
             try
             {
                 PaymentResult ret = new PaymentResult();
@@ -1724,23 +1683,24 @@ namespace MealOrderPayments.Controllers
                 var splitted = rawjsonstring.Split(",");
                 var uri = splitted.Where(s => s.Contains("checkout.stripe.com")).First();
                 var s2 = uri.Split(": ");
-                var uri2=s2[1].Replace('\"', ' ').Trim();
+                var uri2 = s2[1].Replace('\"', ' ').Trim();
                 ret.responseURI = uri2;
-
+                // TODO this is dirty. fix it later.
+                // because we dont want to break paymentresult, reuse this for now.
+                ret.fomoPaymentResponse = new FomoPaymentResponse();
+                ret.fomoPaymentResponse.id = session.Id;
+                // I hope this will be helpful when debugging frontend
+                ret.fomoPaymentResponse.description = "Manually created. This is created in PostStripe";
+                ret.isSuccessful = true;
                 return ret;
-            }catch (Exception ex)
-            {  
+            } catch (Exception ex)
+            {
                 var z = ex.Message;
                 EventLogger.CreateEventEntry(z, EventLogEntryType.Error);
                 return ProcessBadRequest(order, z);
             }
         }
-
-
-
-
-
-
+        
         /// <summary>
         /// Main method 
         /// </summary>
@@ -2274,12 +2234,98 @@ namespace MealOrderPayments.Controllers
         }
 
         /// <summary>
+        /// Only call this from webhook where we know for sure this is stripe.
+        /// if you need to call from other place, see 
+        /// other method named similarly without the stripe word.
+        /// </summary>
+        /// <param name="sessionId">stripe session id</param>
+        /// <returns>use await for this method.</returns>
+        public async Task QueryAndUpdatePaymentStatusStripe(string sessionId)
+        {
+            if (sessionId != null) // this is called from webhook
+            {
+                var sos = QueryOrderStatusStripe(sessionId, true);
+                List<PaymentDTO> payments = await _paymentService.GetCreatedPaymentsAsync( );
+                var pement = payments.Where(x => x.fomoid == sessionId);
+                if (!pement.IsNullOrEmpty())
+                {
+                    var p = pement.First();
+                    if (p != null)
+                    {
+                        var updated = false;
+                        var tokenOrderUpdated = false;
+                        var emailSent = false;
+                        var strOrderStatus = "";
+
+                        try
+                        {
+                            strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : sos;
+                            if (!String.IsNullOrEmpty(strOrderStatus))
+                            {
+                                if (p.Status != strOrderStatus)
+                                {
+                                    p.Status = strOrderStatus;
+
+                                    if (!p.invoiceSent && p.Status == "SUCCESS")
+                                    {
+                                        await SendInvoice(p);
+                                        emailSent = true;
+                                        p.invoiceSent = true;
+                                    }
+
+                                    await _paymentService.UpdatePaymentAsync(p);
+                                }
+
+                                foreach (var t in p.TokenOrders)
+                                {
+                                    if (t.Status != "paid" && p.Status == "SUCCESS" && t.Status != "cancelled")
+                                    {
+                                        var dt = await this._service.GetTokenOrderByIdAsync(t.Id);
+
+                                        if (dt != null)
+                                        {
+                                            dt.Status = "paid";
+                                            var r = await this._service.UpdateTokenOrderAsync(dt);
+
+                                            tokenOrderUpdated = true;
+                                        }
+                                    }
+                                }
+
+                                foreach (var t in p.MealPlanOrders)
+                                {
+                                    if (t.Status != "paid" && p.Status == "SUCCESS" && t.Status != "cancelled")
+                                    {
+                                        var dt = await this._service.GetMealPlanOrderByIdAsync(t.Id);
+
+                                        if (dt != null)
+                                        {
+                                            dt.Status = "paid";
+                                            var r = await this._service.UpdateMealPlanOrderAsync(dt);
+
+                                            tokenOrderUpdated = true;
+
+                                            if (t.StudentGroupId.HasValue && t.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception ex)
+                        {
+                            _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, $"Error when update payment status. Payment Id {p.Id}, status {p.Status}, status from fomo {strOrderStatus}, payment update {updated}, token order updated {tokenOrderUpdated}, email sent {emailSent}");
+                        }
+                    }
+                }
+            } 
+        }
+
+        /// <summary>
         /// Create a method that can be awaited, but does not return any value.
         /// In this case we don't need to anything after querying payment and 
         /// updating database. Hence mark method as Task. rather than very undersiable
         /// void.
         /// </summary>
-        /// <param name="objBodyPayload"></param>
+        /// <param name="studentId"></param>
         /// <returns></returns>
         public async Task QueryAndUpdatePaymentStatus(int? studentId = null)
         {
@@ -2296,8 +2342,22 @@ namespace MealOrderPayments.Controllers
 
                     try
                     {
+                        // this function can be called from other places
+                        // so we need to account for possibility of stripe payment type,
+                        // which require additional code to query the status.
+                        var filter = new BaseFilter();
+                        var types = await _paymentService.GetPaymentTypesAsync(filter);
+                        var pt = types.PagedData.Where(a => a.Name.Contains("stripe", StringComparison.CurrentCultureIgnoreCase)).First();
+                        string qos;
+                        if (pt != null && p.PaymentTypeId == pt.Id)
+                        {
+                            qos = QueryOrderStatusStripe(p.fomoid);
+                        } else
+                        {
+                            qos = QueryOrderStatus(p.fomoid);
+                        }
 
-                        strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : QueryOrderStatus(p.fomoid);
+                        strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : qos;
 
                         if (!String.IsNullOrEmpty(strOrderStatus))
                         {
