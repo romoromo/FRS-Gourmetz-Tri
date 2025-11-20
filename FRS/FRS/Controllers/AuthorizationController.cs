@@ -294,7 +294,7 @@ namespace FRS.Controllers
                     }
                     else
                     {
-                        var isSuccess = await _emailSender.SendEmailAsync("Tappee", "smv.notification@gmail.com", user.FullName, user.Email, "Tappee Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+                        var isSuccess = await _emailSender.SendEmailAsync("GOe", "smv.notification@gmail.com", user.FullName, user.Email, "GOe Confirmation Code", $"Confirmation Code is {user.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
                     }
 
                     //await _emailController.SendEmailFromQueue();

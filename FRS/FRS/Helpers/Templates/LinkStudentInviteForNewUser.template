@@ -2,8 +2,8 @@
   <img src="{img_onboarding}"></img>
 </div>
 <p>Dear user {email},</p>
-<p>You have been invited to link this email to {student_name}'s account in Tappee.</p>
-<p>Please click the following link to accept the invite. You will be redirected to complete the account registration for Tappee</p>
+<p>You have been invited to link this email to {student_name}'s account in GOe.</p>
+<p>Please click the following link to accept the invite. You will be redirected to complete the account registration for GOe</p>
 <p>
   <a href='{callbackUrl}'>Link Email</a>
 </p>
@@ -11,8 +11,8 @@
 <p>{callbackUrl}</p>
 <br/>
 <p>This email is sent automatically by the system, please do not reply directly.</p>
-<p>Thanks and welcome to Tappee.</p>
+<p>Thanks and welcome to GOe.</p>
 
-<p>Tappee</p>
-<p>Powered by SATS</p>
+<p>GOe</p>
+<p>Powered by Gourmetz</p>
 

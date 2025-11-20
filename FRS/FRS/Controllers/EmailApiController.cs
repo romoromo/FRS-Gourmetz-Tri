@@ -165,8 +165,8 @@ namespace FRS.Controllers
                     var emails = contactUsEmails.Value.Split(';').Select(e => e.Trim()).ToList();
                     foreach (var email in emails)
                     {
-                        await _emailSender.SendEmailAsync(user.FriendlyName, email, "Tappee Contact Us - " + model.Subject, sb.ToString());
-                        //await _emailSender.SendEmailAsync(user.FriendlyName, user.Email, "Tappee Contact Us", email, model.Subject, model.Detail);
+                        await _emailSender.SendEmailAsync(user.FriendlyName, email, "GOe Contact Us - " + model.Subject, sb.ToString());
+                        //await _emailSender.SendEmailAsync(user.FriendlyName, user.Email, "GOe Contact Us", email, model.Subject, model.Detail);
                     }
                 }
 

@@ -55,7 +55,7 @@ export class EmailQueuesManagementComponent implements OnInit {
     this.filter.filters = '';
     this.filter.page = 1;
 
-    this.subjects.push("Tappee Payment Invoice");
+    this.subjects.push("GOe Payment Invoice");
     this.subjects.push("Contact Us");
     this.subjects.push("Confirm your Account");
 

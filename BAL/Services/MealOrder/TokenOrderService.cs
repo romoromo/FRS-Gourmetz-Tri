@@ -657,7 +657,7 @@ namespace BAL.Services.MealOrder
                         if (orders[i].Student != null)
                         {
                             cell = row.CreateCell(0);
-                            cell.SetCellValue("SATS Food Services Pte Ltd (" + orders[0].Student.Outlet.Name + ")");
+                            cell.SetCellValue("Gourmetz Pte Ltd (" + orders[0].Student.Outlet.Name + ")");
                             cell.CellStyle = detailStyle;
                             break;
                         }
@@ -719,7 +719,7 @@ namespace BAL.Services.MealOrder
                     //{
                     //    if (orders[i].Student != null)
                     //    {
-                    //        Paragraph para5 = new Paragraph("SATS Food Services Pte Ltd (" + orders[0].Student.Outlet.Name + ")", new Font(Font.FontFamily.HELVETICA, 10));
+                    //        Paragraph para5 = new Paragraph("Gourmetz Pte Ltd (" + orders[0].Student.Outlet.Name + ")", new Font(Font.FontFamily.HELVETICA, 10));
                     //        para5.Alignment = Element.ALIGN_LEFT;
                     //        document.Add(para5);
                     //        break;

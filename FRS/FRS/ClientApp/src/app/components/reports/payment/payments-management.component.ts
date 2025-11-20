@@ -107,7 +107,7 @@ export class PaymentsReportManagementComponent implements OnInit, OnDestroy {
     this.columns = [
       //{ prop: "index", name: '#', width: 50, cellTemplate: this.indexTemplate, canAutoResize: false },
 
-      { prop: 'invoiceNumber', name: 'Tappee Invoice No.' },
+      { prop: 'invoiceNumber', name: 'GOe Invoice No.' },
       { prop: 'transactionTime', name: 'Transaction Date', pipe: new DateOnlyPipe('en-SG') },
       { prop: 'outletName', name: 'Outlet Name' },
       { prop: 'profileName', name: 'Name' },

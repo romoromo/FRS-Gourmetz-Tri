@@ -881,7 +881,7 @@ namespace BAL.Services.MealOrder
             cell2.Border = Rectangle.NO_BORDER;
             table2.AddCell(cell2);
 
-            table2.AddCell(getCellNoBord("SATS FOOD SERVICE PTE LTD", PdfPCell.ALIGN_LEFT));
+            table2.AddCell(getCellNoBord("Gourmetz PTE LTD", PdfPCell.ALIGN_LEFT));
             table2.AddCell(getCellBoldNoBord("DO Number : ", PdfPCell.ALIGN_LEFT));
             table2.AddCell(getCellNoBord(dOrder.DONumber, PdfPCell.ALIGN_LEFT));
 

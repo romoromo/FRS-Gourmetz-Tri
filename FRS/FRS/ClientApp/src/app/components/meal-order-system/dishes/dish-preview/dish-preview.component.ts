@@ -19,7 +19,7 @@ export class DishPreviewComponent implements OnInit {
   id: string;
   dish: Dish;
   totalWeight: number;
-  satsLogo = 'assets\\images\\sats-logo.jpeg';
+  companyLogo = 'assets\\images\\company-logo.png';
   private restrictions = [];
   restrictionTableData: any[][] = [];
   nipTableData: any[][] = [];

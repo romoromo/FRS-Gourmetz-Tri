@@ -1947,10 +1947,10 @@ namespace MealOrderPayments.Controllers
             sb.AppendLine("</tr>");
             sb.AppendLine("</tbody>");
             sb.AppendLine("</table>");
-            sb.AppendLine("<div><p>SATS Food Services Pte Ltd<br />GST Registration No: M90363671C</p></div>");
+            sb.AppendLine("<div><p>Gourmetz Pte Ltd<br />GST Registration No: </p></div>");
 
 
-            var isSuccess = await _emailSender.SendEmailAsync(p.name, p.email, "Tappee Payment Invoice", sb.ToString());
+            var isSuccess = await _emailSender.SendEmailAsync(p.name, p.email, "GOe Payment Invoice", sb.ToString());
         }
 
         public async Task SendWalletInvoice(WalletPaymentDTO p)
@@ -1993,10 +1993,10 @@ namespace MealOrderPayments.Controllers
             sb.AppendLine("</tr>");
             sb.AppendLine("</tbody>");
             sb.AppendLine("</table>");
-            sb.AppendLine("<div><p>SATS Food Services Pte Ltd<br />GST Registration No: M90363671C</p></div>");
+            sb.AppendLine("<div><p>Gourmetz Pte Ltd<br />GST Registration No: </p></div>");
 
 
-            var isSuccess = await _emailSender.SendEmailAsync(p.name, p.email, "Tappee Payment Invoice", sb.ToString());
+            var isSuccess = await _emailSender.SendEmailAsync(p.name, p.email, "GOe Payment Invoice", sb.ToString());
         }
 
         /// <summary>

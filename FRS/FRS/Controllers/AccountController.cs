@@ -617,9 +617,9 @@ namespace FRS.Controllers
 
                     if (result.Item1)
                     {
-                        var title = $"Tappee Login Information.";
+                        var title = $"GOe Login Information.";
                         var content = $"Hi {appUser.Email}.\n" +
-                            "Please find below your login information for Tappee.\n" +
+                            "Please find below your login information for GOe.\n" +
                             $"Username: {appUser.Email}\n" +
                             $"Password: {newPassword}\n\n" +
                             ""
@@ -627,7 +627,7 @@ namespace FRS.Controllers
 
                         var emailBody = EmailTemplates.GetPlainTextTestEmail(DateTime.Now);
 
-                        var isSuccess = await _emailSender.SendEmailAsync("Tappee", "smv.notification@gmail.com", appUser.FullName, appUser.Email, title, content);
+                        var isSuccess = await _emailSender.SendEmailAsync("GOe", "smv.notification@gmail.com", appUser.FullName, appUser.Email, title, content);
 
                         //int uId = 0;
                         //Int32.TryParse(appUser.Id, out uId);
@@ -1615,7 +1615,7 @@ namespace FRS.Controllers
                     }
 
                     var callbackUrl = Url.Action("StudentLinkAccount", "Authorization", new { studentId = id, userId = user.Id }, protocol: HttpContext.Request.Scheme, host: baseUrl);
-                    var resp = await _emailSender.SendEmailAsync(user.FullName, user.Email, "Tappee Invite to link Student Account",
+                    var resp = await _emailSender.SendEmailAsync(user.FullName, user.Email, "GOe Invite to link Student Account",
                         EmailTemplates.GetLinkStudentAccountForExistingUserEmail(user.Email, dto.Name, callbackUrl, imgUrl));
                     emailSent = resp.success;
                 }
@@ -1623,7 +1623,7 @@ namespace FRS.Controllers
                 {
                     // a new user
                     var callbackUrl = Url.Action("StudentLinkAccount", "Authorization", new { studentId = id, email = email }, protocol: HttpContext.Request.Scheme, host: baseUrl);
-                    var resp = await _emailSender.SendEmailAsync(email, email, "Tappee Invite to link Student Account",
+                    var resp = await _emailSender.SendEmailAsync(email, email, "GOe Invite to link Student Account",
                         EmailTemplates.GetLinkStudentAccountForNewUserEmail(email, dto.Name, callbackUrl, imgUrl));
                     emailSent = resp.success;
                 }

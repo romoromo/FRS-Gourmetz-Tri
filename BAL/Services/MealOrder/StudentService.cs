@@ -326,7 +326,7 @@ namespace BAL.Services.MealOrder
 
                     ICell cell;
                     cell = row.CreateCell(0);
-                    cell.SetCellValue("SATS Food Services Pte Ltd");
+                    cell.SetCellValue("Gourmetz Pte Ltd");
                     cell.CellStyle = headerStyle;
 
                     rowCount += 3;

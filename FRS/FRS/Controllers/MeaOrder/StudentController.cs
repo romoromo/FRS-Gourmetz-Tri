@@ -244,9 +244,9 @@ namespace FRS.Controllers
             {
                 var student = await this._service.GetStudentByIdAsync(id);
 
-                var title = $"Tappee Login Information.";
+                var title = $"GOe Login Information.";
                 var content = $"Hi {student.Name}.\n" +
-                    "Please find below your login information for Tappee.\n" +
+                    "Please find below your login information for GOe.\n" +
                     $"Username: {student.Email}\n" +
                     $"Password: {student.NewPassword}\n\n" +
                     ""
