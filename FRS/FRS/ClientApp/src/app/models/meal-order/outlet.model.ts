@@ -33,6 +33,8 @@ export class OutletSimple {
   public outletProfileId: string;
   public daysToFreezeOrdering: string;
   public createdBy: string;
+
+  public passcode: string;
 }
 
 export class Outlet extends OutletSimple {

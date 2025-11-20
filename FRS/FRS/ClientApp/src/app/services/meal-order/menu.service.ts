@@ -135,6 +135,10 @@ export class MenuService {
     return this.commonEndpoint.get<MealSessionDetail[]>(`${this.mealsessionsByCollectionTypeUrl}?outletId=${outletId}&orderDate=${orderDate}&orderDateTo=${orderDateTo}`);
   }
 
+  getMealsessionsByStudentGroup(outletId, studentGroupId, orderDate, orderDateTo?){
+    return this.commonEndpoint.get<MealSessionDetail[]>(`${this.configurations.baseUrl}/api/menu/outlets/getMealsessionsByStudentGroup?outletId=${outletId}&studentGroupId=${studentGroupId}&orderDate=${orderDate}&orderDateTo=${orderDateTo}`);
+  }
+
   getMealsessionsFromMealAllocation(outletId, orderDate){
     return this.commonEndpoint.get<MealSessionDetail[]>(`${this.configurations.baseUrl}/api/menu/outlets/mealsessionsFromMealAllocation?outletId=${outletId}&orderDate=${orderDate}`);
   }

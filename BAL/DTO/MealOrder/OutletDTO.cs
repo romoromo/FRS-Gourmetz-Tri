@@ -17,6 +17,8 @@ namespace BAL.DTO.MealOrder
         public string OutletProfileName { get; set; }
         public int DaysToFreezeOrdering { get; set; }
         public int? CreatedBy { get; set; }
+
+        public string Passcode { get; set; }
     }
 
     public class OutletDTO : OutletSimpleDTO

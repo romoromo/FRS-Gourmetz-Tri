@@ -668,10 +668,10 @@ namespace FRS
             services.AddScoped<IDeliveryService, DeliveryService>();
             services.AddScoped<IOrderPortalService, OrderPortalService>();
 
-            services.AddScoped<PeriodSessionByClassRoaster>();
-            services.AddScoped<PeriodSessionByClassLevel>();
-            services.AddScoped<PeriodSessionByStudentSelect>();
-            services.AddScoped<IOutletMealSessionResolver, OutletMealSessionResolver>();
+            services.AddScoped<MealSessionByClassRoaster>();
+            services.AddScoped<MealSessionByClassLevel>();
+            services.AddScoped<MealSessionByStudentSelect>();
+            services.AddScoped<IMealSessionResolver, MealSessionResolver>();
             #endregion
         }
 

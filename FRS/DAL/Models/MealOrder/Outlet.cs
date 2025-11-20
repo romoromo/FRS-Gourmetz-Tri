@@ -19,6 +19,8 @@ namespace DAL.Models.MealOrder
         public int? LocationId { get; set; }
         public virtual Location Location { get; set; }
 
+        public string Passcode { get; set; }
+
         public virtual List<CatererOutlet> CatererOutlets { get; set; }
 
         public virtual ICollection<ClassLevel> ClassLevels { get; set; }
