@@ -87,6 +87,8 @@ namespace FRS.ViewModels
         public string DirectoryListingLabel { get; set; }
         public bool IsPasswordMustChange { get; set; }
 
+        public bool isOnboardingSuccess { get; set; }
+
         public string ConfirmationCode { get; set; }
     }
 

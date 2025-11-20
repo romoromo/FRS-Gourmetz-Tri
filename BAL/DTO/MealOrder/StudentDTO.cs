@@ -66,6 +66,10 @@ namespace BAL.DTO.MealOrder
 
         public bool IsChangePassword { get; set; }
 
+        public string ParentEmail { get; set; }
+
+        public bool isFrontendVerified { get; set; }
+
         public bool isNotifNoOrderMadeForNextWeek { get; set; }
         public bool isNotifAbandonCart { get; set; }
         public bool isNotifCancellationRequestStatus { get; set; }
@@ -135,6 +139,7 @@ namespace BAL.DTO.MealOrder
         public string CardId { get; set; }
         public string Status { get; set; }
         public string Remarks { get; set; }
+        public DateTime? IssueDate { get; set; }
         
     }
 
@@ -202,5 +207,13 @@ namespace BAL.DTO.MealOrder
         public string UserName { get; set; }
 
         public string StudentName { get; set; }
+    }
+
+    public class EmailConfirmDTO
+    {
+        public int Id { get; set; }
+        public string Email { get; set; }
+        public string ConfirmationCode { get; set; }
+        public DateTime? Date { get; set; }
     }
 }

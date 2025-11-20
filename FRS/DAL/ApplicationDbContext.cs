@@ -201,6 +201,7 @@ namespace DAL
         public DbSet<Outlet> Outlets { get; set; }
         public DbSet<CatererOutlet> CatererOutlets { get; set; }
         public DbSet<Driver> Drivers { get; set; }
+        public DbSet<EmailConfirm> EmailConfirms { get; set; }
         public DbSet<InterestGroup> InterestGroups { get; set; }
         public DbSet<Route> Routes { get; set; }
         public DbSet<MealSession> MealSessions { get; set; }
@@ -596,6 +597,7 @@ namespace DAL
             #endregion
             builder.Entity<CatererOutlet>().TrackAllProperties();
             builder.Entity<Driver>().TrackAllProperties();
+            builder.Entity<EmailConfirm>().TrackAllProperties();
             builder.Entity<InterestGroup>().TrackAllProperties();
             builder.Entity<Route>().TrackAllProperties();
             builder.Entity<MealSession>().TrackAllProperties();

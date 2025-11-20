@@ -122,6 +122,7 @@ namespace DAL
         private CuisineRepository _cuisines;
         private OutletProfileRepository _outletProfiles;
         private DriverRepository _drivers;
+        private EmailConfirmRepository _emailConfirms;
         private InterestGroupRepository _interestGroups;
         private RouteRepository _routes;
         private MealSessionRepository _mealSessions;
@@ -1327,7 +1328,19 @@ namespace DAL
                 return _drivers;
             }
         }
-        
+
+        public IEmailConfirmRepository EmailConfirms
+        {
+            get
+            {
+                if (_emailConfirms == null)
+                    _emailConfirms = new EmailConfirmRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+
+
+                return _emailConfirms;
+            }
+        }
+
         public IInterestGroupRepository InterestGroups
         {
             get

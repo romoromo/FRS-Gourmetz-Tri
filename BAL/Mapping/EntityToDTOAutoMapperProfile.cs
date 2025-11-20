@@ -685,6 +685,9 @@ namespace BAL.Mapping
             CreateMap<Driver, DriverDTO>();
             CreateMap<DriverDTO, Driver>();
 
+            CreateMap<EmailConfirm, EmailConfirmDTO>();
+            CreateMap<EmailConfirmDTO, EmailConfirm>();
+
             CreateMap<Route, RouteDTO>();
             CreateMap<RouteDTO, Route>();
             CreateMap<RouteNodeDTO, RouteNode>();

@@ -7,9 +7,12 @@ using DAL.Core.DTO;
 using DAL.Core.Helpers;
 using DAL.Core.Interfaces;
 using DAL.Filters;
+using DAL.Models;
 using DAL.Models.MealOrder;
 using FRS.Attributes;
+using FRS.Authorization;
 using FRS.Helpers;
+using FRS.Hubs;
 using FRS.ViewModels;
 using FRS.ViewModels.MealOrder;
 using MealOrderPayments.Controllers;
@@ -1556,7 +1559,7 @@ namespace FRS.Controllers
                 StudentDTO vm = _mapper.Map<CreateStudentLiteRequestDto, StudentDTO>(dto);
                 vm.StudentCards = new List<StudentCardDTO>();
                 if (!string.IsNullOrEmpty(dto.CardId))
-                    vm.StudentCards.Add(new StudentCardDTO { CardId = dto?.CardId, Status = "ACTIVE" });
+                    vm.StudentCards.Add(new StudentCardDTO { CardId = dto?.CardId, IssueDate = dto?.CardIssueDate,  Status = "ACTIVE" });
 
                 if (dto.CurrentUserId != null)
                 {
@@ -1581,6 +1584,100 @@ namespace FRS.Controllers
             {
                 _logger.LogError($"Error CreateStudentV2 : {ex.Message}", ex);
                 _logger.LogError($"Error CreateStudentV2 : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpPost("sendemailconfirm")]
+        [AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllUsersPolicy)]
+        [ProducesResponseType(201, Type = typeof(UserViewModel))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> SendEmailConfirm([FromBody] EmailConfirmDTO ec)
+        {
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (ec == null)
+                        return BadRequest($"{nameof(ec)} cannot be null");
+
+                    EmailConfirm ecModel = _mapper.Map<EmailConfirm>(ec);
+
+                    ecModel.Date = DateTime.Now;
+
+                    Random generator = new Random();
+                    String r = generator.Next(0, 1000000).ToString("D6");
+
+                    ec.ConfirmationCode = r;
+                    ecModel.ConfirmationCode = r;
+
+                    var result = await _service.CreateEmailConfirm(ecModel);
+                    if (result.IsSuccess)
+                    {
+                        var isSuccess = await _emailSender.SendEmailAsync("Gourmetz meal system", "smv_noreply@realtimesys.my.id", ec.Email, ec.Email, "Confirmation Code", $"Confirmation Code is {ec.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
+                        
+                        _logger.LogInformation($"Email Successfully sent");
+                        return CreatedAtAction("Email Confirmationn", new { id = ecModel.Id }, ecModel);
+                    }
+
+                }
+                _logger.LogInformation($"Error Model State");
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Confirm Email : {ex.Message}", ex);
+                _logger.LogError($"Error Confirm email : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpPut("emailConfirm/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> ConfirmUserToken(int id, [FromBody] EmailConfirmDTO ec)
+        {
+            try
+            {
+                EmailConfirm ecModel = await _service.GetEmailConfirm(id);
+
+                if (ModelState.IsValid)
+                {
+                    if (ec == null)
+                        return BadRequest($"{nameof(ec)} cannot be null");
+
+                    if (ecModel == null)
+                        return NotFound(id);
+
+                    bool isValid = true;
+
+                    if (ecModel.ConfirmationCode != ec.ConfirmationCode)
+                    {
+                        isValid = false;
+                        AddErrors(new string[] { "The confirmation code is invalid." });
+                    }
+
+                    if (isValid)
+                    {
+                        return NoContent();
+                    } 
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error UpdateUser : {ex.Message}", ex);
+                _logger.LogError($"Error UpdateUser : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
         }

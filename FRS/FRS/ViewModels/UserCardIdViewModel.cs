@@ -13,6 +13,7 @@ namespace FRS.ViewModels
         [Required(ErrorMessage = "Card Id is required"), StringLength(200, ErrorMessage = "Card Id number must be at most 200 characters")]
         public string Status { get; set; }
         public string Remarks { get; set; }
+        public DateTime? IssueDate { get; set; }
         public int UserId { get; set; }
 
         public UserViewModel UserObj { get; set; }

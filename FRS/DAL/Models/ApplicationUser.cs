@@ -62,6 +62,10 @@ namespace DAL.Models
         public bool IsChangePassword { get; set; }
         public bool IsPasswordMustChange { get; set; } = false;
 
+        public bool isOnboardingSuccess { get; set; }
+
+
+
         [SkipTracking]
         public bool IsConnected { get; set; }
         [SkipTracking]

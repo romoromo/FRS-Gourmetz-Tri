@@ -1,22 +1,23 @@
-﻿using System;
+﻿using AutoMapper;
+using BAL.DTO.MealOrder;
+using BAL.Services.Interfaces;
+using BAL.Services.Interfaces.MealOrder;
+using DAL;
+using DAL.Core;
+using DAL.Core.DTO;
+using DAL.Core.Interfaces;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using Microsoft.AspNetCore.Identity;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using Sieve.Services;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using DAL.Models;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
-using DAL;
-using BAL.Services.Interfaces;
-using AutoMapper;
-using BAL.Services.Interfaces.MealOrder;
-using BAL.DTO.MealOrder;
-using DAL.Models.MealOrder;
-using DAL.Core.Interfaces;
-using DAL.Core.DTO;
-using System.ComponentModel.DataAnnotations;
-using NPOI.XSSF.UserModel;
-using NPOI.SS.UserModel;
 
 namespace BAL.Services.MealOrder
 {
@@ -757,5 +758,39 @@ namespace BAL.Services.MealOrder
         }
 
         #endregion
+
+
+        public async Task<BaseOperationResponse> CreateEmailConfirm(EmailConfirm ec)
+        {
+            var existingEc = await _uow.EmailConfirms.GetByEmailAsync(ec.Email);
+
+            if (existingEc != null)
+            {
+                ec.Id = existingEc.Id;
+                existingEc.CopyFrom(ec);
+                if (existingEc.IsActive)
+                {
+                    return await _uow.EmailConfirms.UpdateAsync(existingEc);
+                }
+                else
+                {
+                    existingEc.IsActive = true;
+                    return await _uow.EmailConfirms.UpdateAsync(existingEc);
+                }
+            }
+
+            if (existingEc == null)
+            {
+                existingEc = ec;
+            }
+
+            return await _uow.EmailConfirms.CreateAsync(ec);
+        }
+
+        public async Task<EmailConfirm> GetEmailConfirm(int id)
+        {
+            return await this._uow.EmailConfirms.GetByIdAsync(id);
+        }
+
     }
 }

@@ -107,6 +107,7 @@ namespace DAL
         IMenuCycleRepository MenuCycles { get; }
         ICuisineRepository Cuisines { get; }
         IDriverRepository Drivers { get; }
+        IEmailConfirmRepository EmailConfirms { get; }
         IInterestGroupRepository InterestGroups { get; }
         IRouteRepository Routes { get; }
         IMealSessionRepository MealSessions { get; }

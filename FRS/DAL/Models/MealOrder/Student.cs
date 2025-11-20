@@ -48,11 +48,15 @@ namespace DAL.Models.MealOrder
 
         public double WalletDailyLimit { get; set; }
 
+        public string ParentEmail { get; set; }
+
         [SkipTracking]
         public byte[] ConcurrencyStamp { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]
         public double PointBalance { get; set; }
+
+        public bool isFrontendVerified { get; set; }
 
         public bool isNotifNoOrderMadeForNextWeek { get; set; }
         public bool isNotifAbandonCart { get; set; }

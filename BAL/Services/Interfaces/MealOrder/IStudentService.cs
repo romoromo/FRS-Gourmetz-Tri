@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BAL.DTO.MealOrder;
+﻿using BAL.DTO.MealOrder;
 using DAL.Core;
 using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
+using DAL.Models.MealOrder;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BAL.Services.Interfaces.MealOrder
 {
@@ -70,5 +71,9 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<bool> ImportStudentGroupAsync(List<int> studentids, int studentGroupId, int userId);
         Task<BaseOperationResponse> AssignVoucherByStudentGroup(int studentGroupId, string code);
         Task<BaseOperationResponse> UpdateStudentClassByClassId(StudentDTO dto, int originClassId);
+
+        Task<BaseOperationResponse> CreateEmailConfirm(EmailConfirm ec);
+
+        Task<EmailConfirm> GetEmailConfirm(int id);
     }
 }

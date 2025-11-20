@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
+using System;
+
 namespace BAL.DTO.MealOrder
 {
     public class CreateStudentLiteRequestDto
@@ -17,6 +19,9 @@ namespace BAL.DTO.MealOrder
         public int ClassBatchId { get; set; }
         public List<int> RestrictionsIds { get; set; } = new List<int>();
         public string CardId { get; set; }
+        public DateTime CardIssueDate { get; set; }
+        public string ParentEmail { get; set; }
+
         [Required]
         public int OutletId { get; set; }
         public int CurrentUserId { get; set; }

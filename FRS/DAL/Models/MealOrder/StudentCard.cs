@@ -17,6 +17,8 @@ namespace DAL.Models.MealOrder
         public string CardId { get; set; }
         public string Status { get; set; }
         public string Remarks { get; set; }
+
+        public DateTime? IssueDate { get; set; }
         public int StudentId { get; set; }
 
         [ForeignKey("StudentId")]
