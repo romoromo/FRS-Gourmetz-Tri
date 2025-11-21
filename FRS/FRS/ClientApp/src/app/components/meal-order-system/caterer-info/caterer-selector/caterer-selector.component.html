@@ -27,7 +27,7 @@
               </td>
               <td>{{row.outlet.name}}</td>
               <td>
-                <mat-select [disabled]="row.status == 'APPROVED' && row.outletProfileId > 0" id="outletProfile" name="outletProfile" [(ngModel)]="row.outletProfileId" #outletProfile="ngModel" required style="border: 1px solid #000;">
+                <mat-select id="outletProfile" name="outletProfile" [(ngModel)]="row.outletProfileId" #outletProfile="ngModel" required style="border: 1px solid #000;">
                   <mat-option *ngFor="let outletProfile of outletProfileByCaterer(row)" [value]="outletProfile.id">
                     {{outletProfile.label}}
                   </mat-option>
