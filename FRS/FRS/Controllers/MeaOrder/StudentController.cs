@@ -1546,6 +1546,7 @@ namespace FRS.Controllers
         [HttpPost("students/v2")]
         [ProducesResponseType(201, Type = typeof(BaseOperationResponse))]
         [ProducesResponseType(400)]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateStudentV2([FromBody] CreateStudentLiteRequestDto dto)
         {
             try

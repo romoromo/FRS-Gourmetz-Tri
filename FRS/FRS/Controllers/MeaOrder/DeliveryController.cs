@@ -180,7 +180,7 @@ namespace FRS.Controllers
         #region Outlets
 
         #region Sieved
-        [ApiKeyAuthorize]
+        //[ApiKeyAuthorize]
         [HttpGet("outlets/simple/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllOutletsPolicy)]
         [AllowAnonymous]

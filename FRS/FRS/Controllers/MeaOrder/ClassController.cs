@@ -44,7 +44,7 @@ namespace FRS.Controllers
         #region Class Batches
 
         #region Sieved
-        [ApiKeyAuthorize]
+        //[ApiKeyAuthorize]
         [HttpGet("classbatches/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllClassBatchesPolicy)]
         [AllowAnonymous]
@@ -138,7 +138,7 @@ namespace FRS.Controllers
 
         #region Class Levels
 
-        #region Sieved
+        //#region Sieved
         [ApiKeyAuthorize]
         [HttpGet("classlevels/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllClassLevelsPolicy)]
@@ -229,7 +229,7 @@ namespace FRS.Controllers
             return BadRequest(ModelState);
         }
 
-        [ApiKeyAuthorize]
+        //[ApiKeyAuthorize]
         [HttpGet("classlevels/periodmealsession")]
         //[AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(List<MealSessionDetailDTO>))]
