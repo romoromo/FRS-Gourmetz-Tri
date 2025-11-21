@@ -1,4 +1,5 @@
 ﻿using DAL.Core.Audit.Attributes;
+using DAL.Core.DTO;
 using DAL.Models.MealOrder;
 using Sieve.Attributes;
 using System;
@@ -90,6 +91,8 @@ namespace BAL.DTO.MealOrder
         public List<StudentAccountLinkRequestDTO> AccountLinkRequests { get; set; }
 
         public List<WalletPaymentDTO> WalletPayments { get; set; }
+        public List<StudentWalletDTO> StudentWallets { get; set; }
+        public List<StudentPointDTO> StudentPoints { get; set; }
     }
 
     public class StudentManageAccountDTO

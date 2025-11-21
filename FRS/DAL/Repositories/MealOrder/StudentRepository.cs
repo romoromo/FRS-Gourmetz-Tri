@@ -55,7 +55,12 @@ namespace DAL.Repositories.MealOrder
         #region Sieved
         public async Task<PagedEntity<Student>> GetStudentsAsync(BaseFilter filter, bool noAccount = false)
         {
-            IQueryable<Student> query = _appContext.Students.Include(e => e.Account).ThenInclude(e => e.User).ThenInclude(e => e.UserCardIds);
+            IQueryable<Student> query = _appContext.Students
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Include(e => e.Account).ThenInclude(e => e.User).ThenInclude(e => e.UserCardIds)
+                .Include(e => e.StudentWallets)
+                .Include(e => e.StudentPoints);
 
             if (noAccount) query = query.Where(q => q.Account == null && q.Email != null && q.Email != "");
 

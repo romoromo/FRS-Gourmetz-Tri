@@ -163,7 +163,9 @@ namespace BAL.Mapping
                 .ForMember(e => e.OutletName, map => map.MapFrom(f => f.Outlet.Name));
 
             CreateMap<ClassDTO, Class>();
-            CreateMap<StudentDTO, Student>();
+            CreateMap<StudentDTO, Student>()
+                .ForMember(e => e.StudentPoints, map => map.Ignore())
+                .ForMember(e => e.StudentWallets, map => map.Ignore());
             CreateMap<StudentDTO, ApplicationUser>()
                 .ForMember(e => e.Id, map => map.MapFrom(e => e.UserId))
                 .ForMember(e => e.UserType, map => map.MapFrom(e => e.UserType));
@@ -191,6 +193,9 @@ namespace BAL.Mapping
                 .ForMember(e => e.InterestGroups, map => map.MapFrom(e => e.InterestGroups.Where(f => f.IsActive).ToList()))
                 .ForMember(e => e.Vouchers, map => map.MapFrom(e => e.Vouchers.Where(f => f.IsActive).ToList()))
                 .ForMember(e => e.AccountLinkRequests, map => map.MapFrom(e => e.AccountLinkRequests.Where(f => f.IsActive && f.Status == "Pending").ToList()));
+            
+            CreateMap<StudentWallet, StudentWalletDTO>();
+            CreateMap<StudentPoint, StudentPointDTO>();
 
             CreateMap<StudentManageAccount, StudentManageAccountDTO>()
                 .ForMember(d => d.Name, map => map.MapFrom(s => s.Student != null ? s.Student.Name : string.Empty))

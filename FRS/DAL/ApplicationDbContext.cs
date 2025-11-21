@@ -387,6 +387,8 @@ namespace DAL
             builder.Entity<Student>().HasMany(s => s.StudentCards).WithOne(s => s.Student);
             builder.Entity<Student>().HasMany(s => s.Restrictions).WithOne(s => s.Student);
             builder.Entity<Student>().HasMany(s => s.InterestGroups).WithOne(s => s.Student);
+            builder.Entity<Student>().HasMany(s => s.StudentPoints).WithOne(s => s.Student);
+            builder.Entity<Student>().HasMany(s => s.StudentWallets).WithOne(s => s.Student);
             builder.Entity<Student>().Property(u => u.ConcurrencyStamp).ValueGeneratedOnAddOrUpdate().IsConcurrencyToken(true).IsRowVersion();
             builder.Entity<StudentGroup>().HasMany(s => s.Sgdetails).WithOne(s => s.StudentGroup);
             builder.Entity<StudentAccount>().HasKey(lf => new { lf.StudentId, lf.UserId });

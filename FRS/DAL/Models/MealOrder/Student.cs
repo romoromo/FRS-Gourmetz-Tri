@@ -85,6 +85,8 @@ namespace DAL.Models.MealOrder
         public virtual ICollection<StudentAccountLinkRequest> AccountLinkRequests { get; set; }
 
         public virtual ICollection<WalletPayment> WalletPayments { get; set; }
+        public virtual ICollection<StudentWallet> StudentWallets { get; set; }
+        public virtual ICollection<StudentPoint> StudentPoints { get; set; }
 
 
     }
