@@ -1,34 +1,37 @@
-import { Component, ViewChild, Inject } from '@angular/core';
+import { Component, ViewChild, Inject } from "@angular/core";
 
-import { AlertService, MessageSeverity } from '../../../services/alert.service';
+import { AlertService, MessageSeverity } from "../../../services/alert.service";
 import { AccountService } from "../../../services/account.service";
-import { Permission } from '../../../models/permission.model';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Route, RouteNode } from 'src/app/models/meal-order/route.model';
-import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
-import { MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
-import { MomentUtcDateAdapter } from 'src/app/helpers/moment-utc-adapter';
-import { Filter } from 'src/app/models/sieve-filter.model';
-import { DateAdapter, MatDatepickerInputEvent, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material';
-import { StoreInfo } from '../../../models/meal-order/store-info.model';
+import { Permission } from "../../../models/permission.model";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
+import { Route, RouteNode } from "src/app/models/meal-order/route.model";
+import { DeliveryService } from "src/app/services/meal-order/delivery.service";
+import { MAT_MOMENT_DATE_FORMATS } from "@angular/material-moment-adapter";
+import { MomentUtcDateAdapter } from "src/app/helpers/moment-utc-adapter";
+import { Filter } from "src/app/models/sieve-filter.model";
+import {
+  DateAdapter,
+  MatDatepickerInputEvent,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+} from "@angular/material";
+import { StoreInfo } from "../../../models/meal-order/store-info.model";
 
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
 @Component({
-  selector: 'route-editor',
-  templateUrl: './route-editor.component.html',
-  styleUrls: ['./route-editor.component.css']
+  selector: "route-editor",
+  templateUrl: "./route-editor.component.html",
+  styleUrls: ["./route-editor.component.css"],
 })
 export class RouteEditorComponent {
-
   private isNewRoute = false;
   private isSaving: boolean;
   private showValidationErrors: boolean = true;
   private editingRouteLabel: string;
   private routeEdit: Route = new Route();
   private allPermissions: Permission[] = [];
-  private selectedValues: { [key: string]: boolean; } = {};
+  private selectedValues: { [key: string]: boolean } = {};
   public formResetToggle = true;
   public nodes = [];
   public selectedNodes = [];
@@ -40,14 +43,17 @@ export class RouteEditorComponent {
   public changesFailedCallback: () => void;
   public changesCancelledCallback: () => void;
 
-
-  @ViewChild('f')
+  @ViewChild("f")
   private form;
 
-  constructor(private alertService: AlertService, private deliveryService: DeliveryService, private accountService: AccountService,
+  constructor(
+    private alertService: AlertService,
+    private deliveryService: DeliveryService,
+    private accountService: AccountService,
     public dialogRef: MatDialogRef<RouteEditorComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-    if (typeof (data.route) != typeof (undefined)) {
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    if (typeof data.route != typeof undefined) {
       if (data.route.id) {
         this.editRoute(data.route);
       } else {
@@ -56,18 +62,17 @@ export class RouteEditorComponent {
     }
   }
 
-
   private showErrorAlert(caption: string, message: string) {
     this.alertService.showMessage(caption, message, MessageSeverity.error);
   }
 
   getStores() {
-    console.log("get stores")
+    console.log("get stores");
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
-    this.deliveryService.getStoreInfosByFilter(filter)
-      .subscribe(results => {
-        console.log("stores: ", results)
+    filter.filters = "(IsActive)==true";
+    this.deliveryService.getStoreInfosByFilter(filter).subscribe(
+      (results) => {
+        console.log("stores: ", results);
         this.nodes = results.pagedData;
         if (this.routeEdit.nodes != null) {
           this.routeEdit.nodes.forEach((rn, indexr) => {
@@ -75,43 +80,103 @@ export class RouteEditorComponent {
               if (rn.storeId == n.id) {
                 n.order = rn.order;
                 n.interval = rn.interval;
-                this.selectedNodes.push(n)
+                this.selectedNodes.push(n);
               }
             });
           });
         }
-        console.log("selected Nodes", this.selectedNodes)
-        this.selectedNodes.sort((a, b) => a.order - b.order)
+        console.log("selected Nodes", this.selectedNodes);
+        this.selectedNodes.sort((a, b) => a.order - b.order);
+
+        this.initNodeLists(this.nodes, this.selectedNodes);
       },
-        error => {
-          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving interest groups.\r\n"`,
-            MessageSeverity.error);
-        })
+      (error) => {
+        //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+        this.alertService.showStickyMessage(
+          "Get Error",
+          `An error occured while retrieving interest groups.\r\n"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 
+  private initNodeLists(allNodes: any[], existingSelected?: any[]) {
+    // clone to avoid accidental ref sharing
+    this.nodes = (allNodes || []).map((n) => ({ ...n }));
+    this.selectedNodes = [];
+
+    if (existingSelected && existingSelected.length) {
+      // normalize: by id only
+      const selectedIds = new Set(existingSelected.map((s) => Number(s.id)));
+
+      // populate selectedNodes using objects from nodes source if possible
+      const stillAvailable = [];
+      for (const n of this.nodes) {
+        if (selectedIds.has(Number(n.id))) {
+          this.selectedNodes.push({ ...n });
+        } else {
+          stillAvailable.push(n);
+        }
+      }
+
+      // nodes that are not selected
+      this.nodes = stillAvailable;
+
+      // If there were selected items that are not in `nodes` (maybe edited), append them to selectedNodes:
+      existingSelected.forEach((s) => {
+        if (!this.selectedNodes.some((x) => Number(x.id) === Number(s.id))) {
+          this.selectedNodes.push({ ...s });
+        }
+      });
+    }
+
+    // Keep nodes sorted by display name (optional)
+    this.nodes.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  }
 
   addNode() {
-    console.log("selected node: ", this.selectedNode)
-    this.selectedNodes.push(this.selectedNode)
+    if (!this.selectedNode) return;
+
+    const id = Number(this.selectedNode.id);
+
+    if (this.selectedNodes.some((x) => Number(x.id) === id)) {
+      return;
+    }
+
+    const itemToAdd = { ...this.selectedNode };
+    this.selectedNodes.push(itemToAdd);
+    this.nodes = this.nodes.filter((n) => Number(n.id) !== id);
+
+    this.selectedNode = null;
   }
 
-  drop(event: CdkDragDrop<{ id: number, title: string, url: string }[]>) {
-    moveItemInArray(this.selectedNodes, event.previousIndex, event.currentIndex);
-    console.log("urutan: " + this.selectedNodes)
+  drop(event: CdkDragDrop<{ id: number; title: string; url: string }[]>) {
+    moveItemInArray(
+      this.selectedNodes,
+      event.previousIndex,
+      event.currentIndex
+    );
+    console.log("urutan: " + this.selectedNodes);
   }
 
   removeNode(node) {
-    var index = this.selectedNodes.indexOf(node);
-    this.selectedNodes.splice(index, 1);
-  }
+    if (!node) return;
+    const id = Number(node.id);
 
+    this.selectedNodes = this.selectedNodes.filter((n) => Number(n.id) !== id);
+    if (!this.nodes.some((n) => Number(n.id) === id)) {
+      this.nodes.push({ ...node });
+      this.nodes.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    }
+  }
 
   private save() {
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
-    this.routeEdit.institutionId = this.accountService.currentUser.institutionId;
-    console.log("route save:", this.routeEdit)
+    this.routeEdit.institutionId =
+      this.accountService.currentUser.institutionId;
+    console.log("route save:", this.routeEdit);
 
     this.routeEdit.nodes = [];
     this.selectedNodes.forEach((p, index, ps) => {
@@ -121,57 +186,64 @@ export class RouteEditorComponent {
       sr.order = index;
       sr.interval = p.interval;
       this.routeEdit.nodes.push(sr);
-
     });
 
-
     if (this.isNewRoute) {
-      this.deliveryService.newRoute(this.routeEdit).subscribe(route => this.saveSuccessHelper(route), error => this.saveFailedHelper(error));
-    }
-    else {
-      this.deliveryService.updateRoute(this.routeEdit).subscribe(response => this.saveSuccessHelper(), error => this.saveFailedHelper(error));
+      this.deliveryService.newRoute(this.routeEdit).subscribe(
+        (route) => this.saveSuccessHelper(route),
+        (error) => this.saveFailedHelper(error)
+      );
+    } else {
+      this.deliveryService.updateRoute(this.routeEdit).subscribe(
+        (response) => this.saveSuccessHelper(),
+        (error) => this.saveFailedHelper(error)
+      );
     }
   }
 
-
   private saveSuccessHelper(route?: Route) {
-    if (route)
-      Object.assign(this.routeEdit, route);
+    if (route) Object.assign(this.routeEdit, route);
 
     this.isSaving = false;
     this.alertService.stopLoadingMessage();
     this.showValidationErrors = false;
 
     if (this.isNewRoute)
-      this.alertService.showMessage("Success", `Route \"${this.routeEdit.label}\" was created successfully`, MessageSeverity.success);
+      this.alertService.showMessage(
+        "Success",
+        `Route \"${this.routeEdit.label}\" was created successfully`,
+        MessageSeverity.success
+      );
     else
-      this.alertService.showMessage("Success", `Changes to route type \"${this.routeEdit.label}\" was saved successfully`, MessageSeverity.success);
-
+      this.alertService.showMessage(
+        "Success",
+        `Changes to route type \"${this.routeEdit.label}\" was saved successfully`,
+        MessageSeverity.success
+      );
 
     this.routeEdit = new Route();
     this.resetForm();
 
-
     //if (!this.isNewMealType && this.accountService.currentUser.facilities.some(r => r == this.editingMealTypeCode))
     //    this.refreshLoggedInUser();
 
-    if (this.changesSavedCallback)
-      this.changesSavedCallback();
+    if (this.changesSavedCallback) this.changesSavedCallback();
 
     this.dialogRef.close();
   }
 
-
   private saveFailedHelper(error: any) {
     this.isSaving = false;
     this.alertService.stopLoadingMessage();
-    this.alertService.showStickyMessage("Save Error", "The below errors occured while saving your changes:", MessageSeverity.error);
+    this.alertService.showStickyMessage(
+      "Save Error",
+      "The below errors occured while saving your changes:",
+      MessageSeverity.error
+    );
     this.alertService.showStickyMessage(error, null, MessageSeverity.error);
 
-    if (this.changesFailedCallback)
-      this.changesFailedCallback();
+    if (this.changesFailedCallback) this.changesFailedCallback();
   }
-
 
   private cancel() {
     this.routeEdit = new Route();
@@ -181,18 +253,15 @@ export class RouteEditorComponent {
 
     this.alertService.resetStickyMessage();
 
-    if (this.changesCancelledCallback)
-      this.changesCancelledCallback();
+    if (this.changesCancelledCallback) this.changesCancelledCallback();
 
     this.dialogRef.close();
   }
 
   resetForm(replace = false) {
-
     if (!replace) {
       this.form.reset();
-    }
-    else {
+    } else {
       this.formResetToggle = false;
 
       setTimeout(() => {
@@ -200,7 +269,6 @@ export class RouteEditorComponent {
       });
     }
   }
-
 
   newRoute() {
     this.isNewRoute = true;
@@ -218,7 +286,7 @@ export class RouteEditorComponent {
 
   editRoute(route: Route) {
     if (route) {
-      console.log("route edit:", route)
+      console.log("route edit:", route);
       this.isNewRoute = false;
       this.showValidationErrors = true;
 
@@ -227,18 +295,19 @@ export class RouteEditorComponent {
       this.routeEdit = new Route();
       Object.assign(this.routeEdit, route);
 
-      console.log('start: ', this.start)
+      console.log("start: ", this.start);
 
       this.getStores();
 
       return this.routeEdit;
-    }
-    else {
+    } else {
       return this.newRoute();
     }
   }
 
   get canManageRoutes() {
-    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtRoutesPermission)
+    return this.accountService.userHasPermission(
+      Permission.manageMOSOrderMgtRoutesPermission
+    );
   }
 }

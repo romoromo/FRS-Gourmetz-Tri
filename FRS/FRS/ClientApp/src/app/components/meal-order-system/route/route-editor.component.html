@@ -1,21 +1,28 @@
 <h1 mat-dialog-title>{{data.header}}</h1>
 <div>
   <form *ngIf="formResetToggle" class="form-horizontal" name="routeEditorForm" #f="ngForm" novalidate
-        (ngSubmit)="f.form.valid ? save() :
+    (ngSubmit)="f.form.valid ? save() :
           (!routeLabel.valid && showErrorAlert('Label is required', 'Please enter label (minimum of 2 and maximum of 200 characters)'));">
     <div mat-dialog-content>
       <div class="row">
         <mat-form-field class="col-md-12">
-          <input matInput autocomplete="off" [disabled]="!canManageRoutes" type="text" id="routeLabel" name="routeLabel" placeholder="Enter label" [(ngModel)]="routeEdit.label" #routeLabel="ngModel" required minlength="2" maxlength="200" />
+          <input matInput autocomplete="off" [disabled]="!canManageRoutes" type="text" id="routeLabel" name="routeLabel"
+            placeholder="Enter label" [(ngModel)]="routeEdit.label" #routeLabel="ngModel" required minlength="2"
+            maxlength="200" />
         </mat-form-field>
         <mat-form-field class="col-md-12">
-          <input matInput autocomplete="off" [disabled]="!canManageRoutes" type="text" id="routeDetails" name="routeDetails" placeholder="Enter Route Details" [(ngModel)]="routeEdit.details" #routeDetails="ngModel" />
+          <input matInput autocomplete="off" [disabled]="!canManageRoutes" type="text" id="routeDetails"
+            name="routeDetails" placeholder="Enter Route Details" [(ngModel)]="routeEdit.details"
+            #routeDetails="ngModel" />
         </mat-form-field>
         <mat-form-field class="col-md-12">
-          <input matInput [disabled]="!canManageRoutes" type="time" id="routeTime" datetime="routeTime" placeholder="Enter Pickup Time" name="routeTime" [ngModel]="routeEdit.pickup | date:  'HH:mm'" (ngModelChange)="routeEdit.pickup = $event" />
+          <input matInput [disabled]="!canManageRoutes" type="time" id="routeTime" datetime="routeTime"
+            placeholder="Enter Pickup Time" name="routeTime" [ngModel]="routeEdit.pickup | date:  'HH:mm'"
+            (ngModelChange)="routeEdit.pickup = $event" />
         </mat-form-field>
         <mat-form-field class="col-md-12">
-          <input matInput [disabled]="!canManageRoutes" type="color" id="color" placeholder="Enter Route Color" name="color"[(ngModel)]="routeEdit.color" #color="ngModel"/>
+          <input matInput [disabled]="!canManageRoutes" type="color" id="color" placeholder="Enter Route Color"
+            name="color" [(ngModel)]="routeEdit.color" #color="ngModel" />
         </mat-form-field>
         <hr />
         <div class="col-sm-12">
@@ -30,13 +37,33 @@
           </mat-select>
         </mat-form-field>
         <div class="col-md-4">
-          <button *ngIf="!canManageRoutes" type="button" mat-button (click)="addNode()">
-            Add Node
+          <button [disabled]="!canManageRoutes" type="button" mat-button (click)="addNode()"
+            style="border: 1px solid #c3c3c3;">
+            <i class="fa fa-plus-square" aria-hidden="true"></i> Add Node
           </button>
         </div>
-        <div *ngIf="selectedNodes.length > 0" style="max-height: 75vh;overflow-y: auto;" cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-          <div style="border:solid 1px;padding:10px;border-radius:15px" *ngFor="let node of selectedNodes; let i = index;" cdkDrag>
+        <div *ngIf="selectedNodes.length > 0" style="max-height: 75vh;overflow-y: auto;margin-bottom: 10px;" cdkDropList
+          class="example-list" (cdkDropListDropped)="drop($event)">
+          <div style="padding:10px;border-radius:15px"
+            *ngFor="let node of selectedNodes; let i = index;" cdkDrag>
             <div class="row">
+              <div class="col-md-5">
+                {{node.name}}
+              </div>
+              <div class="col-md-5">
+                <mat-form-field class="col-md-12 no-padding-bottom no-padding-top" [floatLabel]="never">
+                  <input matInput [disabled]="!canManageRoutes" type="time" id="ni-{{i}}"
+                    placeholder="Enter Time" name="ni-{{i}}" [ngModel]="node.interval | date:  'HH:mm'"
+                    (ngModelChange)="node.interval = $event" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-sm btn-link" type="button" (click)="removeNode(node)">
+                  <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+            <!-- <div class="row">
               <div class="col-md-10">
                 {{node.name}}
               </div>
@@ -46,9 +73,11 @@
             </div>
             <div class="row">
               <div class="col-md-6">
-                <input matInput [disabled]="!canManageRoutes" type="time" id="ni-{{i}}" placeholder="Enter Interval Time" name="ni-{{i}}" [ngModel]="node.interval | date:  'HH:mm'" (ngModelChange)="node.interval = $event" />
+                <input matInput [disabled]="!canManageRoutes" type="time" id="ni-{{i}}"
+                  placeholder="Enter Interval Time" name="ni-{{i}}" [ngModel]="node.interval | date:  'HH:mm'"
+                  (ngModelChange)="node.interval = $event" />
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
         <!--<div class="col-sm-12">
@@ -79,10 +108,13 @@
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">
-      <button *ngIf="!canManageRoutes" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
-      <button *ngIf="canManageRoutes" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button *ngIf="!canManageRoutes" type="button" mat-button (click)="cancel()">{{'common.editor.Close' |
+        translate}}</button>
+      <button *ngIf="canManageRoutes" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i
+          class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
       <button *ngIf="canManageRoutes" type="submit" mat-button [disabled]="isSaving">
-        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i>
+        {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
       </button>
     </div>
   </form>

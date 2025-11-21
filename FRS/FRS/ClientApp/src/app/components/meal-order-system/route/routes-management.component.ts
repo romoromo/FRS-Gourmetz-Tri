@@ -39,6 +39,10 @@ export class RoutesManagementComponent implements OnInit {
 
   @ViewChild('routeEditor')
   routeEditor: RouteEditorComponent;
+
+  @ViewChild('colorTemplate')
+  colorTemplate: TemplateRef<any>;
+
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog) {
@@ -47,7 +51,7 @@ export class RoutesManagementComponent implements OnInit {
   openDialog(route: Route): void {
     const dialogRef = this.dialog.open(RouteEditorComponent, {
       data: { header: this.header, route: route },
-      width: '400px',
+      width: '500px',
       disableClose: true
     });
 
@@ -77,6 +81,7 @@ export class RoutesManagementComponent implements OnInit {
       { prop: 'label', name: 'Label' },
       { prop: 'details', name: 'Route Details' },
       { prop: 'pickup', name: 'Pickup Time', pipe: this.pipeTime() },
+      { name: 'Color', prop: 'color', cellTemplate: this.colorTemplate, width: 100 },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
 
