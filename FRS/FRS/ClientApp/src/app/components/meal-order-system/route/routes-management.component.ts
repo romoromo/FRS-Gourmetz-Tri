@@ -1,23 +1,34 @@
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild, Input, PipeTransform } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap/modal';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  TemplateRef,
+  ViewChild,
+  Input,
+  PipeTransform,
+} from "@angular/core";
+import { ModalDirective } from "ngx-bootstrap/modal";
 
-import { AlertService, DialogType, MessageSeverity } from '../../../services/alert.service';
+import {
+  AlertService,
+  DialogType,
+  MessageSeverity,
+} from "../../../services/alert.service";
 import { AppTranslationService } from "../../../services/app-translation.service";
-import { AccountService } from '../../../services/account.service';
-import { Utilities } from '../../../services/utilities';
-import { Filter, PagedResult } from '../../../models/sieve-filter.model';
-import { Permission } from '../../../models/permission.model';
-import { MatDialog } from '@angular/material';
-import { Route } from 'src/app/models/meal-order/route.model';
-import { RouteEditorComponent } from './route-editor.component';
-import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
-import * as moment from 'moment';
-
+import { AccountService } from "../../../services/account.service";
+import { Utilities } from "../../../services/utilities";
+import { Filter, PagedResult } from "../../../models/sieve-filter.model";
+import { Permission } from "../../../models/permission.model";
+import { MatDialog } from "@angular/material";
+import { Route } from "src/app/models/meal-order/route.model";
+import { RouteEditorComponent } from "./route-editor.component";
+import { DeliveryService } from "src/app/services/meal-order/delivery.service";
+import * as moment from "moment";
 
 @Component({
-  selector: 'routes-management',
-  templateUrl: './routes-management.component.html',
-  styleUrls: ['./routes-management.component.css']
+  selector: "routes-management",
+  templateUrl: "./routes-management.component.html",
+  styleUrls: ["./routes-management.component.css"],
 })
 export class RoutesManagementComponent implements OnInit {
   columns: any[] = [];
@@ -29,41 +40,45 @@ export class RoutesManagementComponent implements OnInit {
   loadingIndicator: boolean;
   filter: Filter;
   pagedResult: PagedResult;
-  keyword: string = '';
+  keyword: string = "";
 
-  @ViewChild('actionsTemplate')
+  @ViewChild("actionsTemplate")
   actionsTemplate: TemplateRef<any>;
 
-  @ViewChild('flagTemplate')
+  @ViewChild("flagTemplate")
   flagTemplate: TemplateRef<any>;
 
-  @ViewChild('routeEditor')
+  @ViewChild("routeEditor")
   routeEditor: RouteEditorComponent;
 
-  @ViewChild('colorTemplate')
-  colorTemplate: TemplateRef<any>;
+  @ViewChild("pickupTemplate")
+  pickupTemplate: TemplateRef<any>;
 
   header: string;
-  constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
-    private deliveryService: DeliveryService, public dialog: MatDialog) {
-  }
+  constructor(
+    private alertService: AlertService,
+    private translationService: AppTranslationService,
+    private accountService: AccountService,
+    private deliveryService: DeliveryService,
+    public dialog: MatDialog
+  ) {}
 
   openDialog(route: Route): void {
     const dialogRef = this.dialog.open(RouteEditorComponent, {
       data: { header: this.header, route: route },
-      width: '500px',
-      disableClose: true
+      width: "500px",
+      disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       this.loadData(null);
     });
   }
 
   initializeFilter() {
     this.filter = new Filter(1, 10);
-    this.filter.sorts = 'label';
-    this.filter.filters = '';
+    this.filter.sorts = "label";
+    this.filter.filters = "";
     this.filter.page = 1;
   }
 
@@ -78,15 +93,34 @@ export class RoutesManagementComponent implements OnInit {
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
-      { prop: 'label', name: 'Label' },
-      { prop: 'details', name: 'Route Details' },
-      { prop: 'pickup', name: 'Pickup Time', pipe: this.pipeTime() },
-      { name: 'Color', prop: 'color', cellTemplate: this.colorTemplate, width: 100 },
-      { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
+      { prop: "label", name: "Label" },
+      { prop: "details", name: "Route Details" },
+      {
+        prop: "pickup",
+        name: "Pickup Time",
+        pipe: this.pipeTime(),
+        cellTemplate: this.pickupTemplate,
+      },
+      {
+        name: "",
+        width: 150,
+        cellTemplate: this.actionsTemplate,
+        resizeable: false,
+        canAutoResize: false,
+        sortable: false,
+        draggable: false,
+      },
     ];
 
-    if (!this.accountService.currentUser.institutionId || this.accountService.currentUser.institutionId == '0') {
-      this.columns.splice(1, 0, { prop: 'institutionName', name: gT('roles.management.Institution'), width: 120 });
+    if (
+      !this.accountService.currentUser.institutionId ||
+      this.accountService.currentUser.institutionId == "0"
+    ) {
+      this.columns.splice(1, 0, {
+        prop: "institutionName",
+        name: gT("roles.management.Institution"),
+        width: 120,
+      });
     }
   }
 
@@ -97,7 +131,6 @@ export class RoutesManagementComponent implements OnInit {
     this.loadData();
   }
 
-
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
     this.loadingIndicator = true;
@@ -106,15 +139,20 @@ export class RoutesManagementComponent implements OnInit {
     if (ev) {
       this.filter.page = ev.offset + 1;
       if (ev.sorts) {
-        this.filter.sorts = ev.sorts[0].dir == 'desc' ? '-' + ev.sorts[0].prop : ev.sorts[0].prop;
+        this.filter.sorts =
+          ev.sorts[0].dir == "desc" ? "-" + ev.sorts[0].prop : ev.sorts[0].prop;
       }
     }
 
-    if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(IsActive)==true,(Label)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
-    
-    this.deliveryService.getRoutesByFilter(this.filter)
-      .subscribe(results => {
+    if (!this.keyword) this.keyword = "";
+    this.filter.filters =
+      "(IsActive)==true,(Label)@=" +
+      this.keyword +
+      ",(InstitutionId)==" +
+      this.accountService.currentUser.institutionId;
+
+    this.deliveryService.getRoutesByFilter(this.filter).subscribe(
+      (results) => {
         this.pagedResult = results;
 
         this.alertService.stopLoadingMessage();
@@ -126,20 +164,23 @@ export class RoutesManagementComponent implements OnInit {
           (<any>route).index = index + 1;
         });
 
-
         this.rowsCache = [...routes];
         this.rows = routes;
-
       },
-        error => {
-          this.alertService.stopLoadingMessage();
-          this.loadingIndicator = false;
+      (error) => {
+        this.alertService.stopLoadingMessage();
+        this.loadingIndicator = false;
 
-          this.alertService.showStickyMessage("Load Error", `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(error)}"`,
-            MessageSeverity.error);
-        });
+        this.alertService.showStickyMessage(
+          "Load Error",
+          `Unable to retrieve records from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(
+            error
+          )}"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
-
 
   onSearchChanged(value: string) {
     this.keyword = value;
@@ -147,54 +188,75 @@ export class RoutesManagementComponent implements OnInit {
   }
 
   newRoute() {
-    this.header = 'New Route';
+    this.header = "New Route";
     this.editedRoute = new Route();
     this.openDialog(this.editedRoute);
   }
 
-
   editRoute(row: Route) {
     this.editedRoute = row;
-    this.header = 'Edit Route';
+    this.header = "Edit Route";
     this.openDialog(this.editedRoute);
   }
 
   deleteRoute(row: Route) {
-    this.alertService.showDialog('Are you sure you want to delete the \"' + row.label + '\" route?', DialogType.confirm, () => this.deleteRouteHelper(row));
+    this.alertService.showDialog(
+      'Are you sure you want to delete the "' + row.label + '" route?',
+      DialogType.confirm,
+      () => this.deleteRouteHelper(row)
+    );
   }
 
-
   deleteRouteHelper(row: Route) {
-
     this.alertService.startLoadingMessage("Deleting...");
     this.loadingIndicator = true;
 
-    this.deliveryService.deleteRoute(row.id)
-      .subscribe(results => {
+    this.deliveryService.deleteRoute(row.id).subscribe(
+      (results) => {
         this.alertService.stopLoadingMessage();
         this.loadingIndicator = false;
 
         this.loadData();
       },
-        error => {
-          this.alertService.stopLoadingMessage();
-          this.loadingIndicator = false;
+      (error) => {
+        this.alertService.stopLoadingMessage();
+        this.loadingIndicator = false;
 
-          this.alertService.showStickyMessage("Delete Error", `An error occured while deleting the route type.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-            MessageSeverity.error);
-        });
+        this.alertService.showStickyMessage(
+          "Delete Error",
+          `An error occured while deleting the route type.\r\nError: "${Utilities.getHttpResponseMessage(
+            error
+          )}"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 
   pipeTime(): PipeTransform {
     return {
       transform: (value) => {
-        return moment(value).format('HH:mm')
-      }
-    }
+        return moment(value).format("HH:mm");
+      },
+    };
+  }
+
+  getContrastColor(color: string): string {
+    if (!color) return "";
+    const c = color.startsWith("#") ? color.substring(1) : color;
+
+    const rgb = parseInt(c, 16);
+    const r = (rgb >> 16) & 0xff;
+    const g = (rgb >> 8) & 0xff;
+    const b = rgb & 0xff;
+
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    return luminance < 150 ? "white" : "black";
   }
 
   get canManageRoutes() {
-    return this.accountService.userHasPermission(Permission.manageMOSOrderMgtRoutesPermission)
+    return this.accountService.userHasPermission(
+      Permission.manageMOSOrderMgtRoutesPermission
+    );
   }
-
 }

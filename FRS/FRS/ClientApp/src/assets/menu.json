@@ -44,46 +44,7 @@
           "permissions": [],
           "childMenus": []
         },
-        {
-          "label": "Bento Box Types",
-          "active": true,
-          "link": "/bentoboxtypes",
-          "showLabel": true,
-          "showLogo": true,
-          "logoClass": "",
-          "permissions": [],
-          "childMenus": []
-        },
-        {
-          "label": "Bento Assets",
-          "active": true,
-          "link": "/bentoassets",
-          "showLabel": true,
-          "showLogo": true,
-          "logoClass": "",
-          "permissions": [],
-          "childMenus": []
-        },
-        {
-          "label": "Carton Types",
-          "active": true,
-          "link": "/cartontypes",
-          "showLabel": true,
-          "showLogo": true,
-          "logoClass": "",
-          "permissions": [],
-          "childMenus": []
-        },
-        {
-          "label": "Carton Assets",
-          "active": true,
-          "link": "/cartonassets",
-          "showLabel": true,
-          "showLogo": true,
-          "logoClass": "",
-          "permissions": [],
-          "childMenus": []
-        },
+        
         {
           "label": "Delivery Orders",
           "active": true,
