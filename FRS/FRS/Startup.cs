@@ -334,10 +334,6 @@ namespace FRS
             var origins = Configuration["AppSettings:corsOrigin"].Split(";");
             services.AddCors(corsOptions =>
             {
-                corsOptions.AddPolicy("AllowLocalhost", 
-                    policy => policy.WithOrigins("http://localhost:56969")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
                 corsOptions.AddPolicy(_corsPolicyname,
                     configurePolicy => configurePolicy
                     .WithOrigins(origins)
@@ -347,7 +343,7 @@ namespace FRS
                     .AllowAnyMethod()
                     .AllowCredentials()
                     //.AllowAnyOrigin()
-                    ///.DisallowCredentials()
+                    //.DisallowCredentials()
 
 
                     );
