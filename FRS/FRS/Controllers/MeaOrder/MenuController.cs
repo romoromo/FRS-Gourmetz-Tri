@@ -401,19 +401,8 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetStudentSessions(int studentId, DateTime orderDate)
         {
-            var student = await this._studentService.GetStudentByIdAsync(studentId);
-            var outlet = student != null ? await this._deliveryService.GetOutletByIdSimpleAsync(student.OutletId.Value) : null;
-
-            var results = new List<MealSessionDetailDTO>();
-
-            //if(student != null && outlet != null && outlet.MealCollectionType == MealCollectionType.STUDENT_SELECTS)
-            //{
-            //    results = await this._service.GetOutleOnlyMealSessions(student.OutletId.Value, orderDate);
-            //    return Ok(results);
-            //}
-
-            results = await this._service.GetStudentSessions(studentId, orderDate);
-            return Ok(results);
+            var result = await this._outletMealSessionResolver.GetMealSessionsByStudent(studentId, orderDate);
+            return Ok(result);
         }
 
         //[ApiKeyAuthorize]

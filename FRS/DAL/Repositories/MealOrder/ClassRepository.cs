@@ -150,6 +150,14 @@ namespace DAL.Repositories.MealOrder
             return classList;
         }
 
+        public async Task<(Class Class, int outletId)> GetClassByStudentId(int studentId)
+        {
+            var student = await _appContext.Students.Where(m => m.IsActive && m.Class.IsActive && m.Id == studentId)
+                .Include(m => m.Class).ThenInclude(m => m.ClassLevel)
+                .FirstOrDefaultAsync();
+            return (student?.Class ?? new Class(), student?.OutletId ?? 0);
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }

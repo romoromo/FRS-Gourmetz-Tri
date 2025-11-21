@@ -18,5 +18,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdateAsync(Class classModel);
         Task<List<Class>> GetByOutlet(int outletId);
         Task<List<Class>> GetClassByStudentGroupId(int studentGroupId);
+        Task<(Class Class, int outletId)> GetClassByStudentId(int studentId);
     }
 }

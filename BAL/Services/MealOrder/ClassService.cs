@@ -1,25 +1,26 @@
-﻿using System;
+﻿using AutoMapper;
+using BAL.DTO;
+using BAL.DTO.MealOrder;
+using BAL.Services.Interfaces;
+using BAL.Services.Interfaces.MealOrder;
+using DAL;
+using DAL.Core;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.Util;
+using NPOI.XSSF.UserModel;
+using Sieve.Services;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
-using DAL;
-using BAL.Services.Interfaces;
-using BAL.DTO;
-using AutoMapper;
-using DAL.Repositories.Interfaces;
-using System.IO;
-using NPOI.HSSF.UserModel;
-using BAL.Services.Interfaces.MealOrder;
-using BAL.DTO.MealOrder;
-using DAL.Models.MealOrder;
-using NPOI.XSSF.UserModel;
-using NPOI.SS.UserModel;
 
 namespace BAL.Services.MealOrder
 {
@@ -160,6 +161,12 @@ namespace BAL.Services.MealOrder
         {
             var classes = await this._uow.Classes.GetClassByStudentGroupId(studentGroupId);
             return _mapper.Map<List<ClassDTO>>(classes);
+        }
+
+        public async Task<(ClassDTO Class, int outletId)> GetClassByStudentId(int studentId)
+        {
+            var classObject = await this._uow.Classes.GetClassByStudentId(studentId);
+            return new(_mapper.Map<ClassDTO>(classObject.Class), classObject.outletId);
         }
 
         #endregion
