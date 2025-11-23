@@ -90,12 +90,12 @@
               </mat-tab>
               <mat-tab label="Carton Types" *ngIf="canViewDishCycles">
                 <div class="container-fluid" style="padding-top:20px">
-                  <carton-types-management></carton-types-management>
+                  <carton-types-management [catererId]="row.id"></carton-types-management>
                 </div>
               </mat-tab>
               <mat-tab label="Carton Assets" *ngIf="canViewDishCycles">
                 <div class="container-fluid" style="padding-top:20px">
-                  <carton-assets-management></carton-assets-management>
+                  <carton-assets-management [catererId]="row.id"></carton-assets-management>
                 </div>
               </mat-tab>
               <!--<mat-tab label="Menus">

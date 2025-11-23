@@ -93,7 +93,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateCartonAssetAsync(CartonAssetDTO dto);
         Task<BaseOperationResponse> DeleteCartonAssetAsync(int id);
         Task<CartonAssetDTO> GetCartonAssetByIdAsync(int id);
-        Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(BaseFilter filter);
+        Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(CartonAssetsFilter filter);
         Task<BaseOperationResponse> UpdateCartonAssetAsync(CartonAssetDTO dto);
         Task<BaseOperationResponse> ResetCartonAssetAsync();
         Task<byte[]> GenerateCartonAssetLabel(int id);

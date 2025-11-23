@@ -1,4 +1,4 @@
-import { Component, ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, Inject, OnInit, OnDestroy, Input } from '@angular/core';
 
 import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { AccountService } from "../../../services/account.service";
@@ -46,10 +46,14 @@ export class CartonAssetEditorComponent implements OnInit, OnDestroy {
   @ViewChild('f')
   private form;
 
+  private catererId: string;
+
   constructor(private alertService: AlertService, private deliveryService: DeliveryService, private accountService: AccountService,
     public dialogRef: MatDialogRef<CartonAssetEditorComponent>, private mealService: MealService, private dishService: DishService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.cartonAsset) != typeof (undefined)) {
+      if(data.cartonAsset.catererId)
+        this.catererId = data.cartonAsset.catererId;
       if (data.cartonAsset.id) {
         this.editCartonAsset(data.cartonAsset);
       } else {
@@ -168,7 +172,7 @@ export class CartonAssetEditorComponent implements OnInit, OnDestroy {
     this.editingCartonAssetCode = null;
     this.selectedValues = {};
     this.cartonAssetEdit = new CartonAsset();
-
+    this.cartonAssetEdit.catererId = this.catererId;
     return this.cartonAssetEdit;
   }
 
@@ -191,7 +195,7 @@ export class CartonAssetEditorComponent implements OnInit, OnDestroy {
 
   getCartonTypes() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
+    filter.filters = '(IsActive)==true'+ ',(CatererInfoId)==' + this.catererId;
     this.subscription.add(this.deliveryService.getCartonTypesByFilter(filter)
       .subscribe(results => {
         this.cartonTypes = results.pagedData;

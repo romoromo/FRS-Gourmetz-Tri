@@ -109,3 +109,10 @@ export class BentoAssetFilter extends Filter{
   }
   public catererInfoId: string;
 }
+
+export class CartonAssetFilter extends Filter{
+  constructor(page?: number, pageSize?: number) {
+    super(page, pageSize);
+  }
+  public catererInfoId: string;
+}

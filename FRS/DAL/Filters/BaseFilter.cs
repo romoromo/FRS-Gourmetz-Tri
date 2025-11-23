@@ -112,4 +112,9 @@ namespace DAL.Filters
     {
         public int CatererInfoId { get; set; }
     }
+
+    public class CartonAssetsFilter : BaseFilter
+    {
+        public int CatererInfoId { get; set; }
+    }
 }

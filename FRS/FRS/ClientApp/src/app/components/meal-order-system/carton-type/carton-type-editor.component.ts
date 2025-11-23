@@ -40,19 +40,20 @@ export class CartonTypeEditorComponent implements OnInit, OnDestroy {
 
   @ViewChild('f')
   private form;
+  private catererId: string;
 
   constructor(private alertService: AlertService, private deliveryService: DeliveryService, private accountService: AccountService,
     public dialogRef: MatDialogRef<CartonTypeEditorComponent>, private mealService: MealService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.cartonType) != typeof (undefined)) {
+      if(data.cartonType.catererInfoId)
+        this.catererId = data.cartonType.catererInfoId;
       if (data.cartonType.id) {
         this.editCartonType(data.cartonType);
       } else {
         this.newCartonType();
       }
     }
-
-    this.getCatererInfos();
   }
 
   ngOnInit() {
@@ -161,7 +162,7 @@ export class CartonTypeEditorComponent implements OnInit, OnDestroy {
     this.editingCartonTypeCode = null;
     this.selectedValues = {};
     this.cartonTypeEdit = new CartonType();
-
+    this.cartonTypeEdit.catererInfoId = this.catererId; 
     return this.cartonTypeEdit;
   }
 
@@ -180,21 +181,6 @@ export class CartonTypeEditorComponent implements OnInit, OnDestroy {
     else {
       return this.newCartonType();
     }
-  }
-
-  getCatererInfos() {
-    let filter = new Filter();
-    filter.sorts = 'name';
-    filter.filters = '(IsActive)==true';
-    this.subscription.add(this.deliveryService.getCatererInfosSimpleByFilter(filter)
-      .subscribe(results => {
-        this.catererInfos = results.pagedData;
-      },
-        error => {
-          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving caterers.\r\n"`,
-            MessageSeverity.error);
-        }));
   }
 
 

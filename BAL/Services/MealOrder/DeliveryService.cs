@@ -443,7 +443,7 @@ namespace BAL.Services.MealOrder
 
         #region CartonAsset
 
-        public async Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(BaseFilter filter)
+        public async Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(CartonAssetsFilter filter)
         {
             var result = _mapper.Map<PagedEntity<CartonAssetDTO>>(await this._uow.CartonAssets.GetCartonAssetsAsync(filter));
             return result;

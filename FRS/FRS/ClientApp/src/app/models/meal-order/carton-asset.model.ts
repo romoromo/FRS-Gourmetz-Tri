@@ -15,4 +15,5 @@ export class CartonAsset {
   public date: Date;
 
   public timeStamp: Date;
+  public catererId: string;
 }

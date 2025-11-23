@@ -48,6 +48,8 @@ export class CartonTypesManagementComponent implements OnInit, OnDestroy {
 
   @ViewChild('cartonTypeTable') table: any;
 
+  @Input() catererId: string;
+
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog) {
@@ -86,7 +88,6 @@ export class CartonTypesManagementComponent implements OnInit, OnDestroy {
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
-      { prop: 'catererInfoName', name: 'Caterer' },
       { prop: 'code', name: 'Code' },
       { prop: 'details', name: 'Details' },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
@@ -122,7 +123,7 @@ export class CartonTypesManagementComponent implements OnInit, OnDestroy {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(IsActive)==true,(Code)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
+    this.filter.filters = '(IsActive)==true,(Code)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId + ',(CatererInfoId)==' + this.catererId;
     
     this.subscription.add(this.deliveryService.getCartonTypesByFilter(this.filter)
       .subscribe(results => {
@@ -171,6 +172,7 @@ export class CartonTypesManagementComponent implements OnInit, OnDestroy {
   newCartonType() {
     this.header = 'New Carton type';
     this.editedCartonType = new CartonType();
+    this.editedCartonType.catererInfoId = this.catererId;
     this.openDialog(this.editedCartonType);
   }
 
@@ -178,6 +180,7 @@ export class CartonTypesManagementComponent implements OnInit, OnDestroy {
   editCartonType(row: CartonType) {
     this.editedCartonType = row;
     this.header = 'Edit Carton type';
+    this.editedCartonType.catererInfoId = this.catererId;
     this.openDialog(this.editedCartonType);
   }
 
