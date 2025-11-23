@@ -47,11 +47,13 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
   dishs: any;
   routes: any;
   storeInfos: any;
+  private catererId: string;
 
   constructor(private alertService: AlertService, private deliveryService: DeliveryService, private dishService: DishService,  private accountService: AccountService,
     public dialogRef: MatDialogRef<BentoAssetEditorComponent>, private mealService: MealService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.bentoAsset) != typeof (undefined)) {
+      this.catererId = data.bentoAsset.catererInfoId;
       if (data.bentoAsset.id) {
         this.editBentoAsset(data.bentoAsset);
       } else {
@@ -173,7 +175,7 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
     this.editingBentoAssetCode = null;
     this.selectedValues = {};
     this.bentoAssetEdit = new BentoAsset();
-
+    this.bentoAssetEdit.catererInfoId = this.catererId;
     return this.bentoAssetEdit;
   }
 
@@ -211,7 +213,7 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
 
   getBentoBoxTypes() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
+    filter.filters = '(IsActive)==true,(CatererInfoId)==' + this.bentoAssetEdit.catererInfoId;
     this.subscription.add(this.deliveryService.getBentoBoxTypesByFilter(filter)
       .subscribe(results => {
         this.bentoBoxTypes = results.pagedData;

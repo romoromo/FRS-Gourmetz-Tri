@@ -107,4 +107,9 @@ namespace DAL.Filters
         public DateTime? DateTo { get; set; }
         public int OutletId { get; set; }
     }
+
+    public class BentoAssetsFilter : BaseFilter
+    {
+        public int CatererInfoId { get; set; }
+    }
 }

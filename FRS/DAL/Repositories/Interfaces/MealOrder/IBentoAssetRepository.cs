@@ -13,6 +13,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> DeleteAsync(int dataId);
         Task<BentoAsset> GetByIdAsync(int id);
         Task<PagedEntity<BentoAsset>> GetBentoAssetsAsync(BaseFilter filter);
+        Task<PagedEntity<BentoAsset>> GetBentoAssetsAsync(BentoAssetsFilter filter);
         Task<BaseOperationResponse> UpdateAsync(BentoAsset data);
 
         Task<BaseOperationResponse> ResetAsync();

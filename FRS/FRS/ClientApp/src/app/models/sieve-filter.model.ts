@@ -102,3 +102,10 @@ export class UserActivityLogReportFilter extends Filter {
   public keyword: string;
   public reportType: string;
 }
+
+export class BentoAssetFilter extends Filter{
+  constructor(page?: number, pageSize?: number) {
+    super(page, pageSize);
+  }
+  public catererInfoId: string;
+}

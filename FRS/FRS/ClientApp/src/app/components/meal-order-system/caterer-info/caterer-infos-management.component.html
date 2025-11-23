@@ -80,12 +80,12 @@
               </mat-tab>
               <mat-tab label="Bento Box Type" *ngIf="canViewDishCycles">
                 <div class="container-fluid" style="padding-top:20px">
-                  <bento-box-types-management></bento-box-types-management>
+                  <bento-box-types-management [catererId]="row.id"></bento-box-types-management>
                 </div>
               </mat-tab>
               <mat-tab label="Bento Assets" *ngIf="canViewDishCycles">
                 <div class="container-fluid" style="padding-top:20px">
-                  <bento-assets-management></bento-assets-management>
+                  <bento-assets-management [catererId]="row.id"></bento-assets-management>
                 </div>
               </mat-tab>
               <mat-tab label="Carton Types" *ngIf="canViewDishCycles">

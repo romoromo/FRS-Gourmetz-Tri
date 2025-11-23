@@ -33,4 +33,5 @@ export class BentoAsset {
   public routeId: string;
 
   public reouteLabel: string;
+  public catererInfoId: string;
 }

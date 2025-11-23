@@ -85,6 +85,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateBentoAssetAsync(BentoAssetDTO dto);
         Task<BaseOperationResponse> DeleteBentoAssetAsync(int id);
         Task<BentoAssetDTO> GetBentoAssetByIdAsync(int id);
+        Task<PagedEntity<BentoAssetDTO>> GetBentoAssetsAsync(BentoAssetsFilter filter);
         Task<PagedEntity<BentoAssetDTO>> GetBentoAssetsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateBentoAssetAsync(BentoAssetDTO dto);
         Task<BaseOperationResponse> ResetBentoAssetAsync();
