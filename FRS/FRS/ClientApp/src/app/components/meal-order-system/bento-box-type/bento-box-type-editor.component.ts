@@ -51,8 +51,6 @@ export class BentoBoxTypeEditorComponent implements OnInit, OnDestroy {
         this.newBentoBoxType();
       }
     }
-
-    this.getCatererInfos();
   }
 
   ngOnInit() {
@@ -189,22 +187,6 @@ export class BentoBoxTypeEditorComponent implements OnInit, OnDestroy {
     else {
       return this.newBentoBoxType();
     }
-  }
-
-  getCatererInfos() {
-    let filter = new Filter(-1, -1);
-
-    filter.sorts = 'name';
-    filter.filters = '(IsActive)==true';
-    this.subscription.add(this.deliveryService.getCatererInfosSimpleByFilter(filter)
-      .subscribe(results => {
-        this.catererInfos = results.pagedData;
-      },
-        error => {
-          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving caterers.\r\n"`,
-            MessageSeverity.error);
-        }));
   }
 
 

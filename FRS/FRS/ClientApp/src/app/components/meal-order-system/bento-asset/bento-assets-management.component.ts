@@ -8,7 +8,7 @@ import { AlertService, DialogType, MessageSeverity } from '../../../services/ale
 import { AppTranslationService } from "../../../services/app-translation.service";
 import { AccountService } from '../../../services/account.service';
 import { Utilities } from '../../../services/utilities';
-import { Filter, PagedResult } from '../../../models/sieve-filter.model';
+import { BentoAssetFilter, Filter, PagedResult } from '../../../models/sieve-filter.model';
 import { Permission } from '../../../models/permission.model';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { BentoAsset } from 'src/app/models/meal-order/bento-asset.model';
@@ -33,7 +33,7 @@ export class BentoAssetsManagementComponent implements OnInit, OnDestroy {
   editedBentoAsset: BentoAsset;
   sourceBentoAsset: BentoAsset;
   loadingIndicator: boolean;
-  filter: Filter;
+  filter: BentoAssetFilter;
   pagedResult: PagedResult;
   keyword: string = '';
 
@@ -49,6 +49,9 @@ export class BentoAssetsManagementComponent implements OnInit, OnDestroy {
   @ViewChild('searchbox') searchbox: SearchBoxComponent;
 
   @ViewChild('bentoAssetTable') table: any;
+
+  @Input() catererId: string;
+
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog) {
@@ -68,11 +71,11 @@ export class BentoAssetsManagementComponent implements OnInit, OnDestroy {
   }
 
   initializeFilter() {
-    this.filter = new Filter(1, 10);
+    this.filter = new BentoAssetFilter(1, 10);
     this.filter.sorts = 'code';
     this.filter.filters = '';
     this.filter.page = 1;
-
+    this.filter.catererInfoId = this.catererId;
     
   }
 
@@ -176,6 +179,7 @@ export class BentoAssetsManagementComponent implements OnInit, OnDestroy {
   newBentoAsset() {
     this.header = 'New Bento Asset';
     this.editedBentoAsset = new BentoAsset();
+    this.editedBentoAsset.catererInfoId = this.catererId;
     this.openDialog(this.editedBentoAsset);
   }
 
@@ -183,6 +187,7 @@ export class BentoAssetsManagementComponent implements OnInit, OnDestroy {
   editBentoAsset(row: BentoAsset) {
     this.editedBentoAsset = row;
     this.header = 'Edit Bento Asset';
+    this.editedBentoAsset.catererInfoId = this.catererId;
     this.openDialog(this.editedBentoAsset);
   }
 
@@ -219,6 +224,9 @@ export class BentoAssetsManagementComponent implements OnInit, OnDestroy {
   newMultipleBentoAsset(): void {
     const dialogRef = this.dialog.open(NewMultipleBentoAsset, {
       width: '40vw',
+      data:{
+        catererId: this.catererId
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -241,7 +249,7 @@ export class NewMultipleBentoAsset implements OnInit, OnDestroy {
     bentoTimeout: NodeJS.Timer;
   map: any = {};
   rows: any = [];
-
+  private catererId: string;
 
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
@@ -249,7 +257,8 @@ export class NewMultipleBentoAsset implements OnInit, OnDestroy {
   constructor(private alertService: AlertService,
     public dialogRef: MatDialogRef<any>,
     @Inject(MAT_DIALOG_DATA) public data: any, public deliveryService: DeliveryService, private accountService: AccountService) {
-
+    if(data.catererId)
+      this.catererId = data.catererId;
     this.getBentoBoxTypes();
   }
 
@@ -328,7 +337,7 @@ export class NewMultipleBentoAsset implements OnInit, OnDestroy {
 
   getBentoBoxTypes() {
     let filter = new Filter();
-    filter.filters = '(IsActive)==true';
+    filter.filters = '(IsActive)==true,(CatererInfoId)==' + this.catererId;
     this.subscription.add(this.deliveryService.getBentoBoxTypesByFilter(filter)
       .subscribe(results => {
         this.bentoBoxTypes = results.pagedData;

@@ -26,7 +26,7 @@ namespace DAL.Models.MealOrder
         public decimal? Length { get; set; }
         public decimal? Width { get; set; }
         public decimal? Height { get; set; }
-
+        [Sieve(CanFilter = true, CanSort = true)]
         public int? CatererInfoId { get; set; }
 
         [ForeignKey("CatererInfoId")]

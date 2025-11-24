@@ -48,7 +48,10 @@ export class BentoBoxTypesManagementComponent implements OnInit, OnDestroy {
 
   @ViewChild('bentoBoxTypeTable') table: any;
 
+  @Input() catererId: string;
+
   header: string;
+
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog) {
   }
@@ -86,7 +89,6 @@ export class BentoBoxTypesManagementComponent implements OnInit, OnDestroy {
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
-      { prop: 'catererInfoName', name: 'Caterer' },
       { prop: 'code', name: 'Code' },
       { prop: 'details', name: 'Details' },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
@@ -122,7 +124,7 @@ export class BentoBoxTypesManagementComponent implements OnInit, OnDestroy {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(IsActive)==true,(Code)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId;
+    this.filter.filters = '(IsActive)==true,(Code)@=' + this.keyword + ',(InstitutionId)==' + this.accountService.currentUser.institutionId + ',(CatererInfoId)==' + this.catererId;
     
     this.subscription.add(this.deliveryService.getBentoBoxTypesByFilter(this.filter)
       .subscribe(results => {
@@ -171,12 +173,14 @@ export class BentoBoxTypesManagementComponent implements OnInit, OnDestroy {
   newBentoBoxType() {
     this.header = 'New Bento box type';
     this.editedBentoBoxType = new BentoBoxType();
+    this.editedBentoBoxType.catererInfoId = this.catererId;
     this.openDialog(this.editedBentoBoxType);
   }
 
 
   editBentoBoxType(row: BentoBoxType) {
     this.editedBentoBoxType = row;
+    this.editedBentoBoxType.catererInfoId = this.catererId;
     this.header = 'Edit Bento box type';
     this.openDialog(this.editedBentoBoxType);
   }

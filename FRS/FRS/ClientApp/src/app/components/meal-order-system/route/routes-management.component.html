@@ -49,11 +49,13 @@
     <a *ngIf="canManageRoutes" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteRoute(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
   </ng-template>
 
-  <ng-template #colorTemplate let-row="row">
+<ng-template #pickupTemplate let-row="row">
   <div 
-    [style.background]="row.color"
-    style="width: 25%; height: 20px; border-radius: 4px; border: 1px solid #ccc;"
-  >
+    [style.backgroundColor]="row.color"
+    [style.color]="getContrastColor(row.color)"
+    [style.border]="(getContrastColor(row.color) != 'white' && getContrastColor(row.color) != '') ? '1px solid black': '' "
+    style="width: 25%;padding: 4px 8px; border-radius: 4px;">
+    {{ row.pickup | date:'HH:mm' }}
   </div>
 </ng-template>
 </div>

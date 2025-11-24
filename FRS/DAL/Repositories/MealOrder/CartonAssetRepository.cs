@@ -27,20 +27,12 @@ namespace DAL.Repositories.MealOrder
         }
 
         #region Sieved
-        public async Task<PagedEntity<CartonAsset>> GetCartonAssetsAsync(BaseFilter filter)
+        public async Task<PagedEntity<CartonAsset>> GetCartonAssetsAsync(CartonAssetsFilter filter)
         {
-            IQueryable<CartonAsset> query = _appContext.CartonAssets
+            IQueryable<CartonAsset> query = _appContext.CartonAssets.Where(m => m.CartonType.CatererInfoId == filter.CatererInfoId)
                 .Include(e => e.Institution);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
-            //int totalCount = query.Count();
-            //query = _sieveProcessor.Apply(filter, query, applyFiltering: false, applySorting: false, applyPagination: (filter.Page > 0 && filter.PageSize > 0));
-            //var result = new PagedEntity<CartonAsset>
-            //{
-            //    Filter = filter,
-            //    TotalCount = totalCount,
-            //    PagedData = await query.ToListAsync()
-            //};
 
             return result;
         }

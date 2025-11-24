@@ -398,6 +398,12 @@ namespace BAL.Services.MealOrder
 
         #region BentoAsset
 
+        public async Task<PagedEntity<BentoAssetDTO>> GetBentoAssetsAsync(BentoAssetsFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<BentoAssetDTO>>(await this._uow.BentoAssets.GetBentoAssetsAsync(filter));
+            return result;
+        }
+
         public async Task<PagedEntity<BentoAssetDTO>> GetBentoAssetsAsync(BaseFilter filter)
         {
             var result = _mapper.Map<PagedEntity<BentoAssetDTO>>(await this._uow.BentoAssets.GetBentoAssetsAsync(filter));
@@ -437,7 +443,7 @@ namespace BAL.Services.MealOrder
 
         #region CartonAsset
 
-        public async Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(BaseFilter filter)
+        public async Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(CartonAssetsFilter filter)
         {
             var result = _mapper.Map<PagedEntity<CartonAssetDTO>>(await this._uow.CartonAssets.GetCartonAssetsAsync(filter));
             return result;

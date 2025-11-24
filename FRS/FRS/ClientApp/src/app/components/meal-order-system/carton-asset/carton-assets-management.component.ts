@@ -7,7 +7,7 @@ import { AlertService, DialogType, MessageSeverity } from '../../../services/ale
 import { AppTranslationService } from "../../../services/app-translation.service";
 import { AccountService } from '../../../services/account.service';
 import { Utilities } from '../../../services/utilities';
-import { Filter, PagedResult } from '../../../models/sieve-filter.model';
+import { CartonAssetFilter, Filter, PagedResult } from '../../../models/sieve-filter.model';
 import { Permission } from '../../../models/permission.model';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { CartonAsset } from 'src/app/models/meal-order/carton-asset.model';
@@ -33,7 +33,7 @@ export class CartonAssetsManagementComponent implements OnInit, OnDestroy {
   editedCartonAsset: CartonAsset;
   sourceCartonAsset: CartonAsset;
   loadingIndicator: boolean;
-  filter: Filter;
+  filter: CartonAssetFilter;
   pagedResult: PagedResult;
   keyword: string = '';
 
@@ -49,6 +49,9 @@ export class CartonAssetsManagementComponent implements OnInit, OnDestroy {
   @ViewChild('searchbox') searchbox: SearchBoxComponent;
 
   @ViewChild('cartonAssetTable') table: any;
+
+  @Input() catererId: string;
+
   header: string;
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
     private deliveryService: DeliveryService, public dialog: MatDialog) {
@@ -79,11 +82,11 @@ export class CartonAssetsManagementComponent implements OnInit, OnDestroy {
   }
 
   initializeFilter() {
-    this.filter = new Filter(1, 10);
+    this.filter = new CartonAssetFilter(1, 10);
     this.filter.sorts = 'code';
     this.filter.filters = '';
     this.filter.page = 1;
-
+    this.filter.catererInfoId = this.catererId;
     
   }
 
@@ -184,6 +187,7 @@ export class CartonAssetsManagementComponent implements OnInit, OnDestroy {
   newCartonAsset() {
     this.header = 'New Carton Asset';
     this.editedCartonAsset = new CartonAsset();
+    this.editedCartonAsset.catererId = this.catererId;
     this.openDialog(this.editedCartonAsset);
   }
 
@@ -191,6 +195,7 @@ export class CartonAssetsManagementComponent implements OnInit, OnDestroy {
   editCartonAsset(row: CartonAsset) {
     this.editedCartonAsset = row;
     this.header = 'Edit Carton Asset';
+    this.editedCartonAsset.catererId = this.catererId;
     this.openDialog(this.editedCartonAsset);
   }
 

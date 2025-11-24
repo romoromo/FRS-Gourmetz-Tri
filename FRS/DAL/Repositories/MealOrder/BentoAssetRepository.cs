@@ -33,14 +33,16 @@ namespace DAL.Repositories.MealOrder
                 .Include(e => e.Institution);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
-            //int totalCount = query.Count();
-            //query = _sieveProcessor.Apply(filter, query, applyFiltering: false, applySorting: false, applyPagination: (filter.Page > 0 && filter.PageSize > 0));
-            //var result = new PagedEntity<BentoAsset>
-            //{
-            //    Filter = filter,
-            //    TotalCount = totalCount,
-            //    PagedData = await query.ToListAsync()
-            //};
+
+            return result;
+        }
+
+        public async Task<PagedEntity<BentoAsset>> GetBentoAssetsAsync(BentoAssetsFilter filter)
+        {
+            IQueryable<BentoAsset> query = _appContext.BentoAssets.Where(m => m.BentoBoxType.CatererInfoId == filter.CatererInfoId)
+                .Include(e => e.Institution);
+
+            var result = await this._sieveProcessor.GetPagedAsync(query, filter);
 
             return result;
         }

@@ -85,6 +85,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateBentoAssetAsync(BentoAssetDTO dto);
         Task<BaseOperationResponse> DeleteBentoAssetAsync(int id);
         Task<BentoAssetDTO> GetBentoAssetByIdAsync(int id);
+        Task<PagedEntity<BentoAssetDTO>> GetBentoAssetsAsync(BentoAssetsFilter filter);
         Task<PagedEntity<BentoAssetDTO>> GetBentoAssetsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateBentoAssetAsync(BentoAssetDTO dto);
         Task<BaseOperationResponse> ResetBentoAssetAsync();
@@ -92,7 +93,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateCartonAssetAsync(CartonAssetDTO dto);
         Task<BaseOperationResponse> DeleteCartonAssetAsync(int id);
         Task<CartonAssetDTO> GetCartonAssetByIdAsync(int id);
-        Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(BaseFilter filter);
+        Task<PagedEntity<CartonAssetDTO>> GetCartonAssetsAsync(CartonAssetsFilter filter);
         Task<BaseOperationResponse> UpdateCartonAssetAsync(CartonAssetDTO dto);
         Task<BaseOperationResponse> ResetCartonAssetAsync();
         Task<byte[]> GenerateCartonAssetLabel(int id);

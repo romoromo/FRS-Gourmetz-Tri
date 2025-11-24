@@ -1218,7 +1218,7 @@ namespace FRS.Controllers
         //[AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetBentoAssets(BaseFilter filter)
+        public async Task<IActionResult> GetBentoAssets(BentoAssetsFilter filter)
         {
             var results = await this._service.GetBentoAssetsAsync(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<BentoAssetDTO>>(results));
@@ -1331,7 +1331,7 @@ namespace FRS.Controllers
         //[AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetCartonAssets(BaseFilter filter)
+        public async Task<IActionResult> GetCartonAssets(CartonAssetsFilter filter)
         {
             var results = await this._service.GetCartonAssetsAsync(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<CartonAssetDTO>>(results));
