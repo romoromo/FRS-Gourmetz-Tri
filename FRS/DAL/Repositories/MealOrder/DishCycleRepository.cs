@@ -47,7 +47,7 @@ namespace DAL.Repositories.MealOrder
         {
             var outlet = await _appContext.CatererOutlets.FirstOrDefaultAsync(e => e.OutletId == outletId && e.CatererInfoId == catererId);
 
-            IQueryable<DishCycle> query = _appContext.DishCycles.Where(e => e.OutletProfileId == outlet.OutletProfileId);
+            IQueryable<DishCycle> query = _appContext.DishCycles.Where(e => (e.OutletProfileId == outlet.OutletProfileId && e.IsActive));
 
             return await query.ToListAsync();
         }
