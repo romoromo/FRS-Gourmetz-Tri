@@ -593,29 +593,11 @@ namespace MealOrderPayments.Controllers
         /// <param name="sessionId">stripe session id</param>
         /// <param name="fromWebhook">from webhook</param>
         /// <returns>order status</returns>
-        private String QueryOrderStatusStripe(string sessionId, bool fromWebhook=false)
+        private string QueryOrderStatusStripe(string sessionId, bool fromWebhook=false)
         {
-            string authorizationString = string.Empty;
-            string apiDestination = string.Empty;
-            string baseFOMOPayUR = string.Empty;
-            string strOrderStatus = string.Empty;
-            string strQueryOrderURL = string.Empty;
-
-            RestClient client;
-            RestRequest request;
-
-            QueryOrderResponse queryOrderResponse = null;
-            RestResponse getRequestResponse;
-            PaymentResult paymentResult;
-
-
-            paymentResult = new PaymentResult();
-            queryOrderResponse = new QueryOrderResponse();
-
             //  Quick check ...
             if (!String.IsNullOrEmpty(sessionId))
             {
-
                 try
                 {
                     // Set your secret key. Remember to switch to your live secret key in production.
@@ -633,7 +615,6 @@ namespace MealOrderPayments.Controllers
                     var options = new SessionGetOptions
                     {
                         Expand = new List<string> { "line_items" },
-                         
                     };
 
                     var service = new SessionService();
@@ -643,35 +624,24 @@ namespace MealOrderPayments.Controllers
                     // to determine if fulfillment should be performed
                     //if (checkoutSession.PaymentStatus != "unpaid")
                     //{
-                    if (checkoutSession!=null )
+                    if (checkoutSession != null)
                     {
-                        if (fromWebhook) // or checkoutSession.PaymentStatus != "unpaid", but no api support yet. need to find another way.
+                        // ideally this should be if checkoutSession.PaymentStatus != "unpaid", but the api version we currently use does not support that yet.
+                        // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#3920---2020-09-03
+                        // need to upgrade api version to at least 2020-08-27 and stripe.net sdk version to at least 39.1.2.
+                        if (fromWebhook) 
                         {
                             return "SUCCESS";
                         }
                     }
-                     
-                   // Console.WriteLine(checkoutSession.ToString());
-
-                    
                 } catch (Exception ex)
                 {
                     WriteToEventLog("Exception", ex.Message);
                 } finally
                 {
-                    // Do clean up code....
-                    queryOrderResponse = null;
-                    getRequestResponse = null;
-                    paymentResult = null;
-                    client = null;
-                    request = null;
-
                 }
-
-            }   
- 
-            return strOrderStatus;
-
+            }
+            return "";
         }
 
         /// <summary>
@@ -1573,19 +1543,24 @@ namespace MealOrderPayments.Controllers
             try
             {
                 var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], secret);
-
+                // TODO what events do we need to listen?
+                // currently only listening for CheckoutSessionCompleted.
                 // If on SDK version < 46, use class Events instead of EventTypes
                 if (stripeEvent.Type == Events.CheckoutSessionCompleted)
                 {
                     var sess = stripeEvent.Data.Object as Stripe.Checkout.Session;
-                    await QueryAndUpdatePaymentStatusStripe(sess.Id);
+                    // this assumes that top up wallet is always first and the only item in the transaction.
+                    var custom = sess.DisplayItems.First().Custom;
+                    if (custom.Name.ToUpper().Equals("TOP UP WALLET"))
+                    {
+                        await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
+                    } else
+                    {
+                        await QueryAndUpdatePaymentStatusStripe(sess.Id);
+                    }
                     return Ok();
-                } else if (stripeEvent.Type == Events.ChargeSucceeded)
-                {
-                    var scharge = stripeEvent.Data.Object as Stripe.Charge;
-                    await QueryAndUpdatePaymentStatusStripe(scharge.Id);
-                    return Ok();
-                } else
+                } // cant differentiate top up wallet from charge.succeeded event.
+                else
                 {
                     EventLogger.CreateEventEntry("Not the stripe event type we check", EventLogEntryType.Error);
                     return BadRequest();
@@ -1598,7 +1573,7 @@ namespace MealOrderPayments.Controllers
         }
 
         /// <summary>
-        /// asdf
+        /// PostStripe
         /// </summary>
         /// <param name="custTransaction"></param>
         /// <returns></returns>
@@ -1662,7 +1637,9 @@ namespace MealOrderPayments.Controllers
                     Amount = amt,
                     Currency = order.currencyCode,
                     Quantity = 1,
-                    Name = order.subject, //subject: 'Token Meal Payment',
+                    // TODO probably can do something more explicit to differentiate
+                    // between cart and topup wallet here?
+                    Name = order.subject, //subject: 'Token Meal Payment', / 'Top Up Wallet'
                     Description = order.description, // description: `Payment for ${student.name}`,
                   },
                 },
@@ -2245,7 +2222,7 @@ namespace MealOrderPayments.Controllers
             if (sessionId != null) // this is called from webhook
             {
                 var sos = QueryOrderStatusStripe(sessionId, true);
-                List<PaymentDTO> payments = await _paymentService.GetCreatedPaymentsAsync( );
+                List<PaymentDTO> payments = await _paymentService.GetCreatedPaymentsAsync();
                 var pement = payments.Where(x => x.fomoid == sessionId);
                 if (!pement.IsNullOrEmpty())
                 {
@@ -2342,21 +2319,7 @@ namespace MealOrderPayments.Controllers
 
                     try
                     {
-                        // this function can be called from other places
-                        // so we need to account for possibility of stripe payment type,
-                        // which require additional code to query the status.
-                        var filter = new BaseFilter();
-                        var types = await _paymentService.GetPaymentTypesAsync(filter);
-                        var pt = types.PagedData.Where(a => a.Name.Contains("stripe", StringComparison.CurrentCultureIgnoreCase)).First();
-                        string qos;
-                        if (pt != null && p.PaymentTypeId == pt.Id)
-                        {
-                            qos = QueryOrderStatusStripe(p.fomoid);
-                        } else
-                        {
-                            qos = QueryOrderStatus(p.fomoid);
-                        }
-
+                        var qos = await QueryOrderStatusIndependent(p.PaymentTypeId, p.fomoid);
                         strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : qos;
 
                         if (!String.IsNullOrEmpty(strOrderStatus))
@@ -2462,6 +2425,84 @@ namespace MealOrderPayments.Controllers
 
         }
 
+        public async Task QueryAndUpdateWalletPaymentStatusStripe(string sessionId)
+        {
+            if (sessionId != null) // this is called from webhook
+            {
+                var sos = QueryOrderStatusStripe(sessionId, true);
+                try
+                {
+                    List<WalletPaymentDTO> payments = await _paymentService.GetCreatedWalletPaymentsAsync();
+
+                    foreach (var p in payments)
+                    {
+                        var updated = false;
+                        var tokenOrderUpdated = false;
+                        var emailSent = false;
+                        var strOrderStatus = "";
+
+                        try
+                        {
+                            strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : sos;
+
+                            if (!String.IsNullOrEmpty(strOrderStatus))
+                            {
+                                if (p.Status != strOrderStatus)
+                                {
+                                    p.Status = strOrderStatus;
+
+                                    if (!p.invoiceSent && p.Status == "SUCCESS")
+                                    {
+                                        await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value, WalletType.BASIC);
+                                        await SendWalletInvoice(p);
+                                        emailSent = true;
+                                        p.invoiceSent = true;
+                                    }
+
+                                    await _paymentService.UpdateWalletPaymentAsync(p);
+                                }
+                            }
+                        } catch (Exception ex)
+                        {
+                            _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, $"Error when update payment status. Payment Id {p.Id}, status {p.Status}, status from fomo {strOrderStatus}, payment update {updated}, token order updated {tokenOrderUpdated}, email sent {emailSent}");
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    WriteToEventLog("FRS Exception", ex.Message);
+
+                    _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, "Error when update payment and token order status.");
+                } finally
+                {
+                }
+            }
+        }
+
+        /// <summary>
+        /// query order status independent of the payment type.
+        /// </summary>
+        /// <param name="paymentTypeId"></param>
+        /// <param name="fomoid"></param>
+        /// <returns>order status</returns>
+        private async Task<string> QueryOrderStatusIndependent(int? paymentTypeId, string fomoid)
+        {
+            // this function can be called from other places
+            // so we need to account for possibility of stripe payment type,
+            // which require additional code to query the status.
+            var filter = new BaseFilter();
+            var types = await _paymentService.GetPaymentTypesAsync(filter);
+            var pt = types.PagedData.Where(a => a.Name.Contains("stripe", StringComparison.CurrentCultureIgnoreCase)).First();
+            string qos;
+            if (pt != null && paymentTypeId == pt.Id)
+            {
+                qos = QueryOrderStatusStripe(fomoid);
+            } else
+            {
+                qos = QueryOrderStatus(fomoid);
+            }
+            return qos;
+        }
+        
         /// <summary>
         /// Create a method that can be awaited, but does not return any value.
         /// In this case we don't need to anything after querying payment and 
@@ -2485,8 +2526,8 @@ namespace MealOrderPayments.Controllers
 
                     try
                     {
-
-                        strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : QueryOrderStatus(p.fomoid);
+                        var qos = await QueryOrderStatusIndependent(p.PaymentTypeId, p.fomoid);
+                        strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : qos;
 
                         if (!String.IsNullOrEmpty(strOrderStatus))
                         {
