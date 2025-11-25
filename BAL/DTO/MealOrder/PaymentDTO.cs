@@ -41,6 +41,10 @@ namespace BAL.DTO.MealOrder
 
         public string Status { get; set; }
 
+        ///<summary>
+        ///If payment is generated from stripe, this is stripe checkout.session.id.
+        ///I dont rename the field because dont want to break existing api.
+        ///</summary>
         public string fomoid { get; set; }
         public bool invoiceSent { get; set; }
 

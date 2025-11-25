@@ -343,7 +343,7 @@ namespace FRS
                     .AllowAnyMethod()
                     .AllowCredentials()
                     //.AllowAnyOrigin()
-                    ///.DisallowCredentials()
+                    //.DisallowCredentials()
 
 
                     );

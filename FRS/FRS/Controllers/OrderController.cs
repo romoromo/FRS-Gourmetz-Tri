@@ -1,43 +1,49 @@
 ﻿using AutoMapper;
 using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces;
+using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
+using BAL.Services.MealOrder;
 using DAL;
+using DAL.Core;
+using DAL.Core.Logging;
+using DAL.Filters;
 using DAL.Models;
+using DAL.Models.MealOrder;
+using FRS.Controllers;
+using FRS.Helpers;
+using FRS.Middleware;
 using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NodaTime.Calendars;
 using RestSharp;
 using SMV.FOMOPay.CommonHelper;
 using SMV.FOMOPay.LoggerHelper;
 using SMV.FOMOPay.MessageHelper;
 using SMV.FOMOPay.Model;
+using Stripe;
+using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BAL.Services.Interfaces;
-using DAL.Core.Logging;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using BAL.Services.MealOrder;
-using FRS.Controllers;
-using FRS.Helpers;
-using LoggingEvents = DAL.Core.Logging.LoggingEvents;
-using System.Security.Policy;
 using System.Web;
-using DAL.Models.MealOrder;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using DAL.Core;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using LoggingEvents = DAL.Core.Logging.LoggingEvents;
 
 namespace MealOrderPayments.Controllers
 {
@@ -145,7 +151,15 @@ namespace MealOrderPayments.Controllers
 
         //}
 
-
+        /// <summary>
+        /// Min order amount is SGD 0.50 as required by stripe.
+        /// https://docs.stripe.com/currencies#minimum-and-maximum-charge-amounts
+        /// </summary>
+        /// <returns></returns>
+        private static long GetMinOrderValueStripe()
+        {
+            return 50;
+        }
 
         /// <summary>
         /// Min order amount is SGD 0.50 as required by fomopay.
@@ -253,7 +267,7 @@ namespace MealOrderPayments.Controllers
         /// <param name="cancelToken"></param>
         /// <returns></returns>
         [HttpPost, HttpPut]
-        private async Task<ActionResult<PaymentResult>> ProcessPaymentAsync(Order custOrder, CancellationToken cancelToken)
+        private async Task<ActionResult<PaymentResult>> ProcessPaymentAsync(SMV.FOMOPay.Model.Order custOrder, CancellationToken cancelToken)
         {
             string authorizationString = "";
             string apiDestination = "";
@@ -569,6 +583,66 @@ namespace MealOrderPayments.Controllers
             EventLogger.CreateEventEntry(strPrefix + ":" + strErrorMessage, EventLogEntryType.Warning);
         }
 
+
+
+
+
+        /// <summary>
+        /// We have to do a query on the order status and update our database table.
+        /// </summary>
+        /// <param name="sessionId">stripe session id</param>
+        /// <param name="fromWebhook">from webhook</param>
+        /// <returns>order status</returns>
+        private string QueryOrderStatusStripe(string sessionId, bool fromWebhook=false)
+        {
+            //  Quick check ...
+            if (!String.IsNullOrEmpty(sessionId))
+            {
+                try
+                {
+                    // Set your secret key. Remember to switch to your live secret key in production.
+                    // See your keys here: https://dashboard.stripe.com/apikeys
+                    StripeConfiguration.ApiKey = _configuration.GetSection("StripeConfiguration:ApiKey").Value;
+                    Console.WriteLine("Fulfilling Checkout Session " + sessionId);
+
+                    // TODO: Make this function safe to run multiple times,
+                    // even concurrently, with the same session ID
+
+                    // TODO: Make sure fulfillment hasn't already been
+                    // performed for this Checkout Session
+
+                    // Retrieve the Checkout Session from the API with line_items expanded
+                    var options = new SessionGetOptions
+                    {
+                        Expand = new List<string> { "line_items" },
+                    };
+
+                    var service = new SessionService();
+                    var checkoutSession = service.Get(sessionId, options);
+
+                    // Check the Checkout Session's payment_status property
+                    // to determine if fulfillment should be performed
+                    //if (checkoutSession.PaymentStatus != "unpaid")
+                    //{
+                    if (checkoutSession != null)
+                    {
+                        // ideally this should be if checkoutSession.PaymentStatus != "unpaid", but the api version we currently use does not support that yet.
+                        // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#3920---2020-09-03
+                        // need to upgrade api version to at least 2020-08-27 and stripe.net sdk version to at least 39.1.2.
+                        if (fromWebhook) 
+                        {
+                            return "SUCCESS";
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    WriteToEventLog("Exception", ex.Message);
+                } finally
+                {
+                }
+            }
+            return "";
+        }
 
         /// <summary>
         /// We have to do a query on the order status and update our database table.
@@ -1457,12 +1531,153 @@ namespace MealOrderPayments.Controllers
 
         }
 
+        [Route("[action]")]
+        [HttpPost]
+        public async Task<IActionResult> NotifyStripe()
+        {
+            // Use the secret provided by Stripe CLI for local testing
+            // or your webhook endpoint's secret.
+            var secret = _configuration.GetSection("StripeConfiguration:WebhookSecret").Value;
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 
+            try
+            {
+                var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], secret);
+                // TODO what events do we need to listen?
+                // currently only listening for CheckoutSessionCompleted.
+                // If on SDK version < 46, use class Events instead of EventTypes
+                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
+                {
+                    var sess = stripeEvent.Data.Object as Stripe.Checkout.Session;
+                    // this assumes that top up wallet is always first and the only item in the transaction.
+                    var custom = sess.DisplayItems.First().Custom;
+                    if (custom.Name.ToUpper().Equals("TOP UP WALLET"))
+                    {
+                        await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
+                    } else
+                    {
+                        await QueryAndUpdatePaymentStatusStripe(sess.Id);
+                    }
+                    return Ok();
+                } // cant differentiate top up wallet from charge.succeeded event.
+                else
+                {
+                    EventLogger.CreateEventEntry("Not the stripe event type we check", EventLogEntryType.Error);
+                    return BadRequest();
+                }
+            } catch (StripeException sec)
+            {
+                EventLogger.CreateEventEntry(sec.StripeError.ToString(), EventLogEntryType.Error);
+                return BadRequest();
+            }
+        }
 
+        /// <summary>
+        /// PostStripe
+        /// </summary>
+        /// <param name="custTransaction"></param>
+        /// <returns></returns>
+        /// POST api/<OrderController>
+        [Route("[action]")]
+        [HttpPost]
+        public PaymentResult PostStripe(SMV.FOMOPay.Model.Order order)
+        {
+            StripeConfiguration.ApiKey = _configuration.GetSection("StripeConfiguration:ApiKey").Value;
+            // validate total here
+            long amt = 0;
+            try
+            {
+                var damt = decimal.Parse(order.amount);
+                // old stripe api versions cant use decimal
+                amt = (long)damt;
+            } catch (Exception ex)
+            {
+                //TODO want to fail here
+                // For internal use
+                //Debug.WriteLine("Exception occured:" + ex);
 
+                // Show user friendly error message
+                ProcessMessage(false);
+                var erm = "Exception occurred in OrderController PostStripe method of API";
+                EventLogger.CreateEventEntry(erm + "." + ex.Message, EventLogEntryType.Error);
+                throw new Exception(erm, ex);
+            }
+            if (amt < GetMinOrderValueStripe())
+            {
+                var z = _configuration.GetSection("UserMessages:MinPaymentError").Value + MinOrderPrefix();
+                return ProcessBadRequest(order, z);
+            }
+            if (order.orderNo.Length == 0)
+            {
+                var z = _configuration.GetSection("UserMessages:NoOrderNumberError").Value;
+                return ProcessBadRequest(order, z);
+            }
 
+            var options = new SessionCreateOptions
+            {
+                LineItems = new List<SessionLineItemOptions>
+                {
+                  new SessionLineItemOptions
+                  {
+                    //PriceData = new SessionLineItemPriceDataOptions
+                    //{
 
+                    //  UnitAmountDecimal = amt,
+                    //  Currency = order.currencyCode,
+                    //  ProductData = new SessionLineItemPriceDataProductDataOptions
+                    //  {
+                    //    Name = order.subject, //subject: 'Token Meal Payment',
+                    //    Description = order.description,// description: `Payment for ${student.name}`,
+                    //    Metadata = new Dictionary<string, string>
+                    //    {
+                    //        { "orderNo", order.orderNo }
+                    //    }
+                    //  },
+                    //},
+                    Amount = amt,
+                    Currency = order.currencyCode,
+                    Quantity = 1,
+                    // TODO probably can do something more explicit to differentiate
+                    // between cart and topup wallet here?
+                    Name = order.subject, //subject: 'Token Meal Payment', / 'Top Up Wallet'
+                    Description = order.description, // description: `Payment for ${student.name}`,
+                  },
+                },
+                Mode = "payment",
+                //SuccessUrl = order.returnUrl,
+                SuccessUrl = order.returnUrl + "?&session_id={CHECKOUT_SESSION_ID}",
+                CancelUrl = order.backUrl,
+            };
 
+            var service = new SessionService();
+            Session session = service.Create(options);
+            // old Stripe API version cant use `Session.Url` directly. 
+            // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#39540---2021-06-16
+            try
+            {
+                PaymentResult ret = new PaymentResult();
+                var rawjsonstring = session.StripeResponse.Content;
+                var splitted = rawjsonstring.Split(",");
+                var uri = splitted.Where(s => s.Contains("checkout.stripe.com")).First();
+                var s2 = uri.Split(": ");
+                var uri2 = s2[1].Replace('\"', ' ').Trim();
+                ret.responseURI = uri2;
+                // TODO this is dirty. fix it later.
+                // because we dont want to break paymentresult, reuse this for now.
+                ret.fomoPaymentResponse = new FomoPaymentResponse();
+                ret.fomoPaymentResponse.id = session.Id;
+                // I hope this will be helpful when debugging frontend
+                ret.fomoPaymentResponse.description = "Manually created. This is created in PostStripe";
+                ret.isSuccessful = true;
+                return ret;
+            } catch (Exception ex)
+            {
+                var z = ex.Message;
+                EventLogger.CreateEventEntry(z, EventLogEntryType.Error);
+                return ProcessBadRequest(order, z);
+            }
+        }
+        
         /// <summary>
         /// Main method 
         /// </summary>
@@ -1470,7 +1685,7 @@ namespace MealOrderPayments.Controllers
         /// <returns></returns>
         /// POST api/<OrderController>
         [HttpPost]
-        public PaymentResult Post(Order custTransaction)
+        public PaymentResult Post(SMV.FOMOPay.Model.Order custTransaction)
         {
             String redirectToPaymentURL = "";
             String paymentSelected = "";
@@ -1484,7 +1699,7 @@ namespace MealOrderPayments.Controllers
             TransactionOptions transactionOptions = null;
             PaymentItem[] paymentItems = null;
             Amount paymentAmount = null;
-            Address shipAddrs = null;
+            SMV.FOMOPay.Model.Address shipAddrs = null;
             PaymentDiscount[] paymentDiscountList = null;
             bool successfulConvert = false;
             PaymentResult dataReturnedObject = default;
@@ -1503,11 +1718,7 @@ namespace MealOrderPayments.Controllers
             //cancellationTokenSource.CancelAfter(1);
             var cancellationToken = cancellationTokenSource.Token;
             FomoPaymentResponse objFomoPaymentResponse;
-            Order cusOrder;
-
-
-
-            cusOrder = new Order();
+            SMV.FOMOPay.Model.Order cusOrder = new SMV.FOMOPay.Model.Order();
 
             cusOrder.mode = custTransaction.mode;
             cusOrder.orderNo = custTransaction.orderNo;
@@ -1711,7 +1922,7 @@ namespace MealOrderPayments.Controllers
 
 
 
-        private PaymentResult ProcessBadRequest(Order customerRequestData, String returnMessage)
+        private PaymentResult ProcessBadRequest(SMV.FOMOPay.Model.Order customerRequestData, String returnMessage)
         {
             PaymentResult dataReturnedDataObject;
             string prefix;
@@ -2000,12 +2211,98 @@ namespace MealOrderPayments.Controllers
         }
 
         /// <summary>
+        /// Only call this from webhook where we know for sure this is stripe.
+        /// if you need to call from other place, see 
+        /// other method named similarly without the stripe word.
+        /// </summary>
+        /// <param name="sessionId">stripe session id</param>
+        /// <returns>use await for this method.</returns>
+        public async Task QueryAndUpdatePaymentStatusStripe(string sessionId)
+        {
+            if (sessionId != null) // this is called from webhook
+            {
+                var sos = QueryOrderStatusStripe(sessionId, true);
+                List<PaymentDTO> payments = await _paymentService.GetCreatedPaymentsAsync();
+                var pement = payments.Where(x => x.fomoid == sessionId);
+                if (!pement.IsNullOrEmpty())
+                {
+                    var p = pement.First();
+                    if (p != null)
+                    {
+                        var updated = false;
+                        var tokenOrderUpdated = false;
+                        var emailSent = false;
+                        var strOrderStatus = "";
+
+                        try
+                        {
+                            strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : sos;
+                            if (!String.IsNullOrEmpty(strOrderStatus))
+                            {
+                                if (p.Status != strOrderStatus)
+                                {
+                                    p.Status = strOrderStatus;
+
+                                    if (!p.invoiceSent && p.Status == "SUCCESS")
+                                    {
+                                        await SendInvoice(p);
+                                        emailSent = true;
+                                        p.invoiceSent = true;
+                                    }
+
+                                    await _paymentService.UpdatePaymentAsync(p);
+                                }
+
+                                foreach (var t in p.TokenOrders)
+                                {
+                                    if (t.Status != "paid" && p.Status == "SUCCESS" && t.Status != "cancelled")
+                                    {
+                                        var dt = await this._service.GetTokenOrderByIdAsync(t.Id);
+
+                                        if (dt != null)
+                                        {
+                                            dt.Status = "paid";
+                                            var r = await this._service.UpdateTokenOrderAsync(dt);
+
+                                            tokenOrderUpdated = true;
+                                        }
+                                    }
+                                }
+
+                                foreach (var t in p.MealPlanOrders)
+                                {
+                                    if (t.Status != "paid" && p.Status == "SUCCESS" && t.Status != "cancelled")
+                                    {
+                                        var dt = await this._service.GetMealPlanOrderByIdAsync(t.Id);
+
+                                        if (dt != null)
+                                        {
+                                            dt.Status = "paid";
+                                            var r = await this._service.UpdateMealPlanOrderAsync(dt);
+
+                                            tokenOrderUpdated = true;
+
+                                            if (t.StudentGroupId.HasValue && t.ProfileId.HasValue) await _studentService.CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception ex)
+                        {
+                            _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, $"Error when update payment status. Payment Id {p.Id}, status {p.Status}, status from fomo {strOrderStatus}, payment update {updated}, token order updated {tokenOrderUpdated}, email sent {emailSent}");
+                        }
+                    }
+                }
+            } 
+        }
+
+        /// <summary>
         /// Create a method that can be awaited, but does not return any value.
         /// In this case we don't need to anything after querying payment and 
         /// updating database. Hence mark method as Task. rather than very undersiable
         /// void.
         /// </summary>
-        /// <param name="objBodyPayload"></param>
+        /// <param name="studentId"></param>
         /// <returns></returns>
         public async Task QueryAndUpdatePaymentStatus(int? studentId = null)
         {
@@ -2022,8 +2319,8 @@ namespace MealOrderPayments.Controllers
 
                     try
                     {
-
-                        strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : QueryOrderStatus(p.fomoid);
+                        var qos = await QueryOrderStatusIndependent(p.PaymentTypeId, p.fomoid);
+                        strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : qos;
 
                         if (!String.IsNullOrEmpty(strOrderStatus))
                         {
@@ -2128,6 +2425,84 @@ namespace MealOrderPayments.Controllers
 
         }
 
+        public async Task QueryAndUpdateWalletPaymentStatusStripe(string sessionId)
+        {
+            if (sessionId != null) // this is called from webhook
+            {
+                var sos = QueryOrderStatusStripe(sessionId, true);
+                try
+                {
+                    List<WalletPaymentDTO> payments = await _paymentService.GetCreatedWalletPaymentsAsync();
+
+                    foreach (var p in payments)
+                    {
+                        var updated = false;
+                        var tokenOrderUpdated = false;
+                        var emailSent = false;
+                        var strOrderStatus = "";
+
+                        try
+                        {
+                            strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : sos;
+
+                            if (!String.IsNullOrEmpty(strOrderStatus))
+                            {
+                                if (p.Status != strOrderStatus)
+                                {
+                                    p.Status = strOrderStatus;
+
+                                    if (!p.invoiceSent && p.Status == "SUCCESS")
+                                    {
+                                        await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value, WalletType.BASIC);
+                                        await SendWalletInvoice(p);
+                                        emailSent = true;
+                                        p.invoiceSent = true;
+                                    }
+
+                                    await _paymentService.UpdateWalletPaymentAsync(p);
+                                }
+                            }
+                        } catch (Exception ex)
+                        {
+                            _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, $"Error when update payment status. Payment Id {p.Id}, status {p.Status}, status from fomo {strOrderStatus}, payment update {updated}, token order updated {tokenOrderUpdated}, email sent {emailSent}");
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    WriteToEventLog("FRS Exception", ex.Message);
+
+                    _logger.LogError(LoggingEvents.APPLICATION_ERROR, ex, "Error when update payment and token order status.");
+                } finally
+                {
+                }
+            }
+        }
+
+        /// <summary>
+        /// query order status independent of the payment type.
+        /// </summary>
+        /// <param name="paymentTypeId"></param>
+        /// <param name="fomoid"></param>
+        /// <returns>order status</returns>
+        private async Task<string> QueryOrderStatusIndependent(int? paymentTypeId, string fomoid)
+        {
+            // this function can be called from other places
+            // so we need to account for possibility of stripe payment type,
+            // which require additional code to query the status.
+            var filter = new BaseFilter();
+            var types = await _paymentService.GetPaymentTypesAsync(filter);
+            var pt = types.PagedData.Where(a => a.Name.Contains("stripe", StringComparison.CurrentCultureIgnoreCase)).First();
+            string qos;
+            if (pt != null && paymentTypeId == pt.Id)
+            {
+                qos = QueryOrderStatusStripe(fomoid);
+            } else
+            {
+                qos = QueryOrderStatus(fomoid);
+            }
+            return qos;
+        }
+        
         /// <summary>
         /// Create a method that can be awaited, but does not return any value.
         /// In this case we don't need to anything after querying payment and 
@@ -2151,8 +2526,8 @@ namespace MealOrderPayments.Controllers
 
                     try
                     {
-
-                        strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : QueryOrderStatus(p.fomoid);
+                        var qos = await QueryOrderStatusIndependent(p.PaymentTypeId, p.fomoid);
+                        strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : qos;
 
                         if (!String.IsNullOrEmpty(strOrderStatus))
                         {
