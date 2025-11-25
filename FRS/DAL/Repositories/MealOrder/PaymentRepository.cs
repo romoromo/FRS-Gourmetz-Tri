@@ -82,7 +82,7 @@ namespace DAL.Repositories.MealOrder
 
             bool useVoucher = await _appContext.Vouchers.AnyAsync(x => x.Id == Payment.VoucherId);
 
-            bool useWallet = await _appContext.PaymentTypes.AnyAsync(x => x.Name == "Wallet" && x.Id >= Payment.PaymentTypeId);
+            bool useWallet = await _appContext.PaymentTypes.AnyAsync(x => x.Name == "Wallet" && x.Id == Payment.PaymentTypeId);
 
             int resultSaveChange = 0;
             if (useVoucher)
