@@ -13,6 +13,7 @@ import { Dish } from 'src/app/models/meal-order/dish.model';
 import { Cuisine } from 'src/app/models/meal-order/cuisine.model';
 import { BlockUnblockOutletDishDateModel, DishBlockUnblockDateModel, DishCycle, DishCyclePeriod, OutletDishCyclePeriodMenu, OutletDishViewMenu } from 'src/app/models/meal-order/dish-cycle';
 import { DishCycleCalendar } from 'src/app/models/meal-order/dish-cycle-calendar.model';
+import { CatererAssetType } from 'src/app/models/meal-order/asset-type.model';
 
 @Injectable()
 export class DishService {
@@ -28,6 +29,9 @@ export class DishService {
 
   private readonly _dishCycleUrl: string = "/api/dish/dishcycles";
   get dishCycleUrl() { return this.configurations.baseUrl + this._dishCycleUrl; }
+
+  private readonly _catererassetType: string = "/api/dish/catererassetType";
+  get catererassetType() { return this.configurations.baseUrl + this._catererassetType; }
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
@@ -199,5 +203,28 @@ export class DishService {
 
   getCombinedDish(outletId, catererId, mealTypeId, orderDate, sessionId) {
     return this.commonEndpoint.get<any>(this.dishUrl + '/get/' + outletId + '?catererId=' + catererId + '&mealTypeId=' + mealTypeId + '&orderDate=' + orderDate + '&sessionId=' + sessionId);
+  }
+
+  
+  newAssetType(assetType: CatererAssetType) {
+    return this.commonEndpoint.getNewEndpoint<CatererAssetType>(this.catererassetType, assetType);
+  }
+
+  getAssetTypeById(assetTypeId: string) {
+    return this.commonEndpoint.getById<any>(this.catererassetType + '/get', assetTypeId);
+  }
+
+  getAssetTypeByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.catererassetType + '/sieve/list', filter);
+  }
+
+  updateAssetType(assetType: CatererAssetType) {
+    if (assetType.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.catererassetType, assetType, assetType.id);
+    }
+  }
+
+  deleteAssetType(cuisineOrCuisineId: string | Cuisine): Observable<Cuisine> {
+    return this.commonEndpoint.getDeleteEndpoint<Cuisine>(this.catererassetType, <string>cuisineOrCuisineId);
   }
 }

@@ -9,6 +9,7 @@ export class AssetType {
 
   public id: string;
   public name: string;
+  
   public fileId: string;
   public filePath: string;
   public fileName: string;

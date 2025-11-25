@@ -134,6 +134,7 @@ namespace DAL
         IFaqSubjectRepository FaqSubjects { get; }
         IFaqDetailRepository FaqDetails { get; }
         IPLCRepository PLCRepository { get; }
+        ICatererAssetTypeRepository CatererAssetType { get; }
 
         #region For token order payment processing
         ITokenPaymentRepository SubmittedPayments { get; }

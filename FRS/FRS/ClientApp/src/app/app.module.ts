@@ -558,7 +558,8 @@ import { PlcManagementComponent } from "./components/meal-order-system/outlet/pl
 import { PlcEditorComponent } from "./components/meal-order-system/outlet/plc/plc-editor.component";
 import { TrayEditorComponent } from "./components/meal-order-system/dispenser-outlet/tray-editor.component";
 import { ClassLevelDetailComponent } from "./components/meal-order-system/class-level/class-level-detail.components";
-
+import { CatererAsssetTypeManagementComponent } from "./components/meal-order-system/asset-type/caterer-asset-type-management.component";
+import { CatererAsssetTypeEditorComponent } from "./components/meal-order-system/asset-type/caterer-asset-type-editor.component";
 export const configFactory = (configService: ConfigurationService) => {
   return () => {
     configService.loadConfig();
@@ -773,7 +774,6 @@ export const configFactory = (configService: ConfigurationService) => {
     ApplicationSettingsManagementComponent,
     DirectoryListingCategoryEditorComponent,
     DirectoryListingCategorysManagementComponent,
-
     MediaExtensionEditorComponent,
     MediaExtensionsManagementComponent,
     EmployeeDesignationEditorComponent,
@@ -1022,7 +1022,9 @@ export const configFactory = (configService: ConfigurationService) => {
     PlcManagementComponent,
     PlcEditorComponent,
     TrayEditorComponent,
-    ClassLevelDetailComponent
+    ClassLevelDetailComponent,
+    CatererAsssetTypeManagementComponent,
+    CatererAsssetTypeEditorComponent
   ],
   providers: [
     { provide: "BASE_URL", useFactory: getBaseUrl },
@@ -1385,7 +1387,9 @@ export const configFactory = (configService: ConfigurationService) => {
     VoucherDishComponent,
     PlcEditorComponent,
     TrayEditorComponent,
-    ClassLevelDetailComponent
+    ClassLevelDetailComponent,
+    CatererAsssetTypeManagementComponent,
+    CatererAsssetTypeEditorComponent
   ],
 })
 export class AppModule {}

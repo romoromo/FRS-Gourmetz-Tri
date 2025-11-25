@@ -120,6 +120,7 @@ namespace DAL.Filters
             MenuGroupMapping(ref mapper);
             FaqSubjectMapping(ref mapper);
             FaqDetailMapping(ref mapper);
+            CatererAssetTypeMapping(ref mapper);
             return mapper;
         }
 
@@ -2792,6 +2793,13 @@ namespace DAL.Filters
                .CanFilter()
                .CanSort()
                .HasName("faqDescription");
+        }
+
+        private void CatererAssetTypeMapping(ref SievePropertyMapper mapper)
+        {
+            mapper.Property<CatererAssetType>(m => m.CatererInfoId)
+                .CanFilter()
+                .HasName("CatererInfoId");
         }
     }
 }

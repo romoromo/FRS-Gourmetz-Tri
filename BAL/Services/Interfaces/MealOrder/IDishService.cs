@@ -55,7 +55,13 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<List<DishCyclePeriodDTO>> GetOutletDishCyclePeriodsAsync(int dishCyleId);
         Task<List<DishCycleDTO>> GetOutletStudentDishCyclesAsync(int studentId, DateTime date, int sessionId);
         Task<IEnumerable<DishTypeDTO>> GetDishTypesByActiveDishCyclesAsync(int outletId, DateTime deliveryDate, DateTime deliveryDateTo);
-        Task<DishImportDTO> DishImport(int catererInfoId, List<DishImportInputDTO> dtos,int userId);
+        Task<DishImportDTO> DishImport(int catererInfoId, List<DishImportInputDTO> dtos, int userId);
         Task<List<int?>> GetDishesIdsByCycleIdAsync(int dishCycleId);
+
+        Task<PagedEntity<CatererAssetTypeDTO>> GetCatererAssetTypesAsync(BaseFilter filter);
+        Task<CatererAssetTypeDTO> GetCatererAssetTypeByIdAsync(int id);
+        Task<BaseOperationResponse> CreateCatererAssetTypeAsync(CatererAssetTypeDTO dto);
+        Task<BaseOperationResponse> UpdateCatererAssetTypeAsync(CatererAssetTypeDTO dto);
+        Task<BaseOperationResponse> DeleteCatererAssetTypeAsync(int id);
     }
 }
