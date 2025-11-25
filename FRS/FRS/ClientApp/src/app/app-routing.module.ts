@@ -160,6 +160,7 @@ import { FaqDetailsManagementComponent } from './components/meal-order-system/fa
 import { VoucherUtilisationsReportManagementComponent } from './components/reports/voucher-utilisation/voucher-utilisations-management.component';
 import { VouchersUnassignManagementComponent } from './components/meal-order-system/voucher-unassign/vouchers-unassign-management.component';
 import { WalletTransactionLogManagementComponent } from './components/meal-order-system/wallet-transaction-log/wallet-transaction-log-management.component';
+import { PointTransactionLogManagementComponent } from './components/meal-order-system/point-transaction-log/point-transaction-log-management.component';
 import { PlcManagementComponent } from './components/meal-order-system/outlet/plc/plc-management.component';
  
 
@@ -310,6 +311,7 @@ const routes: Routes = [
       { path: "vouchers", component: VouchersManagementComponent, canActivate: [AuthGuard], data: { title: "Vouchers" } },
       { path: "vouchers-administration", component: VouchersUnassignManagementComponent, canActivate: [AuthGuard], data: { title: "Vouchers Administration" } },
       { path: "wallet-transaction-log-management", component: WalletTransactionLogManagementComponent, canActivate: [AuthGuard], data: { title: "Ewallet Transactions" } },
+      { path: "point-transaction-log-management", component: PointTransactionLogManagementComponent, canActivate: [AuthGuard], data: { title: "Point Transactions" } },
       { path: "waivers", component: WaiversManagementComponent, canActivate: [AuthGuard], data: { title: "Waivers" } },
       { path: "contactussubjects", component: ContactUsSubjectsManagementComponent, canActivate: [AuthGuard], data: { title: "Contact Us Subjects" } },
       { path: "contactusdetails", component: ContactUsDetailsManagementComponent, canActivate: [AuthGuard], data: { title: "Contact Us Details" } },

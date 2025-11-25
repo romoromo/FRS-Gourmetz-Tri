@@ -334,6 +334,16 @@
               "logoClass": "",
               "permissions": [],
               "childMenus": []
+            },
+            {
+              "label": "Point Transactions",
+              "active": true,
+              "link": "/point-transaction-log-management",
+              "showLabel": true,
+              "showLogo": false,
+              "logoClass": "",
+              "permissions": [],
+              "childMenus": []
             }
           ]
         },

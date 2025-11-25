@@ -42,59 +42,52 @@ namespace BAL.Services
             var result = new BaseOperationResponse();
             var student = await this._uow.Students.GetByIdAsync(dto.StudentId);
 
-            if (!student.ConcurrencyStamp.SequenceEqual(dto.ConcurrencyStamp))
+            if (string.IsNullOrEmpty(dto.TransactionType) ||
+                (!dto.TransactionType.Equals(RewardTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                !dto.TransactionType.Equals(RewardTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
                 result.IsSuccess = false;
-                result.Message = "Student is not the latest version. Please refresh.";
+                result.Message = "Transaction type is missing or invalid.";
                 return result;
             }
-            else
+
+            if (dto.TransactionType.Equals(WalletTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                if (string.IsNullOrEmpty(dto.TransactionType) ||
-                    (!dto.TransactionType.Equals(RewardTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                    !dto.TransactionType.Equals(RewardTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase)))
+                student.PointBalance += dto.Amount;
+            }
+            else if (dto.TransactionType.Equals(WalletTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                if (student.PointBalance - dto.Amount < 0)
                 {
                     result.IsSuccess = false;
-                    result.Message = "Transaction type is missing or invalid.";
+                    result.Message = "Insufficient balance.";
                     return result;
                 }
-
-                if (dto.TransactionType.Equals(WalletTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase))
+                else
                 {
-                    student.PointBalance += dto.Amount;
+                    student.PointBalance -= dto.Amount;
                 }
-                else if (dto.TransactionType.Equals(WalletTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    if (student.PointBalance - dto.Amount < 0)
-                    {
-                        result.IsSuccess = false;
-                        result.Message = "Insufficient balance.";
-                        return result;
-                    }
-                    else
-                    {
-                        student.PointBalance -= dto.Amount;
-                    }
-                }
-
-                result = await this._uow.Students.UpdateAsync(student);
-
-                if (result.IsSuccess)
-                {
-                    var transaction = new StudentPointTransaction
-                    {
-                        Amount = dto.Amount,
-                        TransactionType = dto.TransactionType,
-                        StudentId = dto.StudentId,
-                        Description = dto.Description
-                    };
-
-                    await this._uow.StudentPointTransactions.CreateAsync(transaction);
-                }
-
-                var d = _mapper.Map<StudentDTO>(result.Data);
-                result.Data = d;
             }
+
+            result = await this._uow.Students.UpdateAsync(student);
+
+            if (result.IsSuccess)
+            {
+                var transaction = new StudentPointTransaction
+                {
+                    Amount = dto.Amount,
+                    TransactionType = dto.TransactionType,
+                    StudentId = dto.StudentId,
+                    Description = dto.Description
+                    
+                };
+
+                await this._uow.StudentPointTransactions.CreateAsync(transaction);
+            }
+
+            var d = _mapper.Map<StudentDTO>(result.Data);
+            result.Data = d;
+
 
             return result;
         }
