@@ -45,7 +45,6 @@
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <a  class="btn btn-link btn-xs" href="javascript:;" (click)="editAssetType(row)"><i class="fa fa-pencil-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
-    <a  class="btn btn-link btn-xs" href="javascript:;" (click)="editAssetType(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
     <a  class="btn btn-link btn-xs" href="javascript:;" (click)="deleteAssetType(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
   </ng-template>
 </div>
