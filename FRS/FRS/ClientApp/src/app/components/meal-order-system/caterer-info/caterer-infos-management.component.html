@@ -98,16 +98,16 @@
                   <carton-assets-management [catererId]="row.id"></carton-assets-management>
                 </div>
               </mat-tab>
-              <!--<mat-tab label="Menus">
-      <div class="container-fluid" style="padding-top:20px">
-        <menus-management [isHideHeader]="true" [catererId]="row.id"></menus-management>
-      </div>
-    </mat-tab>
-    <mat-tab label="Menu Cycles">
-      <div class="container-fluid" style="padding-top:20px">
-        <menu-cycles-management [isHideHeader]="true" [catererId]="row.id"></menu-cycles-management>
-      </div>
-    </mat-tab>-->
+              <mat-tab label="Asset Types">
+                <div class="container-fluid" style="padding-top: 20px;">
+                  <caterer-asset-type-management [catererId]="row.id"></caterer-asset-type-management>
+                </div>
+              </mat-tab>
+              <mat-tab label="Asset">
+                <div class="container-fluid" style="padding-top: 20px;">
+                  <caterer-asset-management [catererId]="row.id"></caterer-asset-management>
+                </div>
+              </mat-tab>
           </mat-tab-group>
         </div>
       </ng-template>

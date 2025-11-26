@@ -162,7 +162,9 @@ import { VouchersUnassignManagementComponent } from './components/meal-order-sys
 import { WalletTransactionLogManagementComponent } from './components/meal-order-system/wallet-transaction-log/wallet-transaction-log-management.component';
 import { PointTransactionLogManagementComponent } from './components/meal-order-system/point-transaction-log/point-transaction-log-management.component';
 import { PlcManagementComponent } from './components/meal-order-system/outlet/plc/plc-management.component';
- 
+import { CatererAsssetTypeManagementComponent } from './components/meal-order-system/asset-type/caterer-asset-type-management.component';
+import { CatererAssetsManagementComponent } from './components/meal-order-system/caterer-asset/caterer-asset-management.component';
+import { title } from 'process';
 
 
 const routes: Routes = [
@@ -334,6 +336,8 @@ const routes: Routes = [
       { path: "faqsubjects", component: FaqSubjectsManagementComponent, canActivate: [AuthGuard], data: { title: "FAQ Subjects" } },
       { path: "faqdetails", component: FaqDetailsManagementComponent, canActivate: [AuthGuard], data: { title: "FAQ Details" } },
       { path: "plcs", component: PlcManagementComponent, canActivate: [AuthGuard], data: { title: "PLCs" } },
+      { path: "catererasssettypes", component: CatererAsssetTypeManagementComponent, canActivate: [AuthGuard], data: { title: "Asset Types" } },
+      { path: "catererasset", component: CatererAssetsManagementComponent, canActivate: [AuthGuard], data: { title: "Assets" } }
       //{ path: "orderportalcontents", component: OrderPortalContentComponent, canActivate: [AuthGuard], data: { title: "Order Portal Content" } },
 
       //{ path: "display/:mac", redirectTo: "/display/:mac" },

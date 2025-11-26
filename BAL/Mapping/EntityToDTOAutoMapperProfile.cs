@@ -939,6 +939,17 @@ namespace BAL.Mapping
             CreateMap<TrayDTO, TrayModel>()
                 .ForMember(d => d.PLC, opt => opt.Ignore())
                 .ForMember(d => d.PLCId, opt => opt.MapFrom(src => src.PLCId));
+
+            CreateMap<CatererAssetType, CatererAssetTypeDTO>()
+                .ForMember(d => d.FilePath, map => map.MapFrom(s => s.Icon.Path));
+            CreateMap<CatererAssetTypeDTO, CatererAssetType>()
+                .ForMember(d => d.Icon, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() }));
+
+            CreateMap<CatererAsset, CatererAssetDTO>()
+                .ForMember(d => d.CatererAssetTypeCode, map => map.MapFrom(s => s.CatererAssetType.Code))
+                .ForMember(d => d.FilePath, map => map.MapFrom(s => s.Icon.Path));
+            CreateMap<CatererAssetDTO, CatererAsset>()
+                .ForMember(d => d.Icon, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() }));
         }
     }
 }

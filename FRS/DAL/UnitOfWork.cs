@@ -154,8 +154,10 @@ namespace DAL
         private FaqDetailRepository _faqDetails;
         IUserActivityRepository _userActivityRepository;
         private PLCRepository _plcRepository;
+        private CatererAssetTypeRepository _catererAssetTypeRepository;
+        private CatererAssetRepository _catererAssetRepository;
 
-        public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper,IUserActivityRepository userActivityRepository)
+        public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper, IUserActivityRepository userActivityRepository)
         {
             _context = context;
             _configuration = configuration;
@@ -826,7 +828,7 @@ namespace DAL
             get
             {
                 if (_vouchers == null)
-                    _vouchers = new VoucherRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_userActivityRepository);
+                    _vouchers = new VoucherRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId, _userActivityRepository);
 
                 return _vouchers;
             }
@@ -914,7 +916,7 @@ namespace DAL
             get
             {
                 if (_students == null)
-                    _students = new StudentRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_configuration,_userActivityRepository);
+                    _students = new StudentRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId, _configuration, _userActivityRepository);
 
                 return _students;
             }
@@ -936,7 +938,7 @@ namespace DAL
             get
             {
                 if (_studentCards == null)
-                    _studentCards = new StudentCardRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_userActivityRepository);
+                    _studentCards = new StudentCardRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId, _userActivityRepository);
 
                 return _studentCards;
             }
@@ -947,7 +949,7 @@ namespace DAL
             get
             {
                 if (_tokenOrders == null)
-                    _tokenOrders = new TokenOrderRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,_userActivityRepository);
+                    _tokenOrders = new TokenOrderRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId, _userActivityRepository);
 
                 return _tokenOrders;
             }
@@ -1521,13 +1523,33 @@ namespace DAL
             }
         }
 
-        public IPLCRepository PLCRepository {
+        public IPLCRepository PLCRepository
+        {
             get
             {
                 if (_plcRepository == null)
                     _plcRepository = new PLCRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
 
                 return _plcRepository;
+            }
+        }
+
+        public ICatererAssetTypeRepository CatererAssetType
+        {
+
+            get
+            {
+                _catererAssetTypeRepository ??= new CatererAssetTypeRepository(_context, this._sieveProcessor);
+                return _catererAssetTypeRepository;
+            }
+        }
+
+        public ICatererAssetRepository CatererAssetRepository
+        {
+            get
+            {
+                _catererAssetRepository ??= new CatererAssetRepository(_context, this._sieveProcessor);
+                return _catererAssetRepository;
             }
         }
 

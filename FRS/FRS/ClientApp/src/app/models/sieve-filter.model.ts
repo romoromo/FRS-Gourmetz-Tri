@@ -116,3 +116,10 @@ export class CartonAssetFilter extends Filter{
   }
   public catererInfoId: string;
 }
+
+export class CatererAssetFilter extends Filter{
+  constructor(page?: number, pageSize?: number) {
+    super(page, pageSize);
+  }
+  public catererInfoId: string;
+}

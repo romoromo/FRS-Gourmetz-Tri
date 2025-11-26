@@ -7,7 +7,7 @@ import { AccountEndpoint } from '../account-endpoint.service';
 import { AuthService } from '../auth.service';
 import { CommonEndpoint } from '../common-endpoint.service';
 import { ConfigurationService } from '../configuration.service';
-import { Filter, PagedResult } from 'src/app/models/sieve-filter.model';
+import { CatererAssetFilter, Filter, PagedResult } from 'src/app/models/sieve-filter.model';
 import { Staff } from 'src/app/models/meal-order/staff.model';
 import { CatererInfo, CatererInfoSimple } from '../../models/meal-order/caterer-info.model';
 import { BentoBoxType } from '../../models/meal-order/bento-box-type.model';
@@ -22,6 +22,7 @@ import { Outlet, OutletProfile, OutletTerm, OutletSimple } from 'src/app/models/
 import { StoreInfo } from '../../models/meal-order/store-info.model';
 import { Driver } from 'src/app/models/meal-order/driver.model';
 import { Route } from 'src/app/models/meal-order/route.model';
+import { CatererAsset } from 'src/app/models/meal-order/caterer-asset.model';
 
 @Injectable()
 export class DeliveryService {
@@ -76,6 +77,9 @@ export class DeliveryService {
 
   private readonly _deliveryBaseurl: string = "/api/delivery";
   get deliveryBaseurl() { return this.configurations.baseUrl + this._deliveryBaseurl; }
+
+  private readonly _catererAsset: string = "/api/delivery/catererasset";
+  get catererAssetBaseurl() { return this.configurations.baseUrl + this._catererAsset; }
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
@@ -508,5 +512,33 @@ export class DeliveryService {
 
   deleteOutletTerm(outletOrOutletId: string | OutletTerm): Observable<OutletTerm> {
     return this.commonEndpoint.getDeleteEndpoint<OutletTerm>(this.outletTermUrl, <string>outletOrOutletId);
+  }
+
+
+
+  getCatererAssetsByFilter(filter: CatererAssetFilter){
+    return this.commonEndpoint.getSieve<PagedResult>(this.catererAssetBaseurl + '/sieve/list', filter);
+  }
+
+   newCatererAsset(asset: CatererAsset) {
+    return this.commonEndpoint.getNewEndpoint<CatererAsset>(this.catererAssetBaseurl, asset);
+  }
+
+   getCatererAssetById(assetId: string) {
+    return this.commonEndpoint.getById<any>(this.catererAssetBaseurl + '/get', assetId);
+  }
+
+  getCatererAssetByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.catererAssetBaseurl + '/sieve/list', filter);
+  }
+
+  updateCatererAsset(catererAsset: CatererAsset) {
+    if (catererAsset.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.catererAssetBaseurl, catererAsset, catererAsset.id);
+    }
+  }
+
+  deleteCatererAsset(id: string | CatererAsset): Observable<CatererAsset> {
+    return this.commonEndpoint.getDeleteEndpoint<CatererAsset>(this.catererAssetBaseurl, <string>id);
   }
 }

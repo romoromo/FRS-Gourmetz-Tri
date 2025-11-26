@@ -150,7 +150,7 @@ namespace FRS.Controllers
         [HttpGet("dishes/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllDishesPolicy)]
         //[AllowAnonymous]
-        [ProducesResponseType(200, Type  = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetDishes(BaseFilter filter)
         {
@@ -217,7 +217,7 @@ namespace FRS.Controllers
         //[AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(MealCreditSetDTO))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetDishesByMealType(int outletId, int catererId,int mealTypeId, DateTime orderDate, int? sessionId)
+        public async Task<IActionResult> GetDishesByMealType(int outletId, int catererId, int mealTypeId, DateTime orderDate, int? sessionId)
         {
             var results = await this._service.GetDishesByMealType(outletId, catererId, mealTypeId, orderDate, sessionId);
             return Ok(results);
@@ -241,7 +241,7 @@ namespace FRS.Controllers
 
         [HttpPost("dishes")]
         //[Authorize(Authorization.Policies.ManageAllDishesPolicy)]
-        [ProducesResponseType(201, Type  = typeof(DishDTO))]
+        [ProducesResponseType(201, Type = typeof(DishDTO))]
         [ProducesResponseType(400)]
         //[AllowAnonymous]
         public async Task<IActionResult> CreateDish([FromBody] DishDTO dto)
@@ -268,7 +268,7 @@ namespace FRS.Controllers
 
         [HttpDelete("dishes/delete/{id}")]
         //[Authorize(Authorization.Policies.ManageAllDishesPolicy)]
-        [ProducesResponseType(200, Type  = typeof(DishDTO))]
+        [ProducesResponseType(200, Type = typeof(DishDTO))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         //[AllowAnonymous]
@@ -468,7 +468,7 @@ namespace FRS.Controllers
 
                     }
                 }
-                var responseData = await _service.DishImport(catererId, valueExcel,userId);
+                var responseData = await _service.DishImport(catererId, valueExcel, userId);
                 return Ok(responseData);
             }
             catch (Exception ex)
@@ -812,6 +812,90 @@ namespace FRS.Controllers
         {
             var results = await this._service.CreateOutletDishCyclePeriodMenus(models);
             return Ok(results);
+        }
+        #endregion
+
+        #region Caterer Asset Type
+
+        #region Sieved
+        [ApiKeyAuthorize]
+        [HttpGet("catererassetType/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetCatererAssetTypes(BaseFilter filter)
+        {
+            var results = await this._service.GetCatererAssetTypesAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<CatererAssetTypeDTO>>(results));
+        }
+
+        #endregion
+
+        [HttpPost("catererassetType")]
+        [ProducesResponseType(201, Type = typeof(CatererAssetTypeDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateCatererAssetType([FromBody] CatererAssetTypeDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                var result = await this._service.CreateCatererAssetTypeAsync(dto);
+                if (result.IsSuccess)
+                {
+                    CatererAssetTypeDTO vm = _mapper.Map<CatererAssetTypeDTO>(result.Data);
+                    return CreatedAtAction("GetCatererAssetTypeByIdAsync", new { id = vm.Id }, vm);
+                }
+
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
+        [HttpDelete("catererassetType/delete/{id}")]
+        //[Authorize(Authorization.Policies.ManageAllCuisinesPolicy)]
+        [ProducesResponseType(200, Type = typeof(CatererAssetTypeDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteCatererAssetType(int id)
+        {
+            var dto = await this._service.GetCatererAssetTypeByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            var result = await this._service.DeleteCatererAssetTypeAsync(id);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while deleting: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+        [HttpPut("catererassetType/update/{id}")]
+        //[Authorize(Authorization.Policies.ManageAllCuisinesPolicy)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateCatererAssetType(string id, [FromBody] CatererAssetTypeDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                var dto = await this._service.GetCatererAssetTypeByIdAsync(model.Id);
+
+                if (dto == null)
+                    return NotFound(id);
+
+                var result = await this._service.UpdateCatererAssetTypeAsync(model);
+                if (result.IsSuccess)
+                    return NoContent();
+
+                AddErrors(new string[] { result.Message });
+
+            }
+
+            return BadRequest(ModelState);
         }
         #endregion
     }
