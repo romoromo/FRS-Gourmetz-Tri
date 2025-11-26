@@ -103,6 +103,11 @@
                   <caterer-asset-type-management [catererId]="row.id"></caterer-asset-type-management>
                 </div>
               </mat-tab>
+              <mat-tab label="Asset">
+                <div class="container-fluid" style="padding-top: 20px;">
+                  <caterer-asset-management [catererId]="row.id"></caterer-asset-management>
+                </div>
+              </mat-tab>
           </mat-tab-group>
         </div>
       </ng-template>

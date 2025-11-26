@@ -1681,5 +1681,31 @@ namespace BAL.Services.MealOrder
         }
 
         #endregion
+
+        public async Task<PagedEntity<CatererAssetDTO>> GetCatererAssetsAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<CatererAssetDTO>>(await this._uow.CatererAssetRepository.GetAsync(filter));
+            return result;
+        }
+
+        public async Task<CatererAssetDTO> GetCatererAssetByIdAsync(int id)
+        {
+            return _mapper.Map<CatererAssetDTO>(await this._uow.CatererAssetRepository.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreateCatererAssetAsync(CatererAssetDTO dto)
+        {
+            return await this._uow.CatererAssetRepository.CreateAsync(_mapper.Map<CatererAsset>(dto));
+        }
+
+        public async Task<BaseOperationResponse> UpdateCatererAssetAsync(CatererAssetDTO dto)
+        {
+            return await this._uow.CatererAssetRepository.UpdateAsync(_mapper.Map<CatererAsset>(dto));
+        }
+
+        public async Task<BaseOperationResponse> DeleteCatererAssetAsync(int id)
+        {
+            return await this._uow.CatererAssetRepository.DeleteAsync(id);
+        }
     }
 }

@@ -277,6 +277,7 @@ namespace DAL
         public DbSet<StudentWallet> StudentWallets { get; set; }
         public DbSet<StudentPoint> StudentPoints { get; set; }
         public DbSet<CatererAssetType> CatererAssetTypes { get; set; }
+        public DbSet<CatererAsset> CatererAssets { get; set; }
 
         #region Stored Procedures
 
@@ -737,6 +738,9 @@ namespace DAL
 
             builder.Entity<CatererAssetType>().TrackAllProperties();
             builder.Entity<CatererAssetType>().HasIndex(p => new { p.Code, p.Description, p.CatererInfoId });
+
+            builder.Entity<CatererAsset>().TrackAllProperties();
+            builder.Entity<CatererAsset>().HasIndex(p => new { p.assetQRCode, p.Description, p.CatererAssetTypeId });
             #endregion
 
         }

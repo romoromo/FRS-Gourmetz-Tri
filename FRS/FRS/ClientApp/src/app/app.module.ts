@@ -560,6 +560,9 @@ import { TrayEditorComponent } from "./components/meal-order-system/dispenser-ou
 import { ClassLevelDetailComponent } from "./components/meal-order-system/class-level/class-level-detail.components";
 import { CatererAsssetTypeManagementComponent } from "./components/meal-order-system/asset-type/caterer-asset-type-management.component";
 import { CatererAsssetTypeEditorComponent } from "./components/meal-order-system/asset-type/caterer-asset-type-editor.component";
+import { CatererAssetsManagementComponent } from "./components/meal-order-system/caterer-asset/caterer-asset-management.component";
+import { CatererAssetEditorComponent } from "./components/meal-order-system/caterer-asset/caterer-asset-editor.component";
+
 export const configFactory = (configService: ConfigurationService) => {
   return () => {
     configService.loadConfig();
@@ -1024,7 +1027,9 @@ export const configFactory = (configService: ConfigurationService) => {
     TrayEditorComponent,
     ClassLevelDetailComponent,
     CatererAsssetTypeManagementComponent,
-    CatererAsssetTypeEditorComponent
+    CatererAsssetTypeEditorComponent,
+    CatererAssetsManagementComponent,
+    CatererAssetEditorComponent
   ],
   providers: [
     { provide: "BASE_URL", useFactory: getBaseUrl },
@@ -1389,7 +1394,9 @@ export const configFactory = (configService: ConfigurationService) => {
     TrayEditorComponent,
     ClassLevelDetailComponent,
     CatererAsssetTypeManagementComponent,
-    CatererAsssetTypeEditorComponent
+    CatererAsssetTypeEditorComponent,
+    CatererAssetsManagementComponent,
+    CatererAssetEditorComponent
   ],
 })
 export class AppModule {}

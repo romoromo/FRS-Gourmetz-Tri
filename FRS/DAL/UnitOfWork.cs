@@ -155,6 +155,7 @@ namespace DAL
         IUserActivityRepository _userActivityRepository;
         private PLCRepository _plcRepository;
         private CatererAssetTypeRepository _catererAssetTypeRepository;
+        private CatererAssetRepository _catererAssetRepository;
 
         public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper, IUserActivityRepository userActivityRepository)
         {
@@ -1540,6 +1541,15 @@ namespace DAL
             {
                 _catererAssetTypeRepository ??= new CatererAssetTypeRepository(_context, this._sieveProcessor);
                 return _catererAssetTypeRepository;
+            }
+        }
+
+        public ICatererAssetRepository CatererAssetRepository
+        {
+            get
+            {
+                _catererAssetRepository ??= new CatererAssetRepository(_context, this._sieveProcessor);
+                return _catererAssetRepository;
             }
         }
 

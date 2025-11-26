@@ -1912,5 +1912,88 @@ namespace FRS.Controllers
         }
 
         #endregion
+
+
+        #region Caterer Asset
+
+        #region Sieved
+        [ApiKeyAuthorize]
+        [HttpGet("catererasset/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetCatererAssets(BaseFilter filter)
+        {
+            var results = await this._service.GetCatererAssetsAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<CatererAssetDTO>>(results));
+        }
+
+        #endregion
+
+        [HttpPost("catererasset")]
+        [ProducesResponseType(201, Type = typeof(CatererAssetDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateCatererAsset([FromBody] CatererAssetDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                var result = await this._service.CreateCatererAssetAsync(dto);
+                if (result.IsSuccess)
+                {
+                    CatererAssetDTO vm = _mapper.Map<CatererAssetDTO>(result.Data);
+                    return CreatedAtAction("GetCatererAssetByIdAsync", new { id = vm.Id }, vm);
+                }
+
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
+        [HttpDelete("catererasset/delete/{id}")]
+        [ProducesResponseType(200, Type = typeof(CatererAssetTypeDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteCatererAsset(int id)
+        {
+            var dto = await this._service.GetCatererAssetByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            var result = await this._service.DeleteCatererAssetAsync(id);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while deleting: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+        [HttpPut("catererasset/update/{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateCatererAsset(string id, [FromBody] CatererAssetDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                var dto = await this._service.GetCatererAssetByIdAsync(model.Id);
+
+                if (dto == null)
+                    return NotFound(id);
+
+                var result = await this._service.UpdateCatererAssetAsync(model);
+                if (result.IsSuccess)
+                    return NoContent();
+
+                AddErrors(new string[] { result.Message });
+
+            }
+
+            return BadRequest(ModelState);
+        }
+        #endregion
     }
 }
