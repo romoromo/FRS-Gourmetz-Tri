@@ -7,7 +7,7 @@ export class CatererAsset {
   }
 
   public id: string;
-  public assetTypeId: string;
+  public catererAssetTypeId: string;
   public description: string;
   public assetQRCode: string;
 

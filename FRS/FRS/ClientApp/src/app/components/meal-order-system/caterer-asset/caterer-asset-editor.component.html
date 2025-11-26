@@ -7,7 +7,7 @@
       <div class="row">
         <mat-form-field class="col-md-12">
           <mat-label>Asset Type</mat-label>
-          <mat-select id="assetType" name="assetType" [(ngModel)]="catererAssetEdit.assetTypeId" #assetTypeId="ngModel" required>
+          <mat-select id="assetType" name="assetType" [(ngModel)]="catererAssetEdit.catererAssetTypeId" #assetTypeId="ngModel" required>
             <mat-option *ngFor="let assetType of catererAssetTypes" [value]="assetType.id">
               {{assetType.code}}
             </mat-option>
@@ -16,7 +16,7 @@
         </mat-form-field>
 
         <mat-form-field class="col-md-12">
-          <input matInput autocomplete="off" type="text" id="assetQRCode" name="assetQRCode" placeholder="Asset QR Code" [(ngModel)]="catererAssetEdit.code" #assetQRCode="ngModel" required minlength="2" maxlength="200" />
+          <input matInput autocomplete="off" type="text" id="assetQRCode" name="assetQRCode" placeholder="Asset QR Code" [(ngModel)]="catererAssetEdit.assetQRCode" #assetQRCode="ngModel" required minlength="2" maxlength="200" />
         </mat-form-field>
         <mat-form-field class="col-md-12">
           <input matInput autocomplete="off"  type="text" id="description" name="description" placeholder="Description" [(ngModel)]="catererAssetEdit.description" #description="ngModel" />
@@ -51,9 +51,9 @@
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">
-      <button *ngIf="!canManageCartonAssets" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
-      <button *ngIf="canManageCartonAssets" type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
-      <button *ngIf="canManageCartonAssets" type="submit" mat-button [disabled]="isSaving">
+      <button type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button type="submit" mat-button [disabled]="isSaving">
         <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
       </button>
     </div>

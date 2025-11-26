@@ -119,7 +119,7 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
-      { prop: "assetTypeCode", name: "Asset Type" },
+      { prop: "catererAssetTypeCode", name: "Asset Type" },
       { prop: "assetQRCode", name: "Asset QR Code" },
       { prop: "description", name: "Description" },
       {
@@ -197,7 +197,7 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
 
   onSearchChanged(value: string) {
     this.keyword = value;
-    //this.loadData(null);
+    this.loadData(null);
   }
 
   clearFilterAndPagedResult() {
@@ -239,7 +239,7 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
     this.alertService.startLoadingMessage("Deleting...");
     this.loadingIndicator = true;
 
-    this.deliveryService.deleteCartonAsset(row.id)
+    this.deliveryService.deleteCatererAsset(row.id)
       .subscribe(results => {
         this.alertService.stopLoadingMessage();
         this.loadingIndicator = false;

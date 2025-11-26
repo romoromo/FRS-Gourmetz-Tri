@@ -13,6 +13,7 @@ import { DishService } from '../../../services/meal-order/dish.service';
 import { Subscription } from 'rxjs';
 import { CatererAssetType } from 'src/app/models/meal-order/asset-type.model';
 import { CatererAsset } from 'src/app/models/meal-order/caterer-asset.model';
+import { FileService } from 'src/app/services/file.service';
 
 
 @Component({
@@ -46,9 +47,10 @@ export class CatererAssetEditorComponent implements OnInit, OnDestroy {
   private form;
 
   private catererId: string;
+  public fileUploadResponse: { dbPath: '', fileId: null, fileName: '' };
 
   constructor(private alertService: AlertService, private deliveryService: DeliveryService, private accountService: AccountService,
-    public dialogRef: MatDialogRef<CatererAssetEditorComponent>, private mealService: MealService, private dishService: DishService,
+    public dialogRef: MatDialogRef<CatererAssetEditorComponent>, private mealService: MealService, private dishService: DishService,  private fileService: FileService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (typeof (data.catererAsset) != typeof (undefined)) {
       if(data.catererAsset.catererId)
@@ -185,9 +187,24 @@ export class CatererAssetEditorComponent implements OnInit, OnDestroy {
         this.catererAssetTypes = results.pagedData;
       },
         error => {
-          //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving caterer types.\r\n"`,
             MessageSeverity.error);
         }));
   }
+
+  public uploadFinished = (event) => {
+    this.fileUploadResponse = event;
+    this.catererAssetEdit.filePath = this.fileUploadResponse ? this.fileUploadResponse.dbPath : null;
+  }
+
+  getFileImage(path) {
+    return this.fileService.getFile(path);
+  }
+
+  removePhoto() {
+    this.catererAssetEdit.filePath = null;
+    this.catererAssetEdit.fileId = null;
+    this.catererAssetEdit.fileName = null;
+  }
+
 }

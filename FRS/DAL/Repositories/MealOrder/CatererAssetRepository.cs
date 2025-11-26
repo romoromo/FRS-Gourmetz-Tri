@@ -21,7 +21,8 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<PagedEntity<CatererAsset>> GetAsync(BaseFilter filter)
         {
-            IQueryable<CatererAsset> query = _appContext.CatererAssets;
+            IQueryable<CatererAsset> query = _appContext.CatererAssets
+                .Include(m => m.CatererAssetType);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
             return result;
