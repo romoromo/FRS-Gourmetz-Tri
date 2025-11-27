@@ -136,7 +136,7 @@ export class OrderCancellationReportManagementComponent implements OnInit, OnDes
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(profileName|processedBy|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(status)==cancelled,(OrderCancelledDateRange)==' + this.start.toDateString() + '|' + this.end.toDateString();
+    this.filter.filters = '(profileName|processedBy|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(status)==cancelled,(IsActive)==true,(OrderCancelledDateRange)==' + this.start.toDateString() + '|' + this.end.toDateString();
 
     if (this.isFAS) {
       this.filter.filters += ',(isFas)==true';

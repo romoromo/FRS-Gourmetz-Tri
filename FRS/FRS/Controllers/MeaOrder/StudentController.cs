@@ -1579,6 +1579,13 @@ namespace FRS.Controllers
                     Message = response.Message,
                     Data = studentData?.Id ?? 0
                 };
+
+                if (!response.IsSuccess)
+                {
+                    _logger.LogInformation($"Error CreateStudentV2 Service : {response.Message}");
+                    return BadRequest(responseObject);
+                }
+
                 return Ok(responseObject);
             }
             catch (Exception ex)

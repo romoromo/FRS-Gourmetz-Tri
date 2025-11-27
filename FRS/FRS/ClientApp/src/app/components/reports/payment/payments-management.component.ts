@@ -166,7 +166,7 @@ export class PaymentsReportManagementComponent implements OnInit, OnDestroy {
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(profileName|processedBy|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(status)==' + (this.status == 'All' ? '' : this.status) + ',(orderType)==' + (this.ordertype == 'All' ? '' : this.ordertype) + ',(AuditOrderLogDateRange)==' + this.start.toDateString() + '|' + this.end.toDateString();
+    this.filter.filters = '(profileName|processedBy|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(IsActive)==true,(status)==' + (this.status == 'All' ? '' : this.status) + ',(orderType)==' + (this.ordertype == 'All' ? '' : this.ordertype) + ',(AuditOrderLogDateRange)==' + this.start.toDateString() + '|' + this.end.toDateString();
 
     if (this.isFAS) {
       this.filter.filters += ',(isFas)==true';

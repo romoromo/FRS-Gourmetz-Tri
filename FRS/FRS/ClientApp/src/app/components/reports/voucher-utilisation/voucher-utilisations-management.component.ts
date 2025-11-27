@@ -153,7 +153,7 @@ export class VoucherUtilisationsReportManagementComponent implements OnInit, OnD
     }
 
     if (!this.keyword) this.keyword = '';
-    this.filter.filters = '(studentName|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(status)==' + (this.status == 'All' ? '' : this.status);
+    this.filter.filters = '(studentName|className|invoiceNumber|voucherCode)@=' + this.keyword + ',(IsActive)==true,(status)==' + (this.status == 'All' ? '' : this.status);
 
     this.filter.reportDateFrom = this.start.toDateString();
     this.filter.reportDateTo = this.end.toDateString();
