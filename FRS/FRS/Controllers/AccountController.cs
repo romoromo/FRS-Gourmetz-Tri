@@ -816,7 +816,7 @@ namespace FRS.Controllers
 
                     ApplicationUser existingUser = await _accountManager.GetUserByEmailAsync(user.Email);
 
-                    if (existingUser != null && existingUser.IsActive)
+                    if (existingUser != null && existingUser.IsActive && existingUser.IsEnabled)
                         return BadRequest($"{user.Email} already registered on the system, please use forgot password option");
 
                     if (string.IsNullOrEmpty(user.UserName)) user.UserName = user.Email;
@@ -1013,6 +1013,7 @@ namespace FRS.Controllers
                 return NotFound(id);
 
             appUser.LockoutEnd = null;
+            appUser.IsEnabled = true;
             var result = await _accountManager.UpdateUserAsync(appUser);
             if (!result.Item1)
                 throw new Exception("The following errors occurred while unblocking user: " + string.Join(", ", result.Item2));
