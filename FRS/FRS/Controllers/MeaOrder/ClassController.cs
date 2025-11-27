@@ -139,7 +139,7 @@ namespace FRS.Controllers
         #region Class Levels
 
         //#region Sieved
-        [ApiKeyAuthorize]
+        //[ApiKeyAuthorize]
         [HttpGet("classlevels/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllClassLevelsPolicy)]
         [AllowAnonymous]
@@ -245,7 +245,7 @@ namespace FRS.Controllers
         #region Classes
 
         #region Sieved
-        [ApiKeyAuthorize]
+        //[ApiKeyAuthorize]
         [HttpGet("classes/sieve/list")]
         //[Authorize(Authorization.Policies.ViewAllClasssPolicy)]
         [AllowAnonymous]

@@ -121,7 +121,7 @@ namespace BAL.Services.MealOrder
 
         private DishDTO GetDishWithFile(DishDTO dto)
         {
-            if(!string.IsNullOrEmpty(dto.FilePath))
+            if (!string.IsNullOrEmpty(dto.FilePath))
             {
 
                 try
@@ -195,7 +195,7 @@ namespace BAL.Services.MealOrder
                 var wb = new XSSFWorkbook();
                 var rowCount = 0;
                 var sheet = (XSSFSheet)wb.CreateSheet("Dishes");
-                var headers = new string[] { "Code", "Label", "Production Description","Type", "Cuisine", "Bento Box","RPP","Cost","Is Enabled" };
+                var headers = new string[] { "Code", "Label", "Production Description", "Type", "Cuisine", "Bento Box", "RPP", "Cost", "Is Enabled" };
                 #region Headers
 
                 var headerStyle = wb.CreateCellStyle();
@@ -324,7 +324,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<DishImportDTO> DishImport(int catererInfoId, List<DishImportInputDTO> dtos, int userId)
         {
-            return await _uow.Dishes.DishImport(catererInfoId, dtos,userId);
+            return await _uow.Dishes.DishImport(catererInfoId, dtos, userId);
         }
         #endregion
 
@@ -427,7 +427,7 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        
+
         #endregion
 
         #region Dish Cycle Calendar
@@ -463,6 +463,35 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> CreateOutletDishCyclePeriodMenus(OutletDishViewMenuDTO model)
         {
             var result = await this._uow.DishCycles.CreateOutletDishCyclePeriodMenus(_mapper.Map<OutletDishViewMenu>(model));
+            return result;
+        }
+        #endregion
+
+        #region Caterer Asset Type
+        public async Task<PagedEntity<CatererAssetTypeDTO>> GetCatererAssetTypesAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<CatererAssetTypeDTO>>(await this._uow.CatererAssetType.GetAsync(filter));
+            return result;
+        }
+
+        public async Task<CatererAssetTypeDTO> GetCatererAssetTypeByIdAsync(int id)
+        {
+            return _mapper.Map<CatererAssetTypeDTO>(await this._uow.CatererAssetType.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreateCatererAssetTypeAsync(CatererAssetTypeDTO dto)
+        {
+            return await this._uow.CatererAssetType.CreateAsync(_mapper.Map<CatererAssetType>(dto));
+        }
+
+        public async Task<BaseOperationResponse> UpdateCatererAssetTypeAsync(CatererAssetTypeDTO dto)
+        {
+            return await this._uow.CatererAssetType.UpdateAsync(_mapper.Map<CatererAssetType>(dto));
+        }
+
+        public async Task<BaseOperationResponse> DeleteCatererAssetTypeAsync(int id)
+        {
+            var result = await this._uow.CatererAssetType.DeleteAsync(id);
             return result;
         }
         #endregion

@@ -4,14 +4,17 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251125024126_AddCatererAssetType")]
+    partial class AddCatererAssetType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3385,9 +3388,6 @@ namespace FRS.Migrations
                     b.Property<int?>("CartonTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CatererAssetTypeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
 
@@ -3430,8 +3430,6 @@ namespace FRS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartonTypeId");
-
-                    b.HasIndex("CatererAssetTypeId");
 
                     b.HasIndex("CreatedBy");
 
@@ -3573,56 +3571,6 @@ namespace FRS.Migrations
                     b.HasIndex("UpdatedBy");
 
                     b.ToTable("CartonTypes");
-                });
-
-            modelBuilder.Entity("DAL.Models.MealOrder.CatererAsset", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CatererAssetTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("FileId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("assetQRCode")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CatererAssetTypeId");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("FileId");
-
-                    b.HasIndex("UpdatedBy");
-
-                    b.HasIndex("assetQRCode", "Description", "CatererAssetTypeId");
-
-                    b.ToTable("CatererAssets");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CatererAssetType", b =>
@@ -14816,10 +14764,6 @@ namespace FRS.Migrations
                         .WithMany("CartonAssets")
                         .HasForeignKey("CartonTypeId");
 
-                    b.HasOne("DAL.Models.MealOrder.CatererAssetType", null)
-                        .WithMany("CartonAssets")
-                        .HasForeignKey("CatererAssetTypeId");
-
                     b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedBy");
@@ -14921,33 +14865,6 @@ namespace FRS.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("Institution");
-
-                    b.Navigation("UpdatedByUser");
-                });
-
-            modelBuilder.Entity("DAL.Models.MealOrder.CatererAsset", b =>
-                {
-                    b.HasOne("DAL.Models.MealOrder.CatererAssetType", "CatererAssetType")
-                        .WithMany()
-                        .HasForeignKey("CatererAssetTypeId");
-
-                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy");
-
-                    b.HasOne("DAL.Models.File", "Icon")
-                        .WithMany()
-                        .HasForeignKey("FileId");
-
-                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy");
-
-                    b.Navigation("CatererAssetType");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Icon");
 
                     b.Navigation("UpdatedByUser");
                 });
@@ -19880,11 +19797,6 @@ namespace FRS.Migrations
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CartonType", b =>
-                {
-                    b.Navigation("CartonAssets");
-                });
-
-            modelBuilder.Entity("DAL.Models.MealOrder.CatererAssetType", b =>
                 {
                     b.Navigation("CartonAssets");
                 });
