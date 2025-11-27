@@ -91,6 +91,8 @@ namespace BAL.DTO.MealOrder
         public DateTime? ReturnTime { get; set; }
         public string AmendReason { get; set; }
 
+        public bool IsActive { get; set; }
+
         public List<TokensOrderHistoryDTO> TokensOrderHistorys { get; set; }
     }
 

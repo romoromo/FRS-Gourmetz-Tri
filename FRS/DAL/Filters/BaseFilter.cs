@@ -9,6 +9,7 @@ namespace DAL.Filters
     {
         //public int? InstitutionId { get; set; }
 
+        public bool IsActive { get; set; }
     }
 
     public class DashboardFilter

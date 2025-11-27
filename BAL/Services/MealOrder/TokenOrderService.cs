@@ -3312,6 +3312,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<TokenOrderDTO>> GetSalesOrdersAsync(SalesOrderReportFilter filter)
         {
+            filter.IsActive = true;
             var salesOrders = await _uow.TokenOrders.GetSalesOrders(filter);
             int total = salesOrders != null && salesOrders.Any() ? salesOrders.FirstOrDefault().Total : 0;
             var result = new PagedEntity<TokenOrderDTO>();
@@ -3327,6 +3328,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<PagedEntity<VoucherUtilisation>> GetVoucherUtilisationsAsync(VoucherUtilisationReportFilter filter)
         {
+            filter.IsActive = true;
             var orders = await _uow.TokenOrders.GetVoucherUtilisations(filter);
             int total = orders != null && orders.Any() ? orders.FirstOrDefault().Total : 0;
             var result = new PagedEntity<VoucherUtilisation>();
@@ -3342,6 +3344,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GenerateOrderLogXls2(SalesOrderReportFilter filter)
         {
+            filter.IsActive = true;
             var orders = await _uow.TokenOrders.GetSalesOrders(filter);
             string dateFormat = "dd/MM/yy";
             string dateTimeFormat = "dd/MM/yy hh:mm tt";
@@ -3788,6 +3791,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GenerateFlattenOrderLogXls(SalesOrderReportFilter filter)
         {
+            filter.IsActive = true;
             var orders = await _uow.TokenOrders.GetSalesOrders(filter);
             string dateFormat = "dd/MM/yy";
             string dateTimeFormat = "dd/MM/yy hh:mm tt";
@@ -4076,6 +4080,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GeneratePaymentReport(SalesOrderReportFilter filter)
         {
+            filter.IsActive = true;
             var orders = await _uow.TokenOrders.GetSalesOrders(filter);
             string dateFormat = "dd/MM/yy";
             string dateTimeFormat = "dd/MM/yy hh:mm tt";
@@ -4288,6 +4293,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GenerateVoucherUtilisationReport(VoucherUtilisationReportFilter filter)
         {
+            filter.IsActive = true;
             var orders = await _uow.TokenOrders.GetVoucherUtilisations(filter);
             string dateFormat = "dd/MM/yy";
             string dateTimeFormat = "dd/MM/yy hh:mm tt";
@@ -4529,6 +4535,7 @@ namespace BAL.Services.MealOrder
         #region Cancelled Orders
         public async Task<byte[]> GenerateCancelledOrdersXls(SalesOrderReportFilter filter)
         {
+            filter.IsActive = true;
             var orders = await _uow.TokenOrders.GetSalesOrders(filter);
             string dateFormat = "dd/MM/yy";
             string dateTimeFormat = "dd/MM/yy hh:mm tt";
@@ -4949,6 +4956,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GenerateOrderCollectionXls(SalesOrderReportFilter filter)
         {
+            filter.IsActive = true;
             var orders = await _uow.TokenOrders.GetSalesOrders(filter);
             string dateFormat = "dd/MM/yy";
             string dateTimeFormat = "dd/MM/yy hh:mm tt";

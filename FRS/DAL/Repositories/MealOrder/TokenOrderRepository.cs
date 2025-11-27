@@ -51,6 +51,7 @@ namespace DAL.Repositories.MealOrder
             var to = new SqlParameter("@ReportDateTo", System.Data.SqlDbType.Date);
             var status = new SqlParameter("@Status", System.Data.SqlDbType.VarChar);
             var isFas = new SqlParameter("@IsFAS", System.Data.SqlDbType.Bit);
+            var isActive = new SqlParameter("@IsActive", System.Data.SqlDbType.Bit);
             var page = new SqlParameter("@Page", System.Data.SqlDbType.Int);
             var pageSize = new SqlParameter("@PageSize", System.Data.SqlDbType.Int);
             var keywords = new SqlParameter("@Keywords", System.Data.SqlDbType.VarChar);
@@ -65,6 +66,7 @@ namespace DAL.Repositories.MealOrder
             to.Value = filter.ReportDateTo;
             status.Value = (object)filter.Status ?? DBNull.Value;
             isFas.Value = (object)filter.IsFas ?? DBNull.Value;
+            isActive.Value = (object)filter.IsActive ?? DBNull.Value;
             page.Value = (object)filter.Page ?? 1;
             pageSize.Value = (object)filter.PageSize ?? int.MaxValue;
             keywords.Value = (object)filter.Keyword ?? DBNull.Value;
@@ -78,8 +80,8 @@ namespace DAL.Repositories.MealOrder
             sortBy.Value = isDesc;
 
             var orders = await _appContext.spSalesOrderReport
-                            .FromSqlRaw($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupIds, @OrderType, @CollectionStatuses",
-                                    from, to, status, isFas, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupIds, orderType, collectionStatuses).ToListAsync();
+                            .FromSqlRaw($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @IsActive, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupIds, @OrderType, @CollectionStatuses",
+                                    from, to, status, isFas, isActive, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupIds, orderType, collectionStatuses).ToListAsync();
 
             return orders;
         }
@@ -94,6 +96,7 @@ namespace DAL.Repositories.MealOrder
             var keywords = new SqlParameter("@Keywords", System.Data.SqlDbType.VarChar);
             var sortByCol = new SqlParameter("@SortBy", System.Data.SqlDbType.VarChar);
             var sortBy = new SqlParameter("@SortDirection", System.Data.SqlDbType.Bit);
+            var isActive = new SqlParameter("@IsActive", System.Data.SqlDbType.Bit);
 
             from.Value = filter.ReportDateFrom;
             to.Value = filter.ReportDateTo;
@@ -101,14 +104,15 @@ namespace DAL.Repositories.MealOrder
             page.Value = (object)filter.Page ?? 1;
             pageSize.Value = (object)filter.PageSize ?? int.MaxValue;
             keywords.Value = (object)filter.Keyword ?? DBNull.Value;
+            isActive.Value = (object)filter.IsActive ?? DBNull.Value;
 
             bool isDesc = filter.Sorts.Contains("-");
             sortByCol.Value = isDesc ? filter.Sorts.Substring(1) : filter.Sorts;
             sortBy.Value = isDesc;
 
             var orders = await _appContext.spVoucherUtilisationReport
-                            .FromSqlRaw($"exec spVoucherUtilisationReport @ReportDateFrom, @ReportDateTo, @Status, @Page, @PageSize, @Keywords, @SortBy, @SortDirection",
-                                    from, to, status, page, pageSize, keywords, sortByCol, sortBy).ToListAsync();
+                            .FromSqlRaw($"exec spVoucherUtilisationReport @ReportDateFrom, @ReportDateTo, @Status, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @IsActive",
+                                    from, to, status, page, pageSize, keywords, sortByCol, sortBy, isActive).ToListAsync();
 
             return orders;
         }
