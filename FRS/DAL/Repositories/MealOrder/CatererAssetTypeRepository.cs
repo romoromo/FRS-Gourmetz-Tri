@@ -19,7 +19,7 @@ namespace DAL.Repositories.MealOrder
             this._sieveProcessor = sieveProcessor;
         }
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
-        
+
         public async Task<PagedEntity<CatererAssetType>> GetAsync(BaseFilter filter)
         {
             IQueryable<CatererAssetType> query = _appContext.CatererAssetTypes;
@@ -135,6 +135,14 @@ namespace DAL.Repositories.MealOrder
             result.IsSuccess = false;
             result.Message = "Record not found.";
             return result;
-        }        
+        }
+
+        public async Task<string> GenerateAssetQRCode(int catererInfoId)
+        {
+            var catererInfo = await _appContext.CatererInfos.FirstOrDefaultAsync(m => m.Id == catererInfoId);
+            var lastId = await _appContext.CatererAssets.Where(m => m.CatererAssetType.CatererInfoId == catererInfoId)
+                .Select(m => m.Id).DefaultIfEmpty().MaxAsync();
+            return $"{catererInfo?.Code}-{lastId + 1}";
+        }
     }
 }

@@ -19,9 +19,9 @@ namespace DAL.Repositories.MealOrder
         }
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
 
-        public async Task<PagedEntity<CatererAsset>> GetAsync(BaseFilter filter)
+        public async Task<PagedEntity<CatererAsset>> GetAsync(CatererAsserFilter filter)
         {
-            IQueryable<CatererAsset> query = _appContext.CatererAssets
+            IQueryable<CatererAsset> query = _appContext.CatererAssets.Where(m => m.CatererAssetType.CatererInfoId == filter.catererInfoId)
                 .Include(m => m.CatererAssetType);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);

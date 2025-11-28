@@ -541,4 +541,8 @@ export class DeliveryService {
   deleteCatererAsset(id: string | CatererAsset): Observable<CatererAsset> {
     return this.commonEndpoint.getDeleteEndpoint<CatererAsset>(this.catererAssetBaseurl, <string>id);
   }
+
+  generateAssetQRCode(catererId: string){
+    return this.commonEndpoint.get<any>(this.catererAssetBaseurl + '/generateQRCode/' + catererId);
+  }
 }

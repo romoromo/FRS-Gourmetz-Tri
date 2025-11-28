@@ -129,10 +129,11 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<byte[]> GeneratePrintCartonLabel(int doId);
 
 
-        Task<PagedEntity<CatererAssetDTO>> GetCatererAssetsAsync(BaseFilter filter);
+        Task<PagedEntity<CatererAssetDTO>> GetCatererAssetsAsync(CatererAsserFilter filter);
         Task<CatererAssetDTO> GetCatererAssetByIdAsync(int id);
         Task<BaseOperationResponse> CreateCatererAssetAsync(CatererAssetDTO dto);
         Task<BaseOperationResponse> UpdateCatererAssetAsync(CatererAssetDTO dto);
         Task<BaseOperationResponse> DeleteCatererAssetAsync(int id);
+        Task<string> GenerateAssetQRCode(int catererId);
     }
 }

@@ -14,5 +14,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<CatererAssetType> GetByIdAsync(int id);
         Task<PagedEntity<CatererAssetType>> GetAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateAsync(CatererAssetType assetType);
+        Task<string> GenerateAssetQRCode(int catererInfoId);
     }
 }
