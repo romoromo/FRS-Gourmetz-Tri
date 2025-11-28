@@ -127,6 +127,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<byte[]> GeneratePrintDo(int doId);
 
         Task<byte[]> GeneratePrintCartonLabel(int doId);
+        Task<byte[]> GeneratePrintCartonLabelV2(int cartonId, int routeId);
 
 
         Task<PagedEntity<CatererAssetDTO>> GetCatererAssetsAsync(BaseFilter filter);

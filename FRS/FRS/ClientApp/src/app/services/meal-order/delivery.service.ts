@@ -495,6 +495,10 @@ export class DeliveryService {
     return this.commonEndpoint.getFileget<any>(this.deliveryBaseurl + '/printCCLabel/' + doId);
   }
 
+  printCCLabelV2(doId: string, routeId: string) {
+    return this.commonEndpoint.getFileget<any>(this.deliveryBaseurl + '/printCCLabelV2/' + doId + '/' + routeId);
+  }
+
   getOutletTermsByFilter(filter: Filter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.outletTermUrl + '/sieve/list', filter);
   }

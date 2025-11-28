@@ -1,27 +1,27 @@
-﻿using System;
+﻿using AutoMapper;
+using BAL.DTO;
+using BAL.DTO.MealOrder;
+using BAL.Services.Interfaces;
+using BAL.Services.Interfaces.MealOrder;
+using BAL.Utilities;
+using DAL;
+using DAL.Core;
+using DAL.Core.Interfaces;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using Microsoft.EntityFrameworkCore;
+using NPOI.HSSF.UserModel;
+using Sieve.Services;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
-using DAL;
-using BAL.Services.Interfaces;
-using BAL.DTO;
-using AutoMapper;
-using DAL.Repositories.Interfaces;
-using System.IO;
-using NPOI.HSSF.UserModel;
-using BAL.Services.Interfaces.MealOrder;
-using BAL.DTO.MealOrder;
-using DAL.Models.MealOrder;
-using DAL.Core.Interfaces;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using BAL.Utilities;
 
 namespace BAL.Services.MealOrder
 {
@@ -1646,6 +1646,169 @@ namespace BAL.Services.MealOrder
             //{
             //    return null;
             //}
+        }
+
+
+        public async Task<byte[]> GeneratePrintCartonLabelV2(int cartonId, int routeId)
+        {
+            //var dOrder = await GetDeliveryOrderNewByIdAsync(doId);
+
+            BaseFilter filterDis = new BaseFilter();
+
+            filterDis.Filters = "(isActive)==True,(CartonAssetId)==" + cartonId + ",(RouteId)=="+ routeId;
+
+            var disposables = _mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await GetDisposableBoxesAsync(filterDis));
+
+            var bentos = _mapper.Map<PagedEntity<BentoAssetDTO>>(await GetBentoAssetsAsync(filterDis));
+
+            var route = _mapper.Map<RouteDTO>(await GetRouteByIdAsync(routeId));
+
+            List<DoPrintDTO> DOReports = new List<DoPrintDTO>();
+
+            var cartonCode = "";
+
+            var totalQty = 0;
+
+            if (disposables.TotalCount <= 0 && bentos.TotalCount <= 0)
+            {
+                return null;
+            }
+
+            foreach (CartonDisposableBoxDTO d in disposables.PagedData)
+            {
+                var rep = DOReports.Find(r => r.dishID == d.DishId);
+                if (rep == null)
+                {
+                    var repDish = new DoPrintDTO();
+                    repDish.dishID = d.DishId.Value;
+                    repDish.dishLabel = d.DishLabel;
+                    repDish.dishCode = d.DishCode;
+                    //repDish.categories = d.Dish;
+                    repDish.dishQty = d.Qty;
+                    totalQty += d.Qty;
+                    repDish.bentoList = "";
+                    cartonCode = d.CartonAssetCode;
+
+                    DOReports.Add(repDish);
+                }
+                else
+                {
+                    rep.dishQty += d.Qty;
+                    totalQty += d.Qty;
+                }
+            }
+
+            foreach (BentoAssetDTO d in bentos.PagedData)
+            {
+                var rep = DOReports.Find(r => r.dishID == d.DishId);
+                if (rep == null)
+                {
+                    var repDish = new DoPrintDTO();
+                    repDish.dishID = d.DishId.Value;
+                    repDish.dishLabel = d.DishLabel;
+                    repDish.dishCode = d.DishCode;
+                    //repDish.categories = d.Dish;
+                    repDish.dishQty = 1;
+                    totalQty += 1;
+                    repDish.bentoList = "";
+                    cartonCode = d.CartonAssetCode;
+
+                    DOReports.Add(repDish);
+                }
+                else
+                {
+                    rep.dishQty += 1;
+                    totalQty += 1;
+                }
+            }
+
+
+            using (var stream = new System.IO.MemoryStream())
+            {
+                #region pdfheader
+                Document document = new Document(PageSize.A6, 10, 10, 20, 20);
+                PdfWriter writer = PdfWriter.GetInstance(document, stream);
+                document.Open();
+
+                PdfPTable table = new PdfPTable(3);
+                table.WidthPercentage = 100f;
+
+                PdfPCell cell_1 = new PdfPCell(new Phrase("Carton Code: ", new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
+                PdfPCell cell_2 = new PdfPCell(new Phrase(cartonCode, new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
+                PdfPCell cell_3 = new PdfPCell(new Phrase(""));
+
+                System.Drawing.Color systemColor = System.Drawing.ColorTranslator.FromHtml(route.Color);
+
+                BaseColor bgColor = new BaseColor(systemColor.R, systemColor.G, systemColor.B);
+
+                cell_1.HorizontalAlignment = Element.ALIGN_LEFT;
+                cell_1.BackgroundColor = bgColor;
+                cell_1.BorderWidth = 1f;
+                cell_2.HorizontalAlignment = Element.ALIGN_LEFT;
+                cell_2.BackgroundColor = bgColor;
+                cell_2.BorderWidth = 1f;
+                cell_3.HorizontalAlignment = Element.ALIGN_LEFT;
+                cell_3.BackgroundColor = bgColor;
+                cell_3.BorderWidth = 1f;
+
+                table.AddCell(cell_1);
+                table.AddCell(cell_2);
+                table.AddCell(cell_3);
+
+                PdfPCell cell_1_h = new PdfPCell(new Phrase("Dish Code", new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
+                PdfPCell cell_2_h = new PdfPCell(new Phrase("Dish Label", new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
+                PdfPCell cell_3_h = new PdfPCell(new Phrase("Qty", new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
+
+                cell_1_h.HorizontalAlignment = Element.ALIGN_LEFT;
+                cell_1_h.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell_1_h.BorderWidth = 1f;
+                cell_2_h.HorizontalAlignment = Element.ALIGN_LEFT;
+                cell_2_h.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell_2_h.BorderWidth = 1f;
+                cell_3_h.HorizontalAlignment = Element.ALIGN_LEFT;
+                cell_3_h.BackgroundColor = BaseColor.LIGHT_GRAY;
+                cell_3_h.BorderWidth = 1f;
+
+                table.AddCell(cell_1_h);
+                table.AddCell(cell_2_h);
+                table.AddCell(cell_3_h);
+
+                DOReports.ForEach(dd => {
+                    PdfPCell i_cell_1 = new PdfPCell(new Phrase(dd.dishCode, new Font(Font.FontFamily.HELVETICA, 10)));
+                    PdfPCell i_cell_2 = new PdfPCell(new Phrase(dd.dishLabel, new Font(Font.FontFamily.HELVETICA, 10)));
+                    PdfPCell i_cell_3 = new PdfPCell(new Phrase(dd.dishQty + "", new Font(Font.FontFamily.HELVETICA, 10)));
+
+                    i_cell_1.HorizontalAlignment = Element.ALIGN_LEFT;
+                    i_cell_2.HorizontalAlignment = Element.ALIGN_LEFT;
+                    i_cell_3.HorizontalAlignment = Element.ALIGN_LEFT;
+
+                    table.AddCell(i_cell_1);
+                    table.AddCell(i_cell_2);
+                    table.AddCell(i_cell_3);
+
+                });
+
+                PdfPCell t_cell_1 = new PdfPCell(new Phrase(" ", new Font(Font.FontFamily.HELVETICA, 10)));
+                PdfPCell t_cell_2 = new PdfPCell(new Phrase("Total Qty: ", new Font(Font.FontFamily.HELVETICA, 10)));
+                PdfPCell t_cell_3 = new PdfPCell(new Phrase(totalQty + "", new Font(Font.FontFamily.HELVETICA, 10)));
+
+                t_cell_1.HorizontalAlignment = Element.ALIGN_LEFT;
+                t_cell_2.HorizontalAlignment = Element.ALIGN_LEFT;
+                t_cell_3.HorizontalAlignment = Element.ALIGN_LEFT;
+
+                table.AddCell(t_cell_1);
+                table.AddCell(t_cell_2);
+                table.AddCell(t_cell_3);
+
+
+                document.Add(table);
+
+                document.Close();
+                writer.Close();
+                #endregion
+
+                return stream.ToArray();
+            }
         }
 
         #endregion

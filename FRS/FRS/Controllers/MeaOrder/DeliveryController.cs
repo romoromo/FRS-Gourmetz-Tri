@@ -1816,6 +1816,34 @@ namespace FRS.Controllers
                 fileDownloadName: reportName
             );
         }
+
+        [HttpGet("printCCLabelV2/{cartonId}/{routeId}")]
+        //[AllowAnonymous]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> PrintCCLabelV2(int cartonId, int routeId)
+        {
+            var dto = await this._service.GetCartonAssetByIdAsync(cartonId);
+            if (dto == null)
+                return NotFound(cartonId);
+
+            var dto2 = await this._service.GetRouteByIdAsync(routeId);
+            if (dto2 == null)
+                return NotFound(routeId);
+
+            var pdf = await this._service.GeneratePrintCartonLabelV2(cartonId, routeId);
+            var reportName = dto.Code + "_Label.pdf";
+
+            if (pdf == null || pdf.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: pdf,
+                contentType: "application/vnd",
+                fileDownloadName: reportName
+            );
+        }
         #endregion
 
         #region Outlet Terns

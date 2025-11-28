@@ -4,10 +4,10 @@ import { AlertService, MessageSeverity } from '../../../services/alert.service';
 import { DateAdapter, MatDatepickerInputEvent, MatDialog, MatDialogRef, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_DIALOG_DATA } from '@angular/material';
 import { AccountService } from "../../../services/account.service";
 import { Permission } from '../../../models/permission.model';
-import { BentoAsset } from 'src/app/models/meal-order/bento-asset.model';
-import { MealService } from 'src/app/services/meal-order/meal.service';
-import { Filter } from 'src/app/models/sieve-filter.model';
-import { MealPeriod } from 'src/app/models/meal-order/meal-period.model';
+import { BentoAsset } from '../../../models/meal-order/bento-asset.model';
+import { MealService } from '../../../services/meal-order/meal.service';
+import { Filter, CartonAssetFilter } from '../../../models/sieve-filter.model';
+import { MealPeriod } from '../../../models/meal-order/meal-period.model';
 import { StaffService } from '../../../services/meal-order/staff.service';
 import { DeliveryService } from '../../../services/meal-order/delivery.service';
 import { BentoBoxType } from '../../../models/meal-order/bento-box-type.model';
@@ -226,8 +226,10 @@ export class BentoAssetEditorComponent implements OnInit, OnDestroy {
   }
 
   getCartonAssets() {
-    let filter = new Filter();
+    let filter = new CartonAssetFilter();
     filter.filters = '(IsActive)==true';
+    filter.catererInfoId = this.catererId;
+
     this.subscription.add(this.deliveryService.getCartonAssetsByFilter(filter)
       .subscribe(results => {
         this.cartonAssets = results.pagedData;
