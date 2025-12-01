@@ -161,7 +161,7 @@ export class CatererAssetEditorComponent implements OnInit, OnDestroy {
     this.selectedValues = {};
     this.catererAssetEdit = new CatererAsset();
 
-    this.deliveryService.generateAssetQRCode(this.catererId)
+    this.deliveryService.getAssetQRCode(this.catererId)
     .subscribe(response => {
       this.catererAssetEdit.assetQRCode = response.result;
     })

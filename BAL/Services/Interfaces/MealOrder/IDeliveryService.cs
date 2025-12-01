@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BAL.DTO;
 using BAL.DTO.MealOrder;
@@ -134,6 +135,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateCatererAssetAsync(CatererAssetDTO dto);
         Task<BaseOperationResponse> UpdateCatererAssetAsync(CatererAssetDTO dto);
         Task<BaseOperationResponse> DeleteCatererAssetAsync(int id);
-        Task<string> GenerateAssetQRCode(int catererId);
+        Task<string> GetAssetQRCode(int catererId);
+        Task<byte[]> GenerateAssetQRCode(int id, int catererId);
     }
 }

@@ -234,13 +234,13 @@ namespace BAL.Services.MealOrder
             var usages = new List<BentoUsageCountDTO>();
             foreach (var dOrder in results.PagedData)
             {
-                foreach(var doDetail in dOrder.DeliveryDetails)
+                foreach (var doDetail in dOrder.DeliveryDetails)
                 {
-                    foreach(var doBento in doDetail.DeliveryBentos)
+                    foreach (var doBento in doDetail.DeliveryBentos)
                     {
                         if (doBento.BentoAssetId == null) continue;
                         var bentoIndex = usages.FindIndex(x => x.BentoId == doBento.BentoAssetId);
-                        if(bentoIndex < 0)
+                        if (bentoIndex < 0)
                         {
                             var bentoUse = new BentoUsageCountDTO();
                             bentoUse.BentoId = doBento.BentoAssetId;
@@ -248,7 +248,8 @@ namespace BAL.Services.MealOrder
                             bentoUse.UsageCount = 1;
                             usages.Add(bentoUse);
 
-                        } else
+                        }
+                        else
                         {
                             usages[bentoIndex].UsageCount += 1;
                         }
@@ -256,11 +257,11 @@ namespace BAL.Services.MealOrder
                 }
             }
 
-            if(filter.Sorts == "usageCount")
+            if (filter.Sorts == "usageCount")
             {
                 usages = usages.OrderBy(o => o.UsageCount).ToList();
             }
-            else if(filter.Sorts == "-usageCount")
+            else if (filter.Sorts == "-usageCount")
             {
                 usages = usages.OrderByDescending(o => o.UsageCount).ToList();
             }
@@ -270,7 +271,8 @@ namespace BAL.Services.MealOrder
             if (endPage >= usages.Count())
             {
                 endPage = (usages.Count()) % (filter.PageSize ?? 10);
-            } else
+            }
+            else
             {
                 endPage = (filter.PageSize ?? 10);
             }
@@ -714,14 +716,14 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> DeleteOutletProfileAsync(int id)
         {
             var result = new BaseOperationResponse();
-            
+
             result = await this._uow.OutletProfiles.DeleteAsync(id);
             return result;
         }
 
         public async Task<bool> TestDeleteOutletProfileAsync(int id)
         {
-            return await this._uow.OutletProfiles.TestDeleteAsync(id); 
+            return await this._uow.OutletProfiles.TestDeleteAsync(id);
         }
         #endregion
 
@@ -779,7 +781,7 @@ namespace BAL.Services.MealOrder
         {
             var route = _mapper.Map<Route>(dto);
             var routeNodes = _mapper.Map<List<RouteNode>>(dto.Nodes);
-            return await this._uow.Routes.UpdateAsync(route,routeNodes);
+            return await this._uow.Routes.UpdateAsync(route, routeNodes);
         }
 
         public async Task<BaseOperationResponse> DeleteRouteAsync(int id)
@@ -795,7 +797,7 @@ namespace BAL.Services.MealOrder
 
         public PdfPCell getCellBold(String text, int alignment)
         {
-            PdfPCell cell = new PdfPCell(new Phrase(text, new Font(Font.FontFamily.HELVETICA, 10,Font.BOLD)));
+            PdfPCell cell = new PdfPCell(new Phrase(text, new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
             //cell.Padding = 0 ;
             cell.HorizontalAlignment = alignment;
             //cell.Border = PdfPCell.NO_BORDER;
@@ -844,7 +846,7 @@ namespace BAL.Services.MealOrder
         }
 
 
-        public void printHeader(DeliveryOrderNewDTO dOrder,Document document)
+        public void printHeader(DeliveryOrderNewDTO dOrder, Document document)
         {
             var imageFolderName = Path.Combine("Resources", "Images");
             var pathToImageSave = Path.Combine(Directory.GetCurrentDirectory(), imageFolderName);
@@ -980,7 +982,7 @@ namespace BAL.Services.MealOrder
 
             StoreInventoryDTO dInv = new StoreInventoryDTO();
 
-            if(dInvs.PagedData.Count > 0)
+            if (dInvs.PagedData.Count > 0)
             {
                 dInv = dInvs.PagedData[0];
             }
@@ -999,8 +1001,8 @@ namespace BAL.Services.MealOrder
                     float[] widths3 = new float[] { 3.4f, 7f, 2.2f, 1.8f, 1.6f };
 
 
-                    printHeader(dOrder,document);
-                    
+                    printHeader(dOrder, document);
+
 
                     PdfPTable table = new PdfPTable(5);
                     table.SetWidths(widths3);
@@ -1025,7 +1027,8 @@ namespace BAL.Services.MealOrder
                     {
                         totalRowCount += 1;
                         List<DoPrintDTO> DOReports = new List<DoPrintDTO>();
-                        c.DeliveryBentos.ForEach(b => {
+                        c.DeliveryBentos.ForEach(b =>
+                        {
 
                             var rep = DOReports.Find(r => r.dishID == b.DishId);
                             if (rep == null)
@@ -1044,7 +1047,8 @@ namespace BAL.Services.MealOrder
 
                     var rowCount = 0;
 
-                    dOrder.DeliveryDetails.ForEach(c => {
+                    dOrder.DeliveryDetails.ForEach(c =>
+                    {
 
                         if (rowCount == 30)
                         {
@@ -1066,7 +1070,7 @@ namespace BAL.Services.MealOrder
 
                         PdfPCell cell_1 = new PdfPCell(new Phrase("Carton No " + cartonNo++, new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
                         var cartonAsset = new Phrase();
-                        cartonAsset.Add(new Chunk(c.CartonAssetCode.Substring(0,c.CartonAssetCode.Length-6), normalFont));
+                        cartonAsset.Add(new Chunk(c.CartonAssetCode.Substring(0, c.CartonAssetCode.Length - 6), normalFont));
                         cartonAsset.Add(new Chunk(c.CartonAssetCode.Substring(c.CartonAssetCode.Length - 6), boldFont));
                         PdfPCell cell_2 = new PdfPCell(cartonAsset);
                         PdfPCell cell_3 = new PdfPCell(new Phrase("", new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
@@ -1104,7 +1108,8 @@ namespace BAL.Services.MealOrder
 
                         List<DoPrintDTO> DOReports = new List<DoPrintDTO>();
 
-                        c.DeliveryBentos.ForEach(b => {
+                        c.DeliveryBentos.ForEach(b =>
+                        {
 
                             var rep = DOReports.Find(r => r.dishID == b.DishId);
                             var rec = (StoreInventoryDetailDTO)null;
@@ -1130,7 +1135,8 @@ namespace BAL.Services.MealOrder
                                 }
 
                                 DOReports.Add(repDish);
-                            } else
+                            }
+                            else
                             {
                                 rep.dishQty += b.Qty;
                                 totalQty += b.Qty;
@@ -1148,7 +1154,8 @@ namespace BAL.Services.MealOrder
 
                         });
 
-                        DOReports.ForEach(dd => {
+                        DOReports.ForEach(dd =>
+                        {
 
                             if (rowCount == 30)
                             {
@@ -1172,13 +1179,14 @@ namespace BAL.Services.MealOrder
                             PdfPCell i_cell_2 = new PdfPCell(new Phrase(dd.dishLabel, new Font(Font.FontFamily.HELVETICA, 10)));
                             PdfPCell i_cell_4 = new PdfPCell(new Phrase(dd.categories, new Font(Font.FontFamily.HELVETICA, 10)));
                             PdfPCell i_cell_3 = new PdfPCell();
-                            if(dd.dishQty == dd.issQty)
+                            if (dd.dishQty == dd.issQty)
                             {
                                 i_cell_3 = new PdfPCell(new Phrase(dd.dishQty + "", new Font(Font.FontFamily.HELVETICA, 10)));
-                            } else
+                            }
+                            else
                             {
                                 notCompleted = true;
-                                i_cell_3 = new PdfPCell(new Phrase(dd.dishQty + "", new Font(Font.FontFamily.HELVETICA, 10,Font.BOLD)));
+                                i_cell_3 = new PdfPCell(new Phrase(dd.dishQty + "", new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD)));
                             }
                             PdfPCell i_cell_5 = new PdfPCell(new Phrase(dd.issQty + "", new Font(Font.FontFamily.HELVETICA, 10)));
 
@@ -1243,7 +1251,7 @@ namespace BAL.Services.MealOrder
                     document.Add(table);
 
                     PdfPTable table3 = new PdfPTable(2);
-                    float[] widths2 = new float[] { 3.4f, 7f};
+                    float[] widths2 = new float[] { 3.4f, 7f };
                     table3.SetWidths(widths2);
                     table3.WidthPercentage = 65f;
 
@@ -1290,13 +1298,15 @@ namespace BAL.Services.MealOrder
 
                     var text = "";
 
-                    if(dOrder.VehicleNumber == null || dOrder.VehicleNumber == "" || dOrder.ReceivingTime == null)
+                    if (dOrder.VehicleNumber == null || dOrder.VehicleNumber == "" || dOrder.ReceivingTime == null)
                     {
                         text = "";
-                    } else if (notCompleted)
+                    }
+                    else if (notCompleted)
                     {
                         text = "Please note that there are item(s) that has not been issued.Please follow-up.";
-                    } else
+                    }
+                    else
                     {
                         text = "N/A";
                     }
@@ -1343,7 +1353,7 @@ namespace BAL.Services.MealOrder
 
             var totalQty = 0;
 
-            if(disposables.TotalCount <= 0 && bentos.TotalCount <= 0)
+            if (disposables.TotalCount <= 0 && bentos.TotalCount <= 0)
             {
                 return null;
             }
@@ -1443,7 +1453,8 @@ namespace BAL.Services.MealOrder
                 table.AddCell(cell_2_h);
                 table.AddCell(cell_3_h);
 
-                DOReports.ForEach(dd => {
+                DOReports.ForEach(dd =>
+                {
                     PdfPCell i_cell_1 = new PdfPCell(new Phrase(dd.dishCode, new Font(Font.FontFamily.HELVETICA, 10)));
                     PdfPCell i_cell_2 = new PdfPCell(new Phrase(dd.dishLabel, new Font(Font.FontFamily.HELVETICA, 10)));
                     PdfPCell i_cell_3 = new PdfPCell(new Phrase(dd.dishQty + "", new Font(Font.FontFamily.HELVETICA, 10)));
@@ -1458,7 +1469,7 @@ namespace BAL.Services.MealOrder
 
                 });
 
-                PdfPCell t_cell_1= new PdfPCell(new Phrase(" ", new Font(Font.FontFamily.HELVETICA, 10)));
+                PdfPCell t_cell_1 = new PdfPCell(new Phrase(" ", new Font(Font.FontFamily.HELVETICA, 10)));
                 PdfPCell t_cell_2 = new PdfPCell(new Phrase("Total Qty: ", new Font(Font.FontFamily.HELVETICA, 10)));
                 PdfPCell t_cell_3 = new PdfPCell(new Phrase(totalQty + "", new Font(Font.FontFamily.HELVETICA, 10)));
 
@@ -1708,9 +1719,98 @@ namespace BAL.Services.MealOrder
             return await this._uow.CatererAssetRepository.DeleteAsync(id);
         }
 
-        public async Task<string> GenerateAssetQRCode(int catererId)
+        public async Task<string> GetAssetQRCode(int catererId)
         {
-            return await this._uow.CatererAssetType.GenerateAssetQRCode(catererId);
+            return await this._uow.CatererAssetType.GetAssetQRCode(catererId);
+        }
+
+        public async Task<byte[]> GenerateAssetQRCode(int id, int catererId)
+        {
+            var asset = await this._uow.CatererAssetRepository.GetByIdAsync(id);
+            var tagId = asset?.assetQRCode ?? string.Empty;
+
+            var catererName = "Gourmetz Catering Pte Lt";
+            var catererAddress = "";
+
+            var catererInfo = await this._uow.CatererInfos.GetByIdAsync(catererId);
+            if (catererInfo != null)
+            {
+                catererName = catererInfo.Name.Length > 24 ? catererInfo.Name.Substring(0, 24) : catererInfo.Name;
+                var addresses = catererInfo.Address.Split('\n');
+
+                catererAddress = string.Join("\n", addresses.Select(e => e.Length > 28 ? e.Substring(0, 28) : e));
+            }
+
+            using (var stream = new System.IO.MemoryStream())
+            {
+                var folderName = Path.Combine("Resources", "Font");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                var imageFolderName = Path.Combine("Resources", "Images", "Default");
+                var logoImagePath = Path.Combine(Directory.GetCurrentDirectory(), imageFolderName);
+
+                var fullPath = Path.Combine(pathToSave, "Aller_Bd.ttf");
+                var fullImagePath = Path.Combine(logoImagePath, "company_logo.png");
+
+                BaseFont allerfont = BaseFont.CreateFont(fullPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
+                Font aller = new Font(allerfont, 12);
+
+                var pgSize = new iTextSharp.text.Rectangle(227f, 114f); // Page size
+                Document document = new Document(pgSize, 5, 5, 5, 5);
+                PdfWriter writer = PdfWriter.GetInstance(document, stream);
+                document.Open();
+
+                // QR Code on the left half
+                BarcodeQRCode qrCode = new BarcodeQRCode(tagId, 105, 105, null);
+                iTextSharp.text.Image qrImage = qrCode.GetImage();
+                qrImage.SetAbsolutePosition(0f, 12f);  // Positioned on the left side
+                document.Add(qrImage);
+
+                // Caterer name and address on the right half
+                Paragraph para1 = new Paragraph(catererName, new Font(allerfont, 10));
+                para1.Alignment = Element.ALIGN_RIGHT;
+                para1.IndentationRight = 5f; // Align to the right side
+                para1.PaddingTop = 0f;
+                document.Add(para1);
+
+                Image png = Image.GetInstance(fullImagePath);
+                png.ScaleToFit(25f, 25f);
+                png.SetAbsolutePosition(100f, 65f);
+                document.Add(png);
+
+                Paragraph para2 = new Paragraph(catererAddress, new Font(allerfont, 6));
+                para2.Alignment = Element.ALIGN_RIGHT;
+                para2.IndentationRight = 5f; // Align to the right side
+                document.Add(para2);
+
+                //// Add the rectangle around the tagId substring (para3) and make the text red
+                //string tagIdSubstring = tagId.Substring(12, 4); // Extract substring
+                PdfContentByte cb = writer.DirectContent;
+
+                // Set the position and dimensions for the rectangle
+                float rectX = 105f;
+                float rectY = 30f;
+                float rectWidth = 80f;
+                float rectHeight = 30f;
+
+                //// Draw rectangle
+                //cb.Rectangle(rectX, rectY, rectWidth, rectHeight);
+                //cb.Stroke();
+
+                //// Add the text inside the rectangle in red
+                //Font redFont = new Font(allerfont, 26, Font.NORMAL, BaseColor.RED);
+                //ColumnText.ShowTextAligned(cb, Element.ALIGN_CENTER, new Phrase(tagIdSubstring, redFont), rectX + rectWidth / 2, rectY + rectHeight / 4, 0);
+
+                // Add the full tagId at the bottom, center-aligned across the entire page
+                var phrase = new Phrase();
+                phrase.Add(new Chunk(tagId, new Font(allerfont, 10, Font.NORMAL)));
+
+                ColumnText.ShowTextAligned(cb, Element.ALIGN_CENTER, new Phrase(phrase), 115f, 10f, 0);
+
+                document.Close();
+                writer.Close();
+
+                return stream.ToArray();
+            }
         }
     }
 }

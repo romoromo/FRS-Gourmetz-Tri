@@ -44,6 +44,7 @@
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <a  class="btn btn-link btn-xs" href="javascript:;" (click)="editCatererAsset(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
+    <a  class="btn btn-link btn-xs" href="javascript:;" (click)="downloadLabel(row)"><i class="fa fa-qrcode" aria-hidden="true"></i> {{'Generate Qr Code'}}</a>
     <a  class="btn btn-link btn-xs" href="javascript:;" (click)="deleteCatererAsset(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
   </ng-template>
 </div>

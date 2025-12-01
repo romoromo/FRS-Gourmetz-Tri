@@ -137,7 +137,7 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        public async Task<string> GenerateAssetQRCode(int catererInfoId)
+        public async Task<string> GetAssetQRCode(int catererInfoId)
         {
             var catererInfo = await _appContext.CatererInfos.FirstOrDefaultAsync(m => m.Id == catererInfoId);
             var lastId = await _appContext.CatererAssets.Where(m => m.CatererAssetType.CatererInfoId == catererInfoId)

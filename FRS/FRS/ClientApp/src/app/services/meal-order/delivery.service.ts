@@ -542,7 +542,11 @@ export class DeliveryService {
     return this.commonEndpoint.getDeleteEndpoint<CatererAsset>(this.catererAssetBaseurl, <string>id);
   }
 
-  generateAssetQRCode(catererId: string){
-    return this.commonEndpoint.get<any>(this.catererAssetBaseurl + '/generateQRCode/' + catererId);
+  getAssetQRCode(catererId: string){
+    return this.commonEndpoint.get<any>(this.catererAssetBaseurl + '/getQRCode/' + catererId);
+  }
+
+  generateAssetQRCode(id:string, catererId: string){
+    return this.commonEndpoint.getFile<any>(this.catererAssetBaseurl + '/generateQRCode?id='+id+'&catererId=' + catererId);
   }
 }
