@@ -33,12 +33,14 @@ using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -1550,15 +1552,23 @@ namespace MealOrderPayments.Controllers
                 {
                     var sess = stripeEvent.Data.Object as Stripe.Checkout.Session;
                     // this assumes that top up wallet is always first and the only item in the transaction.
-                    var custom = sess.DisplayItems.First().Custom;
-                    if (custom.Name.ToUpper().Equals("TOP UP WALLET"))
+                    var first = sess.DisplayItems.First();
+                    if (first != null)
                     {
-                        await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
+                        var custom = first.Custom;
+                        if (custom.Name.ToUpper().Equals("TOP UP WALLET"))
+                        {
+                            await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
+                        } else
+                        {
+                            await QueryAndUpdatePaymentStatusStripe(sess.Id);
+                        }
+                        return Ok();
                     } else
                     {
-                        await QueryAndUpdatePaymentStatusStripe(sess.Id);
+                        return BadRequest("display items is null");
                     }
-                    return Ok();
+                   
                 } // cant differentiate top up wallet from charge.succeeded event.
                 else
                 {
@@ -1587,8 +1597,10 @@ namespace MealOrderPayments.Controllers
             long amt = 0;
             try
             {
-                var damt = decimal.Parse(order.amount);
+                var culture = CultureInfo.CreateSpecificCulture("en-SG");
+                var damt = decimal.Parse( order.amount, culture ); 
                 // old stripe api versions cant use decimal
+                damt *= 100;
                 amt = (long)damt;
             } catch (Exception ex)
             {
