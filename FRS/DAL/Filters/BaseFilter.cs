@@ -118,4 +118,9 @@ namespace DAL.Filters
     {
         public int CatererInfoId { get; set; }
     }
+
+    public class CatererAsserFilter : BaseFilter
+    {
+        public int catererInfoId { get; set; }
+    }
 }

@@ -254,4 +254,20 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
             MessageSeverity.error);
         });
   }
+
+  downloadLabel(row: CatererAsset)
+  {
+    const fileName = moment().format('DDMMYYYY_hhmmss') + '_CartonAssetLabel.pdf';
+    
+        this.deliveryService.generateAssetQRCode(row.id, this.catererId).subscribe(
+          data => {
+            console.log(data);
+            saveAs(data, fileName);
+          },
+          err => {
+            alert("Problem while downloading the file.");
+            console.error(err);
+          }
+        );
+  }
 }

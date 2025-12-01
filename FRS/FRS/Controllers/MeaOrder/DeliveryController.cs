@@ -1949,7 +1949,7 @@ namespace FRS.Controllers
         [HttpGet("catererasset/sieve/list")]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetCatererAssets(BaseFilter filter)
+        public async Task<IActionResult> GetCatererAssets(CatererAsserFilter filter)
         {
             var results = await this._service.GetCatererAssetsAsync(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<CatererAssetDTO>>(results));
@@ -2021,6 +2021,32 @@ namespace FRS.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpGet("catererasset/getQRCode/{catererId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetAssetQRCode(int catererId)
+        {
+            var result = await _service.GetAssetQRCode(catererId);
+            return Ok(new { result });
+        }
+
+        [HttpPost("catererasset/generateQRCode")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateQRCode(int id, int catererId)
+        {
+            var pdf = await this._service.GenerateAssetQRCode(id, catererId);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_CatererAsset.pdf";
+
+            if (pdf == null || pdf.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(fileContents: pdf, contentType: "application/vnd", fileDownloadName: reportName
+            );
         }
         #endregion
     }

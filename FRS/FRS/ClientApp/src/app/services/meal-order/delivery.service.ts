@@ -545,4 +545,12 @@ export class DeliveryService {
   deleteCatererAsset(id: string | CatererAsset): Observable<CatererAsset> {
     return this.commonEndpoint.getDeleteEndpoint<CatererAsset>(this.catererAssetBaseurl, <string>id);
   }
+
+  getAssetQRCode(catererId: string){
+    return this.commonEndpoint.get<any>(this.catererAssetBaseurl + '/getQRCode/' + catererId);
+  }
+
+  generateAssetQRCode(id:string, catererId: string){
+    return this.commonEndpoint.getFile<any>(this.catererAssetBaseurl + '/generateQRCode?id='+id+'&catererId=' + catererId);
+  }
 }
