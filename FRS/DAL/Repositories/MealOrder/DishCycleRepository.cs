@@ -421,8 +421,8 @@ namespace DAL.Repositories.MealOrder
                     var detToAdd = sched.Details.Where(e => !x.Details.Any(a => a.Id == e.Id)).ToList();
                     this._appContext.DishCycleScheduleDetails.AddRange(detToAdd);
 
-                    var menusToSave = sched?.Details.SelectMany(e => e.Menus).ToList();
-                    if (menusToSave != null)
+                    var menusToSave = sched?.Details.SelectMany(e => e?.Menus ?? Enumerable.Empty<DishCycleScheduleDetailMenu>()).ToList();
+                    if (menusToSave != null && menusToSave.Count != 0)
                     {
                         var existingMenus = x.Details.SelectMany(e => e.Menus).ToList();
                         var menusToDelete = existingMenus.Where(e => !menusToSave.Any(a => a.DishCycleScheduleDetailId == e.DishCycleScheduleDetailId && a.DishId == e.DishId)).ToList();
