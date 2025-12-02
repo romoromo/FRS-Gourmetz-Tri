@@ -43,7 +43,7 @@
       <div class="clearfix"></div>
     </div>
     <div mat-dialog-actions align="center">
-      <button  type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
+      <button *ngIf="!canManageassetTypes" type="button" mat-button (click)="cancel()" >{{'common.editor.Close' | translate}}</button>
       <button  type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
       <button  type="submit" mat-button [disabled]="isSaving">
         <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}

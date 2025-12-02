@@ -1975,5 +1975,31 @@ namespace BAL.Services.MealOrder
                 return stream.ToArray();
             }
         }
+
+        public async Task<PagedEntity<AssetComponentDTO>> GetAssetComponentAsync(AssetComponentFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<AssetComponentDTO>>(await this._uow.AssetComponentRepository.GetAsync(filter));
+            return result;
+        }
+
+        public async Task<AssetComponentDTO> GetAssetComponentByIdAsync(int id)
+        {
+            return _mapper.Map<AssetComponentDTO>(await this._uow.AssetComponentRepository.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreateAssetComponentAsync(AssetComponentDTO dto)
+        {
+            return await this._uow.AssetComponentRepository.CreateAsync(_mapper.Map<AssetComponent>(dto));
+        }
+
+        public async Task<BaseOperationResponse> UpdateAssetComponentAsync(AssetComponentDTO dto)
+        {
+            return await this._uow.AssetComponentRepository.UpdateAsync(_mapper.Map<AssetComponent>(dto));
+        }
+
+        public async Task<BaseOperationResponse> DeleteAssetComponentAsync(int id)
+        {
+            return await this._uow.AssetComponentRepository.DeleteAsync(id);
+        }
     }
 }

@@ -138,5 +138,11 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> DeleteCatererAssetAsync(int id);
         Task<string> GetAssetQRCode(int catererId);
         Task<byte[]> GenerateAssetQRCode(int id, int catererId);
+
+        Task<PagedEntity<AssetComponentDTO>> GetAssetComponentAsync(AssetComponentFilter filter);
+        Task<AssetComponentDTO> GetAssetComponentByIdAsync(int id);
+        Task<BaseOperationResponse> CreateAssetComponentAsync(AssetComponentDTO dto);
+        Task<BaseOperationResponse> UpdateAssetComponentAsync(AssetComponentDTO dto);
+        Task<BaseOperationResponse> DeleteAssetComponentAsync(int id);
     }
 }

@@ -2049,5 +2049,87 @@ namespace FRS.Controllers
             );
         }
         #endregion
+
+        #region Asset Component
+
+        #region Sieved
+        [ApiKeyAuthorize]
+        [HttpGet("assetcomponent/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> Getassetcomponents(AssetComponentFilter filter)
+        {
+            var results = await this._service.GetAssetComponentAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<AssetComponentDTO>>(results));
+        }
+
+        #endregion
+
+        [HttpPost("assetcomponent")]
+        [ProducesResponseType(201, Type = typeof(AssetComponentDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateAssetComponent([FromBody] AssetComponentDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                var result = await this._service.CreateAssetComponentAsync(dto);
+                if (result.IsSuccess)
+                {
+                    AssetComponentDTO vm = _mapper.Map<AssetComponentDTO>(result.Data);
+                    return CreatedAtAction("GetAssetComponentByIdAsync", new { id = vm.Id }, vm);
+                }
+
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
+        [HttpDelete("assetcomponent/delete/{id}")]
+        [ProducesResponseType(200, Type = typeof(AssetComponentDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteAssetComponent(int id)
+        {
+            var dto = await this._service.GetAssetComponentByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            var result = await this._service.DeleteAssetComponentAsync(id);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while deleting: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+        [HttpPut("assetcomponent/update/{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateAssetComponent(string id, [FromBody] AssetComponentDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                var dto = await this._service.GetAssetComponentByIdAsync(model.Id);
+
+                if (dto == null)
+                    return NotFound(id);
+
+                var result = await this._service.UpdateAssetComponentAsync(model);
+                if (result.IsSuccess)
+                    return NoContent();
+
+                AddErrors(new string[] { result.Message });
+
+            }
+
+            return BadRequest(ModelState);
+        }
+        #endregion
     }
 }

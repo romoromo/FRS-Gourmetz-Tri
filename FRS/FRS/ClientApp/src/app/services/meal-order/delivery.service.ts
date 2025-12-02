@@ -7,7 +7,7 @@ import { AccountEndpoint } from '../account-endpoint.service';
 import { AuthService } from '../auth.service';
 import { CommonEndpoint } from '../common-endpoint.service';
 import { ConfigurationService } from '../configuration.service';
-import { CatererAssetFilter, Filter, PagedResult } from 'src/app/models/sieve-filter.model';
+import { AssetComponentFilter, CatererAssetFilter, Filter, PagedResult } from 'src/app/models/sieve-filter.model';
 import { Staff } from 'src/app/models/meal-order/staff.model';
 import { CatererInfo, CatererInfoSimple } from '../../models/meal-order/caterer-info.model';
 import { BentoBoxType } from '../../models/meal-order/bento-box-type.model';
@@ -23,6 +23,7 @@ import { StoreInfo } from '../../models/meal-order/store-info.model';
 import { Driver } from 'src/app/models/meal-order/driver.model';
 import { Route } from 'src/app/models/meal-order/route.model';
 import { CatererAsset } from 'src/app/models/meal-order/caterer-asset.model';
+import { AssetComponent } from 'src/app/models/meal-order/asset-component.model';
 
 @Injectable()
 export class DeliveryService {
@@ -80,6 +81,9 @@ export class DeliveryService {
 
   private readonly _catererAsset: string = "/api/delivery/catererasset";
   get catererAssetBaseurl() { return this.configurations.baseUrl + this._catererAsset; }
+
+  private readonly _assetComponent: string ="api/delivery/assetcomponent";
+  get assetComponentBaseurl() {return this.configurations.baseUrl + this._assetComponent}
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
@@ -552,5 +556,35 @@ export class DeliveryService {
 
   generateAssetQRCode(id:string, catererId: string){
     return this.commonEndpoint.getFile<any>(this.catererAssetBaseurl + '/generateQRCode?id='+id+'&catererId=' + catererId);
+  }
+
+
+
+
+
+  getAssetComponentsByFilter(filter: AssetComponentFilter){
+    return this.commonEndpoint.getSieve<PagedResult>(this.assetComponentBaseurl + '/sieve/list', filter);
+  }
+
+   newAssetComponent(asset: AssetComponent) {
+    return this.commonEndpoint.getNewEndpoint<AssetComponent>(this.assetComponentBaseurl, asset);
+  }
+
+   getAssetComponentById(assetId: string) {
+    return this.commonEndpoint.getById<any>(this.assetComponentBaseurl + '/get', assetId);
+  }
+
+  getAssetComponentByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.assetComponentBaseurl + '/sieve/list', filter);
+  }
+
+  updateAssetComponent(assetComponent: AssetComponent) {
+    if (assetComponent.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.assetComponentBaseurl, assetComponent, assetComponent.id);
+    }
+  }
+
+  deleteAssetComponent(id: string | AssetComponent): Observable<AssetComponent> {
+    return this.commonEndpoint.getDeleteEndpoint<AssetComponent>(this.assetComponentBaseurl, <string>id);
   }
 }

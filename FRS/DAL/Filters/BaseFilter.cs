@@ -123,4 +123,9 @@ namespace DAL.Filters
     {
         public int catererInfoId { get; set; }
     }
+
+    public class AssetComponentFilter : BaseFilter
+    {
+        public int catererInfoId { get; set; }
+    }
 }

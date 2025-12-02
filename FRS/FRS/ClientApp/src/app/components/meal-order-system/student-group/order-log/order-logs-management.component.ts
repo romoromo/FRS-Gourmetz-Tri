@@ -166,6 +166,11 @@ export class OrderCollectionLogsManagementComponent implements OnInit, OnDestroy
 
 
   loadData(ev?: any) {
+    if(this.end < this.start)
+    {
+      this.alertService.showStickyMessage("Please ensure the start date is earlier than or equal to the end date.");
+      return;
+    }
     this.alertService.startLoadingMessage();
     this.loadingIndicator = true;
     this.filter.pageSize = this.currentPageLimit;

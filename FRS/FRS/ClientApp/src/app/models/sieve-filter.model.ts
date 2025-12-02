@@ -123,3 +123,10 @@ export class CatererAssetFilter extends Filter{
   }
   public catererInfoId: string;
 }
+
+export class AssetComponentFilter extends Filter{
+  constructor(page?: number, pageSize?: number) {
+    super(page, pageSize);
+  }
+  public catererInfoId: string;
+}
