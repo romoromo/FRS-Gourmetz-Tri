@@ -1,5 +1,5 @@
 
-export class AssetComponent {
+export class AssetCmp {
 
   constructor(id?: string) {
 

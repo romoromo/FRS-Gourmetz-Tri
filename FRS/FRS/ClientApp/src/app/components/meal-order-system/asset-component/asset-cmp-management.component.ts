@@ -21,7 +21,7 @@ import { AppTranslationService } from "../../../services/app-translation.service
 import { AccountService } from "../../../services/account.service";
 import { Utilities } from "../../../services/utilities";
 import {
-  AssetComponentFilter,
+  AssetCmpFilter,
   Filter,
   PagedResult,
 } from "../../../models/sieve-filter.model";
@@ -32,24 +32,24 @@ import { StaffService } from "../../../services/meal-order/staff.service";
 import { DeliveryService } from "../../../services/meal-order/delivery.service";
 import { saveAs } from "file-saver";
 import * as moment from "moment";
-import { AssetComponent } from "src/app/models/meal-order/asset-component.model";
-import { AssetComponentEditorComponent } from "./asset-component-editor.component";
+import { AssetCmp } from "src/app/models/meal-order/asset-cmp.model";
+import { AssetCmpEditorComponent } from "./asset-cmp-editor.component";
 
 @Component({
-  selector: "asset-component-management",
-  templateUrl: "./asset-component-management.component.html",
-  styleUrls: ["./asset-component-management.component.css"],
+  selector: "asset-cmp-management",
+  templateUrl: "./asset-cmp-management.component.html",
+  styleUrls: ["./asset-cmp-management.component.css"],
 })
-export class AssetComponentManagementComponent implements OnInit, OnDestroy {
+export class AssetCmpManagementComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
   columns: any[] = [];
-  rows: AssetComponent[] = [];
-  rowsCache: AssetComponent[] = [];
+  rows: AssetCmp[] = [];
+  rowsCache: AssetCmp[] = [];
   allPermissions: Permission[] = [];
-  editedAssetComponent: AssetComponent;
-  sourceAssetComponent: AssetComponent;
+  editedAssetCmp: AssetCmp;
+  sourceAssetComponent: AssetCmp;
   loadingIndicator: boolean;
-  filter: AssetComponentFilter;
+  filter: AssetCmpFilter;
   pagedResult: PagedResult;
   keyword: string = "";
 
@@ -60,7 +60,7 @@ export class AssetComponentManagementComponent implements OnInit, OnDestroy {
   flagTemplate: TemplateRef<any>;
 
   @ViewChild("catererAssetEditor")
-  catererAssetEditor: AssetComponentEditorComponent;
+  catererAssetEditor: AssetCmpEditorComponent;
 
   @ViewChild("searchbox") searchbox: SearchBoxComponent;
 
@@ -77,8 +77,8 @@ export class AssetComponentManagementComponent implements OnInit, OnDestroy {
     public dialog: MatDialog
   ) {}
 
-  openDialog(catererAsset: AssetComponent): void {
-    const dialogRef = this.dialog.open(AssetComponentEditorComponent, {
+  openDialog(catererAsset: AssetCmp): void {
+    const dialogRef = this.dialog.open(AssetCmpEditorComponent, {
       data: { header: this.header, catererAsset: catererAsset },
       width: "400px",
       disableClose: true,
@@ -89,8 +89,8 @@ export class AssetComponentManagementComponent implements OnInit, OnDestroy {
     });
   }
 
-  openQrDialog(asset: AssetComponent): void {
-    const dialogRef = this.dialog.open(AssetComponentEditorComponent, {
+  openQrDialog(asset: AssetCmp): void {
+    const dialogRef = this.dialog.open(AssetCmpEditorComponent, {
       data: `${asset.id}`,
       width: "90vw",
     });
@@ -101,7 +101,7 @@ export class AssetComponentManagementComponent implements OnInit, OnDestroy {
   }
 
   initializeFilter() {
-    this.filter = new AssetComponentFilter(1, 10);
+    this.filter = new AssetCmpFilter(1, 10);
     this.filter.sorts = "id";
     this.filter.filters = "";
     this.filter.page = 1;
@@ -164,7 +164,7 @@ export class AssetComponentManagementComponent implements OnInit, OnDestroy {
     this.filter.filters = "(IsActive)==true";
 
     this.subscription.add(
-      this.deliveryService.getAssetComponentByFilter(this.filter).subscribe(
+      this.deliveryService.getAssetCmpByFilter(this.filter).subscribe(
         (results) => {
           this.pagedResult = results;
 
@@ -212,47 +212,53 @@ export class AssetComponentManagementComponent implements OnInit, OnDestroy {
     this.loadData(null);
   }
 
-  newAssetComponent() {
+  newAssetCmp() {
     this.header = "New Asset Component";
-    this.editedAssetComponent = new AssetComponent();
-    this.editedAssetComponent.catererId = this.catererId;
-    this.openDialog(this.editedAssetComponent);
+    this.editedAssetCmp = new AssetCmp();
+    this.editedAssetCmp.catererId = this.catererId;
+    this.openDialog(this.editedAssetCmp);
   }
 
-  editAssetComponent(row: AssetComponent) {
-    this.editedAssetComponent = row;
+  editAssetCmp(row: AssetCmp) {
+    this.editedAssetCmp = row;
     this.header = "Edit Asset Component";
-    this.editedAssetComponent.catererId = this.catererId;
-    this.openDialog(this.editedAssetComponent);
+    this.editedAssetCmp.catererId = this.catererId;
+    this.openDialog(this.editedAssetCmp);
   }
 
-  deleteAssetComponent(row: AssetComponent) {
+  deleteAssetCmp(row: AssetCmp) {
     this.alertService.showDialog(
       'Are you sure you want to delete the "' +
         row.description +
         '" Asset Component?',
       DialogType.confirm,
-      () => this.deleteAssetComponentHelper(row)
+      () => this.deleteAssetCmpHelper(row)
     );
   }
 
-  deleteAssetComponentHelper(row: AssetComponent) {
+  deleteAssetCmpHelper(row: AssetCmp) {
     this.alertService.startLoadingMessage("Deleting...");
     this.loadingIndicator = true;
 
-    this.deliveryService.deleteAssetComponent(row.id)
-      .subscribe(results => {
+    this.deliveryService.deleteAssetCmp(row.id).subscribe(
+      (results) => {
         this.alertService.stopLoadingMessage();
         this.loadingIndicator = false;
 
         this.loadData();
       },
-        error => {
-          this.alertService.stopLoadingMessage();
-          this.loadingIndicator = false;
+      (error) => {
+        this.alertService.stopLoadingMessage();
+        this.loadingIndicator = false;
 
-          this.alertService.showStickyMessage("Delete Error", `An error occured while deleting the Asset Component.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-            MessageSeverity.error);
-        });
+        this.alertService.showStickyMessage(
+          "Delete Error",
+          `An error occured while deleting the Asset Component.\r\nError: "${Utilities.getHttpResponseMessage(
+            error
+          )}"`,
+          MessageSeverity.error
+        );
+      }
+    );
   }
 }

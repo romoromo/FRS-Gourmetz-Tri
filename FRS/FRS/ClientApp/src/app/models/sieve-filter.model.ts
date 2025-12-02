@@ -124,7 +124,7 @@ export class CatererAssetFilter extends Filter{
   public catererInfoId: string;
 }
 
-export class AssetComponentFilter extends Filter{
+export class AssetCmpFilter extends Filter{
   constructor(page?: number, pageSize?: number) {
     super(page, pageSize);
   }

@@ -2054,7 +2054,7 @@ namespace FRS.Controllers
 
         #region Sieved
         [ApiKeyAuthorize]
-        [HttpGet("assetcomponent/sieve/list")]
+        [HttpGet("assetcmp/sieve/list")]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
         public async Task<IActionResult> Getassetcomponents(AssetComponentFilter filter)
@@ -2065,7 +2065,7 @@ namespace FRS.Controllers
 
         #endregion
 
-        [HttpPost("assetcomponent")]
+        [HttpPost("assetcmp")]
         [ProducesResponseType(201, Type = typeof(AssetComponentDTO))]
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateAssetComponent([FromBody] AssetComponentDTO dto)
@@ -2090,7 +2090,7 @@ namespace FRS.Controllers
         }
 
 
-        [HttpDelete("assetcomponent/delete/{id}")]
+        [HttpDelete("assetcmp/delete/{id}")]
         [ProducesResponseType(200, Type = typeof(AssetComponentDTO))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
@@ -2107,7 +2107,7 @@ namespace FRS.Controllers
             return Ok(dto);
         }
 
-        [HttpPut("assetcomponent/update/{id}")]
+        [HttpPut("assetcmp/update/{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]

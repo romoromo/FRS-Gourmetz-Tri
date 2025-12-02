@@ -7,7 +7,7 @@ import { AccountEndpoint } from '../account-endpoint.service';
 import { AuthService } from '../auth.service';
 import { CommonEndpoint } from '../common-endpoint.service';
 import { ConfigurationService } from '../configuration.service';
-import { AssetComponentFilter, CatererAssetFilter, Filter, PagedResult } from 'src/app/models/sieve-filter.model';
+import { AssetCmpFilter, CatererAssetFilter, Filter, PagedResult } from 'src/app/models/sieve-filter.model';
 import { Staff } from 'src/app/models/meal-order/staff.model';
 import { CatererInfo, CatererInfoSimple } from '../../models/meal-order/caterer-info.model';
 import { BentoBoxType } from '../../models/meal-order/bento-box-type.model';
@@ -23,7 +23,7 @@ import { StoreInfo } from '../../models/meal-order/store-info.model';
 import { Driver } from 'src/app/models/meal-order/driver.model';
 import { Route } from 'src/app/models/meal-order/route.model';
 import { CatererAsset } from 'src/app/models/meal-order/caterer-asset.model';
-import { AssetComponent } from 'src/app/models/meal-order/asset-component.model';
+import { AssetCmp } from 'src/app/models/meal-order/asset-cmp.model';
 
 @Injectable()
 export class DeliveryService {
@@ -82,8 +82,8 @@ export class DeliveryService {
   private readonly _catererAsset: string = "/api/delivery/catererasset";
   get catererAssetBaseurl() { return this.configurations.baseUrl + this._catererAsset; }
 
-  private readonly _assetComponent: string ="api/delivery/assetcomponent";
-  get assetComponentBaseurl() {return this.configurations.baseUrl + this._assetComponent}
+  private readonly _assetCmp: string ="/api/delivery/assetcmp";
+  get assetCmpBaseurl() { return this.configurations.baseUrl + this._assetCmp }
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
@@ -562,29 +562,29 @@ export class DeliveryService {
 
 
 
-  getAssetComponentsByFilter(filter: AssetComponentFilter){
-    return this.commonEndpoint.getSieve<PagedResult>(this.assetComponentBaseurl + '/sieve/list', filter);
+  getAssetCmpsByFilter(filter: AssetCmpFilter){
+    return this.commonEndpoint.getSieve<PagedResult>(this.assetCmpBaseurl + '/sieve/list', filter);
   }
 
-   newAssetComponent(asset: AssetComponent) {
-    return this.commonEndpoint.getNewEndpoint<AssetComponent>(this.assetComponentBaseurl, asset);
+   newAssetCmp(asset: AssetCmp) {
+    return this.commonEndpoint.getNewEndpoint<AssetCmp>(this.assetCmpBaseurl, asset);
   }
 
-   getAssetComponentById(assetId: string) {
-    return this.commonEndpoint.getById<any>(this.assetComponentBaseurl + '/get', assetId);
+   getAssetCmpById(assetId: string) {
+    return this.commonEndpoint.getById<any>(this.assetCmpBaseurl + '/get', assetId);
   }
 
-  getAssetComponentByFilter(filter: Filter) {
-    return this.commonEndpoint.getSieve<PagedResult>(this.assetComponentBaseurl + '/sieve/list', filter);
+  getAssetCmpByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.assetCmpBaseurl + '/sieve/list', filter);
   }
 
-  updateAssetComponent(assetComponent: AssetComponent) {
-    if (assetComponent.id) {
-      return this.commonEndpoint.getUpdateEndpoint(this.assetComponentBaseurl, assetComponent, assetComponent.id);
+  updateAssetCmp(assetCmp: AssetCmp) {
+    if (assetCmp.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.assetCmpBaseurl, assetCmp, assetCmp.id);
     }
   }
 
-  deleteAssetComponent(id: string | AssetComponent): Observable<AssetComponent> {
-    return this.commonEndpoint.getDeleteEndpoint<AssetComponent>(this.assetComponentBaseurl, <string>id);
+  deleteAssetCmp(id: string | AssetCmp): Observable<AssetCmp> {
+    return this.commonEndpoint.getDeleteEndpoint<AssetCmp>(this.assetCmpBaseurl, <string>id);
   }
 }

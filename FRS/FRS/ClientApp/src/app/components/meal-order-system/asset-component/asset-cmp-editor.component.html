@@ -7,7 +7,7 @@
             <div class="row">
                 <mat-form-field class="col-md-12">
                     <mat-label>Asset</mat-label>
-                    <mat-select id="asset" name="asset" [(ngModel)]="assetComponentEdit.catererAssetId"
+                    <mat-select id="asset" name="asset" [(ngModel)]="assetCmpEdit.catererAssetId"
                         #assetId="ngModel" required>
                         <mat-option *ngFor="let asset of catererAssets" [value]="asset.id">
                             {{asset.assetQRCode}}
@@ -18,16 +18,16 @@
 
                 <mat-form-field class="col-md-12">
                     <input matInput autocomplete="off" type="text" id="description" name="description"
-                        placeholder="Description" [(ngModel)]="assetComponentEdit.description" #description="ngModel"
+                        placeholder="Description" [(ngModel)]="assetCmpEdit.description" #description="ngModel"
                         required minlength="2" maxlength="200" />
                 </mat-form-field>
                 <mat-form-field class="col-md-12">
                     <input matInput autocomplete="off" type="number" id="qty" name="qty" placeholder="Qty"
-                        [(ngModel)]="assetComponentEdit.qty" #qty="ngModel" />
+                        [(ngModel)]="assetCmpEdit.qty" #qty="ngModel" />
                 </mat-form-field>
                 <mat-form-field class="col-md-12">
                     <input matInput autocomplete="off" type="text" id="remarks" name="remarks" placeholder="Remarks"
-                        [(ngModel)]="assetComponentEdit.remarks" #remarks="ngModel" required minlength="2"
+                        [(ngModel)]="assetCmpEdit.remarks" #remarks="ngModel" required minlength="2"
                         maxlength="200" />
                 </mat-form-field>
 
@@ -42,18 +42,18 @@
                     <div>
                         <div style="float:left; margin-right: 10px;">
                             <file-upload showTxt="false" (onUploadFinished)="uploadFinished($event)"
-                                [fileName]="assetComponentEdit.code" [useOriginalFilename]="true"
+                                [fileName]="assetCmpEdit.code" [useOriginalFilename]="true"
                                 fileTypes=".jpg, .jpeg, .png"></file-upload>
                         </div>
                     </div>
                     <div class="clearfix"></div>
-                    <div *ngIf="assetComponentEdit.filePath" class="col-md-6"
+                    <div *ngIf="assetCmpEdit.filePath" class="col-md-6"
                         style="padding:10px; border: 1px dashed #808080;text-align:center">
-                        <img [src]="getFileImage(assetComponentEdit.filePath)" alt="icon"
+                        <img [src]="getFileImage(assetCmpEdit.filePath)" alt="icon"
                             style="width:100px; height:100px;" />
                     </div>
                     <div class="clearfix"></div>
-                    <div class="col-md-6 text-center" *ngIf="assetComponentEdit.filePath">
+                    <div class="col-md-6 text-center" *ngIf="assetCmpEdit.filePath">
                         <a class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="removePhoto()"><i
                                 class="fa fa-trash-o" aria-hidden="true"></i> Remove</a>
                     </div>

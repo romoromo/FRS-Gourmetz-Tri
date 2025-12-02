@@ -19,21 +19,21 @@ import { DeliveryService } from "../../../services/meal-order/delivery.service";
 import { DishService } from "../../../services/meal-order/dish.service";
 import { Subscription } from "rxjs";
 import { FileService } from "src/app/services/file.service";
-import { AssetComponent } from "src/app/models/meal-order/asset-component.model";
 import { CatererAsset } from "src/app/models/meal-order/caterer-asset.model";
+import { AssetCmp } from "src/app/models/meal-order/asset-cmp.model";
 
 @Component({
-  selector: "asset-component-editor",
-  templateUrl: "./asset-component-editor.component.html",
-  styleUrls: ["./asset-component-editor.component.css"],
+  selector: "asset-cmp-editor",
+  templateUrl: "./asset-cmp-editor.component.html",
+  styleUrls: ["./asset-cmp-editor.component.css"],
 })
-export class AssetComponentEditorComponent implements OnInit, OnDestroy {
+export class AssetCmpEditorComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
 
-  private isNewAssetComponent = false;
+  private isNewAssetCmp = false;
   private isSaving: boolean;
   private showValidationErrors: boolean = true;
-  private assetComponentEdit: AssetComponent = new AssetComponent();
+  private assetCmpEdit: AssetCmp = new AssetCmp();
   private allPermissions: Permission[] = [];
   private selectedValues: { [key: string]: boolean } = {};
   public formResetToggle = true;
@@ -58,7 +58,7 @@ export class AssetComponentEditorComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private deliveryService: DeliveryService,
     private accountService: AccountService,
-    public dialogRef: MatDialogRef<AssetComponentEditorComponent>,
+    public dialogRef: MatDialogRef<AssetCmpEditorComponent>,
     private mealService: MealService,
     private dishService: DishService,
     private fileService: FileService,
@@ -68,9 +68,9 @@ export class AssetComponentEditorComponent implements OnInit, OnDestroy {
       if (data.catererAsset.catererId)
         this.catererId = data.catererAsset.catererId;
       if (data.catererAsset.id) {
-        this.editAssetComponent(data.catererAsset);
+        this.editAssetCmp(data.catererAsset);
       } else {
-        this.newAssetComponent();
+        this.newAssetCmp();
       }
     }
 
@@ -93,14 +93,14 @@ export class AssetComponentEditorComponent implements OnInit, OnDestroy {
   private save() {
     this.isSaving = true;
     this.alertService.startLoadingMessage("Saving changes...");
-    if (this.isNewAssetComponent) {
-      this.deliveryService.newAssetComponent(this.assetComponentEdit).subscribe(
+    if (this.isNewAssetCmp) {
+      this.deliveryService.newAssetCmp(this.assetCmpEdit).subscribe(
         (catererAsset) => this.saveSuccessHelper(catererAsset),
         (error) => this.saveFailedHelper(error)
       );
     } else {
       this.deliveryService
-        .updateAssetComponent(this.assetComponentEdit)
+        .updateAssetCmp(this.assetCmpEdit)
         .subscribe(
           (response) => this.saveSuccessHelper(),
           (error) => this.saveFailedHelper(error)
@@ -108,27 +108,27 @@ export class AssetComponentEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private saveSuccessHelper(catererAsset?: AssetComponent) {
-    if (catererAsset) Object.assign(this.assetComponentEdit, catererAsset);
+  private saveSuccessHelper(catererAsset?: AssetCmp) {
+    if (catererAsset) Object.assign(this.assetCmpEdit, catererAsset);
 
     this.isSaving = false;
     this.alertService.stopLoadingMessage();
     this.showValidationErrors = false;
 
-    if (this.isNewAssetComponent)
+    if (this.isNewAssetCmp)
       this.alertService.showMessage(
         "Success",
-        `Caterer Asset \"${this.assetComponentEdit.description}\" was created successfully`,
+        `Caterer Asset \"${this.assetCmpEdit.description}\" was created successfully`,
         MessageSeverity.success
       );
     else
       this.alertService.showMessage(
         "Success",
-        `Changes to Caterer Asset \"${this.assetComponentEdit.description}\" was saved successfully`,
+        `Changes to Caterer Asset \"${this.assetCmpEdit.description}\" was saved successfully`,
         MessageSeverity.success
       );
 
-    this.assetComponentEdit = new AssetComponent();
+    this.assetCmpEdit = new AssetCmp();
     this.resetForm();
     if (this.changesSavedCallback) this.changesSavedCallback();
 
@@ -149,7 +149,7 @@ export class AssetComponentEditorComponent implements OnInit, OnDestroy {
   }
 
   private cancel() {
-    this.assetComponentEdit = new AssetComponent();
+    this.assetCmpEdit = new AssetCmp();
 
     this.showValidationErrors = false;
     this.resetForm();
@@ -173,28 +173,28 @@ export class AssetComponentEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  newAssetComponent() {
-    this.isNewAssetComponent = true;
+  newAssetCmp() {
+    this.isNewAssetCmp = true;
     this.showValidationErrors = true;
 
     this.selectedValues = {};
-    this.assetComponentEdit = new AssetComponent();
+    this.assetCmpEdit = new AssetCmp();
 
-    return this.assetComponentEdit;
+    return this.assetCmpEdit;
   }
 
-  editAssetComponent(catererAsset: AssetComponent) {
+  editAssetCmp(catererAsset: AssetCmp) {
     if (catererAsset) {
-      this.isNewAssetComponent = false;
+      this.isNewAssetCmp = false;
       this.showValidationErrors = true;
 
       this.selectedValues = {};
-      this.assetComponentEdit = new AssetComponent();
-      Object.assign(this.assetComponentEdit, catererAsset);
+      this.assetCmpEdit = new AssetCmp();
+      Object.assign(this.assetCmpEdit, catererAsset);
 
-      return this.assetComponentEdit;
+      return this.assetCmpEdit;
     } else {
-      return this.newAssetComponent();
+      return this.newAssetCmp();
     }
   }
 
@@ -220,7 +220,7 @@ export class AssetComponentEditorComponent implements OnInit, OnDestroy {
 
   public uploadFinished = (event) => {
     this.fileUploadResponse = event;
-    this.assetComponentEdit.filePath = this.fileUploadResponse
+    this.assetCmpEdit.filePath = this.fileUploadResponse
       ? this.fileUploadResponse.dbPath
       : null;
   };
@@ -230,8 +230,8 @@ export class AssetComponentEditorComponent implements OnInit, OnDestroy {
   }
 
   removePhoto() {
-    this.assetComponentEdit.filePath = null;
-    this.assetComponentEdit.fileId = null;
-    this.assetComponentEdit.fileName = null;
+    this.assetCmpEdit.filePath = null;
+    this.assetCmpEdit.fileId = null;
+    this.assetCmpEdit.fileName = null;
   }
 }

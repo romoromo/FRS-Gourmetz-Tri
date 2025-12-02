@@ -209,6 +209,7 @@
     <Content Remove="acl.json" />
     <Content Remove="acl_nuh.json" />
     <Content Remove="Pages\Shared\_Layout.cshtml" />
+    <Content Remove="wwwroot\favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -219,6 +220,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Include="Pages\Shared\_Layout.cshtml" />
+    <None Include="wwwroot\favicon.ico" />
   </ItemGroup>
 
   <!--<Target Name="CreateResourcesFolder" AfterTargets="AfterPublish" Condition=" '!Exists('$(PublishUrl)Resources') ">
