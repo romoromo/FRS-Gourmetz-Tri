@@ -80,6 +80,8 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdateCancelOrderRequestAsync(CancelOrderRequestDTO dto);
         Task<BaseOperationResponse> ApprovalCancelOrderRequestAsync(CancelOrderRequestDTO dto);
 
+        Task<BaseOperationResponse> DirectCancelOrderAsync(DirectCancelOrderDTO dto);
+
         Task<byte[]> GenerateOrderLogXls(BaseFilter filter);
         Task<byte[]> GenerateOrderLogXls2(SalesOrderReportFilter filter);
         Task<byte[]> GenerateFlattenOrderLogXls(SalesOrderReportFilter filter);

@@ -531,6 +531,23 @@ namespace FRS.Controllers
         }
 
 
+
+        [HttpPost("tokenorders/cancelorder/direct")]
+        //[AllowAnonymous]
+        public async Task<IActionResult> DirectCancelOrder([FromBody] DirectCancelOrderDTO model)
+        {
+            var dto = await this._service.GetTokenOrderByIdAsync(model.OrderId);
+            if (dto == null)
+                return NotFound(model.OrderId);
+
+            var result = await this._service.DirectCancelOrderAsync(model);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while processing: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+
         [HttpPost("tokenorders/cancelorder/cancel"), DisableRequestSizeLimit]
         //[AllowAnonymous]
         public async Task<IActionResult> CancelOrder([FromBody] CancelOrderRequestDTO dto)

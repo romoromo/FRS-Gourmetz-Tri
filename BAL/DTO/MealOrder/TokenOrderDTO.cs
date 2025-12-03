@@ -432,6 +432,14 @@ namespace BAL.DTO.MealOrder
         public string Response { get; set; }
     }
 
+    public class DirectCancelOrderDTO
+    {
+        public int OrderId { get; set; }
+        public int UserId { get; set; }
+        public string Reason { get; set; }
+        public int? StudentId { get; set; }
+    }
+
     public class SalesOrderCollectionSummary
     {
         public string MealSession { get; set; }
@@ -458,5 +466,27 @@ namespace BAL.DTO.MealOrder
         public string InvoiceNumber { get; set; }
         public float Discount { get; set; }
         public string VoucherStatus { get; set; }
+    }
+
+
+    public class TokenOrderCounterDTO
+    {
+
+        public int Id { get; set; }
+
+        public DateTime TransactionTime { get; set; }
+
+        public int? ProfileId { get; set; }
+
+        public DateTime DeliveryDate { get; set; }
+        public float TotalAmount { get; set; }
+
+        public string Status { get; set; }
+        public List<TokenOrderedDTO> Tokens { get; set; }
+
+        public int? MealSessionDetailId { get; set; }
+
+        public int? StoreId { get; set; }
+
     }
 }

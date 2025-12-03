@@ -114,6 +114,11 @@ namespace BAL.Services
             return await this._uow.StudentWalletTransactions.TopupWalletBalanceByStudentIdAsync(studentId, amount, userId,walletType);
         }
 
+        public async Task<BaseOperationResponse> RefundToWalletBalanceAsync(int studentId, double amount, int userId, WalletType walletType)
+        {
+            return await this._uow.StudentWalletTransactions.RefundToWalletBalanceAsync(studentId, amount, userId, walletType);
+        }
+
         public async Task<BaseOperationResponse> OffBoardingStudent(int studentId, int userId)
         {
             return await this._uow.StudentWalletTransactions.OffBoardingStudent(studentId, userId);

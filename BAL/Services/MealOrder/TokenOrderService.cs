@@ -45,10 +45,11 @@ namespace BAL.Services.MealOrder
         private IClassService _classService;
         private IDeliveryService _deliveryService;
         private IDishService _dishService;
+        private IStudentWalletService _studentWalletService;
         private readonly IMapper _mapper;
 
         public TokenOrderService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, ApplicationDbContext context,
-            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService)
+            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService, IStudentWalletService studentWalletService)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
@@ -58,6 +59,7 @@ namespace BAL.Services.MealOrder
             _mapper = mapper;
             this._deliveryService = deliveryService;
             this._dishService = dishService;
+            this._studentWalletService = studentWalletService;
         }
 
         #region TokenOrder
@@ -5300,7 +5302,9 @@ namespace BAL.Services.MealOrder
 
             if (isApproved && result.IsSuccess && result.Data != null)
             {
-                var to = (TokenOrder)result.Data;
+                TokenOrder to = (TokenOrder)result.Data;
+                result = await this._studentWalletService.RefundToWalletBalanceAsync(to.ProfileId.Value, to.TotalAmount, dto.UserId, WalletType.BASIC);
+
                 var history = _mapper.Map<TokensOrderHistoryDTO>(result.Data);
                 if (history != null)
                 {
@@ -5319,6 +5323,28 @@ namespace BAL.Services.MealOrder
             //    //remove status
             //    await this._uow.TokenOrders.UpdateCancellationStatus(dto.OrderId);
             //}
+
+            return result;
+        }
+
+
+        public async Task<BaseOperationResponse> DirectCancelOrderAsync(DirectCancelOrderDTO dto)
+        {
+            var result = new BaseOperationResponse();
+            result = await this._uow.TokenOrders.UpdateCancellationStatus(dto.OrderId, true, dto.Reason);
+
+            if (result.IsSuccess && result.Data != null)
+            {
+                TokenOrder order = (TokenOrder)result.Data;
+                result = await this._studentWalletService.RefundToWalletBalanceAsync(order.ProfileId.Value, order.TotalAmount, dto.UserId, WalletType.BASIC);
+
+                var history = _mapper.Map<TokensOrderHistoryDTO>(result.Data);
+                if (history != null)
+                {
+                    history.Status = "cancelled";
+                    await CreateTokensOrderHistoryAsync(history, order);
+                }
+            }
 
             return result;
         }
