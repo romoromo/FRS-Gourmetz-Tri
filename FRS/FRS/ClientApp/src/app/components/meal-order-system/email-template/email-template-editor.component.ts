@@ -142,7 +142,7 @@ export class EmailTemplateEditorComponent {
     this.selectedValues = {};
     this.emailTemplateEdit = new EmailTemplate();
     this.emailTemplateEdit.outletId = this.outletId;
-    this.emailTemplateEdit.fromName = 'FRS Team';
+    this.emailTemplateEdit.fromName = 'GOe Singapore';
     this.emailTemplateEdit.fromEmail = 'donotreply@smv360.com';
     return this.emailTemplateEdit;
   }
