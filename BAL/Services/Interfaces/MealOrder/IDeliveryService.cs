@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BAL.DTO;
 using BAL.DTO.MealOrder;
@@ -130,10 +131,18 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<byte[]> GeneratePrintCartonLabelV2(int cartonId, int routeId);
 
 
-        Task<PagedEntity<CatererAssetDTO>> GetCatererAssetsAsync(BaseFilter filter);
+        Task<PagedEntity<CatererAssetDTO>> GetCatererAssetsAsync(CatererAsserFilter filter);
         Task<CatererAssetDTO> GetCatererAssetByIdAsync(int id);
         Task<BaseOperationResponse> CreateCatererAssetAsync(CatererAssetDTO dto);
         Task<BaseOperationResponse> UpdateCatererAssetAsync(CatererAssetDTO dto);
         Task<BaseOperationResponse> DeleteCatererAssetAsync(int id);
+        Task<string> GetAssetQRCode(int catererId);
+        Task<byte[]> GenerateAssetQRCode(int id, int catererId);
+
+        Task<PagedEntity<AssetComponentDTO>> GetAssetComponentAsync(AssetComponentFilter filter);
+        Task<AssetComponentDTO> GetAssetComponentByIdAsync(int id);
+        Task<BaseOperationResponse> CreateAssetComponentAsync(AssetComponentDTO dto);
+        Task<BaseOperationResponse> UpdateAssetComponentAsync(AssetComponentDTO dto);
+        Task<BaseOperationResponse> DeleteAssetComponentAsync(int id);
     }
 }

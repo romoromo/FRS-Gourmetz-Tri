@@ -10,30 +10,31 @@ using System.Threading.Tasks;
 
 namespace DAL.Repositories.MealOrder
 {
-    public class CatererAssetRepository : Repository<CatererAsset>, ICatererAssetRepository
+    public class AssetComponentRepository : Repository<AssetComponent>, IAssetComponentRepository
     {
         private readonly ISieveProcessor _sieveProcessor;
-        public CatererAssetRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor) : base(context)
+        public AssetComponentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
         }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
 
-        public async Task<PagedEntity<CatererAsset>> GetAsync(CatererAsserFilter filter)
+        public async Task<PagedEntity<AssetComponent>> GetAsync(AssetComponentFilter filter)
         {
-            IQueryable<CatererAsset> query = _appContext.CatererAssets.Where(m => m.CatererAssetType.CatererInfoId == filter.catererInfoId)
-                .Include(m => m.CatererAssetType);
+            IQueryable<AssetComponent> query = _appContext.AssetComponents.Where(m => m.CatererAsset.CatererAssetType.CatererInfoId == filter.catererInfoId)
+                .Include(m => m.CatererAsset);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
             return result;
         }
 
-        public async Task<CatererAsset> GetByIdAsync(int id)
+        public async Task<AssetComponent> GetByIdAsync(int id)
         {
             return await GetAsync(id);
         }
 
-        public async Task<BaseOperationResponse> CreateAsync(CatererAsset asset)
+        public async Task<BaseOperationResponse> CreateAsync(AssetComponent asset)
         {
             var result = new BaseOperationResponse();
 
@@ -53,7 +54,7 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        public async Task<BaseOperationResponse> UpdateAsync(CatererAsset asset)
+        public async Task<BaseOperationResponse> UpdateAsync(AssetComponent asset)
         {
             var result = new BaseOperationResponse();
 
@@ -105,7 +106,7 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        public async Task<BaseOperationResponse> Delete(CatererAsset asset)
+        public async Task<BaseOperationResponse> Delete(AssetComponent asset)
         {
             var result = new BaseOperationResponse();
             SoftDelete(asset);

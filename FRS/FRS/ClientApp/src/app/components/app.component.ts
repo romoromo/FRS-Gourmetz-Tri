@@ -46,7 +46,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   shouldShowLoginModal: boolean;
   removePrebootScreen: boolean;
   newNotificationCount = 0;
-  appTitle = "FRS";
+  appTitle = "Communal OS";
   resetUserId = '';
   resetCode = '';
   appLogo = require("../assets/images/booking-icon.png");

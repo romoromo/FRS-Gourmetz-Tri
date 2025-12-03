@@ -136,6 +136,7 @@ namespace DAL
         IPLCRepository PLCRepository { get; }
         ICatererAssetTypeRepository CatererAssetType { get; }
         ICatererAssetRepository CatererAssetRepository { get; }
+        IAssetComponentRepository AssetComponentRepository { get; }
 
         #region For token order payment processing
         ITokenPaymentRepository SubmittedPayments { get; }

@@ -950,6 +950,12 @@ namespace BAL.Mapping
                 .ForMember(d => d.FilePath, map => map.MapFrom(s => s.Icon.Path));
             CreateMap<CatererAssetDTO, CatererAsset>()
                 .ForMember(d => d.Icon, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() }));
+
+            CreateMap<AssetComponent, AssetComponentDTO>()
+                .ForMember(d => d.CatererAssetCode, map => map.MapFrom(s => s.CatererAsset.assetQRCode))
+                .ForMember(d => d.FilePath, map => map.MapFrom(s => s.Icon.Path));
+            CreateMap<AssetComponentDTO, AssetComponent>()
+                .ForMember(d => d.Icon, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() }));
         }
     }
 }

@@ -1,0 +1,78 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+    <form *ngIf="formResetToggle" class="form-horizontal" name="assetEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!cartonAssetName.valid && showErrorAlert('Name is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+        <div mat-dialog-content>
+            <div class="row">
+                <mat-form-field class="col-md-12">
+                    <mat-label>Asset</mat-label>
+                    <mat-select id="asset" name="asset" [(ngModel)]="assetCmpEdit.catererAssetId"
+                        #assetId="ngModel" required>
+                        <mat-option *ngFor="let asset of catererAssets" [value]="asset.id">
+                            {{asset.assetQRCode}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="showValidationErrors && f.submitted">Asset is required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" type="text" id="description" name="description"
+                        placeholder="Description" [(ngModel)]="assetCmpEdit.description" #description="ngModel"
+                        required minlength="2" maxlength="200" />
+                </mat-form-field>
+                <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" type="number" id="qty" name="qty" placeholder="Qty"
+                        [(ngModel)]="assetCmpEdit.qty" #qty="ngModel" />
+                </mat-form-field>
+                <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" type="text" id="remarks" name="remarks" placeholder="Remarks"
+                        [(ngModel)]="assetCmpEdit.remarks" #remarks="ngModel" required minlength="2"
+                        maxlength="200" />
+                </mat-form-field>
+
+                <div class="col-md-12">
+                    <mat-label>
+                        <span class="upload-title">Icon</span>
+                        <span class="upload-hint-filetype">Accepts: </span>
+                        <span class="upload-hint-filetype-values">(*.jpg,*.png)</span>
+                        <span class="upload-hint-resolution">Resolution: </span>
+                        <span class="upload-hint-resolution-values">(1200x800)</span>
+                    </mat-label>
+                    <div>
+                        <div style="float:left; margin-right: 10px;">
+                            <file-upload showTxt="false" (onUploadFinished)="uploadFinished($event)"
+                                [fileName]="assetCmpEdit.code" [useOriginalFilename]="true"
+                                fileTypes=".jpg, .jpeg, .png"></file-upload>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div *ngIf="assetCmpEdit.filePath" class="col-md-6"
+                        style="padding:10px; border: 1px dashed #808080;text-align:center">
+                        <img [src]="getFileImage(assetCmpEdit.filePath)" alt="icon"
+                            style="width:100px; height:100px;" />
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-6 text-center" *ngIf="assetCmpEdit.filePath">
+                        <a class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="removePhoto()"><i
+                                class="fa fa-trash-o" aria-hidden="true"></i> Remove</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+        <div mat-dialog-actions align="center">
+            <button type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+            <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i>
+                {{'common.editor.Cancel' | translate}}</button>
+            <button type="submit" mat-button [disabled]="isSaving">
+                <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving"
+                    class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) :
+                ('common.editor.Save' | translate)}}
+            </button>
+        </div>
+    </form>
+</div>

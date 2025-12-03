@@ -1949,7 +1949,7 @@ namespace FRS.Controllers
         [HttpGet("catererasset/sieve/list")]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetCatererAssets(BaseFilter filter)
+        public async Task<IActionResult> GetCatererAssets(CatererAsserFilter filter)
         {
             var results = await this._service.GetCatererAssetsAsync(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<CatererAssetDTO>>(results));
@@ -2013,6 +2013,114 @@ namespace FRS.Controllers
                     return NotFound(id);
 
                 var result = await this._service.UpdateCatererAssetAsync(model);
+                if (result.IsSuccess)
+                    return NoContent();
+
+                AddErrors(new string[] { result.Message });
+
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpGet("catererasset/getQRCode/{catererId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetAssetQRCode(int catererId)
+        {
+            var result = await _service.GetAssetQRCode(catererId);
+            return Ok(new { result });
+        }
+
+        [HttpPost("catererasset/generateQRCode")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateQRCode(int id, int catererId)
+        {
+            var pdf = await this._service.GenerateAssetQRCode(id, catererId);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_CatererAsset.pdf";
+
+            if (pdf == null || pdf.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(fileContents: pdf, contentType: "application/vnd", fileDownloadName: reportName
+            );
+        }
+        #endregion
+
+        #region Asset Component
+
+        #region Sieved
+        [ApiKeyAuthorize]
+        [HttpGet("assetcmp/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> Getassetcomponents(AssetComponentFilter filter)
+        {
+            var results = await this._service.GetAssetComponentAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<AssetComponentDTO>>(results));
+        }
+
+        #endregion
+
+        [HttpPost("assetcmp")]
+        [ProducesResponseType(201, Type = typeof(AssetComponentDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateAssetComponent([FromBody] AssetComponentDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                var result = await this._service.CreateAssetComponentAsync(dto);
+                if (result.IsSuccess)
+                {
+                    AssetComponentDTO vm = _mapper.Map<AssetComponentDTO>(result.Data);
+                    return CreatedAtAction("GetAssetComponentByIdAsync", new { id = vm.Id }, vm);
+                }
+
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
+        [HttpDelete("assetcmp/delete/{id}")]
+        [ProducesResponseType(200, Type = typeof(AssetComponentDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteAssetComponent(int id)
+        {
+            var dto = await this._service.GetAssetComponentByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            var result = await this._service.DeleteAssetComponentAsync(id);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while deleting: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+        [HttpPut("assetcmp/update/{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateAssetComponent(string id, [FromBody] AssetComponentDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                var dto = await this._service.GetAssetComponentByIdAsync(model.Id);
+
+                if (dto == null)
+                    return NotFound(id);
+
+                var result = await this._service.UpdateAssetComponentAsync(model);
                 if (result.IsSuccess)
                     return NoContent();
 

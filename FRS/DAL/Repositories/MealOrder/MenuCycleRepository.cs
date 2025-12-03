@@ -74,7 +74,8 @@ namespace DAL.Repositories.MealOrder
             var selectedDays = menuCycle.Schedules.Select(a => a.Day);
             var cycleSchedules = this._appContext.MenuCycleSchedules.Where(e => e.MenuCycleId == menuCycle.Id);
 
-            cycleSchedules.ToList().ForEach(x => {
+            cycleSchedules.ToList().ForEach(x =>
+            {
                 var schedulePeriods = this._appContext.MenuCycleSchedulePeriods.Where(e => e.MenuCycleScheduleId == x.Id);
                 this._appContext.MenuCycleSchedulePeriods.RemoveRange(schedulePeriods);
 
@@ -195,7 +196,7 @@ namespace DAL.Repositories.MealOrder
         #region Sieved
         public async Task<List<MenuCycleSchedulePeriod>> GetMenuCycleSchedulePeriods(int menuCycleId, int day)
         {
-            IQueryable<MenuCycleSchedulePeriod> query = _appContext.MenuCycleSchedulePeriods.Where(e => e.IsActive && 
+            IQueryable<MenuCycleSchedulePeriod> query = _appContext.MenuCycleSchedulePeriods.Where(e => e.IsActive &&
                                                                         e.MenuCycleSchedule.MenuCycleId == menuCycleId &&
                                                                         e.MenuCycleSchedule.Day == day);
 
@@ -209,18 +210,19 @@ namespace DAL.Repositories.MealOrder
             bool isModified = false;
             foreach (var period in periods)
             {
-                var menus = _appContext.MenuCycleSchedulePeriodMenus.Where(e => 
+                var menus = _appContext.MenuCycleSchedulePeriodMenus.Where(e =>
                                     e.MenuCycleSchedulePeriod.MenuCycleScheduleId == period.MenuCycleScheduleId &&
                                     e.MenuCycleSchedulePeriod.MealPeriodId == period.MealPeriodId);
 
                 var mealPeriodSchedule = await _appContext.MenuCycleSchedulePeriods.FirstOrDefaultAsync(e => e.MenuCycleScheduleId == period.MenuCycleScheduleId &&
                                     e.MealPeriodId == period.MealPeriodId);
                 var toAddRange = period.Menus.Where(e => !menus.Any(f => f.MenuId == e.MenuId));
-                toAddRange.ToList().ForEach(e => {
+                toAddRange.ToList().ForEach(e =>
+                {
                     e.MenuCycleSchedulePeriodId = mealPeriodSchedule.Id;
                     _appContext.MenuCycleSchedulePeriodMenus.AddAsync(e);
                 });
-                
+
                 var toRemove = menus.Where(e => !period.Menus.Any(f => e.MenuId == f.MenuId));
                 if (!isModified)
                 {
@@ -229,8 +231,8 @@ namespace DAL.Repositories.MealOrder
 
                 _appContext.MenuCycleSchedulePeriodMenus.RemoveRange(toRemove);
             }
-            
-            
+
+
             if (!isModified || await _appContext.SaveChangesAsync() > 0)
             {
                 result.Message = "Successfully saved!";
@@ -326,7 +328,8 @@ namespace DAL.Repositories.MealOrder
                 var mealPeriodSchedule = await _appContext.MenuCycleSchedulePeriods.FirstOrDefaultAsync(e => e.MenuCycleScheduleId == period.MenuCycleScheduleId &&
                                     e.MealPeriodId == period.MealPeriodId);
                 var toAddRange = period.OutletMenus.Where(e => !menus.Any(f => f.MenuId == e.MenuId));
-                toAddRange.ToList().ForEach(e => {
+                toAddRange.ToList().ForEach(e =>
+                {
                     e.MenuCycleSchedulePeriodId = mealPeriodSchedule.Id;
                     _appContext.OutletMenuCycleSchedulePeriodMenus.AddAsync(e);
                 });
@@ -340,7 +343,8 @@ namespace DAL.Repositories.MealOrder
 
                 var menuDishToAddRange = period.OutletMenuDishes.Where(e => !menuDishes.Any(f => f.MenuId == e.MenuId && f.DishId == e.DishId
                                         && f.MealTypeId == e.MealTypeId && f.MenuId == e.MenuId));
-                menuDishToAddRange.ToList().ForEach(e => {
+                menuDishToAddRange.ToList().ForEach(e =>
+                {
                     e.MenuCycleSchedulePeriodId = mealPeriodSchedule.Id;
                     _appContext.OutletMenuDishes.AddAsync(e);
                 });
@@ -378,7 +382,7 @@ namespace DAL.Repositories.MealOrder
             //                                                            e.MenuCycleSchedule.MenuCycleId == menuCycleId &&
             //                                                            e.MenuCycleSchedule.Day == day &&
             //                                                            e.MenuCycleSchedule.MenuCycle.OutletProfile.Outlets.Any(x => x.Id == outletId));
-            
+
             var results = new List<MenuCycleSchedulePeriod>();
             var periods = menuCycle.OutletProfile.MealPeriods.OrderBy(e => e.Sequence).ToList();
             periods.ForEach(e =>
@@ -430,9 +434,9 @@ namespace DAL.Repositories.MealOrder
         public async Task<List<OutletClassRosterSchedule>> GetStudentMenuCycles2Async(int studentId)
         {
             //var outlet = await _appContext.CatererOutlets.FirstOrDefaultAsync(e => e.OutletId == outletId && e.CatererInfoId == catererId);
-            //var student = await _appContext.Students.FirstOrDefaultAsync(e => e.Id == studentId);
+            var student = await _appContext.Students.FirstOrDefaultAsync(e => e.Id == studentId);
             IQueryable<OutletClassRosterSchedule> query = _appContext.OutletClassRosters.Where(e => e.IsActive && e.EndDate.HasValue && e.EndDate.Value.Date >= DateTime.Now.Date).SelectMany(e => e.Schedules);
-            //query = query.Where(e => e.IsActive && e.Periods.SelectMany(f => f.Classes).Any(x => x.ClassId == student.ClassId));
+            query = query.Where(e => e.IsActive && e.Periods.SelectMany(f => f.Classes).Any(x => x.ClassId == student.ClassId));
             return await query.ToListAsync();
         }
 

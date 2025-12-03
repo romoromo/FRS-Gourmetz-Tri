@@ -21,7 +21,7 @@ import { AppTranslationService } from "../../../services/app-translation.service
 import { AccountService } from "../../../services/account.service";
 import { Utilities } from "../../../services/utilities";
 import {
-  CatererAssetFilter,
+  AssetCmpFilter,
   Filter,
   PagedResult,
 } from "../../../models/sieve-filter.model";
@@ -32,24 +32,24 @@ import { StaffService } from "../../../services/meal-order/staff.service";
 import { DeliveryService } from "../../../services/meal-order/delivery.service";
 import { saveAs } from "file-saver";
 import * as moment from "moment";
-import { CatererAsset } from "src/app/models/meal-order/caterer-asset.model";
-import { CatererAssetEditorComponent } from "./caterer-asset-editor.component";
+import { AssetCmp } from "src/app/models/meal-order/asset-cmp.model";
+import { AssetCmpEditorComponent } from "./asset-cmp-editor.component";
 
 @Component({
-  selector: "caterer-asset-management",
-  templateUrl: "./caterer-asset-management.component.html",
-  styleUrls: ["./caterer-asset-management.component.css"],
+  selector: "asset-cmp-management",
+  templateUrl: "./asset-cmp-management.component.html",
+  styleUrls: ["./asset-cmp-management.component.css"],
 })
-export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
+export class AssetCmpManagementComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
   columns: any[] = [];
-  rows: CatererAsset[] = [];
-  rowsCache: CatererAsset[] = [];
+  rows: AssetCmp[] = [];
+  rowsCache: AssetCmp[] = [];
   allPermissions: Permission[] = [];
-  editedCatererAsset: CatererAsset;
-  sourceCatererAsset: CatererAsset;
+  editedAssetCmp: AssetCmp;
+  sourceAssetComponent: AssetCmp;
   loadingIndicator: boolean;
-  filter: CatererAssetFilter;
+  filter: AssetCmpFilter;
   pagedResult: PagedResult;
   keyword: string = "";
 
@@ -60,7 +60,7 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
   flagTemplate: TemplateRef<any>;
 
   @ViewChild("catererAssetEditor")
-  catererAssetEditor: CatererAssetEditorComponent;
+  catererAssetEditor: AssetCmpEditorComponent;
 
   @ViewChild("searchbox") searchbox: SearchBoxComponent;
 
@@ -77,8 +77,8 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
     public dialog: MatDialog
   ) {}
 
-  openDialog(catererAsset: CatererAsset): void {
-    const dialogRef = this.dialog.open(CatererAssetEditorComponent, {
+  openDialog(catererAsset: AssetCmp): void {
+    const dialogRef = this.dialog.open(AssetCmpEditorComponent, {
       data: { header: this.header, catererAsset: catererAsset },
       width: "400px",
       disableClose: true,
@@ -89,8 +89,8 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
     });
   }
 
-  openQrDialog(asset: CatererAsset): void {
-    const dialogRef = this.dialog.open(CatererAssetEditorComponent, {
+  openQrDialog(asset: AssetCmp): void {
+    const dialogRef = this.dialog.open(AssetCmpEditorComponent, {
       data: `${asset.id}`,
       width: "90vw",
     });
@@ -101,8 +101,8 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
   }
 
   initializeFilter() {
-    this.filter = new CatererAssetFilter(1, 10);
-    this.filter.sorts = "assetQRCode";
+    this.filter = new AssetCmpFilter(1, 10);
+    this.filter.sorts = "id";
     this.filter.filters = "";
     this.filter.page = 1;
     this.filter.catererInfoId = this.catererId;
@@ -119,9 +119,10 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
-      { prop: "catererAssetTypeCode", name: "Asset Type" },
-      { prop: "assetQRCode", name: "Asset QR Code" },
+      { prop: "catererAssetCode", name: "Asset" },
       { prop: "description", name: "Description" },
+      { prop: "qty", name: "Qty" },
+      { prop: "remarks", name: "Remarks" },
       {
         name: "",
         width: 150,
@@ -160,10 +161,10 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
     }
 
     if (!this.keyword) this.keyword = "";
-    this.filter.filters = "(IsActive)==true,(assetQRCode)@=" + this.keyword;
+    this.filter.filters = "(IsActive)==true";
 
     this.subscription.add(
-      this.deliveryService.getCatererAssetsByFilter(this.filter).subscribe(
+      this.deliveryService.getAssetCmpByFilter(this.filter).subscribe(
         (results) => {
           this.pagedResult = results;
 
@@ -211,63 +212,53 @@ export class CatererAssetsManagementComponent implements OnInit, OnDestroy {
     this.loadData(null);
   }
 
-  newCatererAsset() {
-    this.header = "New Caterer Asset";
-    this.editedCatererAsset = new CatererAsset();
-    this.editedCatererAsset.catererId = this.catererId;
-    this.openDialog(this.editedCatererAsset);
+  newAssetCmp() {
+    this.header = "New Asset Component";
+    this.editedAssetCmp = new AssetCmp();
+    this.editedAssetCmp.catererId = this.catererId;
+    this.openDialog(this.editedAssetCmp);
   }
 
-  editCatererAsset(row: CatererAsset) {
-    this.editedCatererAsset = row;
-    this.header = "Edit Caterer Asset";
-    this.editedCatererAsset.catererId = this.catererId;
-    this.openDialog(this.editedCatererAsset);
+  editAssetCmp(row: AssetCmp) {
+    this.editedAssetCmp = row;
+    this.header = "Edit Asset Component";
+    this.editedAssetCmp.catererId = this.catererId;
+    this.openDialog(this.editedAssetCmp);
   }
 
-  deleteCatererAsset(row: CatererAsset) {
+  deleteAssetCmp(row: AssetCmp) {
     this.alertService.showDialog(
       'Are you sure you want to delete the "' +
-        row.assetQRCode +
-        '" Caterer Asset?',
+        row.description +
+        '" Asset Component?',
       DialogType.confirm,
-      () => this.deleteCatererAssetHelper(row)
+      () => this.deleteAssetCmpHelper(row)
     );
   }
 
-  deleteCatererAssetHelper(row: CatererAsset) {
+  deleteAssetCmpHelper(row: AssetCmp) {
     this.alertService.startLoadingMessage("Deleting...");
     this.loadingIndicator = true;
 
-    this.deliveryService.deleteCatererAsset(row.id)
-      .subscribe(results => {
+    this.deliveryService.deleteAssetCmp(row.id).subscribe(
+      (results) => {
         this.alertService.stopLoadingMessage();
         this.loadingIndicator = false;
 
         this.loadData();
       },
-        error => {
-          this.alertService.stopLoadingMessage();
-          this.loadingIndicator = false;
+      (error) => {
+        this.alertService.stopLoadingMessage();
+        this.loadingIndicator = false;
 
-          this.alertService.showStickyMessage("Delete Error", `An error occured while deleting the Caterer Asset.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
-            MessageSeverity.error);
-        });
-  }
-
-  downloadLabel(row: CatererAsset)
-  {
-    const fileName = moment().format('DDMMYYYY_hhmmss') + '_CartonAssetLabel.pdf';
-    
-        this.deliveryService.generateAssetQRCode(row.id, this.catererId).subscribe(
-          data => {
-            console.log(data);
-            saveAs(data, fileName);
-          },
-          err => {
-            alert("Problem while downloading the file.");
-            console.error(err);
-          }
+        this.alertService.showStickyMessage(
+          "Delete Error",
+          `An error occured while deleting the Asset Component.\r\nError: "${Utilities.getHttpResponseMessage(
+            error
+          )}"`,
+          MessageSeverity.error
         );
+      }
+    );
   }
 }

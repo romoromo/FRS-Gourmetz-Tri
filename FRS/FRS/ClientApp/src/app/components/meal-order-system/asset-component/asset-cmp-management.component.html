@@ -1,6 +1,6 @@
 <div>
   <header class="pageHeader">
-    <h3>Assets</h3>
+    <h3>Asset Components</h3>
   </header>
   <div class="row control-box">
     <div class="col-sm-8">
@@ -12,7 +12,7 @@
       <div class="navbar action-box">
         <ul class="nav navbar-nav navbar-right">
           <li  class="toolbaritem">
-            <a href="javascript:;" (click)="newCatererAsset(row)">
+            <a href="javascript:;" (click)="newAssetCmp(row)">
               <i class="fa fa-plus-circle"></i> {{'common.New' | translate}}
             </a>
           </li>
@@ -21,7 +21,7 @@
     </div>
   </div>
 
-  <ngx-datatable class="material colored-header" #CatererAssetTable
+  <ngx-datatable class="material colored-header" #AssetCmpTable
                  [loadingIndicator]="loadingIndicator"
                  [rows]="rows"
                  [rowHeight]="'auto'"
@@ -43,8 +43,7 @@
 
 
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
-    <a  class="btn btn-link btn-xs" href="javascript:;" (click)="editCatererAsset(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
-    <a  class="btn btn-link btn-xs" href="javascript:;" (click)="downloadLabel(row)"><i class="fa fa-qrcode" aria-hidden="true"></i> {{'Generate Qr Code'}}</a>
-    <a  class="btn btn-link btn-xs" href="javascript:;" (click)="deleteCatererAsset(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
+    <a  class="btn btn-link btn-xs" href="javascript:;" (click)="editAssetCmp(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
+    <a  class="btn btn-link btn-xs" href="javascript:;" (click)="deleteAssetCmp(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
   </ng-template>
 </div>

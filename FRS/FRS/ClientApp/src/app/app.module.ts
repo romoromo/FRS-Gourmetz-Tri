@@ -562,6 +562,8 @@ import { CatererAsssetTypeManagementComponent } from "./components/meal-order-sy
 import { CatererAsssetTypeEditorComponent } from "./components/meal-order-system/asset-type/caterer-asset-type-editor.component";
 import { CatererAssetsManagementComponent } from "./components/meal-order-system/caterer-asset/caterer-asset-management.component";
 import { CatererAssetEditorComponent } from "./components/meal-order-system/caterer-asset/caterer-asset-editor.component";
+import { AssetCmpEditorComponent } from "./components/meal-order-system/asset-component/asset-cmp-editor.component";
+import { AssetCmpManagementComponent } from "./components/meal-order-system/asset-component/asset-cmp-management.component";
 
 export const configFactory = (configService: ConfigurationService) => {
   return () => {
@@ -1029,7 +1031,9 @@ export const configFactory = (configService: ConfigurationService) => {
     CatererAsssetTypeManagementComponent,
     CatererAsssetTypeEditorComponent,
     CatererAssetsManagementComponent,
-    CatererAssetEditorComponent
+    CatererAssetEditorComponent,
+    AssetCmpEditorComponent,
+    AssetCmpManagementComponent
   ],
   providers: [
     { provide: "BASE_URL", useFactory: getBaseUrl },
@@ -1396,7 +1400,9 @@ export const configFactory = (configService: ConfigurationService) => {
     CatererAsssetTypeManagementComponent,
     CatererAsssetTypeEditorComponent,
     CatererAssetsManagementComponent,
-    CatererAssetEditorComponent
+    CatererAssetEditorComponent,
+    AssetCmpEditorComponent,
+    AssetCmpManagementComponent
   ],
 })
 export class AppModule {}

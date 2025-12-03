@@ -12,7 +12,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> Delete(CatererAsset asset);
         Task<BaseOperationResponse> DeleteAsync(int assetId);
         Task<CatererAsset> GetByIdAsync(int id);
-        Task<PagedEntity<CatererAsset>> GetAsync(BaseFilter filter);
+        Task<PagedEntity<CatererAsset>> GetAsync(CatererAsserFilter filter);
         Task<BaseOperationResponse> UpdateAsync(CatererAsset asset);
     }
 }

@@ -7,7 +7,7 @@ import { AccountEndpoint } from '../account-endpoint.service';
 import { AuthService } from '../auth.service';
 import { CommonEndpoint } from '../common-endpoint.service';
 import { ConfigurationService } from '../configuration.service';
-import { CatererAssetFilter, Filter, PagedResult } from 'src/app/models/sieve-filter.model';
+import { AssetCmpFilter, CatererAssetFilter, Filter, PagedResult } from 'src/app/models/sieve-filter.model';
 import { Staff } from 'src/app/models/meal-order/staff.model';
 import { CatererInfo, CatererInfoSimple } from '../../models/meal-order/caterer-info.model';
 import { BentoBoxType } from '../../models/meal-order/bento-box-type.model';
@@ -23,6 +23,7 @@ import { StoreInfo } from '../../models/meal-order/store-info.model';
 import { Driver } from 'src/app/models/meal-order/driver.model';
 import { Route } from 'src/app/models/meal-order/route.model';
 import { CatererAsset } from 'src/app/models/meal-order/caterer-asset.model';
+import { AssetCmp } from 'src/app/models/meal-order/asset-cmp.model';
 
 @Injectable()
 export class DeliveryService {
@@ -80,6 +81,9 @@ export class DeliveryService {
 
   private readonly _catererAsset: string = "/api/delivery/catererasset";
   get catererAssetBaseurl() { return this.configurations.baseUrl + this._catererAsset; }
+
+  private readonly _assetCmp: string ="/api/delivery/assetcmp";
+  get assetCmpBaseurl() { return this.configurations.baseUrl + this._assetCmp }
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
@@ -544,5 +548,43 @@ export class DeliveryService {
 
   deleteCatererAsset(id: string | CatererAsset): Observable<CatererAsset> {
     return this.commonEndpoint.getDeleteEndpoint<CatererAsset>(this.catererAssetBaseurl, <string>id);
+  }
+
+  getAssetQRCode(catererId: string){
+    return this.commonEndpoint.get<any>(this.catererAssetBaseurl + '/getQRCode/' + catererId);
+  }
+
+  generateAssetQRCode(id:string, catererId: string){
+    return this.commonEndpoint.getFile<any>(this.catererAssetBaseurl + '/generateQRCode?id='+id+'&catererId=' + catererId);
+  }
+
+
+
+
+
+  getAssetCmpsByFilter(filter: AssetCmpFilter){
+    return this.commonEndpoint.getSieve<PagedResult>(this.assetCmpBaseurl + '/sieve/list', filter);
+  }
+
+   newAssetCmp(asset: AssetCmp) {
+    return this.commonEndpoint.getNewEndpoint<AssetCmp>(this.assetCmpBaseurl, asset);
+  }
+
+   getAssetCmpById(assetId: string) {
+    return this.commonEndpoint.getById<any>(this.assetCmpBaseurl + '/get', assetId);
+  }
+
+  getAssetCmpByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.assetCmpBaseurl + '/sieve/list', filter);
+  }
+
+  updateAssetCmp(assetCmp: AssetCmp) {
+    if (assetCmp.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.assetCmpBaseurl, assetCmp, assetCmp.id);
+    }
+  }
+
+  deleteAssetCmp(id: string | AssetCmp): Observable<AssetCmp> {
+    return this.commonEndpoint.getDeleteEndpoint<AssetCmp>(this.assetCmpBaseurl, <string>id);
   }
 }
