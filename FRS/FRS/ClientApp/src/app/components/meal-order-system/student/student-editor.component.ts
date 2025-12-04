@@ -18,6 +18,7 @@ import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
 import { FormControl } from '@angular/forms';
 import { Utilities } from '../../../services/utilities';
 import { UserEdit } from '../../../models/user-edit.model';
+import { FileService } from 'src/app/services/file.service';
 
 
 @Component({
@@ -61,9 +62,11 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
   @ViewChild('f')
   private form;
 
+    public fileUploadResponse: { dbPath: ""; fileId: null; fileName: "" };
+
   constructor(private alertService: AlertService, private studentService: StudentService, private accountService: AccountService, private classService: ClassService,
     private userService: UserService, private restrictionService: RestrictionService, private deliveryService: DeliveryService,
-    public dialogRef: MatDialogRef<StudentEditorComponent>, public dialog: MatDialog, 
+    public dialogRef: MatDialogRef<StudentEditorComponent>, public dialog: MatDialog, private fileService: FileService, 
     @Inject(MAT_DIALOG_DATA) public data: any) {
 
     this.outletId = data.outletId;
@@ -547,5 +550,22 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
 
   get canManageStudents() {
     return true; //this.accountService.userHasPermission(Permission.manageStudentsPermission)
+  }
+
+   public uploadFinished = (event) => {
+    this.fileUploadResponse = event;
+    this.studentEdit.photoPath = this.fileUploadResponse
+      ? this.fileUploadResponse.dbPath
+      : null;
+  };
+
+  getFileImage(path) {
+    return this.fileService.getFile(path);
+  }
+
+  removePhoto() {
+    this.studentEdit.photoPath = null;
+    this.studentEdit.photoId = null;
+    this.studentEdit.photoName = null;
   }
 }

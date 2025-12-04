@@ -141,6 +141,7 @@ export class OutletsManagementComponent implements OnInit {
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
+      { prop: 'id', name: 'ID' },
       { prop: 'name', name: 'Name' },
       { prop: 'address', name: 'Address' },
       { prop: 'daysToFreezeOrdering', name: 'Cut-off in Days' },

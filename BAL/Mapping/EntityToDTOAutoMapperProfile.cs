@@ -165,7 +165,8 @@ namespace BAL.Mapping
             CreateMap<ClassDTO, Class>();
             CreateMap<StudentDTO, Student>()
                 .ForMember(e => e.StudentPoints, map => map.Ignore())
-                .ForMember(e => e.StudentWallets, map => map.Ignore());
+                .ForMember(e => e.StudentWallets, map => map.Ignore())
+                .ForMember(d => d.Photo, map => map.MapFrom(s => new File { Path = s.PhotoPath, FileName = s.PhotoName, Type = FileType.Icon.ToString() }));
             CreateMap<StudentDTO, ApplicationUser>()
                 .ForMember(e => e.Id, map => map.MapFrom(e => e.UserId))
                 .ForMember(e => e.UserType, map => map.MapFrom(e => e.UserType));
@@ -192,8 +193,9 @@ namespace BAL.Mapping
                  .ForMember(e => e.WalletPayments, map => map.MapFrom(e => e.WalletPayments.Where(f => f.IsActive && f.Status == "CREATED").ToList()))
                 .ForMember(e => e.InterestGroups, map => map.MapFrom(e => e.InterestGroups.Where(f => f.IsActive).ToList()))
                 .ForMember(e => e.Vouchers, map => map.MapFrom(e => e.Vouchers.Where(f => f.IsActive).ToList()))
-                .ForMember(e => e.AccountLinkRequests, map => map.MapFrom(e => e.AccountLinkRequests.Where(f => f.IsActive && f.Status == "Pending").ToList()));
-            
+                .ForMember(e => e.AccountLinkRequests, map => map.MapFrom(e => e.AccountLinkRequests.Where(f => f.IsActive && f.Status == "Pending").ToList()))
+                .ForMember(d => d.PhotoPath, map => map.MapFrom(s => s.Photo.Path));
+
             CreateMap<StudentWallet, StudentWalletDTO>();
             CreateMap<StudentPoint, StudentPointDTO>();
 

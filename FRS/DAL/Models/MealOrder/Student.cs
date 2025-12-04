@@ -88,6 +88,10 @@ namespace DAL.Models.MealOrder
         public virtual ICollection<StudentWallet> StudentWallets { get; set; }
         public virtual ICollection<StudentPoint> StudentPoints { get; set; }
 
+        public int? PhotoId { get; set; }
+        [ForeignKey("PhotoId")]
+        public virtual File Photo { get; set; }
+
 
     }
 }

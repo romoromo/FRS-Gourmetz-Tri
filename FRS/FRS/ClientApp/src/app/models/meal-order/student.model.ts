@@ -39,6 +39,10 @@ export class Student {
   public pointBalance: number;
   public isWalletFreeze: boolean;
   public walletDailyLimit: number;
+
+  public photoId: string;
+  public photoName: string;
+  public photoPath: string;
   
 }
 

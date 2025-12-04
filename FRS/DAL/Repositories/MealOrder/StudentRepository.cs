@@ -683,6 +683,34 @@ namespace DAL.Repositories.MealOrder
 
                     f.CopyFrom(student);
 
+                    if (student.Photo != null && !string.IsNullOrEmpty(student.Photo.Path))
+                    {
+                        if (!f.PhotoId.HasValue)
+                        {
+                            f.Photo = student.Photo;
+                        }
+                        else
+                        {
+                            if (f.Photo == null)
+                            {
+                                var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == f.PhotoId);
+                                if (icon == null)
+                                {
+                                    f.Photo = new Models.File();
+                                }
+                                else
+                                {
+                                    f.Photo = icon;
+                                    f.PhotoId = icon.Id;
+                                }
+                            }
+
+                            f.Photo.Path = student.Photo.Path;
+                            f.Photo.FileName = student.Photo.FileName ?? System.IO.Path.GetFileName(student.Photo.Path);
+                            f.Photo.Type = FileType.Icon.ToString();
+                        }
+                    }
+
                     Update(f);
                     if (await _appContext.SaveChangesAsync() > 0)
                     {
@@ -733,6 +761,34 @@ namespace DAL.Repositories.MealOrder
                     var f = await GetSingleOrDefaultAsync(e => e.Id == student.Id);
 
                     f.CopyFrom(student);
+
+                    if (student.Photo != null && !string.IsNullOrEmpty(student.Photo.Path))
+                    {
+                        if (!f.PhotoId.HasValue)
+                        {
+                            f.Photo = student.Photo;
+                        }
+                        else
+                        {
+                            if (f.Photo == null)
+                            {
+                                var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == f.PhotoId);
+                                if (icon == null)
+                                {
+                                    f.Photo = new Models.File();
+                                }
+                                else
+                                {
+                                    f.Photo = icon;
+                                    f.PhotoId = icon.Id;
+                                }
+                            }
+
+                            f.Photo.Path = student.Photo.Path;
+                            f.Photo.FileName = student.Photo.FileName ?? System.IO.Path.GetFileName(student.Photo.Path);
+                            f.Photo.Type = FileType.Icon.ToString();
+                        }
+                    }
 
                     Update(f);
                     if (await _appContext.SaveChangesAsync() > 0)

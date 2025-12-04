@@ -93,6 +93,10 @@ namespace BAL.DTO.MealOrder
         public List<WalletPaymentDTO> WalletPayments { get; set; }
         public List<StudentWalletDTO> StudentWallets { get; set; }
         public List<StudentPointDTO> StudentPoints { get; set; }
+
+        public int? PhotoId { get; set; }
+        public string PhotoName { get; set; }
+        public string PhotoPath { get; set; }
     }
 
     public class StudentManageAccountDTO
