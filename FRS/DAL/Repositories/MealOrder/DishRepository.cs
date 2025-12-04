@@ -11,6 +11,7 @@ using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
 using DAL.Core.DTO;
 using System.IO;
+using iTextSharp.text.pdf;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -58,6 +59,16 @@ namespace DAL.Repositories.MealOrder
                 DishTypeName = x.DishType.Name,
                 CuisineName = x.Cuisine.Name,
                 BentoBoxTypeCode = x.BentoBoxType.Code,
+                ExtraNote = x.ExtraNotes,
+                KicthenName = x.StoreInfo.Name,
+                SapCode = x.SapCode,
+                Protein = x.Protein,
+                Sugar = x.Sugar,
+                TotalFat = x.TotalFat,
+                TotalCarb = x.TotalCarb,
+                Calories = x.Calories,
+                Restrictions = x.Restrictions.Select(x => x.Restriction.Label).ToList()
+
             });
             int totalCount = await query.Select(x => x.Id).CountAsync();
             List<DishLiteDTO> pagedData = new List<DishLiteDTO>();
@@ -380,8 +391,19 @@ namespace DAL.Repositories.MealOrder
                 .Where(x => x.IsActive)
                 .ToDictionaryAsync(x => x.Label, x => x.Id, StringComparer.OrdinalIgnoreCase));
 
+            var dishes = await _appContext.Dishes
+                .AsNoTracking()
+                .Where(x => x.IsActive && x.CatererId == catererInfoId)
+                .Select(x => new { x.Code, x.Id })
+                .GroupBy(x => x.Code)
+                .ToDictionaryAsync(
+                    g => g.Key,
+                    g => g.First().Id,
+                    StringComparer.OrdinalIgnoreCase
+                );
 
-            var (validatedDtos, validationResult) = ValidateDishImport(dtos, dishTypeMap, bentoBoxTypeMap, cuisineMap,storeInfo,restrictions);
+
+            var (validatedDtos, validationResult) = ValidateDishImport(dtos, dishTypeMap, bentoBoxTypeMap, cuisineMap,storeInfo,restrictions, dishes);
 
             if (!validationResult.IsSuccess)
                 return validationResult;
@@ -393,7 +415,8 @@ namespace DAL.Repositories.MealOrder
             var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmm");
             int index = 0;
 
-            foreach (var x in validatedDtos)
+            var validatedDtosForInsert = validatedDtos.Where(x => (x.DishId == null || x.DishId <= 0));
+            foreach (var x in validatedDtosForInsert)
             {
                 var currentCount = dishCount + (index + 1);
                 var code = $"{caterer.Code}{timestamp}{currentCount}";
@@ -455,6 +478,49 @@ namespace DAL.Repositories.MealOrder
             }
 
             AddRange(dishItems);
+
+            var updateDishIds = validatedDtos.Where(x => x.DishId > 0).Select(x => x.DishId).ToList();
+
+            var dishesToUpdate = await _appContext.Dishes
+                .Include(x => x.Restrictions)
+                .Where(x => updateDishIds.Contains(x.Id))
+                .ToListAsync();
+
+            foreach (var dish in dishesToUpdate)
+            {
+                var updateDto = validatedDtos.First(x => x.DishId == dish.Id);
+
+                dish.Label = updateDto.OriginalData.Label;
+                dish.DishTypeId = updateDto.DishTypeId!.Value;
+                dish.CuisineId = updateDto.CuisineId;
+                dish.RRPrice = updateDto.OriginalData.RPP;
+                dish.Cost = updateDto.OriginalData.Cost;
+                dish.IsEnabled = updateDto.OriginalData.IsEnabled;
+                dish.BentoBoxTypeId = updateDto.BentoBoxTypeId!.Value;
+                dish.Protein = updateDto.OriginalData.Protein;
+                dish.Sugar = updateDto.OriginalData.Sugar;
+                dish.StoreInfoId = updateDto.StoreId;
+                dish.TotalFat = updateDto.OriginalData.TotalFat;
+                dish.TotalCarb = updateDto.OriginalData.TotalCarb;
+                dish.Calories = updateDto.OriginalData.Calories;
+                dish.SapCode = updateDto.OriginalData.SapCode;
+                dish.ProductionDescription = updateDto.OriginalData.ProductionDescription;
+                dish.ExtraNotes = updateDto.OriginalData.ExtraNote;
+                dish.UpdatedBy = userId;
+
+                dish.Restrictions.Clear();
+                foreach (var r in updateDto.RestrictionsIds)
+                {
+                    dish.Restrictions.Add(new DishRestriction
+                    {
+                        RestrictionId = r,
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    });
+                }
+            }
+
+
             await _appContext.SaveChangesAsync();
 
             return resultData;
@@ -467,7 +533,8 @@ namespace DAL.Repositories.MealOrder
         Dictionary<string, int> bentoBoxTypeMap,
         Dictionary<string, int> cuisineMap,
         Dictionary<string, int> storeInfoMap,
-        Dictionary<string, int> restrictions
+        Dictionary<string, int> restrictions,
+        Dictionary<string, int> dishes
         )
         {
             var result = new DishImportDTO
@@ -492,7 +559,14 @@ namespace DAL.Repositories.MealOrder
                     cuisineId = cuisineIdParam;
                 }
 
-                    storeInfoMap.TryGetValue(dto.KicthenName ?? "", out var storeInfoId);
+                int? dishId = null;
+                if (!string.IsNullOrEmpty(dto.Code))
+                {
+                    dishes.TryGetValue(dto.Code ?? "", out int dishIdParam);
+                    dishId = dishIdParam;
+                }
+
+                storeInfoMap.TryGetValue(dto.KicthenName ?? "", out var storeInfoId);
 
                 if (dishTypeId == 0)
                     messages.Add($"Dish Type: {dto.DishTypeName} not found");
@@ -502,6 +576,8 @@ namespace DAL.Repositories.MealOrder
                     messages.Add($"Cuisine: {dto.CuisineName} not found");
                 if (!string.IsNullOrEmpty(dto.KicthenName) && storeInfoId == 0)
                     messages.Add($"Kitchen: {dto.KicthenName} not found");
+                if (!string.IsNullOrEmpty(dto.Code) && dishId == 0)
+                    messages.Add($"Dish: {dto.Code} not found");
 
                 List<int> validRestriction = new List<int>();
                 foreach (var item in dto.Restrictions)
@@ -527,6 +603,7 @@ namespace DAL.Repositories.MealOrder
                     validatedList.Add(new ValidatedDishInputDTO
                     {
                         OriginalData = dto,
+                        DishId = dishId,
                         DishTypeId = dishTypeId,
                         BentoBoxTypeId = bentoBoxTypeId,
                         CuisineId = cuisineId,

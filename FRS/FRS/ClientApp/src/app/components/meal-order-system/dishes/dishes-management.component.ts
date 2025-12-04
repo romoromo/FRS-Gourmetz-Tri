@@ -274,7 +274,7 @@ export class DishesManagementComponent implements OnInit {
         }
 
         this.loadingIndicator = false;
-        this.isExporting = false;
+        this.isImporting = false;
       },
         error => {
           this.alertService.stopLoadingMessage();
@@ -283,7 +283,7 @@ export class DishesManagementComponent implements OnInit {
           if (this.fileImport && this.fileImport.nativeElement) {
             this.fileImport.nativeElement.value = "";
           }
-          this.isExporting = false;
+          this.isImporting = false;
           this.alertService.showStickyMessage("Import Error", `Unable to import the file to the server.`,
             MessageSeverity.error);
         }),
