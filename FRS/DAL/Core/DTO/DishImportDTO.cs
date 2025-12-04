@@ -5,6 +5,7 @@ namespace DAL.Core.DTO
 
     public class DishImportInputDTO
     {
+        public string Code { get; set; }
         public string Label { get; set; }
         public string ProductionDescription { get; set; }
         public string ExtraNote { get; set; }
@@ -40,6 +41,7 @@ namespace DAL.Core.DTO
     public class ValidatedDishInputDTO
     {
         public DishImportInputDTO OriginalData { get; set; }
+        public int? DishId { get; set; }
         public int? DishTypeId { get; set; }
         public int? BentoBoxTypeId { get; set; }
         public int? CuisineId { get; set; }

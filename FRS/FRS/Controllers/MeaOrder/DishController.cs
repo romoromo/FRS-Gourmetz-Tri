@@ -380,13 +380,16 @@ namespace FRS.Controllers
                     int colCount = sheet.GetRow(reqNumCells).PhysicalNumberOfCells;
 
                     int rowCount = sheet.PhysicalNumberOfRows;
-                    for (int i = startRow; ExcelUtility.GetRowWithNonEmptyCell(sheet, i) != null; i++)
+                    for (int i = startRow; ExcelUtility.GetRowWithNonEmptyCell(sheet, i,1) != null; i++)
                     {
                         var fRow = sheet.GetRow(i);
                         if (fRow == null) continue;
 
                         var dto = new DishImportInputDTO();
                         int c = 0;
+
+                        var code = fRow.GetCell(c++);
+                        dto.Code = code != null ? code.ToString().Trim() : "";
 
                         var label = fRow.GetCell(c++);
                         dto.Label = label != null ? label.ToString().Trim() : "";

@@ -200,7 +200,13 @@ namespace BAL.Services.MealOrder
                 var wb = new XSSFWorkbook();
                 var rowCount = 0;
                 var sheet = (XSSFSheet)wb.CreateSheet("Dishes");
-                var headers = new string[] { "Code", "Label", "Production Description", "Type", "Cuisine", "Bento Box", "RPP", "Cost", "Is Enabled" };
+                var headers = new string[]
+                {
+                    "Code","Label", "Production Description", "Menu Description", "RPP", "Cost",
+                    "Dish Type Name", "Bento Box Type Name", "Cuisine Name", "Kitchen Name",
+                    "SAP Code", "Protein", "Sugar", "Total Fat", "Total Carb", "Calories",
+                    "Restriction Names", "Is Enabled"
+                };
                 #region Headers
 
                 var headerStyle = wb.CreateCellStyle();
@@ -254,15 +260,7 @@ namespace BAL.Services.MealOrder
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
-                    cell.SetCellValue(dt.DishTypeName);
-                    cell.CellStyle = contentStyle;
-
-                    cell = row.CreateCell(i++);
-                    cell.SetCellValue(dt.CuisineName);
-                    cell.CellStyle = contentStyle;
-
-                    cell = row.CreateCell(i++);
-                    cell.SetCellValue(dt.BentoBoxTypeCode);
+                    cell.SetCellValue(dt.ExtraNote);
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
@@ -271,6 +269,51 @@ namespace BAL.Services.MealOrder
 
                     cell = row.CreateCell(i++);
                     cell.SetCellValue(dt.Cost);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.DishTypeName);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.BentoBoxTypeCode);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.CuisineName);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.KicthenName);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.SapCode);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.Protein);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.Sugar);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.TotalFat);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.TotalCarb);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(dt.Calories);
+                    cell.CellStyle = contentStyle;
+
+                    var restrictionsName = string.Join(",", dt.Restrictions);
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(restrictionsName);
                     cell.CellStyle = contentStyle;
 
                     string enableStatus = dt.IsEnabled ? "Yes" : "No";
@@ -286,20 +329,20 @@ namespace BAL.Services.MealOrder
                     sheet.AutoSizeColumn(i, true);
                 }
 
-                CreateExportDishSheet(wb);
+                CreateImportDishSheet(wb);
                 wb.Write(stream);
 
                 return stream.ToArray();
             }
         }
 
-        private void CreateExportDishSheet(XSSFWorkbook workbook)
+        private void CreateImportDishSheet(XSSFWorkbook workbook)
         {
             var sheet = (XSSFSheet)workbook.CreateSheet("Import Dish Template");
 
             var headers = new string[]
             {
-                "Label", "Production Description", "Menu Description", "RPP", "Cost",
+                "Code","Label", "Production Description", "Menu Description", "RPP", "Cost",
                 "Dish Type Name", "Bento Box Type Name", "Cuisine Name", "Kitchen Name",
                 "SAP Code", "Protein", "Sugar", "Total Fat", "Total Carb", "Calories",
                 "Restriction Names", "Is Enabled"

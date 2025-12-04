@@ -1,4 +1,5 @@
 ﻿using Sieve.Attributes;
+using System.Collections.Generic;
 
 namespace DAL.Core.DTO
 {
@@ -21,5 +22,14 @@ namespace DAL.Core.DTO
         public bool IsEnabled { get; set; }
         [Sieve(CanFilter = true, CanSort = false)]
         public bool IsActive { get; set; }
+        public string ExtraNote { get; set; }
+        public string KicthenName { get; set; }
+        public string SapCode { get; set; }
+        public float Protein { get; set; }
+        public float Sugar { get; set; }
+        public float TotalFat { get; set; }
+        public float TotalCarb { get; set; }
+        public float Calories { get; set; }
+        public List<string> Restrictions { get; set; } = new List<string>();
     }
 }
