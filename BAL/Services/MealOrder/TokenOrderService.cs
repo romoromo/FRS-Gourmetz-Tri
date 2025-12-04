@@ -141,6 +141,22 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> CreateTokenOrderAsync(TokenOrderDTO dto)
         {
             var result = new BaseOperationResponse();
+
+            foreach (var token in dto.Tokens)
+            {
+                foreach (var dish in token.SelectedDishes)
+                {
+                    if (dish.DishId == 0 && dish.DishCode != null && dish.DishCode != "")
+                    {
+                        DishDTO dishObj = await this._dishService.GetDishByCodeAsync(dish.DishCode);
+                        if (dishObj != null)
+                        {
+                            dish.DishId = dishObj.Id;
+                        }
+                    }
+                }
+            }
+
             var order = _mapper.Map<TokenOrder>(dto);
             var tokens = _mapper.Map<List<TokenOrdered>>(dto.Tokens);
             result = await this._uow.TokenOrders.CreateAsync(order, tokens);

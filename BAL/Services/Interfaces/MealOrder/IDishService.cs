@@ -20,6 +20,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateDishAsync(DishDTO dto);
         Task<BaseOperationResponse> DeleteDishAsync(int id);
         Task<DishDTO> GetDishByIdAsync(int id);
+        Task<DishDTO> GetDishByCodeAsync(string code);
         Task<PagedEntity<DishDTO>> GetDishesAsync(BaseFilter filter);
         Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter);
         Task<byte[]> GenerateDishXlsx(BaseFilter filter);

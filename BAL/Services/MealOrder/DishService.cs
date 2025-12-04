@@ -100,6 +100,11 @@ namespace BAL.Services.MealOrder
             return _mapper.Map<DishDTO>(await this._uow.Dishes.GetByIdAsync(id));
         }
 
+        public async Task<DishDTO> GetDishByCodeAsync(string code)
+        {
+            return _mapper.Map<DishDTO>(await this._uow.Dishes.GetByCodeAsync(code));
+        }
+
         public async Task<BaseOperationResponse> CreateDishAsync(DishDTO dto)
         {
             dto = GetDishWithFile(dto);

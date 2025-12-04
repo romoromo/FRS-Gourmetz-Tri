@@ -314,6 +314,7 @@ namespace BAL.Mapping
             CreateMap<TokenOrderDishDTO, TokenOrderDish>();
             CreateMap<TokenOrderDish, TokenOrderDishDTO>()
                 .ForMember(e => e.DishLabel, map => map.MapFrom(e => e.Dish != null ? e.Dish.Label : String.Empty))
+                .ForMember(e => e.DishCode, map => map.MapFrom(e => e.Dish != null ? e.Dish.Code : String.Empty))
                 .ForMember(e => e.DishTypeName, map => map.MapFrom(e => e.Dish != null && e.Dish.DishType != null ? e.Dish.DishType.Name : String.Empty))
                 .ForMember(e => e.FilePath, map => map.MapFrom(e => e.Dish != null && e.Dish.Icon != null ? e.Dish.Icon.Path : String.Empty))
                 .ForMember(e => e.ProductionPicturePath, map => map.MapFrom(e => e.Dish != null && e.Dish.Icon != null ? e.Dish.ProductionPicture.Path : String.Empty));

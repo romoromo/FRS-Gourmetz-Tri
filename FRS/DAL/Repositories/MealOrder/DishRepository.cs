@@ -156,6 +156,13 @@ namespace DAL.Repositories.MealOrder
             return records.FirstOrDefault();
         }
 
+        public async Task<Dish> GetByCodeAsync(string code)
+        {
+            var records = await FindWithIncludeAsync(e => e.Code == code);
+
+            return records.FirstOrDefault();
+        }
+
         public async Task<BaseOperationResponse> CreateAsync(Dish dish)
         {
             var result = new BaseOperationResponse();
