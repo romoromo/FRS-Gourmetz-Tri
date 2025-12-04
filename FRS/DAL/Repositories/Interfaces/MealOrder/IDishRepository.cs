@@ -15,6 +15,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> Delete(Dish Dish);
         Task<BaseOperationResponse> DeleteAsync(int DishId);
         Task<Dish> GetByIdAsync(int id);
+        Task<Dish> GetByCodeAsync(string code);
         Task<string> GenerateCode(int id);
         Task<PagedEntity<Dish>> GetDishesAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateAsync(Dish Dish);

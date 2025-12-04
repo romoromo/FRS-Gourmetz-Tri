@@ -216,6 +216,7 @@ namespace BAL.DTO.MealOrder
         public int DishId { get; set; }
         public int Qty { get; set; }
         public string DishLabel { get; set; }
+        public string DishCode { get; set; }
         public string DishTypeName { get; set; }
         public string FilePath { get; set; }
         public string ProductionPicturePath { get; set; }
