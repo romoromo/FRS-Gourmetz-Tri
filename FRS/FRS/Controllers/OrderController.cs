@@ -33,12 +33,14 @@ using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -593,7 +595,7 @@ namespace MealOrderPayments.Controllers
         /// <param name="sessionId">stripe session id</param>
         /// <param name="fromWebhook">from webhook</param>
         /// <returns>order status</returns>
-        private string QueryOrderStatusStripe(string sessionId, bool fromWebhook=false)
+        private string QueryOrderStatusStripe(string sessionId, bool fromWebhook = false)
         {
             //  Quick check ...
             if (!String.IsNullOrEmpty(sessionId))
@@ -629,7 +631,7 @@ namespace MealOrderPayments.Controllers
                         // ideally this should be if checkoutSession.PaymentStatus != "unpaid", but the api version we currently use does not support that yet.
                         // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#3920---2020-09-03
                         // need to upgrade api version to at least 2020-08-27 and stripe.net sdk version to at least 39.1.2.
-                        if (fromWebhook) 
+                        if (fromWebhook)
                         {
                             return "SUCCESS";
                         }
@@ -1550,15 +1552,23 @@ namespace MealOrderPayments.Controllers
                 {
                     var sess = stripeEvent.Data.Object as Stripe.Checkout.Session;
                     // this assumes that top up wallet is always first and the only item in the transaction.
-                    var custom = sess.DisplayItems.First().Custom;
-                    if (custom.Name.ToUpper().Equals("TOP UP WALLET"))
+                    var first = sess.DisplayItems.First();
+                    if (first != null)
                     {
-                        await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
+                        var custom = first.Custom;
+                        if (custom.Name.ToUpper().Equals("TOP UP WALLET"))
+                        {
+                            await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
+                        } else
+                        {
+                            await QueryAndUpdatePaymentStatusStripe(sess.Id);
+                        }
+                        return Ok();
                     } else
                     {
-                        await QueryAndUpdatePaymentStatusStripe(sess.Id);
+                        return BadRequest("display items is null");
                     }
-                    return Ok();
+
                 } // cant differentiate top up wallet from charge.succeeded event.
                 else
                 {
@@ -1580,15 +1590,17 @@ namespace MealOrderPayments.Controllers
         /// POST api/<OrderController>
         [Route("[action]")]
         [HttpPost]
-        public PaymentResult PostStripe(SMV.FOMOPay.Model.Order order)
+        public async Task<PaymentResult> PostStripe(SMV.FOMOPay.Model.Order order)
         {
             StripeConfiguration.ApiKey = _configuration.GetSection("StripeConfiguration:ApiKey").Value;
             // validate total here
             long amt = 0;
             try
             {
-                var damt = decimal.Parse(order.amount);
+                var culture = CultureInfo.CreateSpecificCulture("en-SG");
+                var damt = decimal.Parse(order.amount, culture);
                 // old stripe api versions cant use decimal
+                damt *= 100;
                 amt = (long)damt;
             } catch (Exception ex)
             {
@@ -1611,6 +1623,24 @@ namespace MealOrderPayments.Controllers
             {
                 var z = _configuration.GetSection("UserMessages:NoOrderNumberError").Value;
                 return ProcessBadRequest(order, z);
+            }
+            Dictionary<string, string> mappings = new Dictionary<string, string>();
+            //mappings.Add(db, "stripe_enum");
+            mappings.Add("CARD", "card");
+            //https://docs.stripe.com/payments/grabpay/accept-a-payment?payment-ui=checkout#enable-grabpay-as-a-payment-method
+            mappings.Add("GRABPAY", "grabpay");
+            //https://docs.stripe.com/payments/paynow/accept-a-payment?payment-ui=checkout#enable-paynow-as-a-payment-method
+            mappings.Add("PAYNOW", "paynow");
+
+            string pmCode = order.sourceOfFunds.Last();
+            List<string> paymentMethods = new List<string>();
+            if (pmCode != null)
+            {
+                // map sof pm to stripe pm here.
+                if (mappings.TryGetValue(pmCode, out string found))
+                {
+                    paymentMethods.Add(found);
+                }
             }
 
             var options = new SessionCreateOptions
@@ -1640,13 +1670,14 @@ namespace MealOrderPayments.Controllers
                     // TODO probably can do something more explicit to differentiate
                     // between cart and topup wallet here?
                     Name = order.subject, //subject: 'Token Meal Payment', / 'Top Up Wallet'
-                    Description = order.description, // description: `Payment for ${student.name}`,
+                    Description = order.description, // description: `Payment for ${student.name}`, 
                   },
                 },
                 Mode = "payment",
                 //SuccessUrl = order.returnUrl,
                 SuccessUrl = order.returnUrl + "?&session_id={CHECKOUT_SESSION_ID}",
                 CancelUrl = order.backUrl,
+                PaymentMethodTypes = paymentMethods
             };
 
             var service = new SessionService();
@@ -1677,7 +1708,7 @@ namespace MealOrderPayments.Controllers
                 return ProcessBadRequest(order, z);
             }
         }
-        
+
         /// <summary>
         /// Main method 
         /// </summary>
@@ -2486,14 +2517,12 @@ namespace MealOrderPayments.Controllers
         /// <returns>order status</returns>
         private async Task<string> QueryOrderStatusIndependent(int? paymentTypeId, string fomoid)
         {
-            // this function can be called from other places
-            // so we need to account for possibility of stripe payment type,
-            // which require additional code to query the status.
-            var filter = new BaseFilter();
-            var types = await _paymentService.GetPaymentTypesAsync(filter);
-            var pt = types.PagedData.Where(a => a.Name.Contains("stripe", StringComparison.CurrentCultureIgnoreCase)).First();
+            // we cant use stripe anymore.
+            // use another thing, like fomoid stripe pattern.
+            // TODO verify that actual stripe prod checkout session id actually starts with cs_
+            bool fromStripe = fomoid.StartsWith("cs_") || fomoid.StartsWith("cs_test_");
             string qos;
-            if (pt != null && paymentTypeId == pt.Id)
+            if (fromStripe)
             {
                 qos = QueryOrderStatusStripe(fomoid);
             } else
