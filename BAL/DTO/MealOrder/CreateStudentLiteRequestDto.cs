@@ -27,5 +27,10 @@ namespace BAL.DTO.MealOrder
         public int CurrentUserId { get; set; }
 
         public string Email { get; set; }
+
+        public int? PhotoId { get; set; }
+        public string PhotoName { get; set; }
+        public string PhotoPath { get; set; }
+        public string ImgUrl { get; set; }
     }
 }

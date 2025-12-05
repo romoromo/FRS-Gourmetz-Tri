@@ -192,6 +192,8 @@ namespace FRS.Controllers
                 if (dto == null)
                     return NotFound(id);
 
+                await SaveStudentPicture(model);
+
                 var result = await this._service.UpdateStudentAsync(model);
                 if (result.IsSuccess)
                     return NoContent();
@@ -201,6 +203,37 @@ namespace FRS.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        private async Task SaveStudentPicture(StudentDTO model)
+        {
+            if (!string.IsNullOrEmpty(model.ImgUrl))
+            {
+                var folderName = Path.Combine("Resources", "StudentPictures", model.Id.ToString());
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                if (!Directory.Exists(pathToSave))
+                {
+                    Directory.CreateDirectory(pathToSave);
+                }
+
+                var base64Image = model.ImgUrl;
+                var offset = base64Image.Substring(base64Image.IndexOf(',') + 1);
+
+                var imageInBytes = Convert.FromBase64String(offset);
+                using (var ms = new MemoryStream(imageInBytes))
+                {
+                    var fullPath = Path.Combine(pathToSave, model.PhotoName);
+                    var dbPath = Path.Combine(folderName, model.PhotoName);
+
+                    model.PhotoPath = dbPath;
+
+                    using (FileStream file = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+                    {
+                        ms.WriteTo(file);
+                    }
+                }
+            }
         }
 
         [HttpPut("students/transfer-class/{originClassId:int}")]
@@ -1570,6 +1603,8 @@ namespace FRS.Controllers
                         UserId = dto.CurrentUserId
                     });
                 }
+
+                await SaveStudentPicture(vm);
 
                 var response = await _service.CreateStudentAsync(vm);
                 var studentData = (Student)response.Data;

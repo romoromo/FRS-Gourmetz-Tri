@@ -97,6 +97,7 @@ namespace BAL.DTO.MealOrder
         public int? PhotoId { get; set; }
         public string PhotoName { get; set; }
         public string PhotoPath { get; set; }
+        public string ImgUrl { get; set; }
     }
 
     public class StudentManageAccountDTO
