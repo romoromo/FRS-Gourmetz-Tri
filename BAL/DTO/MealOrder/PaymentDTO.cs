@@ -54,5 +54,6 @@ namespace BAL.DTO.MealOrder
         public DateTime CreatedDate { get; set; }
 
         public string version { get; set; }
+        public string paymentTypeName { get; set; }
     }
 }

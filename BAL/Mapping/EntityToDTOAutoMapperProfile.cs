@@ -819,7 +819,8 @@ namespace BAL.Mapping
                 .ForMember(d => d.TokenOrders, map => map.MapFrom(s => s.TokenOrders != null ? s.TokenOrders.Where(z => z.IsActive) : null))
                 .ForMember(d => d.MealPlanOrders, map => map.MapFrom(s => s.MealPlanOrders != null ? s.MealPlanOrders.Where(z => z.IsActive) : null))
                 .ForMember(e => e.userName, map => map.MapFrom(f => f.User.FriendlyName))
-                .ForMember(e => e.studentName, map => map.MapFrom(f => f.Student.Name));
+                .ForMember(e => e.studentName, map => map.MapFrom(f => f.Student.Name))
+                 .ForMember(e => e.paymentTypeName, map => map.MapFrom(f => f.PaymentType.Name));
 
             CreateMap<WalletPaymentDTO, WalletPayment>();
             CreateMap<WalletPayment, WalletPaymentDTO>()
