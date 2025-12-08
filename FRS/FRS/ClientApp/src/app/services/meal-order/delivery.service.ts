@@ -24,6 +24,7 @@ import { Driver } from 'src/app/models/meal-order/driver.model';
 import { Route } from 'src/app/models/meal-order/route.model';
 import { CatererAsset } from 'src/app/models/meal-order/caterer-asset.model';
 import { AssetCmp } from 'src/app/models/meal-order/asset-cmp.model';
+import { SortingArea } from 'src/app/models/meal-order/sorting-area.model';
 
 @Injectable()
 export class DeliveryService {
@@ -84,6 +85,9 @@ export class DeliveryService {
 
   private readonly _assetCmp: string ="/api/delivery/assetcmp";
   get assetCmpBaseurl() { return this.configurations.baseUrl + this._assetCmp }
+
+  private readonly _sortingArea: string = "/api/delivery/sortingareas";
+  get sortingArea(){ return this.configurations.baseUrl + this._sortingArea }
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
     private accountEndpoint: AccountEndpoint, private commonEndpoint: CommonEndpoint, protected configurations: ConfigurationService) {
@@ -586,5 +590,28 @@ export class DeliveryService {
 
   deleteAssetCmp(id: string | AssetCmp): Observable<AssetCmp> {
     return this.commonEndpoint.getDeleteEndpoint<AssetCmp>(this.assetCmpBaseurl, <string>id);
+  }
+
+
+
+
+
+
+  getSortingAreaByFilter(filter: Filter){
+    return this.commonEndpoint.getSieve<PagedResult>(this.sortingArea + '/sieve/list', filter);
+  }
+
+  deleteSortingArea(id: string | SortingArea): Observable<SortingArea> {
+    return this.commonEndpoint.getDeleteEndpoint<SortingArea>(this.sortingArea, <string>id);
+  }
+
+  newSortingArea(sortingArea: SortingArea) {
+    return this.commonEndpoint.getNewEndpoint<SortingArea>(this.sortingArea, sortingArea);
+  }
+
+  updateSortingArea(sortingArea: SortingArea) {
+    if (sortingArea.id) {
+      return this.commonEndpoint.getUpdateEndpoint(this.sortingArea, sortingArea, sortingArea.id);
+    }
   }
 }

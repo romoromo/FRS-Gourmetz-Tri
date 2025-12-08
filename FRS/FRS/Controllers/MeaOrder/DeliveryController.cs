@@ -2131,5 +2131,15 @@ namespace FRS.Controllers
             return BadRequest(ModelState);
         }
         #endregion
+
+
+        [ApiKeyAuthorize]
+        [HttpGet("sortingareas/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetSortingAssets(BaseFilter filter)
+        {
+
+        }
     }
 }
