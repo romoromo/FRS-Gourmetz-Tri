@@ -1,17 +1,16 @@
-﻿using System;
+﻿using DAL.Core;
+using DAL.Core.Helpers;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Sieve.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Repositories.Interfaces;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
-using DAL.Models.MealOrder;
 using System.Transactions;
-using DAL.Core.Helpers;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -166,14 +165,74 @@ namespace DAL.Repositories.MealOrder
                 }
                 else
                 {
-                    student.WalletBalance -= Decimal.ToDouble(Payment.total);
+                    var wallets = await _appContext.StudentWallets.Where(w => w.StudentId == student.Id).ToListAsync();
+                    var fasWallet = wallets.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());
+                    var normalWallet = wallets.FirstOrDefault(x => x.Type == WalletType.BASIC.ToString());
+                    if (fasWallet == null)
+                    {
+                        fasWallet = new StudentWallet
+                        {
+                            StudentId = student.Id,
+                            Type = WalletType.FAS.ToString(),
+                            Balance = 0,
+                            CreatedBy = Payment.UserId,
+                            UpdatedBy = Payment.UserId
+                        };
+                        await _appContext.StudentWallets.AddAsync(fasWallet);
+                    }
+
+                    if (normalWallet == null)
+                    {
+                        normalWallet = new StudentWallet
+                        {
+                            StudentId = student.Id,
+                            Type = WalletType.BASIC.ToString(),
+                            Balance = 0,
+                            CreatedBy = Payment.UserId,
+                            UpdatedBy = Payment.UserId
+                        };
+                        await _appContext.StudentWallets.AddAsync(normalWallet);
+                    }
+
+                    double originalAmount = decimal.ToDouble(Payment.total);
+                    double remainingAmount = originalAmount;
+                    double oldFasBalance = fasWallet.Balance;
+                    double oldNormalBalance = normalWallet.Balance;
+
+                    if (remainingAmount <= fasWallet.Balance)
+                    {
+                        fasWallet.Balance -= remainingAmount;
+                        remainingAmount = 0;
+                    }
+                    else
+                    {
+                        remainingAmount -= fasWallet.Balance;
+                        fasWallet.Balance = 0;
+                        if (normalWallet.Balance >= remainingAmount)
+                        {
+                            normalWallet.Balance -= remainingAmount;
+                            remainingAmount = 0;
+                        }
+                        else
+                        {
+                            result.IsSuccess = false;
+                            result.Message = "Insufficient balance.";
+                            return result;
+                        }
+                    }
+
+                    student.WalletBalance = fasWallet.Balance + normalWallet.Balance;
 
                     var transaction = new StudentWalletTransaction
                     {
-                        Amount = Decimal.ToDouble(Payment.total),
+                        Amount = originalAmount,
                         TransactionType = WalletTransactionType.DEBIT.ToString(),
                         StudentId = Payment.StudentId.Value,
-                        Description = $"Payment for Order with Invoice Number={Payment.InvoiceNumber}",
+                        Description =
+                            $"Payment for Order (Invoice={Payment.InvoiceNumber}). " +
+                            $"Deducted {originalAmount:C}. " +
+                            $"FAS: {oldFasBalance:C} -> {fasWallet.Balance:C}. " +
+                            $"Normal: {oldNormalBalance:C} -> {normalWallet.Balance:C}.",
                         CreatedBy = Payment.UserId,
                         UpdatedBy = Payment.UserId
                     };

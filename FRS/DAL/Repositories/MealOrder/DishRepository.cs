@@ -60,7 +60,7 @@ namespace DAL.Repositories.MealOrder
                 CuisineName = x.Cuisine.Name,
                 BentoBoxTypeCode = x.BentoBoxType.Code,
                 ExtraNote = x.ExtraNotes,
-                KicthenName = x.StoreInfo.Name,
+                KicthenName = x.StoreInfo.Code,
                 SapCode = x.SapCode,
                 Protein = x.Protein,
                 Sugar = x.Sugar,
