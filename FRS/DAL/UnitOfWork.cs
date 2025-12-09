@@ -157,6 +157,7 @@ namespace DAL
         private CatererAssetTypeRepository _catererAssetTypeRepository;
         private CatererAssetRepository _catererAssetRepository;
         private AssetComponentRepository _assetComponentRepository;
+        private SortingAreaRepository _sortingAreaRepository;
 
         public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper, IUserActivityRepository userActivityRepository)
         {
@@ -1560,6 +1561,15 @@ namespace DAL
             {
                 _assetComponentRepository ??= new AssetComponentRepository(_context, this._sieveProcessor);
                 return _assetComponentRepository;
+            }
+        }
+
+        public ISortingAreaRepository SortingAreaRepository
+        {
+            get
+            {
+                _sortingAreaRepository ??= new SortingAreaRepository(_context, this._sieveProcessor);
+                return _sortingAreaRepository;
             }
         }
 

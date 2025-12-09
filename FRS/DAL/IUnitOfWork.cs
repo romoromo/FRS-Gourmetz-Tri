@@ -137,7 +137,7 @@ namespace DAL
         ICatererAssetTypeRepository CatererAssetType { get; }
         ICatererAssetRepository CatererAssetRepository { get; }
         IAssetComponentRepository AssetComponentRepository { get; }
-
+        ISortingAreaRepository SortingAreaRepository { get; }
         #region For token order payment processing
         ITokenPaymentRepository SubmittedPayments { get; }
         ITokenPaymentResponseRepository ProcessedPayments { get; }

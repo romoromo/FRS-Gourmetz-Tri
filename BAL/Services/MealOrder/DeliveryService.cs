@@ -2001,5 +2001,31 @@ namespace BAL.Services.MealOrder
         {
             return await this._uow.AssetComponentRepository.DeleteAsync(id);
         }
+
+        public async Task<PagedEntity<SortingAreaDTO>> GetSortingAreaAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<SortingAreaDTO>>(await this._uow.SortingAreaRepository.GetAsync(filter));
+            return result;
+        }
+
+        public async Task<SortingAreaDTO> GetSortingAreaByIdAsync(int id)
+        {
+            return _mapper.Map<SortingAreaDTO>(await this._uow.SortingAreaRepository.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreateSortingAreaAsync(SortingAreaDTO dto)
+        {
+            return await this._uow.SortingAreaRepository.CreateAsync(_mapper.Map<SortingArea>(dto));
+        }
+
+        public async Task<BaseOperationResponse> UpdateSortingAreaAsync(SortingAreaDTO dto)
+        {
+            return await this._uow.SortingAreaRepository.UpdateAsync(_mapper.Map<SortingArea>(dto));
+        }
+
+        public async Task<BaseOperationResponse> DeleteSortingAreaAsync(int id)
+        {
+            return await this._uow.SortingAreaRepository.DeleteAsync(id);
+        }
     }
 }

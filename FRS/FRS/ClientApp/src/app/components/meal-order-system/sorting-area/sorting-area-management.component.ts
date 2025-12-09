@@ -39,6 +39,10 @@ export class SortingAreaManagementComponent implements OnInit {
 
   @ViewChild('SortingAreaEditor')
   SortingAreaEditor: SortingAreaEditorComponent;
+
+  @ViewChild('colorTemplate')
+  colorTemplateRef: TemplateRef<any>;
+
   header: string;
 
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
@@ -77,8 +81,8 @@ export class SortingAreaManagementComponent implements OnInit {
     this.columns = [
       { prop: 'code', name: 'Code' },
       { prop: 'description', name: 'Description' },
-      { prop: 'routecolor', name: 'Route Color' },
-      { prop: 'routedescription', name: 'Route Description' },
+      { prop: 'routecolor', name: 'Route Color', cellTemplate: this.colorTemplateRef },
+      { prop: 'routeDetail', name: 'Route Detail' },
       { name: '', width: 150, cellTemplate: this.actionsTemplate, resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
   }

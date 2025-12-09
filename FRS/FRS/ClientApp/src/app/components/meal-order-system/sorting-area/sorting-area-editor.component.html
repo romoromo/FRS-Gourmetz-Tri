@@ -1,0 +1,55 @@
+<h1 mat-dialog-title>{{data.header}}</h1>
+<div>
+    <form *ngIf="formResetToggle" class="form-horizontal" name="assetEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="f.form.valid ? save() :
+          (!sortingAreaEdit.valid && showErrorAlert('Code is required', 'Please enter name (minimum of 2 and maximum of 200 characters)'));">
+        <div mat-dialog-content>
+            <div class="row">
+                <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" type="text" id="code" name="code"
+                        placeholder="Code" [(ngModel)]="sortingAreaEdit.code" #code="ngModel"
+                        required minlength="2" maxlength="200" />
+                </mat-form-field>
+                <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" type="text" id="description" name="description"
+                        placeholder="Description" [(ngModel)]="sortingAreaEdit.description" #description="ngModel"
+                        required minlength="2" maxlength="200" />
+                </mat-form-field>
+
+                <mat-form-field class="col-md-12">
+                    <mat-label>Route</mat-label>
+                    <mat-select id="route" name="route" [(ngModel)]="sortingAreaEdit.routeId"
+                        #routeId="ngModel" required (selectionChange)="onRouteSelected($event.value)">
+                        <mat-option *ngFor="let route of routes" [value]="route.id">
+                            {{route.label}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="showValidationErrors && f.submitted">Route is required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" type="text" id="routeColor" name="routeColor" placeholder="Route Color"
+                        [(ngModel)]="sortingAreaEdit.routeColor" #routeColor="ngModel" maxlength="200" [readonly]="true"/>
+                </mat-form-field>
+
+                 <mat-form-field class="col-md-12">
+                    <input matInput autocomplete="off" type="text" id="routeDetail" name="routeDetail" placeholder="Route Detail"
+                        [(ngModel)]="sortingAreaEdit.routeDetail" #routeDetail="ngModel" maxlength="200" [readonly]="true"/>
+                </mat-form-field>
+
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+        <div mat-dialog-actions align="center">
+            <button type="button" mat-button (click)="cancel()">{{'common.editor.Close' | translate}}</button>
+            <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i>
+                {{'common.editor.Cancel' | translate}}</button>
+            <button type="submit" mat-button [disabled]="isSaving">
+                <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving"
+                    class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) :
+                ('common.editor.Save' | translate)}}
+            </button>
+        </div>
+    </form>
+</div>

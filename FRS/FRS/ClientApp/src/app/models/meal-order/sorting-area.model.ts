@@ -13,7 +13,7 @@ export class SortingArea {
 
   public catererId: string;
 
-  public RouteId: string;
-  public RouteColor: string;
-  public RouteDetail: string;
+  public routeId: string;
+  public routeColor: string;
+  public routeDetail: string;
 }

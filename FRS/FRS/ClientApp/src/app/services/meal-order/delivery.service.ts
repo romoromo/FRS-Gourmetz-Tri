@@ -86,7 +86,7 @@ export class DeliveryService {
   private readonly _assetCmp: string ="/api/delivery/assetcmp";
   get assetCmpBaseurl() { return this.configurations.baseUrl + this._assetCmp }
 
-  private readonly _sortingArea: string = "/api/delivery/sortingareas";
+  private readonly _sortingArea: string = "/api/delivery/sortingarea";
   get sortingArea(){ return this.configurations.baseUrl + this._sortingArea }
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
