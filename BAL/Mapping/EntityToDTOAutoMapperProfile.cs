@@ -182,7 +182,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.StudentId, map => map.MapFrom(e => e.Id))
                 .ForMember(e => e.Username, map => map.MapFrom(e => e.Account.User.UserName))
                 //.ForMember(e => e.CurrentPassword, map => map.MapFrom(e => e.Account.User.))
-                .ForMember(e => e.Email, map => map.MapFrom(e => e.Account.User.Email))
+                //.ForMember(e => e.Email, map => map.MapFrom(e => e.Account.User.Email))
                 .ForMember(e => e.FullName, map => map.MapFrom(e => e.Account.User.FullName))
                 .ForMember(e => e.OutletName, map => map.MapFrom(e => e.Outlet.Name))
                 .ForMember(e => e.DaysToFreezeOrdering, map => map.MapFrom(e => e.Outlet.DaysToFreezeOrdering))
