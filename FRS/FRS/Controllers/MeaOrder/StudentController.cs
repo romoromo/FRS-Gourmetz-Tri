@@ -1384,6 +1384,76 @@ namespace FRS.Controllers
             }
         }
 
+        [ApiKeyAuthorize]
+        [HttpPut("wallet/student/dailylimit")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateDailyLimit([FromBody] UpdateDailyLimitViewModel model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"UpdateDailyLimit UpdateDailyLimitViewModel : {dataJSON}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.StudentId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+
+                    var result = await this._service.UpdateDailyLimit(model.StudentId, model.DailyLimit);
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error UpdateDailyLimit : {ex.Message}", ex);
+                _logger.LogError($"Error UpdateDailyLimit : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
+        [ApiKeyAuthorize]
+        [HttpPut("wallet/student/walletfreeze")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateWalletFreze([FromBody] UpdateIsWalletFreezeViewModel model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"UpdateWalletFreze UpdateIsWalletFreezeViewModel : {dataJSON}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    if (model.StudentId == 0)
+                        return BadRequest("Conflicting type id in parameter and model data");
+
+                    var result = await this._service.UpdateWalletFreze(model.StudentId, model.IsWalletFreeze);
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error UpdateWalletFreze : {ex.Message}", ex);
+                _logger.LogError($"Error UpdateWalletFreze : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
+
         #endregion
 
         #region point

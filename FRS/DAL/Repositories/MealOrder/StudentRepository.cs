@@ -1562,6 +1562,74 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
+        public async Task<BaseOperationResponse> UpdateDailyLimit(int studentId, int dailyLimit)
+        {
+            var result = new BaseOperationResponse();
+
+            try
+            {
+                var studentData = await _appContext.Students
+                    .FirstOrDefaultAsync(u => u.Id == studentId);
+
+                if(studentData == null)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Student not found";
+                    return result;
+                }
+
+                studentData.WalletDailyLimit = dailyLimit;
+
+                _appContext.Students.Update(studentData);
+                await _appContext.SaveChangesAsync();
+
+                result.Message = "Daily Limit Successfully saved!";
+                result.IsSuccess = true;
+            }
+            catch (Exception)
+            {
+                result.IsSuccess = false;
+                result.Message = "Failed to save Daily Limit";
+                return result;
+            }
+
+            return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateWalletFreze(int studentId, bool isFreeze)
+        {
+            var result = new BaseOperationResponse();
+
+            try
+            {
+                var studentData = await _appContext.Students
+                    .FirstOrDefaultAsync(u => u.Id == studentId);
+
+                if (studentData == null)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Student not found";
+                    return result;
+                }
+
+                studentData.IsWalletFreeze = isFreeze;
+
+                _appContext.Students.Update(studentData);
+                await _appContext.SaveChangesAsync();
+
+                result.Message = "Wallet Freeze Successfully saved!";
+                result.IsSuccess = true;
+            }
+            catch (Exception)
+            {
+                result.IsSuccess = false;
+                result.Message = "Failed to save Wallet Freeze";
+                return result;
+            }
+
+            return result;
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 

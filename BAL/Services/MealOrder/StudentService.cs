@@ -501,6 +501,16 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<BaseOperationResponse> UpdateWalletFreze(int studentId, bool isFreeze)
+        {
+            return await this._uow.Students.UpdateWalletFreze(studentId, isFreeze);
+        }
+
+        public async Task<BaseOperationResponse> UpdateDailyLimit(int studentId, int dailyLimit)
+        {
+            return await this._uow.Students.UpdateDailyLimit(studentId, dailyLimit);
+        }
+
         #endregion
 
         #region Student Card

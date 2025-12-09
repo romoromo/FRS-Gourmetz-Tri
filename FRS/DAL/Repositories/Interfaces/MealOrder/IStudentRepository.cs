@@ -38,5 +38,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<List<Student>> GetStudentsLiteByIdsAsync(List<int> studentIds);
         Task<bool> ImportStudentGroupAsync(List<int> studentIds, int studentGroupId, int userId);
         Task<BaseOperationResponse> UpdateStudentClassByClassIdAsync(Student data, int originClassId);
+        Task<BaseOperationResponse> UpdateDailyLimit(int studentId, int dailyLimit);
+        Task<BaseOperationResponse> UpdateWalletFreze(int studentId, bool isFreeze);
     }
 }
