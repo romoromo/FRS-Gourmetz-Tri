@@ -2202,7 +2202,7 @@ namespace MealOrderPayments.Controllers
                                     <table>
                                       <thead>
                                         <tr>
-                                          <td colspan=""4"" style=""text-align:center;padding:5px""><b>Dishes</b></td>
+                                          <td colspan=""4"" style=""text-align:center;padding:5px""></td>
                                         </tr>
                                       </thead>
                                       <tbody>", p.InvoiceNumber));
