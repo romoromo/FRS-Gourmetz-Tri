@@ -614,4 +614,8 @@ export class DeliveryService {
       return this.commonEndpoint.getUpdateEndpoint(this.sortingArea, sortingArea, sortingArea.id);
     }
   }
+
+   generateSortingAreaQRCode(id:string, catererId: string){
+    return this.commonEndpoint.getFile<any>(this.sortingArea + '/generateQRCode?id='+id+'&catererId=' + catererId);
+  }
 }

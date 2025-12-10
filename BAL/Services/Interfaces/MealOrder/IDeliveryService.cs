@@ -150,5 +150,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateSortingAreaAsync(SortingAreaDTO dto);
         Task<BaseOperationResponse> UpdateSortingAreaAsync(SortingAreaDTO dto);
         Task<BaseOperationResponse> DeleteSortingAreaAsync(int id);
+        Task<byte[]> GenerateSortingAreaQRCode(int id, int catererId);
     }
 }

@@ -6,6 +6,7 @@ using BAL.Services.Interfaces.MealOrder;
 using BAL.Utilities;
 using DAL;
 using DAL.Core;
+using DAL.Core.Helpers;
 using DAL.Core.Interfaces;
 using DAL.Filters;
 using DAL.Models;
@@ -15,6 +16,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.EntityFrameworkCore;
 using NPOI.HSSF.UserModel;
+using NPOI.OpenXmlFormats.Wordprocessing;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
@@ -1666,7 +1668,7 @@ namespace BAL.Services.MealOrder
 
             BaseFilter filterDis = new BaseFilter();
 
-            filterDis.Filters = "(isActive)==True,(CartonAssetId)==" + cartonId + ",(RouteId)=="+ routeId;
+            filterDis.Filters = "(isActive)==True,(CartonAssetId)==" + cartonId + ",(RouteId)==" + routeId;
 
             var disposables = _mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await GetDisposableBoxesAsync(filterDis));
 
@@ -1784,7 +1786,8 @@ namespace BAL.Services.MealOrder
                 table.AddCell(cell_2_h);
                 table.AddCell(cell_3_h);
 
-                DOReports.ForEach(dd => {
+                DOReports.ForEach(dd =>
+                {
                     PdfPCell i_cell_1 = new PdfPCell(new Phrase(dd.dishCode, new Font(Font.FontFamily.HELVETICA, 10)));
                     PdfPCell i_cell_2 = new PdfPCell(new Phrase(dd.dishLabel, new Font(Font.FontFamily.HELVETICA, 10)));
                     PdfPCell i_cell_3 = new PdfPCell(new Phrase(dd.dishQty + "", new Font(Font.FontFamily.HELVETICA, 10)));
@@ -2026,6 +2029,77 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> DeleteSortingAreaAsync(int id)
         {
             return await this._uow.SortingAreaRepository.DeleteAsync(id);
+        }
+
+        public async Task<byte[]> GenerateSortingAreaQRCode(int id, int catererId)
+        {
+            var sortingArea = await this._uow.SortingAreaRepository.GetByIdAsync(id);
+            using var stream = new MemoryStream();
+            // A4 full size
+            float pageWidth = PageSize.A4.Width;   // 595f
+            float pageHeight = PageSize.A4.Height; // 842f
+            float halfHeight = pageHeight / 2;     // 421f
+
+            Rectangle pgSize = new Rectangle(pageWidth, pageHeight);
+            Document document = new Document(pgSize, 0, 0, 0, 0);
+            PdfWriter writer = PdfWriter.GetInstance(document, stream);
+            document.Open();
+            PdfContentByte cb = writer.DirectContent;
+            string codeQRValue = sortingArea?.Code;
+
+            float qrWidth = pageWidth - 20;      // 20px margin total (10 left, 10 right)
+            float qrHeight = pageHeight / 2 - 20;// top half minus margin
+
+            BarcodeQRCode qr = new BarcodeQRCode(codeQRValue, (int)qrWidth, (int)qrHeight, null);
+            Image qrImg = qr.GetImage();
+
+            // Fit QR inside the top half
+            qrImg.ScaleToFit(qrWidth, qrHeight);
+            qrImg.SetAbsolutePosition(
+                (pageWidth - qrImg.ScaledWidth) / 2,       // center X
+                pageHeight - qrImg.ScaledHeight - 10       // from top with 10px margin
+            );
+
+            document.Add(qrImg);
+
+            BaseColor routeColor = Common.ParseHexColor(sortingArea?.Route.Color); // DodgerBlue
+            string routeName = sortingArea?.Route?.Label;
+            string routeDetails = sortingArea?.Route?.Details;
+
+            float textBoxHeight = 120f;  // You may adjust
+            float textBoxY = 0;          // Start at bottom
+            BaseColor bgColor = new BaseColor(30, 144, 255); // DodgerBlue
+
+            // Draw background box
+            cb.SetColorFill(bgColor);
+            cb.Rectangle(0, textBoxY, pageWidth, textBoxHeight);
+            cb.Fill();
+
+            BaseFont font = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
+
+            // Route Name
+            ColumnText.ShowTextAligned(
+                cb,
+                Element.ALIGN_CENTER,
+                new Phrase(routeName, new Font(font, 24, Font.BOLD, BaseColor.WHITE)),
+                pageWidth / 2,
+                textBoxY + textBoxHeight - 40,
+                0
+            );
+
+            // Route Details
+            ColumnText.ShowTextAligned(
+                cb,
+                Element.ALIGN_CENTER,
+                new Phrase(routeDetails, new Font(font, 14, Font.NORMAL, BaseColor.WHITE)),
+                pageWidth / 2,
+                textBoxY + textBoxHeight - 80,
+                0
+            );
+
+            doc.Close();
+            writer.Close();
+            return stream.ToArray();
         }
     }
 }

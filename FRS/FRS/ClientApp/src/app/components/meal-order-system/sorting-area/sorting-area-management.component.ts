@@ -10,7 +10,8 @@ import { SortingArea } from 'src/app/models/meal-order/sorting-area.model';
 import { SortingAreaEditorComponent } from './sorting-area-editor.component';
 import { DeliveryService } from 'src/app/services/meal-order/delivery.service';
 import { MatDialog } from '@angular/material';
-
+import * as moment from "moment";
+import { saveAs } from "file-saver";
 
 @Component({
   selector: 'sorting-area-management',
@@ -183,5 +184,21 @@ export class SortingAreaManagementComponent implements OnInit {
             MessageSeverity.error);
         });
   }
+
+  downloadLabel(row: SortingArea)
+    {
+      const fileName = moment().format('DDMMYYYY_hhmmss') + '_CartonAssetLabel.pdf';
+      
+          this.deliveryService.generateSortingAreaQRCode(row.id, this.catererId).subscribe(
+            data => {
+              console.log(data);
+              saveAs(data, fileName);
+            },
+            err => {
+              alert("Problem while downloading the file.");
+              console.error(err);
+            }
+          );
+    }
 
 }

@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.ServiceProcess;
 using System.Threading.Tasks;
 
 namespace FRS.Controllers
@@ -2134,7 +2135,6 @@ namespace FRS.Controllers
         }
         #endregion
 
-
         [ApiKeyAuthorize]
         [HttpGet("sortingarea/sieve/list")]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
@@ -2208,6 +2208,20 @@ namespace FRS.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpPost("sortingarea/generateQRCode")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateSortingAreaQRCode(int id, int catererId)
+        {
+            var pdf = await this._service.GenerateSortingAreaQRCode(id, catererId);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_SortingArea.pdf";
+            if (pdf == null || pdf.Length == 0)
+            {
+                return BadRequest("");
+            }
+            return File(fileContents: pdf, contentType: "application/vnd", fileDownloadName: reportName
+            );
         }
     }
 }
