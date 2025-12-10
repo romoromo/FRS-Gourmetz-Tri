@@ -2033,57 +2033,88 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GenerateSortingAreaQRCode(int id, int catererId)
         {
-            var sortingArea = await this._uow.SortingAreaRepository.GetByIdAsync(id);
-            using var stream = new MemoryStream();
-            // A4 full size
-            float pageWidth = PageSize.A4.Width;   // 595f
-            float pageHeight = PageSize.A4.Height; // 842f
-            float halfHeight = pageHeight / 2;     // 421f
+            var sortingArea = await _uow.SortingAreaRepository.GetByIdAsync(id);
+            string codeQRValue = sortingArea?.Code ?? "";
+            string routeName = sortingArea?.Route?.Label ?? "";
+            string routeDetails = sortingArea?.Route?.Details ?? "";
+            DateTime pickupTimeVal = sortingArea?.Route?.Pickup ?? DateTime.Now;
 
-            Rectangle pgSize = new Rectangle(pageWidth, pageHeight);
-            Document document = new Document(pgSize, 0, 0, 0, 0);
+            BaseColor routeColor = Common.ParseHexColor(sortingArea?.Route?.Color);
+
+            using var stream = new MemoryStream();
+
+            float pageWidth = PageSize.A4.Width;       // 595
+            float pageHeight = PageSize.A4.Height;     // 842
+
+            Document document = new Document(new Rectangle(pageWidth, pageHeight), 10, 10, 10, 10);
             PdfWriter writer = PdfWriter.GetInstance(document, stream);
             document.Open();
+
             PdfContentByte cb = writer.DirectContent;
-            string codeQRValue = sortingArea?.Code;
 
-            float qrWidth = pageWidth - 20;      // 20px margin total (10 left, 10 right)
-            float qrHeight = pageHeight / 2 - 20;// top half minus margin
+            // ---------------------------------------------------------
+            // 1. PICKUP TIME SECTION (HEIGHT: 120px)
+            // ---------------------------------------------------------
+            float topBoxHeight = 120f;
 
-            BarcodeQRCode qr = new BarcodeQRCode(codeQRValue, (int)qrWidth, (int)qrHeight, null);
-            Image qrImg = qr.GetImage();
-
-            // Fit QR inside the top half
-            qrImg.ScaleToFit(qrWidth, qrHeight);
-            qrImg.SetAbsolutePosition(
-                (pageWidth - qrImg.ScaledWidth) / 2,       // center X
-                pageHeight - qrImg.ScaledHeight - 10       // from top with 10px margin
-            );
-
-            document.Add(qrImg);
-
-            BaseColor routeColor = Common.ParseHexColor(sortingArea?.Route.Color); // DodgerBlue
-            string routeName = sortingArea?.Route?.Label;
-            string routeDetails = sortingArea?.Route?.Details;
-
-            float textBoxHeight = 120f;  // You may adjust
-            float textBoxY = 0;          // Start at bottom
-            BaseColor bgColor = new BaseColor(30, 144, 255); // DodgerBlue
-
-            // Draw background box
-            cb.SetColorFill(bgColor);
-            cb.Rectangle(0, textBoxY, pageWidth, textBoxHeight);
+            cb.SetColorFill(routeColor);
+            cb.Rectangle(0, pageHeight - topBoxHeight, pageWidth, topBoxHeight);
             cb.Fill();
 
-            BaseFont font = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
+            // Load custom font
+            string fontPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Font", "Aller_Bd.ttf");
+            BaseFont pickupFont = BaseFont.CreateFont(fontPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
+
+            Phrase pickupPhrase = new Phrase(
+                pickupTimeVal.ToString("HH:mm"),
+                new Font(pickupFont, 64, Font.NORMAL, BaseColor.WHITE)
+            );
+
+            ColumnText.ShowTextAligned(
+                cb,
+                Element.ALIGN_CENTER,
+                pickupPhrase,
+                pageWidth / 2,
+                pageHeight - 75,
+                0
+            );
+
+            // ---------------------------------------------------------
+            // 2. QR CODE (TOP HALF)
+            // ---------------------------------------------------------
+            float qrSize = pageHeight * 0.62f;  // ~520 px, VERY BIG
+
+            BarcodeQRCode qr = new BarcodeQRCode(codeQRValue, (int)qrSize, (int)qrSize, null);
+            Image qrImg = qr.GetImage();
+
+            qrImg.ScaleAbsolute(qrSize, qrSize);
+
+            float qrX = (pageWidth - qrSize) / 2;      // Center horizontally
+            float qrY = (pageHeight - qrSize) / 2;     // Center vertically BETWEEN top and bottom
+
+            qrImg.SetAbsolutePosition(qrX, qrY);
+            document.Add(qrImg);
+
+            // ---------------------------------------------------------
+            // 3. ROUTE NAME + DETAILS (BOTTOM STRIP)
+            // ---------------------------------------------------------
+            float bottomBoxHeight = 120f;
+
+            BaseColor bottomBg = new BaseColor(30, 144, 255); // DodgerBlue
+
+            cb.SetColorFill(bottomBg);
+            cb.Rectangle(0, 0, pageWidth, bottomBoxHeight);
+            cb.Fill();
+
+            BaseFont helvetica = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
 
             // Route Name
             ColumnText.ShowTextAligned(
                 cb,
                 Element.ALIGN_CENTER,
-                new Phrase(routeName, new Font(font, 24, Font.BOLD, BaseColor.WHITE)),
+                new Phrase(routeName, new Font(helvetica, 32, Font.BOLD, BaseColor.WHITE)),
                 pageWidth / 2,
-                textBoxY + textBoxHeight - 40,
+                bottomBoxHeight - 40,
                 0
             );
 
@@ -2091,14 +2122,13 @@ namespace BAL.Services.MealOrder
             ColumnText.ShowTextAligned(
                 cb,
                 Element.ALIGN_CENTER,
-                new Phrase(routeDetails, new Font(font, 14, Font.NORMAL, BaseColor.WHITE)),
+                new Phrase(routeDetails, new Font(helvetica, 20, Font.NORMAL, BaseColor.WHITE)),
                 pageWidth / 2,
-                textBoxY + textBoxHeight - 80,
+                bottomBoxHeight - 80,
                 0
             );
 
-            doc.Close();
-            writer.Close();
+            document.Close();
             return stream.ToArray();
         }
     }
