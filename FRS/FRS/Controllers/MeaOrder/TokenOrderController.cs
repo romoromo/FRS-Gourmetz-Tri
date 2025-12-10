@@ -95,7 +95,8 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> GetTokenOrdersOrderingPortal(RequestFilter filter)
         {
-            if (filter.isrequest) await _orderController.QueryAndUpdatePaymentStatus(filter.studentId);
+            //commented out because payment only using wallet, stripe also dont use this,
+            //if (filter.isrequest) await _orderController.QueryAndUpdatePaymentStatus(filter.studentId);
 
             PagedEntity<TokenOrderOrderingPortalDTO> results = await this._service.GetTokenOrdersOrderingPortalAsync(filter);
             return Ok(results);
