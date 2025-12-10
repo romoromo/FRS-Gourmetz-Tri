@@ -156,13 +156,13 @@ namespace DAL.Repositories.MealOrder
                     result.Message = "Insufficient balance.";
                     return result;
                 }
-                else if (student.IsWalletFreeze)
+                if (student.IsWalletFreeze)
                 {
                     result.IsSuccess = false;
                     result.Message = "Wallet is Freezed";
                     return result;
                 } 
-                else if (student.WalletDailyLimit > 0)
+                if (student.WalletDailyLimit > 0)
                 {
                     if (Decimal.ToDouble(Payment.total) > student.WalletDailyLimit)
                     {
@@ -189,99 +189,95 @@ namespace DAL.Repositories.MealOrder
 
                     }
                 }
-                else 
+
+                var wallets = await _appContext.StudentWallets.Where(w => w.StudentId == student.Id).ToListAsync();
+                var fasWallet = wallets.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());
+                var normalWallet = wallets.FirstOrDefault(x => x.Type == WalletType.BASIC.ToString());
+                if (fasWallet == null)
                 {
-                    var wallets = await _appContext.StudentWallets.Where(w => w.StudentId == student.Id).ToListAsync();
-                    var fasWallet = wallets.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());
-                    var normalWallet = wallets.FirstOrDefault(x => x.Type == WalletType.BASIC.ToString());
-                    if (fasWallet == null)
+                    fasWallet = new StudentWallet
                     {
-                        fasWallet = new StudentWallet
-                        {
-                            StudentId = student.Id,
-                            Type = WalletType.FAS.ToString(),
-                            Balance = 0,
-                            CreatedBy = Payment.UserId,
-                            UpdatedBy = Payment.UserId
-                        };
-                        await _appContext.StudentWallets.AddAsync(fasWallet);
-                    }
+                        StudentId = student.Id,
+                        Type = WalletType.FAS.ToString(),
+                        Balance = 0,
+                        CreatedBy = Payment.UserId,
+                        UpdatedBy = Payment.UserId
+                    };
+                    await _appContext.StudentWallets.AddAsync(fasWallet);
+                }
 
-                    if (normalWallet == null)
+                if (normalWallet == null)
+                {
+                    normalWallet = new StudentWallet
                     {
-                        normalWallet = new StudentWallet
-                        {
-                            StudentId = student.Id,
-                            Type = WalletType.BASIC.ToString(),
-                            Balance = 0,
-                            CreatedBy = Payment.UserId,
-                            UpdatedBy = Payment.UserId
-                        };
-                        await _appContext.StudentWallets.AddAsync(normalWallet);
-                    }
+                        StudentId = student.Id,
+                        Type = WalletType.BASIC.ToString(),
+                        Balance = 0,
+                        CreatedBy = Payment.UserId,
+                        UpdatedBy = Payment.UserId
+                    };
+                    await _appContext.StudentWallets.AddAsync(normalWallet);
+                }
 
-                    double originalAmount = decimal.ToDouble(Payment.total);
-                    double remainingAmount = originalAmount;
-                    double oldFasBalance = fasWallet.Balance;
-                    double oldNormalBalance = normalWallet.Balance;
+                double originalAmount = decimal.ToDouble(Payment.total);
+                double remainingAmount = originalAmount;
+                double oldFasBalance = fasWallet.Balance;
+                double oldNormalBalance = normalWallet.Balance;
 
-                    if (remainingAmount <= fasWallet.Balance)
+                if (remainingAmount <= fasWallet.Balance)
+                {
+                    fasWallet.Balance -= remainingAmount;
+                    remainingAmount = 0;
+                }
+                else
+                {
+                    remainingAmount -= fasWallet.Balance;
+                    fasWallet.Balance = 0;
+                    if (normalWallet.Balance >= remainingAmount)
                     {
-                        fasWallet.Balance -= remainingAmount;
+                        normalWallet.Balance -= remainingAmount;
                         remainingAmount = 0;
                     }
                     else
                     {
-                        remainingAmount -= fasWallet.Balance;
-                        fasWallet.Balance = 0;
-                        if (normalWallet.Balance >= remainingAmount)
-                        {
-                            normalWallet.Balance -= remainingAmount;
-                            remainingAmount = 0;
-                        }
-                        else
-                        {
-                            result.IsSuccess = false;
-                            result.Message = "Insufficient balance.";
-                            return result;
-                        }
+                        result.IsSuccess = false;
+                        result.Message = "Insufficient balance.";
+                        return result;
                     }
-
-                    student.WalletBalance = fasWallet.Balance + normalWallet.Balance;
-
-                    var transaction = new StudentWalletTransaction
-                    {
-                        Amount = originalAmount,
-                        TransactionType = WalletTransactionType.DEBIT.ToString(),
-                        StudentId = Payment.StudentId.Value,
-                        Description =
-                            $"Payment for Order (Invoice={Payment.InvoiceNumber}). " +
-                            $"Deducted {originalAmount:C}. " +
-                            $"FAS: {oldFasBalance:C} -> {fasWallet.Balance:C}. " +
-                            $"Normal: {oldNormalBalance:C} -> {normalWallet.Balance:C}.",
-                        CreatedBy = Payment.UserId,
-                        UpdatedBy = Payment.UserId
-                    };
-
-                    await _appContext.StudentWalletTransactions.AddAsync(transaction);
-
-                    _appContext.AuditUserActivityType = new AuditUserActivityType
-                    {
-                        GroupId = Common.GenerateUniqueStringId(),
-                        ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
-                        Remarks = "Payment was created."
-                    };
-
-                    Payment.Status = "SUCCESS";
-
-                    f = await AddAsync(Payment);
-
-                    resultSaveChange = await _appContext.SaveChangesAsync();
                 }
 
-                //result = await this._uow.Students.UpdateAsync(student);
+                student.WalletBalance = fasWallet.Balance + normalWallet.Balance;
 
-                
+                var transaction = new StudentWalletTransaction
+                {
+                    Amount = originalAmount,
+                    TransactionType = WalletTransactionType.DEBIT.ToString(),
+                    StudentId = Payment.StudentId.Value,
+                    Description =
+                        $"Payment for Order (Invoice={Payment.InvoiceNumber}). " +
+                        $"Deducted {originalAmount:C}. " +
+                        $"FAS: {oldFasBalance:C} -> {fasWallet.Balance:C}. " +
+                        $"Normal: {oldNormalBalance:C} -> {normalWallet.Balance:C}.",
+                    CreatedBy = Payment.UserId,
+                    UpdatedBy = Payment.UserId
+                };
+
+                await _appContext.StudentWalletTransactions.AddAsync(transaction);
+
+                _appContext.AuditUserActivityType = new AuditUserActivityType
+                {
+                    GroupId = Common.GenerateUniqueStringId(),
+                    ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
+                    Remarks = "Payment was created."
+                };
+
+                Payment.Status = "SUCCESS";
+
+                f = await AddAsync(Payment);
+
+                resultSaveChange = await _appContext.SaveChangesAsync();
+
+                //result = await this._uow.Students.UpdateAsync(student);
             }
             else
             {
