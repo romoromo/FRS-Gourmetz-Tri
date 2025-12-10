@@ -150,7 +150,6 @@ namespace DAL.Repositories.MealOrder
                     result.Message = $"Student with Id={Payment.StudentId} not found or inactive.";
                     return result;
                 }
-
                 if (student.WalletBalance - Decimal.ToDouble(Payment.total) < 0)
                 {
                     result.IsSuccess = false;
@@ -162,8 +161,35 @@ namespace DAL.Repositories.MealOrder
                     result.IsSuccess = false;
                     result.Message = "Wallet is Freezed";
                     return result;
+                } 
+                else if (student.WalletDailyLimit > 0)
+                {
+                    if (Decimal.ToDouble(Payment.total) > student.WalletDailyLimit)
+                    {
+                        result.IsSuccess = false;
+                        result.Message = "The payment exceed the wallet daily limit";
+                        return result;
+                    }else
+                    {
+                        DateTime today = DateTime.Today;
+                        var todayTrans = await _appContext.StudentWalletTransactions.Where(t => t.StudentId == student.Id && t.TransactionType == WalletTransactionType.DEBIT.ToString() && t.CreatedDate.Date == today).ToListAsync();
+
+                        var totalTrans = 0.0;
+                        foreach (var trans in todayTrans)
+                        {
+                            totalTrans += trans.Amount;
+                        }
+
+                        if ((totalTrans + Decimal.ToDouble(Payment.total)) > student.WalletDailyLimit)
+                        {
+                            result.IsSuccess = false;
+                            result.Message = "The payment exceed the wallet daily limit";
+                            return result;
+                        }
+
+                    }
                 }
-                else
+                else 
                 {
                     var wallets = await _appContext.StudentWallets.Where(w => w.StudentId == student.Id).ToListAsync();
                     var fasWallet = wallets.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());

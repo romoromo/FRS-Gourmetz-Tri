@@ -70,16 +70,17 @@ namespace BAL.Services
                         result.IsSuccess = false;
                         result.Message = "Insufficient balance.";
                         return result;
-                    } else if (student.IsWalletFreeze)
-                {
-                    result.IsSuccess = false;
-                    result.Message = "Wallet is Freezed";
-                    return result;
-                }
+                    } 
+                    else if (student.IsWalletFreeze)
+                    {
+                        result.IsSuccess = false;
+                        result.Message = "Wallet is Freezed";
+                        return result;
+                    }
                     else
-                {
+                    {
                     student.WalletBalance -= dto.Amount;
-                }
+                    }
                 }
 
                 result = await this._uow.Students.UpdateAsync(student);
