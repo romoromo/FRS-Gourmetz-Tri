@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
-using BAL.DTO;
 using BAL.DTO.MealOrder;
-using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
-using BAL.Utilities;
 using DAL;
 using DAL.Core;
 using DAL.Core.Helpers;
@@ -11,18 +8,14 @@ using DAL.Core.Interfaces;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
-using DAL.Repositories.Interfaces;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using Microsoft.EntityFrameworkCore;
-using NPOI.HSSF.UserModel;
-using NPOI.OpenXmlFormats.Wordprocessing;
+using Microsoft.AspNetCore.Routing;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BAL.Services.MealOrder
@@ -776,12 +769,12 @@ namespace BAL.Services.MealOrder
 
         public async Task<BaseOperationResponse> CreateRouteAsync(RouteDTO dto)
         {
-            return await this._uow.Routes.CreateAsync(_mapper.Map<Route>(dto));
+            return await this._uow.Routes.CreateAsync(_mapper.Map<DAL.Models.MealOrder.Route>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateRouteAsync(RouteDTO dto)
         {
-            var route = _mapper.Map<Route>(dto);
+            var route = _mapper.Map<DAL.Models.MealOrder.Route>(dto);
             var routeNodes = _mapper.Map<List<RouteNode>>(dto.Nodes);
             return await this._uow.Routes.UpdateAsync(route, routeNodes);
         }
@@ -2098,33 +2091,24 @@ namespace BAL.Services.MealOrder
             // ---------------------------------------------------------
             // 3. ROUTE NAME + DETAILS (BOTTOM STRIP)
             // ---------------------------------------------------------
-            float bottomBoxHeight = 120f;
-
-            BaseColor bottomBg = new BaseColor(30, 144, 255); // DodgerBlue
-
-            cb.SetColorFill(bottomBg);
-            cb.Rectangle(0, 0, pageWidth, bottomBoxHeight);
-            cb.Fill();
-
             BaseFont helvetica = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
 
             // Route Name
             ColumnText.ShowTextAligned(
                 cb,
                 Element.ALIGN_CENTER,
-                new Phrase(routeName, new Font(helvetica, 32, Font.BOLD, BaseColor.WHITE)),
+                new Phrase(routeName, new Font(helvetica, 24, Font.BOLD, BaseColor.BLACK)),
                 pageWidth / 2,
-                bottomBoxHeight - 40,
+                120,
                 0
             );
 
-            // Route Details
             ColumnText.ShowTextAligned(
                 cb,
                 Element.ALIGN_CENTER,
-                new Phrase(routeDetails, new Font(helvetica, 20, Font.NORMAL, BaseColor.WHITE)),
+                new Phrase(routeDetails, new Font(helvetica, 16, Font.NORMAL, BaseColor.BLACK)),
                 pageWidth / 2,
-                bottomBoxHeight - 80,
+                80,
                 0
             );
 
