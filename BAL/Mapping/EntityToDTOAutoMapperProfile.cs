@@ -182,7 +182,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.StudentId, map => map.MapFrom(e => e.Id))
                 .ForMember(e => e.Username, map => map.MapFrom(e => e.Account.User.UserName))
                 //.ForMember(e => e.CurrentPassword, map => map.MapFrom(e => e.Account.User.))
-                .ForMember(e => e.Email, map => map.MapFrom(e => e.Account.User.Email))
+                //.ForMember(e => e.Email, map => map.MapFrom(e => e.Account.User.Email))
                 .ForMember(e => e.FullName, map => map.MapFrom(e => e.Account.User.FullName))
                 .ForMember(e => e.OutletName, map => map.MapFrom(e => e.Outlet.Name))
                 .ForMember(e => e.DaysToFreezeOrdering, map => map.MapFrom(e => e.Outlet.DaysToFreezeOrdering))
@@ -960,6 +960,16 @@ namespace BAL.Mapping
                 .ForMember(d => d.FilePath, map => map.MapFrom(s => s.Icon.Path));
             CreateMap<AssetComponentDTO, AssetComponent>()
                 .ForMember(d => d.Icon, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() }));
+
+            CreateMap<SortingArea, SortingAreaDTO>()
+                .ForMember(m=> m.CatererId, map => map.MapFrom(m => m.CatererInfo.Id))
+                .ForMember(m => m.CatererName, map => map.MapFrom(m => m.CatererInfo.Name))
+                .ForMember(m => m.RouteId, map => map.MapFrom(m => m.Route.Id))
+                .ForMember(m => m.RouteColor, map => map.MapFrom(m => m.Route.Color))
+                .ForMember(m => m.RouteDetail, map => map.MapFrom(m => m.Route.Details));
+
+            CreateMap<SortingAreaDTO, SortingArea>()
+                .ForMember(m => m.CatererInfoId, map => map.MapFrom(m => m.CatererId));
         }
     }
 }

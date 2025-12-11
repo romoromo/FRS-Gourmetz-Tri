@@ -4,17 +4,17 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-
-//#nullable disable
-
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251209132201_AddSortingAreas")]
+    partial class AddSortingAreas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -7674,6 +7674,9 @@ namespace FRS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CatererId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CatererInfoId")
                         .HasColumnType("int");
 
@@ -7711,7 +7714,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.HasIndex("Code", "Description", "CatererInfoId", "RouteId");
+                    b.HasIndex("Code", "Description", "CatererId", "RouteId");
 
                     b.ToTable("SortingAreas");
                 });
@@ -12388,16 +12391,10 @@ namespace FRS.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("PaymentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TokenOrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("TransactionType")
@@ -12413,11 +12410,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("CreatedBy");
 
-                    b.HasIndex("PaymentId");
-
                     b.HasIndex("StudentId");
-
-                    b.HasIndex("TokenOrderId");
 
                     b.HasIndex("UpdatedBy");
 
@@ -19519,29 +19512,17 @@ namespace FRS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedBy");
 
-                    b.HasOne("DAL.Models.MealOrder.Payment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentId");
-
                     b.HasOne("DAL.Models.MealOrder.Student", "student")
                         .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Models.MealOrder.TokenOrder", "TokenOrder")
-                        .WithMany()
-                        .HasForeignKey("TokenOrderId");
-
                     b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
                         .WithMany()
                         .HasForeignKey("UpdatedBy");
 
                     b.Navigation("CreatedByUser");
-
-                    b.Navigation("Payment");
-
-                    b.Navigation("TokenOrder");
 
                     b.Navigation("UpdatedByUser");
 
