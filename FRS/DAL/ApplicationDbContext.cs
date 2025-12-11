@@ -279,6 +279,7 @@ namespace DAL
         public DbSet<CatererAssetType> CatererAssetTypes { get; set; }
         public DbSet<CatererAsset> CatererAssets { get; set; }
         public DbSet<AssetComponent> AssetComponents { get; set; }
+        public DbSet<SortingArea> SortingAreas { get; set; }
 
         #region Stored Procedures
 
@@ -746,6 +747,9 @@ namespace DAL
             builder.Entity<AssetComponent>().TrackAllProperties();
             builder.Entity<AssetComponent>().HasIndex(p => new { p.Remarks, p.Description, p.CatererAssetId });
             #endregion
+
+            builder.Entity<SortingArea>().TrackAllProperties();
+            builder.Entity<SortingArea>().HasIndex(p => new { p.Code, p.Description, p.CatererInfoId, p.RouteId });
 
         }
 
