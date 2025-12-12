@@ -260,7 +260,7 @@ namespace DAL.Repositories.MealOrder
                         $"Normal: {oldNormalBalance:C} -> {normalWallet.Balance:C}.",
                     CreatedBy = Payment.UserId,
                     UpdatedBy = Payment.UserId,
-                        PaymentId = Payment.Id,
+                        Payment = Payment,
                 };
 
                 await _appContext.StudentWalletTransactions.AddAsync(transaction);
