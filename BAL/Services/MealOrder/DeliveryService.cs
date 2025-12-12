@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using BAL.DTO;
 using BAL.DTO.MealOrder;
+using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
+using BAL.Utilities;
 using DAL;
 using DAL.Core;
 using DAL.Core.Helpers;
@@ -8,14 +11,19 @@ using DAL.Core.Interfaces;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.Formula.Functions;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace BAL.Services.MealOrder
@@ -1661,11 +1669,21 @@ namespace BAL.Services.MealOrder
 
             BaseFilter filterDis = new BaseFilter();
 
-            filterDis.Filters = "(isActive)==True,(CartonAssetId)==" + cartonId + ",(RouteId)==" + routeId;
+            DateTime today = DateTime.Today;
 
-            var disposables = _mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await GetDisposableBoxesAsync(filterDis));
+            filterDis.Filters = "(isActive)==True,(CartonAssetId)==" + cartonId + ",(RouteId)=="+ routeId;
 
-            var bentos = _mapper.Map<PagedEntity<BentoAssetDTO>>(await GetBentoAssetsAsync(filterDis));
+            BaseFilter filterDispo = filterDis;
+
+            filterDispo.Filters += ",(DispoPackingDateRange)==" + today.ToString() + "|" + today.ToString();
+
+            BaseFilter filterBento = filterDis;
+
+            filterBento.Filters += ",(BentoPackingDateRange)==" + today.ToString() + "|" + today.ToString();
+
+            var disposables = _mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await GetDisposableBoxesAsync(filterDispo));
+
+            var bentos = _mapper.Map<PagedEntity<BentoAssetDTO>>(await GetBentoAssetsAsync(filterBento));
 
             var route = _mapper.Map<RouteDTO>(await GetRouteByIdAsync(routeId));
 
