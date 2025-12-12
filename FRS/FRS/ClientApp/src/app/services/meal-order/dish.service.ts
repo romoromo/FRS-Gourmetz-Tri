@@ -227,4 +227,5 @@ export class DishService {
   deleteAssetType(id: string | CatererAssetType): Observable<CatererAssetType> {
     return this.commonEndpoint.getDeleteEndpoint<CatererAssetType>(this.catererassetType, <string>id);
   }
+
 }

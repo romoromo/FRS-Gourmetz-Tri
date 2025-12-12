@@ -6,6 +6,7 @@ using BAL.Services.Interfaces.MealOrder;
 using BAL.Utilities;
 using DAL;
 using DAL.Core;
+using DAL.Core.Helpers;
 using DAL.Core.Interfaces;
 using DAL.Filters;
 using DAL.Models;
@@ -13,6 +14,7 @@ using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.Formula.Functions;
@@ -775,12 +777,12 @@ namespace BAL.Services.MealOrder
 
         public async Task<BaseOperationResponse> CreateRouteAsync(RouteDTO dto)
         {
-            return await this._uow.Routes.CreateAsync(_mapper.Map<Route>(dto));
+            return await this._uow.Routes.CreateAsync(_mapper.Map<DAL.Models.MealOrder.Route>(dto));
         }
 
         public async Task<BaseOperationResponse> UpdateRouteAsync(RouteDTO dto)
         {
-            var route = _mapper.Map<Route>(dto);
+            var route = _mapper.Map<DAL.Models.MealOrder.Route>(dto);
             var routeNodes = _mapper.Map<List<RouteNode>>(dto.Nodes);
             return await this._uow.Routes.UpdateAsync(route, routeNodes);
         }
@@ -1795,7 +1797,8 @@ namespace BAL.Services.MealOrder
                 table.AddCell(cell_2_h);
                 table.AddCell(cell_3_h);
 
-                DOReports.ForEach(dd => {
+                DOReports.ForEach(dd =>
+                {
                     PdfPCell i_cell_1 = new PdfPCell(new Phrase(dd.dishCode, new Font(Font.FontFamily.HELVETICA, 10)));
                     PdfPCell i_cell_2 = new PdfPCell(new Phrase(dd.dishLabel, new Font(Font.FontFamily.HELVETICA, 10)));
                     PdfPCell i_cell_3 = new PdfPCell(new Phrase(dd.dishQty + "", new Font(Font.FontFamily.HELVETICA, 10)));
@@ -2011,6 +2014,124 @@ namespace BAL.Services.MealOrder
         public async Task<BaseOperationResponse> DeleteAssetComponentAsync(int id)
         {
             return await this._uow.AssetComponentRepository.DeleteAsync(id);
+        }
+
+        public async Task<PagedEntity<SortingAreaDTO>> GetSortingAreaAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<SortingAreaDTO>>(await this._uow.SortingAreaRepository.GetAsync(filter));
+            return result;
+        }
+
+        public async Task<SortingAreaDTO> GetSortingAreaByIdAsync(int id)
+        {
+            return _mapper.Map<SortingAreaDTO>(await this._uow.SortingAreaRepository.GetByIdAsync(id));
+        }
+
+        public async Task<BaseOperationResponse> CreateSortingAreaAsync(SortingAreaDTO dto)
+        {
+            return await this._uow.SortingAreaRepository.CreateAsync(_mapper.Map<SortingArea>(dto));
+        }
+
+        public async Task<BaseOperationResponse> UpdateSortingAreaAsync(SortingAreaDTO dto)
+        {
+            return await this._uow.SortingAreaRepository.UpdateAsync(_mapper.Map<SortingArea>(dto));
+        }
+
+        public async Task<BaseOperationResponse> DeleteSortingAreaAsync(int id)
+        {
+            return await this._uow.SortingAreaRepository.DeleteAsync(id);
+        }
+
+        public async Task<byte[]> GenerateSortingAreaQRCode(int id, int catererId)
+        {
+            var sortingArea = await _uow.SortingAreaRepository.GetByIdAsync(id);
+            string codeQRValue = sortingArea?.Code ?? "";
+            string routeName = sortingArea?.Route?.Label ?? "";
+            string routeDetails = sortingArea?.Route?.Details ?? "";
+            DateTime pickupTimeVal = sortingArea?.Route?.Pickup ?? DateTime.Now;
+
+            BaseColor routeColor = Common.ParseHexColor(sortingArea?.Route?.Color);
+
+            using var stream = new MemoryStream();
+
+            float pageWidth = PageSize.A4.Width;       // 595
+            float pageHeight = PageSize.A4.Height;     // 842
+
+            Document document = new Document(new Rectangle(pageWidth, pageHeight), 10, 10, 10, 10);
+            PdfWriter writer = PdfWriter.GetInstance(document, stream);
+            document.Open();
+
+            PdfContentByte cb = writer.DirectContent;
+
+            // ---------------------------------------------------------
+            // 1. PICKUP TIME SECTION (HEIGHT: 120px)
+            // ---------------------------------------------------------
+            float topBoxHeight = 120f;
+
+            cb.SetColorFill(routeColor);
+            cb.Rectangle(0, pageHeight - topBoxHeight, pageWidth, topBoxHeight);
+            cb.Fill();
+
+            // Load custom font
+            string fontPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Font", "Aller_Bd.ttf");
+            BaseFont pickupFont = BaseFont.CreateFont(fontPath, BaseFont.WINANSI, BaseFont.EMBEDDED);
+
+            Phrase pickupPhrase = new Phrase(
+                pickupTimeVal.ToString("HH:mm"),
+                new Font(pickupFont, 64, Font.NORMAL, BaseColor.WHITE)
+            );
+
+            ColumnText.ShowTextAligned(
+                cb,
+                Element.ALIGN_CENTER,
+                pickupPhrase,
+                pageWidth / 2,
+                pageHeight - 75,
+                0
+            );
+
+            // ---------------------------------------------------------
+            // 2. QR CODE (TOP HALF)
+            // ---------------------------------------------------------
+            float qrSize = pageHeight * 0.62f;  // ~520 px, VERY BIG
+
+            BarcodeQRCode qr = new BarcodeQRCode(codeQRValue, (int)qrSize, (int)qrSize, null);
+            Image qrImg = qr.GetImage();
+
+            qrImg.ScaleAbsolute(qrSize, qrSize);
+
+            float qrX = (pageWidth - qrSize) / 2;      // Center horizontally
+            float qrY = (pageHeight - qrSize) / 2;     // Center vertically BETWEEN top and bottom
+
+            qrImg.SetAbsolutePosition(qrX, qrY);
+            document.Add(qrImg);
+
+            // ---------------------------------------------------------
+            // 3. ROUTE NAME + DETAILS (BOTTOM STRIP)
+            // ---------------------------------------------------------
+            BaseFont helvetica = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
+
+            // Route Name
+            ColumnText.ShowTextAligned(
+                cb,
+                Element.ALIGN_CENTER,
+                new Phrase(routeName, new Font(helvetica, 24, Font.BOLD, BaseColor.BLACK)),
+                pageWidth / 2,
+                120,
+                0
+            );
+
+            ColumnText.ShowTextAligned(
+                cb,
+                Element.ALIGN_CENTER,
+                new Phrase(routeDetails, new Font(helvetica, 16, Font.NORMAL, BaseColor.BLACK)),
+                pageWidth / 2,
+                80,
+                0
+            );
+
+            document.Close();
+            return stream.ToArray();
         }
     }
 }

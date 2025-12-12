@@ -30,5 +30,15 @@ namespace DAL.Models
 
         [ForeignKey("StudentId")]
         public virtual Student student { get; set; }
+
+        public int? PaymentId { get; set; }
+
+        [ForeignKey("PaymentId")]
+        public virtual Payment Payment { get; set; }
+
+
+        public int? TokenOrderId { get; set; }
+        [ForeignKey("TokenOrderId")]
+        public virtual TokenOrder TokenOrder { get; set; }
     }
 }

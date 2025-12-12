@@ -144,5 +144,12 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateAssetComponentAsync(AssetComponentDTO dto);
         Task<BaseOperationResponse> UpdateAssetComponentAsync(AssetComponentDTO dto);
         Task<BaseOperationResponse> DeleteAssetComponentAsync(int id);
+
+        Task<PagedEntity<SortingAreaDTO>> GetSortingAreaAsync(BaseFilter filter);
+        Task<SortingAreaDTO> GetSortingAreaByIdAsync(int id);
+        Task<BaseOperationResponse> CreateSortingAreaAsync(SortingAreaDTO dto);
+        Task<BaseOperationResponse> UpdateSortingAreaAsync(SortingAreaDTO dto);
+        Task<BaseOperationResponse> DeleteSortingAreaAsync(int id);
+        Task<byte[]> GenerateSortingAreaQRCode(int id, int catererId);
     }
 }

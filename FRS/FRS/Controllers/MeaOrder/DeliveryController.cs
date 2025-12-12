@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using BAL.DTO;
 using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces;
@@ -19,11 +13,19 @@ using FRS.Attributes;
 using FRS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using OpenIddict.Validation.AspNetCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.ServiceProcess;
+using System.Threading.Tasks;
 
 namespace FRS.Controllers
 {
@@ -104,7 +106,7 @@ namespace FRS.Controllers
                 if (result.IsSuccess)
                 {
                     //CatererInfoDTO vm = _mapper.Map<CatererInfoDTO>(result.Data);
-                    return CreatedAtAction("GetCatererInfoById", new {});
+                    return CreatedAtAction("GetCatererInfoById", new { });
                 }
 
                 AddErrors(new string[] { result.Message });
@@ -1499,7 +1501,8 @@ namespace FRS.Controllers
                         AddErrors(new string[] { result.Message });
 
                     }
-                } else
+                }
+                else
                 {
                     var result = await this._service.CreateDisposableBoxAsync(dto);
                     if (result.IsSuccess)
@@ -1510,7 +1513,7 @@ namespace FRS.Controllers
 
                     AddErrors(new string[] { result.Message });
                 }
-                
+
             }
 
             return BadRequest(ModelState);
@@ -2131,5 +2134,94 @@ namespace FRS.Controllers
             return BadRequest(ModelState);
         }
         #endregion
+
+        [ApiKeyAuthorize]
+        [HttpGet("sortingarea/sieve/list")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetSortingAssets(BaseFilter filter)
+        {
+            var results = await this._service.GetSortingAreaAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<SortingAreaDTO>>(results));
+        }
+
+        [HttpPost("sortingarea")]
+        [ProducesResponseType(201, Type = typeof(SortingAreaDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateSortingArea([FromBody] SortingAreaDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                var result = await this._service.CreateSortingAreaAsync(dto);
+                if (result.IsSuccess)
+                {
+                    SortingAreaDTO vm = _mapper.Map<SortingAreaDTO>(result.Data);
+                    return CreatedAtAction("GetSortingAreaByIdAsync", new { id = vm.Id }, vm);
+                }
+
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpDelete("sortingarea/delete/{id}")]
+        [ProducesResponseType(200, Type = typeof(SortingAreaDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteSortingArea(int id)
+        {
+            var dto = await this._service.GetSortingAreaByIdAsync(id);
+            if (dto == null)
+                return NotFound(id);
+
+            var result = await this._service.DeleteSortingAreaAsync(id);
+            if (!result.IsSuccess)
+                throw new Exception("The following errors occurred while deleting: " + string.Join(", ", result.Message));
+
+            return Ok(dto);
+        }
+
+        [HttpPut("sortingarea/update/{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateSortingArea(string id, [FromBody] SortingAreaDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                var dto = await this._service.GetSortingAreaByIdAsync(model.Id);
+
+                if (dto == null)
+                    return NotFound(id);
+
+                var result = await this._service.UpdateSortingAreaAsync(model);
+                if (result.IsSuccess)
+                    return NoContent();
+
+                AddErrors(new string[] { result.Message });
+
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost("sortingarea/generateQRCode")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateSortingAreaQRCode(int id, int catererId)
+        {
+            var pdf = await this._service.GenerateSortingAreaQRCode(id, catererId);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_SortingArea.pdf";
+            if (pdf == null || pdf.Length == 0)
+            {
+                return BadRequest("");
+            }
+            return File(fileContents: pdf, contentType: "application/vnd", fileDownloadName: reportName
+            );
+        }
     }
 }

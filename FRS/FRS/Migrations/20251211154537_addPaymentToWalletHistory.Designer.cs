@@ -4,17 +4,19 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 //#nullable disable
 
-
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251211154537_addPaymentToWalletHistory")]
+    partial class addPaymentToWalletHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -7664,56 +7666,6 @@ namespace FRS.Migrations
                     b.HasIndex("UpdatedBy");
 
                     b.ToTable("RouteNodes");
-                });
-
-            modelBuilder.Entity("DAL.Models.MealOrder.SortingArea", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CatererInfoId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("RouteId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CatererInfoId");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("RouteId");
-
-                    b.HasIndex("UpdatedBy");
-
-                    b.HasIndex("Code", "Description", "CatererInfoId", "RouteId");
-
-                    b.ToTable("SortingAreas");
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Staff", b =>
@@ -17398,33 +17350,6 @@ namespace FRS.Migrations
                     b.Navigation("Route");
 
                     b.Navigation("Store");
-
-                    b.Navigation("UpdatedByUser");
-                });
-
-            modelBuilder.Entity("DAL.Models.MealOrder.SortingArea", b =>
-                {
-                    b.HasOne("DAL.Models.MealOrder.CatererInfo", "CatererInfo")
-                        .WithMany()
-                        .HasForeignKey("CatererInfoId");
-
-                    b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy");
-
-                    b.HasOne("DAL.Models.MealOrder.Route", "Route")
-                        .WithMany()
-                        .HasForeignKey("RouteId");
-
-                    b.HasOne("DAL.Models.ApplicationUser", "UpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy");
-
-                    b.Navigation("CatererInfo");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Route");
 
                     b.Navigation("UpdatedByUser");
                 });
