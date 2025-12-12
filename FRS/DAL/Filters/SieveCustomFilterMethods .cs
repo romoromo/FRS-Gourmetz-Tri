@@ -299,6 +299,56 @@ namespace DAL.Filters
             return result; // Must return modified IQueryable<TEntity>
         }
 
+        public IQueryable<BentoAsset> BentoPackingDateRange(IQueryable<BentoAsset> source, string op, string[] values) // The method is given the {Operator} & {Value}
+        {
+            var result = source;
+
+            if (values != null && values.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(values[0]))
+                {
+                    DateTime start = Convert.ToDateTime(values[0]);
+                    result = result.Where(c => c.LastPackingTime.Value.Date >= start);
+                }
+
+
+                if (values.Length > 1)
+                {
+                    if (!string.IsNullOrEmpty(values[1]))
+                    {
+                        DateTime end = Convert.ToDateTime(values[1]);
+                        result = result.Where(c => c.LastPackingTime.Value.Date <= end);
+                    }
+                }
+            }
+            return result; // Must return modified IQueryable<TEntity>
+        }
+
+        public IQueryable<CartonDisposableBox> DispoPackingDateRange(IQueryable<CartonDisposableBox> source, string op, string[] values) // The method is given the {Operator} & {Value}
+        {
+            var result = source;
+
+            if (values != null && values.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(values[0]))
+                {
+                    DateTime start = Convert.ToDateTime(values[0]);
+                    result = result.Where(c => c.LastPackingTime.Value.Date >= start);
+                }
+
+
+                if (values.Length > 1)
+                {
+                    if (!string.IsNullOrEmpty(values[1]))
+                    {
+                        DateTime end = Convert.ToDateTime(values[1]);
+                        result = result.Where(c => c.LastPackingTime.Value.Date <= end);
+                    }
+                }
+            }
+            return result; // Must return modified IQueryable<TEntity>
+        }
+
         public IQueryable<TokenOrder> SalesDDateRange(IQueryable<TokenOrder> source, string op, string[] values) // The method is given the {Operator} & {Value}
         {
             var result = source;

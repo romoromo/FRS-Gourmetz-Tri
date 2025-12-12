@@ -15,6 +15,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.EntityFrameworkCore;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.Formula.Functions;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
@@ -1666,11 +1667,21 @@ namespace BAL.Services.MealOrder
 
             BaseFilter filterDis = new BaseFilter();
 
+            DateTime today = DateTime.Today;
+
             filterDis.Filters = "(isActive)==True,(CartonAssetId)==" + cartonId + ",(RouteId)=="+ routeId;
 
-            var disposables = _mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await GetDisposableBoxesAsync(filterDis));
+            BaseFilter filterDispo = filterDis;
 
-            var bentos = _mapper.Map<PagedEntity<BentoAssetDTO>>(await GetBentoAssetsAsync(filterDis));
+            filterDispo.Filters += ",(DispoPackingDateRange)==" + today.ToString() + "|" + today.ToString();
+
+            BaseFilter filterBento = filterDis;
+
+            filterBento.Filters += ",(BentoPackingDateRange)==" + today.ToString() + "|" + today.ToString();
+
+            var disposables = _mapper.Map<PagedEntity<CartonDisposableBoxDTO>>(await GetDisposableBoxesAsync(filterDispo));
+
+            var bentos = _mapper.Map<PagedEntity<BentoAssetDTO>>(await GetBentoAssetsAsync(filterBento));
 
             var route = _mapper.Map<RouteDTO>(await GetRouteByIdAsync(routeId));
 

@@ -51,11 +51,13 @@ namespace FRS.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IHubContext<UserHub> _userHub;
         private readonly IStudentService _studentService;
+        private IStudentWalletService _studentWalletService;
         private readonly IMapper _mapper;
+
 
         public TokenOrderController(ITokenOrderService service, ILogger<TokenOrderController> logger, IAccountManager accountManager, OrderController orderController,
             IMenuService menuService, IConfiguration configuration, INotificationService notificationService, IHubContext<UserHub> userHub, IEmailSender emailSender,
-            IStudentService studentService, IMapper mapper)
+            IStudentService studentService, IStudentWalletService studentWalletService, IMapper mapper)
         {
             _service = service;
             _logger = logger;
@@ -67,6 +69,7 @@ namespace FRS.Controllers
             _emailSender = emailSender;
             _userHub = userHub;
             _studentService = studentService;
+            _studentWalletService = studentWalletService;
             _mapper = mapper;
         }
 
@@ -187,6 +190,12 @@ namespace FRS.Controllers
 
                 if (dto == null)
                     return NotFound(id);
+
+                if(dto.TotalAmount > model.TotalAmount) {
+                    var toRefund = dto.TotalAmount - model.TotalAmount;
+                    await this._studentWalletService.RefundToWalletBalanceAsync(model.ProfileId.Value, toRefund, dto.CreatedBy.Value, WalletType.BASIC);
+                }
+
 
                 var result = await this._service.UpdateTokenOrderAsync(model);
                 if (result.IsSuccess)
