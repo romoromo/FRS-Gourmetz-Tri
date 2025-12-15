@@ -23,6 +23,7 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NodaTime.Calendars;
+using Org.BouncyCastle.Crypto.Operators;
 using RestSharp;
 using SMV.FOMOPay.CommonHelper;
 using SMV.FOMOPay.LoggerHelper;
@@ -628,10 +629,7 @@ namespace MealOrderPayments.Controllers
                     //{
                     if (checkoutSession != null)
                     {
-                        // ideally this should be if checkoutSession.PaymentStatus != "unpaid", but the api version we currently use does not support that yet.
-                        // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#3920---2020-09-03
-                        // need to upgrade api version to at least 2020-08-27 and stripe.net sdk version to at least 39.1.2.
-                        if (fromWebhook)
+                        if (fromWebhook || checkoutSession.PaymentStatus != "unpaid")
                         {
                             return "SUCCESS";
                         }
@@ -1551,33 +1549,51 @@ namespace MealOrderPayments.Controllers
                 if (stripeEvent.Type == Events.CheckoutSessionCompleted)
                 {
                     var sess = stripeEvent.Data.Object as Stripe.Checkout.Session;
-                    // this assumes that top up wallet is always first and the only item in the transaction.
-                    var first = sess.DisplayItems.First();
-                    if (first != null)
+                    var options = new SessionGetOptions
                     {
-                        var custom = first.Custom;
-                        if (custom.Name.ToUpper().Equals("TOP UP WALLET"))
+                        Expand = new List<string> { "line_items" },
+                    };
+                    var service = new SessionService();
+                    var checkoutSession = service.Get(sess.Id, options);
+
+                    // Check the Checkout Session's payment_status property
+                    // to determine if fulfillment should be performed
+                    if (checkoutSession != null)
+                    {
+                        if (checkoutSession.PaymentStatus != "unpaid")
                         {
-                            await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
+                            var first = checkoutSession.LineItems.First();
+                            if (first != null)
+                            {
+                                var custom = first.Description;
+                                if (custom.ToUpper().Equals("TOP UP WALLET"))
+                                {
+                                    await QueryAndUpdateWalletPaymentStatusStripe(sess.Id, true);
+                                } else
+                                {
+                                    await QueryAndUpdatePaymentStatusStripe(sess.Id, true);
+                                }
+                                return Ok();
+                            } else
+                            {
+                                return BadRequest("display items is null");
+                            }
                         } else
                         {
-                            await QueryAndUpdatePaymentStatusStripe(sess.Id);
+                            return BadRequest("payment is unpaid");
                         }
-                        return Ok();
                     } else
                     {
-                        return BadRequest("display items is null");
+                        return BadRequest("checkout session is null");
                     }
-
-                } // cant differentiate top up wallet from charge.succeeded event.
-                else
+                } else
                 {
                     EventLogger.CreateEventEntry("Not the stripe event type we check", EventLogEntryType.Error);
                     return BadRequest();
                 }
             } catch (StripeException sec)
             {
-                EventLogger.CreateEventEntry(sec.StripeError.ToString(), EventLogEntryType.Error);
+                EventLogger.CreateEventEntry(sec.ToString(), EventLogEntryType.Error);
                 return BadRequest();
             }
         }
@@ -1649,28 +1665,27 @@ namespace MealOrderPayments.Controllers
                 {
                   new SessionLineItemOptions
                   {
-                    //PriceData = new SessionLineItemPriceDataOptions
-                    //{
-
-                    //  UnitAmountDecimal = amt,
-                    //  Currency = order.currencyCode,
-                    //  ProductData = new SessionLineItemPriceDataProductDataOptions
-                    //  {
-                    //    Name = order.subject, //subject: 'Token Meal Payment',
-                    //    Description = order.description,// description: `Payment for ${student.name}`,
-                    //    Metadata = new Dictionary<string, string>
-                    //    {
-                    //        { "orderNo", order.orderNo }
-                    //    }
-                    //  },
-                    //},
-                    Amount = amt,
-                    Currency = order.currencyCode,
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                      UnitAmount = amt,
+                      Currency = order.currencyCode,
+                      ProductData = new SessionLineItemPriceDataProductDataOptions
+                      {
+                        Name = order.subject, //subject: 'Token Meal Payment',
+                        Description = order.description,// description: `Payment for ${student.name}`,
+                        Metadata = new Dictionary<string, string>
+                        {
+                            { "orderNo", order.orderNo }
+                        }
+                      },
+                    },
+                    //Amount = amt,
+                    //Currency = order.currencyCode,
                     Quantity = 1,
                     // TODO probably can do something more explicit to differentiate
                     // between cart and topup wallet here?
-                    Name = order.subject, //subject: 'Token Meal Payment', / 'Top Up Wallet'
-                    Description = order.description, // description: `Payment for ${student.name}`, 
+                    //Name = order.subject, //subject: 'Token Meal Payment', / 'Top Up Wallet'
+                    //Description = order.description, // description: `Payment for ${student.name}`, 
                   },
                 },
                 Mode = "payment",
@@ -2248,11 +2263,18 @@ namespace MealOrderPayments.Controllers
         /// </summary>
         /// <param name="sessionId">stripe session id</param>
         /// <returns>use await for this method.</returns>
-        public async Task QueryAndUpdatePaymentStatusStripe(string sessionId)
+        public async Task QueryAndUpdatePaymentStatusStripe(string sessionId, bool successAlready = false)
         {
             if (sessionId != null) // this is called from webhook
             {
-                var sos = QueryOrderStatusStripe(sessionId, true);
+                var sos = "";
+                if (successAlready)
+                {
+                    sos = "SUCCESS";
+                } else
+                {
+                    sos = QueryOrderStatusStripe(sessionId, true);
+                }
                 List<PaymentDTO> payments = await _paymentService.GetCreatedPaymentsAsync();
                 var pement = payments.Where(x => x.fomoid == sessionId);
                 if (!pement.IsNullOrEmpty())
@@ -2324,7 +2346,7 @@ namespace MealOrderPayments.Controllers
                         }
                     }
                 }
-            } 
+            }
         }
 
         /// <summary>
@@ -2456,11 +2478,18 @@ namespace MealOrderPayments.Controllers
 
         }
 
-        public async Task QueryAndUpdateWalletPaymentStatusStripe(string sessionId)
+        public async Task QueryAndUpdateWalletPaymentStatusStripe(string sessionId, bool successAlready = false)
         {
             if (sessionId != null) // this is called from webhook
             {
-                var sos = QueryOrderStatusStripe(sessionId, true);
+                var sos = "";
+                if (successAlready)
+                {
+                    sos = "SUCCESS";
+                } else
+                {
+                    sos = QueryOrderStatusStripe(sessionId, true);
+                }
                 try
                 {
                     List<WalletPaymentDTO> payments = await _paymentService.GetCreatedWalletPaymentsAsync();
@@ -2531,7 +2560,7 @@ namespace MealOrderPayments.Controllers
             }
             return qos;
         }
-        
+
         /// <summary>
         /// Create a method that can be awaited, but does not return any value.
         /// In this case we don't need to anything after querying payment and 
