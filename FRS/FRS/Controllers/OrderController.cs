@@ -1649,28 +1649,27 @@ namespace MealOrderPayments.Controllers
                 {
                   new SessionLineItemOptions
                   {
-                    //PriceData = new SessionLineItemPriceDataOptions
-                    //{
-
-                    //  UnitAmountDecimal = amt,
-                    //  Currency = order.currencyCode,
-                    //  ProductData = new SessionLineItemPriceDataProductDataOptions
-                    //  {
-                    //    Name = order.subject, //subject: 'Token Meal Payment',
-                    //    Description = order.description,// description: `Payment for ${student.name}`,
-                    //    Metadata = new Dictionary<string, string>
-                    //    {
-                    //        { "orderNo", order.orderNo }
-                    //    }
-                    //  },
-                    //},
-                    Amount = amt,
-                    Currency = order.currencyCode,
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                      UnitAmount = amt,
+                      Currency = order.currencyCode,
+                      ProductData = new SessionLineItemPriceDataProductDataOptions
+                      {
+                        Name = order.subject, //subject: 'Token Meal Payment',
+                        Description = order.description,// description: `Payment for ${student.name}`,
+                        Metadata = new Dictionary<string, string>
+                        {
+                            { "orderNo", order.orderNo }
+                        }
+                      },
+                    },
+                    //Amount = amt,
+                    //Currency = order.currencyCode,
                     Quantity = 1,
                     // TODO probably can do something more explicit to differentiate
                     // between cart and topup wallet here?
-                    Name = order.subject, //subject: 'Token Meal Payment', / 'Top Up Wallet'
-                    Description = order.description, // description: `Payment for ${student.name}`, 
+                    //Name = order.subject, //subject: 'Token Meal Payment', / 'Top Up Wallet'
+                    //Description = order.description, // description: `Payment for ${student.name}`, 
                   },
                 },
                 Mode = "payment",
