@@ -703,5 +703,65 @@ namespace FRS.Controllers
         }
 
         #endregion
+
+        #region CLassLevelSchedule
+        [HttpGet("classlevelschedule/sieve/list")]
+        [AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetClassLevelSchedule(BaseFilter filter)
+        {
+            return Ok(new PagedEntityViewModel<ClassLevelScheduleDTO>());
+        }
+
+        [HttpPost("classlevelschedule")]
+        [ProducesResponseType(201, Type = typeof(ClassLevelDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateClassLevelSchedule([FromBody] ClassLevelScheduleDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+
+                return CreatedAtAction("GetClassLevelScheduleById", new { id = dto.Id }, dto);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+
+        [HttpDelete("classlevelschedule/delete/{id}")]
+        [ProducesResponseType(200, Type = typeof(ClassLevelDTO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteClassLevelSchedule(int id)
+        {
+             return Ok(new ClassLevelScheduleDTO());
+        }
+
+        [HttpPut("classlevelschedule/update/{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateClassLevelSchedule(string id, [FromBody] ClassLevelDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model == null)
+                    return BadRequest($"{nameof(model)} cannot be null");
+
+                if (model.Id == 0)
+                    return BadRequest("Conflicting type id in parameter and model data");
+
+
+                return NoContent();
+
+            }
+
+            return BadRequest(ModelState);
+        }
+        #endregion
     }
 }

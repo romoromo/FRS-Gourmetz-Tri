@@ -1,0 +1,58 @@
+<h1 mat-dialog-title>Class Level Schedule {{classLevelName}}</h1>
+<div>
+    <form *ngIf="formResetToggle" class="form-horizontal" name="classLevelScheduleEditorForm" #f="ngForm" novalidate
+        (ngSubmit)="save()">
+        <div mat-dialog-content>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div>
+                        <table class="table table-bordered mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Days</th>
+                                    <th *ngFor="let day of days">{{ day.label }}</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr *ngFor="let row of scheduleRows; let i = index">
+                                    <td><strong>{{ row.periodName }}</strong></td>
+
+                                    <td *ngFor="let day of days">
+                                        <mat-form-field appearance="outline" style="width:120px">
+                                            <mat-select [(ngModel)]="row.sessions[day.key]"
+                                                [name]="'session_' + i + '_' + day.key" placeholder="Select">
+
+                                                <mat-option *ngFor="let s of mealPeriods[i].details" [value]="s.id">
+                                                    {{ s.name }}
+                                                </mat-option>
+
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+        <div mat-dialog-actions align="center">
+            <button type="button" mat-button (click)="cancel()">
+                {{ "common.editor.Close" | translate }}
+            </button>
+            <button type="submit" mat-button [disabled]="isSaving">
+                <i *ngIf="!isSaving" class="fa fa-save"></i><i *ngIf="isSaving"
+                    class="fa fa-circle-o-notch fa-spin"></i>
+                {{
+                isSaving
+                ? ("common.editor.Saving" | translate)
+                : ("common.editor.Save" | translate)
+                }}
+            </button>
+        </div>
+    </form>
+</div>

@@ -225,4 +225,15 @@ namespace DAL.Core
         GCP,
         HCP
     }
+
+    public enum ScheduleDay
+    {
+        Monday = 1,
+        Tuesday,
+        Wednesday,
+        Thursday,
+        Friday,
+        Saturday,
+        Sunday
+    }
 }

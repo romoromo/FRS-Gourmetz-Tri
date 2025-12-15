@@ -1,4 +1,4 @@
-import { MealCollectionType, PointType, PointsType,WalletType } from "../models/enums";
+import { MealCollectionType, PointType, PointsType,ScheduleDay,WalletType } from "../models/enums";
 
 export enum ModulePath {
   PibDisplay = "/pibdisplay",
@@ -39,4 +39,14 @@ export const PointTypeList = [{
 export const PointsTypeOptions = [
   { id: PointsType.GCP, label: "Good Conduct Points" },
   { id: PointsType.HCP, label: "Healthy Choices Points" },
+];
+
+export const DAYS = [
+  { key: 'monday', label: 'Monday', enum: ScheduleDay.Monday },
+  { key: 'tuesday', label: 'Tuesday', enum: ScheduleDay.Tuesday },
+  { key: 'wednesday', label: 'Wednesday', enum: ScheduleDay.Wednesday },
+  { key: 'thursday', label: 'Thursday', enum: ScheduleDay.Thursday },
+  { key: 'friday', label: 'Friday', enum: ScheduleDay.Friday },
+  { key: 'saturday', label: 'Saturday', enum: ScheduleDay.Saturday },
+  { key: 'sunday', label: 'Sunday', enum: ScheduleDay.Sunday },
 ];
