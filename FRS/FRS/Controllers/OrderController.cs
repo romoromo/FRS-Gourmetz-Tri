@@ -1552,11 +1552,11 @@ namespace MealOrderPayments.Controllers
                 {
                     var sess = stripeEvent.Data.Object as Stripe.Checkout.Session;
                     // this assumes that top up wallet is always first and the only item in the transaction.
-                    var first = sess.DisplayItems.First();
+                    var first = sess.LineItems.First();
                     if (first != null)
                     {
-                        var custom = first.Custom;
-                        if (custom.Name.ToUpper().Equals("TOP UP WALLET"))
+                        var custom = first.Product.Name;
+                        if (custom.ToUpper().Equals("TOP UP WALLET"))
                         {
                             await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
                         } else
