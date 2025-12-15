@@ -619,7 +619,7 @@ namespace MealOrderPayments.Controllers
                     {
                         Expand = new List<string> { "line_items" },
                     };
-                    
+
                     var service = new SessionService();
                     var checkoutSession = service.Get(sessionId, options);
 
@@ -629,10 +629,6 @@ namespace MealOrderPayments.Controllers
                     //{
                     if (checkoutSession != null)
                     {
-                        // ideally this should be if checkoutSession.PaymentStatus != "unpaid", but the api version we currently use does not support that yet.
-                        // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#3920---2020-09-03
-                        // need to upgrade api version to at least 2020-08-27 and stripe.net sdk version to at least 39.1.2.
-                       
                         if (fromWebhook || checkoutSession.PaymentStatus != "unpaid")
                         {
                             return "SUCCESS";
@@ -1557,66 +1553,40 @@ namespace MealOrderPayments.Controllers
                     {
                         Expand = new List<string> { "line_items" },
                     };
-                    var paymentsuccess = false;
                     var service = new SessionService();
                     var checkoutSession = service.Get(sess.Id, options);
 
                     // Check the Checkout Session's payment_status property
                     // to determine if fulfillment should be performed
-                    //if (checkoutSession.PaymentStatus != "unpaid")
-                    //{
                     if (checkoutSession != null)
                     {
-                        // ideally this should be if checkoutSession.PaymentStatus != "unpaid", but the api version we currently use does not support that yet.
-                        // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#3920---2020-09-03
-                        // need to upgrade api version to at least 2020-08-27 and stripe.net sdk version to at least 39.1.2.
-
                         if (checkoutSession.PaymentStatus != "unpaid")
                         {
-                            paymentsuccess = true;
                             var first = checkoutSession.LineItems.First();
                             if (first != null)
                             {
                                 var custom = first.Description;
                                 if (custom.ToUpper().Equals("TOP UP WALLET"))
                                 {
-                                    await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
+                                    await QueryAndUpdateWalletPaymentStatusStripe(sess.Id, true);
                                 } else
                                 {
-                                    await QueryAndUpdatePaymentStatusStripe(sess.Id);
+                                    await QueryAndUpdatePaymentStatusStripe(sess.Id, true);
                                 }
                                 return Ok();
-                            } else {
+                            } else
+                            {
                                 return BadRequest("display items is null");
                             }
                         } else
                         {
                             return BadRequest("payment is unpaid");
                         }
-                        
-                    } else 
+                    } else
+                    {
                         return BadRequest("checkout session is null");
-                    // this assumes that top up wallet is always first and the only item in the transaction.
-                    //var first = sess.LineItems.First();
-                     
-                    //if (first != null)
-                    //{
-                    //    var custom = first.Product.Name;
-                    //    if (custom.ToUpper().Equals("TOP UP WALLET"))
-                    //    {
-                    //        await QueryAndUpdateWalletPaymentStatusStripe(sess.Id);
-                    //    } else
-                    //    {
-                    //        await QueryAndUpdatePaymentStatusStripe(sess.Id);
-                    //    }
-                    //    return Ok();
-                    //} else
-                    //{
-                    //    return BadRequest("display items is null");
-                    //}
-
-                } // cant differentiate top up wallet from charge.succeeded event.
-                else
+                    }
+                } else
                 {
                     EventLogger.CreateEventEntry("Not the stripe event type we check", EventLogEntryType.Error);
                     return BadRequest();
@@ -2293,11 +2263,18 @@ namespace MealOrderPayments.Controllers
         /// </summary>
         /// <param name="sessionId">stripe session id</param>
         /// <returns>use await for this method.</returns>
-        public async Task QueryAndUpdatePaymentStatusStripe(string sessionId)
+        public async Task QueryAndUpdatePaymentStatusStripe(string sessionId, bool successAlready = false)
         {
             if (sessionId != null) // this is called from webhook
             {
-                var sos = QueryOrderStatusStripe(sessionId, true);
+                var sos = "";
+                if (successAlready)
+                {
+                    sos = "SUCCESS";
+                } else
+                {
+                    sos = QueryOrderStatusStripe(sessionId, true);
+                }
                 List<PaymentDTO> payments = await _paymentService.GetCreatedPaymentsAsync();
                 var pement = payments.Where(x => x.fomoid == sessionId);
                 if (!pement.IsNullOrEmpty())
@@ -2369,7 +2346,7 @@ namespace MealOrderPayments.Controllers
                         }
                     }
                 }
-            } 
+            }
         }
 
         /// <summary>
@@ -2501,11 +2478,18 @@ namespace MealOrderPayments.Controllers
 
         }
 
-        public async Task QueryAndUpdateWalletPaymentStatusStripe(string sessionId)
+        public async Task QueryAndUpdateWalletPaymentStatusStripe(string sessionId, bool successAlready = false)
         {
             if (sessionId != null) // this is called from webhook
             {
-                var sos = QueryOrderStatusStripe(sessionId, true);
+                var sos = "";
+                if (successAlready)
+                {
+                    sos = "SUCCESS";
+                } else
+                {
+                    sos = QueryOrderStatusStripe(sessionId, true);
+                }
                 try
                 {
                     List<WalletPaymentDTO> payments = await _paymentService.GetCreatedWalletPaymentsAsync();
@@ -2576,7 +2560,7 @@ namespace MealOrderPayments.Controllers
             }
             return qos;
         }
-        
+
         /// <summary>
         /// Create a method that can be awaited, but does not return any value.
         /// In this case we don't need to anything after querying payment and 
