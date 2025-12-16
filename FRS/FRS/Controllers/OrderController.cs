@@ -2493,8 +2493,8 @@ namespace MealOrderPayments.Controllers
                 try
                 {
                     List<WalletPaymentDTO> payments = await _paymentService.GetCreatedWalletPaymentsAsync();
-
-                    foreach (var p in payments)
+                    var pement = payments.Where(x => x.fomoid == sessionId);
+                    foreach (var p in pement)
                     {
                         var updated = false;
                         var tokenOrderUpdated = false;
