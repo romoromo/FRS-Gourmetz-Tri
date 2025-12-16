@@ -16,6 +16,7 @@ using DAL.Core.Audit.Extensions;
 using DAL.Models.MealOrder;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using DAL.Models.StoredProcedures;
+using Microsoft.Extensions.Hosting;
 
 namespace DAL
 {
@@ -280,6 +281,8 @@ namespace DAL
         public DbSet<CatererAsset> CatererAssets { get; set; }
         public DbSet<AssetComponent> AssetComponents { get; set; }
         public DbSet<SortingArea> SortingAreas { get; set; }
+        public DbSet<ClassLevelSchedule> ClassLevelSchedules { get; set; }
+        public DbSet<ClassLevelScheduleItem> ClassLevelScheduleItems { get; set; }
 
         #region Stored Procedures
 
@@ -698,6 +701,11 @@ namespace DAL
             builder.Entity<TrayModel>().HasIndex(p => new { p.PLCId });
             builder.Entity<ClassLevelDetail>().TrackAllProperties();
             builder.Entity<ClassLevelDetail>().HasIndex(p => new { p.SessionId, p.PeriodId });
+
+            builder.Entity<ClassLevelSchedule>().TrackAllProperties();
+            builder.Entity<ClassLevelSchedule>().HasIndex(m => new { m.ClassLevelId });
+            builder.Entity<ClassLevelScheduleItem>().TrackAllProperties();
+            builder.Entity<ClassLevelScheduleItem>().HasIndex(m => new { m.SessionId, m.PeriodId, m.Day });
             #region UserActivity
             builder.Entity<UserActivity>()
                 .Property(x => x.Message)

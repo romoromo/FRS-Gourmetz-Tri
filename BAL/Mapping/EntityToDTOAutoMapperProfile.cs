@@ -970,6 +970,9 @@ namespace BAL.Mapping
 
             CreateMap<SortingAreaDTO, SortingArea>()
                 .ForMember(m => m.CatererInfoId, map => map.MapFrom(m => m.CatererId));
+
+            CreateMap<ClassLevelScheduleDTO, ClassLevelSchedule>().ReverseMap();
+            CreateMap<ScheduleItemDTO, ClassLevelScheduleItem>().ReverseMap();
         }
     }
 }

@@ -14,6 +14,7 @@ import { ClassBatch } from 'src/app/models/meal-order/class-batch.model';
 import { OutletClassRoster } from 'src/app/models/meal-order/outlet-class-roster.model';
 import { DispenserOutlet } from '../../models/meal-order/dispenser-outlet.model';
 import { PlcModel } from '../../models/meal-order/plc.model';
+import { SaveClassLevelScheduleDto } from 'src/app/models/meal-order/class-level-schedule.model';
 
 @Injectable()
 export class ClassService {
@@ -199,5 +200,13 @@ export class ClassService {
 
   getPeriodMealSession(outletId) {
     return this.commonEndpoint.get<any>(`${this.classLevelUrl}/periodmealsession?outletId=${outletId}`);
+  }
+
+  getClassLevelSchedule(classLevelId: number){
+    return this.commonEndpoint.get<any>(`${this.classLevelUrl}/${classLevelId}/schedule`);
+  }
+
+  saveClassLevelSchedule(schedule: SaveClassLevelScheduleDto){
+    return this.commonEndpoint.getNewEndpoint<SaveClassLevelScheduleDto>(`${this.classLevelUrl}/schedule`, schedule);
   }
 }

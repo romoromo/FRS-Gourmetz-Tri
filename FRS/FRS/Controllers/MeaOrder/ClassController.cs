@@ -705,17 +705,18 @@ namespace FRS.Controllers
         #endregion
 
         #region CLassLevelSchedule
-        [HttpGet("classlevelschedule/sieve/list")]
+        [HttpGet("classlevels/{classLevelId}/schedule")]
         [AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetClassLevelSchedule(BaseFilter filter)
+        public async Task<IActionResult> GetSchedules(int classLevelId)
         {
-            return Ok(new PagedEntityViewModel<ClassLevelScheduleDTO>());
+            var result = await _service.GetClassLevelSchedules(classLevelId);
+            return Ok(result);
         }
 
-        [HttpPost("classlevelschedule")]
-        [ProducesResponseType(201, Type = typeof(ClassLevelDTO))]
+        [HttpPost("classlevels/schedule")]
+        [ProducesResponseType(201, Type = typeof(ClassLevelScheduleDTO))]
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateClassLevelSchedule([FromBody] ClassLevelScheduleDTO dto)
         {
@@ -724,40 +725,8 @@ namespace FRS.Controllers
                 if (dto == null)
                     return BadRequest($"{nameof(dto)} cannot be null");
 
-
-                return CreatedAtAction("GetClassLevelScheduleById", new { id = dto.Id }, dto);
-            }
-
-            return BadRequest(ModelState);
-        }
-
-
-        [HttpDelete("classlevelschedule/delete/{id}")]
-        [ProducesResponseType(200, Type = typeof(ClassLevelDTO))]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteClassLevelSchedule(int id)
-        {
-             return Ok(new ClassLevelScheduleDTO());
-        }
-
-        [HttpPut("classlevelschedule/update/{id}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateClassLevelSchedule(string id, [FromBody] ClassLevelDTO model)
-        {
-            if (ModelState.IsValid)
-            {
-                if (model == null)
-                    return BadRequest($"{nameof(model)} cannot be null");
-
-                if (model.Id == 0)
-                    return BadRequest("Conflicting type id in parameter and model data");
-
-
-                return NoContent();
-
+                var result = await _service.SaveClassLevelSchedule(dto);
+                return Ok(result);
             }
 
             return BadRequest(ModelState);

@@ -17,5 +17,9 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdateAsync(ClassLevel classLevel);
         Task<List<ClassLevel>> GetClassLevelsByOutletIdAsync(int outletId);
         Task<List<MealSessionDetail>> GetMealSessionDetail(int id, int outletId);
+
+        Task<ClassLevelSchedule> GetClassLevelSchedules(int classLevelId);
+        Task<BaseOperationResponse> SaveClassLevelScheduleAsync(ClassLevelSchedule classLevelSchedule);
+
     }
 }

@@ -56,5 +56,8 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<List<ClassDTO>> GetClassByStudentGroupId(int studentGroupId);
         Task<(ClassDTO Class, int outletId)> GetClassByStudentId(int studentId);
         Task<List<MealSessionDetailDTO>> GetMealSessionsByClassLevel(int classLevelId, int outletId);
+
+        Task<ClassLevelScheduleDTO> GetClassLevelSchedules(int classLevelId);
+        Task<BaseOperationResponse> SaveClassLevelSchedule(ClassLevelScheduleDTO scheduleDTO);
     }
 }

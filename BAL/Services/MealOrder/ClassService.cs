@@ -114,6 +114,17 @@ namespace BAL.Services.MealOrder
             return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetails.DistinctBy(m => m.Id));
         }
 
+        public async Task<ClassLevelScheduleDTO> GetClassLevelSchedules(int classLevelId)
+        {
+            return _mapper.Map<ClassLevelScheduleDTO>(await this._uow.ClassLevels.GetClassLevelSchedules(classLevelId));
+        }
+
+        public async Task<BaseOperationResponse> SaveClassLevelSchedule(ClassLevelScheduleDTO scheduleDTO)
+        {
+            var result = await this._uow.ClassLevels.SaveClassLevelScheduleAsync(_mapper.Map<ClassLevelSchedule>(scheduleDTO));
+            return result;
+        }
+
         #endregion
 
         #region Classes

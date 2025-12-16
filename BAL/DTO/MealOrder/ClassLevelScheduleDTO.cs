@@ -7,10 +7,10 @@ namespace BAL.DTO.MealOrder
     {
         public int Id { get; set; }
         public int ClassLevelId { get; set; }
-        public List<ScheduleItemDto> Schedules { get; set; } = [];
+        public List<ScheduleItemDTO> Schedules { get; set; } = [];
     }
 
-    public class ScheduleItemDto
+    public class ScheduleItemDTO
     {
         public int PeriodId { get; set; }
         public ScheduleDay Day { get; set; }

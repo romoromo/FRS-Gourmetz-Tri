@@ -1,17 +1,14 @@
 import { Component, Inject } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
-import { ClassLevelScheduleModel } from "src/app/models/meal-order/class-level-schedule.model";
+import { DAYS } from "src/app/helpers/enums";
+import { ScheduleDay } from "src/app/models/enums";
+import {
+  SaveClassLevelScheduleDto,
+  ScheduleItemDto,
+  ScheduleRowModel,
+} from "src/app/models/meal-order/class-level-schedule.model";
+import { ClassService } from "src/app/services/meal-order/class.service";
 import { MealService } from "src/app/services/meal-order/meal.service";
-
-export const DAYS = [
-  { key: "monday", label: "Monday" },
-  { key: "tuesday", label: "Tuesday" },
-  { key: "wednesday", label: "Wednesday" },
-  { key: "thursday", label: "Thursday" },
-  { key: "friday", label: "Friday" },
-  { key: "saturday", label: "Saturday" },
-  { key: "sunday", label: "Sunday" },
-];
 
 @Component({
   selector: "class-level-schedule",
@@ -20,67 +17,96 @@ export const DAYS = [
 })
 export class ClassLevelSchedule {
   public formResetToggle = true;
-  mealPeriods: any[];
-  mealSessions: any[];
-  scheduleRows: ClassLevelScheduleModel[];
   days = DAYS;
+  mealPeriods: any[] = [];
+  scheduleRows: ScheduleRowModel[] = [];
   classLevelName: string;
   classLevelId: number;
-  isEdit = false;
+  isSaving = false;
 
   constructor(
     public dialogRef: MatDialogRef<ClassLevelSchedule>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private mealService: MealService
+    private mealService: MealService,
+    private classService: ClassService
   ) {
     const outletId = data ? data.outletId : null;
     this.classLevelName = data.classLevelName;
     this.classLevelId = data.classLevelId;
-    
-    this.getMealSessionLite(outletId);
+
+    this.loadMealPeriods(outletId);
   }
 
-  getMealSessionLite(outletId: string) {
+  loadMealPeriods(outletId: string) {
     this.mealService.getMealSessionLite(outletId).subscribe((r) => {
       this.mealPeriods = (r || []).map((p: any) => ({
         ...p,
         details: p.details || [],
       }));
+
       console.log("mealPeriods", this.mealPeriods);
-      this.buildScheduleRows();
+      this.buildRows();
+      this.loadExistingSchedule();
     });
   }
 
-  buildScheduleRows() {
+  buildRows() {
     this.scheduleRows = this.mealPeriods.map((p) => ({
       periodId: p.id,
       periodName: p.name,
-      sessions: this.days.reduce((acc, d) => {
-        acc[d.key] = null;
-        return acc;
-      }, {} as any),
+      sessions: {},
     }));
-    console.log(this.scheduleRows);
   }
 
-  cancel() {
-    this.dialogRef.close(null);
+  loadExistingSchedule() {
+    this.classService
+      .getClassLevelSchedule(this.classLevelId)
+      .subscribe((existing) => {
+        if (!existing || !existing.schedules) return;
+
+        existing.schedules.forEach((item) => {
+          const row = this.scheduleRows.find((r) => r.periodId === item.periodId);
+          if (!row) return;
+
+          row.sessions[item.day] = item.sessionId;
+        });
+      });
   }
 
   save() {
-    const payload = this.scheduleRows.map((row) => ({
-      classLevelId: this.data.classLevelId,
-      periodId: row.periodId,
-      sessionMonday: row.sessions.monday,
-      sessionTuesday: row.sessions.tuesday,
-      sessionWednesday: row.sessions.wednesday,
-      sessionThursday: row.sessions.thursday,
-      sessionFriday: row.sessions.friday,
-      sessionSaturday: row.sessions.saturday,
-      sessionSunday: row.sessions.sunday,
-    }));
+    this.isSaving = true;
+    const schedules: ScheduleItemDto[] = [];
 
-    console.log("SAVE PAYLOAD", payload);
-    this.dialogRef.close(null);
+    this.scheduleRows.forEach((row) => {
+      this.days.forEach((d) => {
+        const sessionId = row.sessions[d.enum];
+        if (sessionId) {
+          schedules.push({
+            periodId: row.periodId,
+            day: d.enum,
+            sessionId,
+          });
+        }
+      });
+    });
+
+    const payload: SaveClassLevelScheduleDto = {
+      classLevelId: this.classLevelId,
+      schedules,
+    };
+
+    this.classService.saveClassLevelSchedule(payload).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.dialogRef.close(true);
+      },
+      error: () => {
+        this.isSaving = false;
+      },
+    });
+  }
+
+  cancel() {
+    this.dialogRef.close(false);
   }
 }

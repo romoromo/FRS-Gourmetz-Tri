@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Class Level Schedule {{classLevelName}}</h1>
+<h1 mat-dialog-title>Class Level Schedule - {{classLevelName}}</h1>
 <div>
     <form *ngIf="formResetToggle" class="form-horizontal" name="classLevelScheduleEditorForm" #f="ngForm" novalidate
         (ngSubmit)="save()">
@@ -18,10 +18,10 @@
                                 <tr *ngFor="let row of scheduleRows; let i = index">
                                     <td><strong>{{ row.periodName }}</strong></td>
 
-                                    <td *ngFor="let day of days">
+                                    <td *ngFor="let d of days">
                                         <mat-form-field appearance="outline" style="width:120px">
-                                            <mat-select [(ngModel)]="row.sessions[day.key]"
-                                                [name]="'session_' + i + '_' + day.key" placeholder="Select">
+                                            <mat-select [(ngModel)]="row.sessions[d.enum]"
+                                                [name]="'session_' + i + '_' + d.enum">
 
                                                 <mat-option *ngFor="let s of mealPeriods[i].details" [value]="s.id">
                                                     {{ s.name }}
