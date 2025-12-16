@@ -629,7 +629,7 @@ namespace MealOrderPayments.Controllers
                     //{
                     if (checkoutSession != null)
                     {
-                        if (fromWebhook || checkoutSession.PaymentStatus != "unpaid")
+                        if (checkoutSession.PaymentStatus != "unpaid")
                         {
                             return "SUCCESS";
                         }
