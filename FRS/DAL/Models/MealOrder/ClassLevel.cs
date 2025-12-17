@@ -1,4 +1,6 @@
-﻿using Sieve.Attributes;
+﻿using DAL.Core;
+using NPOI.DDF;
+using Sieve.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -56,5 +58,38 @@ namespace DAL.Models.MealOrder
         public int? SessionId { get; set; }
         [ForeignKey(nameof(SessionId))]
         public virtual MealSessionDetail MealSession { get; set; }
+    }
+
+    public class ClassLevelSchedule
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public int ClassLevelId { get; set; }
+
+        [ForeignKey(nameof(ClassLevelId))]
+        public virtual ClassLevel ClassLevel { get; set; }
+
+        public virtual ICollection<ClassLevelScheduleItem> Schedules { get; set; }
+            = [];
+    }
+
+    public class ClassLevelScheduleItem
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public int? ClassLevelScheduleId { get; set; }
+        public virtual ClassLevelSchedule ClassLevelSchedule { get; set; }
+
+        public int? PeriodId { get; set; }
+        [ForeignKey(nameof(PeriodId))]
+        public virtual MealSession MealPeriod { get; set; }
+
+        public int? SessionId { get; set; }
+        [ForeignKey(nameof(SessionId))]
+        public virtual MealSessionDetail MealSession { get; set; }
+
+        public ScheduleDay Day { get; set; }
     }
 }

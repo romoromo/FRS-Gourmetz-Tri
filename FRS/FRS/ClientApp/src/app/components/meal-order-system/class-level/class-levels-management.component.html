@@ -48,6 +48,7 @@
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     <a *ngIf="canManageClassLevels" class="btn btn-link btn-xs" href="javascript:;" (click)="editClassLevel(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'common.RowAction.Edit' | translate}}</a>
     <a *ngIf="!canManageClassLevels" class="btn btn-link btn-xs" href="javascript:;" (click)="editClassLevel(row)"><i class="fa fa-eye" aria-hidden="true"></i> {{'common.RowAction.Details' | translate}}</a>
+    <a class="btn btn-link btn-xs" href="javascript:;" (click)="openSchedule(row)"><i class="fa fa-eye" aria-hidden="true"></i> Schedule</a>
     <a *ngIf="canManageClassLevels" class="btn btn-link btn-xs" href="javascript:;" (click)="deleteClassLevel(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'common.RowAction.Delete' | translate}}</a>
   </ng-template>
 </div>

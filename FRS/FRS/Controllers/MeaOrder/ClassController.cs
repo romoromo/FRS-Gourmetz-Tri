@@ -703,5 +703,34 @@ namespace FRS.Controllers
         }
 
         #endregion
+
+        #region CLassLevelSchedule
+        [HttpGet("classlevels/{classLevelId}/schedule")]
+        [AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetSchedules(int classLevelId)
+        {
+            var result = await _service.GetClassLevelSchedules(classLevelId);
+            return Ok(result);
+        }
+
+        [HttpPost("classlevels/schedule")]
+        [ProducesResponseType(201, Type = typeof(ClassLevelScheduleDTO))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateClassLevelSchedule([FromBody] ClassLevelScheduleDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+                var result = await _service.SaveClassLevelSchedule(dto);
+                return Ok(result);
+            }
+
+            return BadRequest(ModelState);
+        }
+        #endregion
     }
 }

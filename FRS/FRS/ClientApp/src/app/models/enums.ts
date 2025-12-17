@@ -55,3 +55,13 @@ export enum PointType {
   GCP = "GCP",
   HCP = "HCP"
 }
+
+export enum ScheduleDay {
+  Monday = 1,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
+  Sunday
+}

@@ -195,6 +195,64 @@ namespace DAL.Repositories.MealOrder
             return query.SelectMany(m => m.ClassLevelDetails.Select(msd => msd.MealSession)).ToListAsync();
         }
 
+        public async Task<ClassLevelSchedule> GetClassLevelSchedules(int classLevelId)
+        {
+            var query = _appContext.ClassLevelSchedules
+                .AsNoTracking()
+                .Include(x => x.Schedules)
+                .Where(m => m.ClassLevelId == classLevelId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<BaseOperationResponse> SaveClassLevelScheduleAsync(ClassLevelSchedule classLevelSchedule)
+        {
+            var result = new BaseOperationResponse();
+
+            var schedule = await _appContext.ClassLevelSchedules
+                .Include(x => x.Schedules)
+                .FirstOrDefaultAsync(x => x.ClassLevelId == classLevelSchedule.ClassLevelId);
+
+            if (schedule == null)
+            {
+                schedule = new ClassLevelSchedule
+                {
+                    ClassLevelId = classLevelSchedule.ClassLevelId,
+                    Schedules = []
+                };
+
+                _appContext.ClassLevelSchedules.Add(schedule);
+            }
+            else
+            {
+                _appContext.RemoveRange(schedule.Schedules);
+                schedule.Schedules.Clear();
+            }
+
+            foreach (var item in classLevelSchedule.Schedules)
+            {
+                schedule.Schedules.Add(new ClassLevelScheduleItem
+                {
+                    PeriodId = item.PeriodId,
+                    SessionId = item.SessionId,
+                    Day = item.Day
+                });
+            }
+
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+            }
+            else
+            {
+                result.Message = "Failed to save!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }
