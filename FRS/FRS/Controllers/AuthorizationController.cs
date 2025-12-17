@@ -679,6 +679,8 @@ namespace FRS.Controllers
             user.UserName = model.Email;
             user.Email = model.Email;
             user.IsActive = true;
+            user.InstitutionId = user.InstitutionId;
+
             var createUserResult = await _accountManager.CreateUserWithPasswordAsync(user, new List<string>(), model.Password);
 
             if (createUserResult.Item1)
