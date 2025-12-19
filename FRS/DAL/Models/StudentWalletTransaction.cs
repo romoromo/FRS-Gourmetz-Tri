@@ -40,5 +40,7 @@ namespace DAL.Models
         public int? TokenOrderId { get; set; }
         [ForeignKey("TokenOrderId")]
         public virtual TokenOrder TokenOrder { get; set; }
+
+        public virtual ICollection<StudentWalletTransactionDetail> Details { get; set; }
     }
 }

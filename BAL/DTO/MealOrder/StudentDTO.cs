@@ -197,6 +197,15 @@ namespace BAL.DTO.MealOrder
 
         public int? TokenOrderId { get; set; }
         public TokenOrderDTO TokenOrder { get; set; }
+        public List<StudentWalletTransactionDetailDTO> Details { get; set; }
+    }
+
+    public class StudentWalletTransactionDetailDTO
+    {
+        public int TransactionId { get; set; }
+        public double Amount { get; set; }
+        public double AmountRefunded { get; set; }
+        public string Type { get; set; }
     }
 
     public class StudentPointTransactionDTO
