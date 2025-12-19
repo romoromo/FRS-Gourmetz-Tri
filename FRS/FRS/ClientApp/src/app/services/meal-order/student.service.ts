@@ -190,6 +190,10 @@ export class StudentService {
     return this.commonEndpoint.getSieve<PagedResult>(this.walletUrl + '/transactions/sieve/list', filter);
   }
 
+  downloadWalletTransactions(filter: Filter){
+    return this.commonEndpoint.getFile<any>(this.walletUrl + '/exportwallettransaction' , filter);
+  }
+
   walletTopupForStudentGroup(studentGroupId: string, amount: number, userId: string,type:string) {
     const param = {
       studentGroupId: studentGroupId,

@@ -19,5 +19,7 @@ namespace BAL.Services.Interfaces
         Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userid, WalletType walletType);
         Task<BaseOperationResponse> RefundToWalletBalanceAsync(int studentId, double amount, int userid, WalletType walletType, int? tokenOrderId);
         Task<BaseOperationResponse> OffBoardingStudent(int studentId, int userId);
+
+        Task<byte[]> GenerateXls(BaseFilter filter);
     }
 }

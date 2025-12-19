@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BAL.DTO.MealOrder;
+using BAL.Services;
 using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
 using DAL.Core;
@@ -1452,6 +1453,27 @@ namespace FRS.Controllers
                 _logger.LogError($"Error UpdateWalletFreze : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
+        }
+
+        [HttpPost("wallet/exportwallettransaction")]
+        //[AllowAnonymous]
+        //[Authorize(Authorization.Policies.ManageAllDirectoryListingsPolicy)]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateWalletTransactionXls(BaseFilter filter)
+        {
+            var xls = await this._walletService.GenerateXls(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_AuthLogs.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
         }
 
         #endregion
