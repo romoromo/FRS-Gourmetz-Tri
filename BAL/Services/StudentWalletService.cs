@@ -1,15 +1,19 @@
-﻿using System;
+﻿using AutoMapper;
+using BAL.DTO;
+using BAL.DTO.MealOrder;
+using BAL.Services.Interfaces;
+using DAL;
+using DAL.Core;
+using DAL.Filters;
+using DAL.Models;
+using Microsoft.EntityFrameworkCore;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using Sieve.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DAL.Models;
-using DAL.Core;
-using Sieve.Services;
-using DAL;
-using BAL.Services.Interfaces;
-using AutoMapper;
-using BAL.DTO.MealOrder;
-using DAL.Filters;
 
 namespace BAL.Services
 {
@@ -18,12 +22,14 @@ namespace BAL.Services
         private ISieveProcessor _sieveProcessor;
         private IUnitOfWork _uow;
         private readonly IMapper _mapper;
+        private ApplicationDbContext _appContext;
 
-        public StudentWalletService(ISieveProcessor sieveProcessor, IUnitOfWork uow, IMapper mapper)
+        public StudentWalletService(ISieveProcessor sieveProcessor, IUnitOfWork uow, IMapper mapper, ApplicationDbContext appContext)
         {
             _sieveProcessor = sieveProcessor;
             _uow = uow;
             _mapper = mapper;
+            _appContext = appContext;
         }
 
         public async Task<PagedEntity<StudentWalletTransactionDTO>> GetWalletTransactionsAsync(BaseFilter filter)
@@ -123,6 +129,110 @@ namespace BAL.Services
         public async Task<BaseOperationResponse> OffBoardingStudent(int studentId, int userId)
         {
             return await this._uow.StudentWalletTransactions.OffBoardingStudent(studentId, userId);
+        }
+
+        public async Task<byte[]> GenerateXls(BaseFilter filter)
+        {
+            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions;
+
+            query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
+            var logs = _mapper.Map<List<StudentWalletTransactionDTO>>(await query.ToListAsync());
+
+            if (logs != null)
+            {
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    var wb = new XSSFWorkbook();
+                    var rowCount = 0;
+                    var sheet = (XSSFSheet)wb.CreateSheet("Wallet Transactions");
+                    var headers = new string[] { "Student","Date", "Amount", "Type", "Description", "Remarks", "Processed By" };
+
+                    #region Headers
+
+                    var headerStyle = wb.CreateCellStyle();
+                    var headerFont = wb.CreateFont();
+                    headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                    headerStyle.SetFont(headerFont);
+                    headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    var row = sheet.CreateRow(rowCount);
+                    var borderedHeaderStyle = wb.CreateCellStyle();
+                    borderedHeaderStyle.SetFont(headerFont);
+                    borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                    ICell cell;
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue(headers[i]);
+                        cell.CellStyle = borderedHeaderStyle;
+                    }
+                    sheet.AutoSizeColumn(0);
+
+                    #endregion
+
+                    #region Content
+                    var contentStyle = wb.CreateCellStyle();
+                    contentStyle.BorderTop = BorderStyle.Thin;
+                    contentStyle.BorderBottom = BorderStyle.Thin;
+                    contentStyle.BorderLeft = BorderStyle.Thin;
+                    contentStyle.BorderRight = BorderStyle.Thin;
+                    contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentStyle.Alignment = HorizontalAlignment.Left;
+                    contentStyle.WrapText = true;
+                    var dataFormatCustom = wb.CreateDataFormat();
+                    logs.ForEach(dt =>
+                    {
+                        row = sheet.CreateRow(++rowCount);
+
+                        cell = row.CreateCell(0);
+                        cell.SetCellValue(dt.StudentName);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(1);
+                        cell.SetCellValue(dt.TransactionDateTime?.ToString("dd/MM/yyyy hh:mm:ss tt"));
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(2);
+                        cell.SetCellValue(dt.Amount);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(3);
+                        cell.SetCellValue(dt.TransactionType);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(4);
+                        cell.SetCellValue(dt.Description);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(5);
+                        cell.SetCellValue(dt.Remarks);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(6);
+                        cell.SetCellValue(dt.UserName);
+                        cell.CellStyle = contentStyle;
+
+                    });
+
+                    #endregion
+
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        sheet.AutoSizeColumn(i, true);
+                    }
+
+                    wb.Write(stream);
+
+                    return stream.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

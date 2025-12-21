@@ -124,10 +124,13 @@ export class WalletTransactionLogManagementComponent implements OnInit, OnDestro
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
     this.loadingIndicator = true;
-    this.filter.pageSize = 10;
+    this.filter.pageSize = 10;    
 
     if (ev) {
       this.filter.page = ev.offset + 1;
+      if(Number.isNaN(this.filter.page))
+        this.filter.page = 1;
+
       if (ev.sorts) {
         this.filter.sorts = ev.sorts[0].dir == 'desc' ? '-' + ev.sorts[0].prop : ev.sorts[0].prop;
       }
@@ -230,6 +233,21 @@ export class WalletTransactionLogManagementComponent implements OnInit, OnDestro
     console.log(selected);
     this.selected = selected;
   }
+
+  downloadResults() {
+      const fileName = moment().format('DDMMYYYY_hhmmss') + '_WalletTransactions.xlsx';
+      console.log(this.filter);
+      this.studentService.downloadWalletTransactions(this.filter).subscribe(
+       data => {
+         console.log(data);
+         saveAs(data, fileName);
+       },
+       err => {
+         alert("Problem while downloading the file.");
+         console.error(err);
+       }
+      );
+    }
 
   get canManageWalletTransaction() {
     return this.accountService.userHasPermission(Permission.manageMOSOrderMgtWalletTransactionsPermission)
