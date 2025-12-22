@@ -131,6 +131,7 @@ namespace DAL
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<WalletTransaction> WalletTransactions { get; set; }
         public DbSet<StudentWalletTransaction> StudentWalletTransactions { get; set; }
+        public DbSet<StudentWalletTransactionDetail> StudentWalletTransactionDetails { get; set; }
         public DbSet<StudentPointTransaction> StudentPointTransactions { get; set; }
         public DbSet<Reward> Rewards { get; set; }
         public DbSet<RewardTransaction> RewardTransactions { get; set; }
@@ -528,6 +529,7 @@ namespace DAL
             builder.Entity<Wallet>().TrackAllProperties();
             builder.Entity<WalletTransaction>().TrackAllProperties();
             builder.Entity<StudentWalletTransaction>().TrackAllProperties();
+            builder.Entity<StudentWalletTransactionDetail>().TrackAllProperties();
             builder.Entity<StudentPointTransaction>().TrackAllProperties();
 
             builder.Entity<Reward>().TrackAllProperties();

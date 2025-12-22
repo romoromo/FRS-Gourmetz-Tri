@@ -224,6 +224,7 @@ namespace DAL.Repositories.MealOrder
                 double oldFasBalance = fasWallet.Balance;
                 double oldNormalBalance = normalWallet.Balance;
 
+
                 if (remainingAmount <= fasWallet.Balance)
                 {
                     fasWallet.Balance -= remainingAmount;
@@ -248,6 +249,23 @@ namespace DAL.Repositories.MealOrder
 
                 student.WalletBalance = fasWallet.Balance + normalWallet.Balance;
 
+                StudentWalletTransactionDetail fasDetail = new StudentWalletTransactionDetail
+                {
+                    Amount = oldFasBalance - fasWallet.Balance,
+                    AmountRefunded = 0,
+                    Type = WalletType.FAS.ToString()
+                };
+
+                StudentWalletTransactionDetail basicDetail = new StudentWalletTransactionDetail
+                {
+                    Amount = oldNormalBalance - normalWallet.Balance,
+                    AmountRefunded = 0,
+                    Type = WalletType.BASIC.ToString()
+                };
+
+
+                
+
                 var transaction = new StudentWalletTransaction
                 {
                     Amount = originalAmount,
@@ -260,8 +278,12 @@ namespace DAL.Repositories.MealOrder
                         $"Normal: {oldNormalBalance:C} -> {normalWallet.Balance:C}.",
                     CreatedBy = Payment.UserId,
                     UpdatedBy = Payment.UserId,
-                        Payment = Payment,
+                    Payment = Payment,
+                    Details = new List<StudentWalletTransactionDetail>(),
                 };
+
+                transaction.Details.Add(fasDetail);
+                transaction.Details.Add(basicDetail);
 
                 await _appContext.StudentWalletTransactions.AddAsync(transaction);
 
