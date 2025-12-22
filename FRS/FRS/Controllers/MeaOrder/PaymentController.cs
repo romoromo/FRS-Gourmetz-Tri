@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using BAL.DTO;
 using BAL.DTO.MealOrder;
-using BAL.Services.Interfaces;  
+using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
 using BAL.Services.MealOrder;
 using DAL;
@@ -17,7 +10,10 @@ using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 using FRS.Attributes;
+using FRS.Controllers;
+using FRS.Hubs;
 using FRS.ViewModels;
+using MealOrderPayments.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,8 +21,13 @@ using Microsoft.Extensions.Logging;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using OpenIddict.Validation.AspNetCore;
-using FRS.Controllers;
-using MealOrderPayments.Controllers;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace FRS.Controllers
 {
@@ -41,8 +42,10 @@ namespace FRS.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
         private OrderController _orderController;
+        private readonly INotificationService _notificationService;
 
-        public PaymentController(IPaymentService service, ILogger<PaymentController> logger, ITokenOrderService tokenService, IEmailSender emailSender, IStudentService studentservice, IMapper mapper, OrderController orderController)
+        public PaymentController(IPaymentService service, ILogger<PaymentController> logger, ITokenOrderService tokenService, IEmailSender emailSender, IStudentService studentservice, IMapper mapper, OrderController orderController,
+            INotificationService notificationService)
         {
             _service = service;
             _logger = logger;
@@ -51,6 +54,7 @@ namespace FRS.Controllers
             _studentService = studentservice;
             _mapper = mapper;
             _orderController = orderController;
+            _notificationService = notificationService;
         }
 
         #region Payment Types
@@ -211,7 +215,7 @@ namespace FRS.Controllers
                             }
                         }
 
-                        if(mpos != null)
+                        if (mpos != null)
                         {
                             foreach (var to in mpos)
                             {
@@ -250,10 +254,30 @@ namespace FRS.Controllers
 
                         return CreatedAtAction("GetPaymentById", new { id = vm.Id }, vm);
                     }
+                    else
+                    {
+                        //Insert to notification that the payment is Failed
+                        NotificationSettingDTO notificationSetting = await this._notificationService.GetNotificationSettingByType(NotificationSettingType.PAYMENT_FAILED);
+                        if (notificationSetting != null && notificationSetting.IsAlertEnabled)
+                        {
+                            if (dto.UserId > 0)
+                            {
+                                var notification = new NotificationDTO
+                                {
+                                    Body = !string.IsNullOrEmpty(notificationSetting.Template) ? notificationSetting.Template : "Your Lunch order payment failed.",
+                                    Date = DateTime.Now,
+                                    Header = !string.IsNullOrEmpty(notificationSetting.Subject) ? notificationSetting.Subject : "Payment Failed",
+                                    UserId = dto.UserId.Value
+                                };
+
+                                var response = await _notificationService.CreateAsync(notification);
+                            }
+                        }
+                    }
 
                     AddErrors(new string[] { result.Message + "- errorPayment" });
 
-                    if(!result.IsSuccess) return BadRequest(result);
+                    if (!result.IsSuccess) return BadRequest(result);
 
                     return Ok(result);
                 }
@@ -367,7 +391,7 @@ namespace FRS.Controllers
             return BadRequest(ModelState);
         }
 
-        
+
         #endregion
 
         #region Transaction Fees
@@ -660,7 +684,7 @@ namespace FRS.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> ValidateVoucher(int studentId, string code)
         {
-            if(string.IsNullOrEmpty(code))
+            if (string.IsNullOrEmpty(code))
                 return BadRequest("Invalid code.");
 
             return Ok(await this._service.ValidateVoucher(studentId, code));
@@ -700,7 +724,8 @@ namespace FRS.Controllers
                     throw new Exception("The following errors occurred while deleting: " + string.Join(", ", dto.Message));
                 return Ok(dto);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError($"Error DeleteVoucherStudent : {ex.Message}", ex);
                 _logger.LogError($"Error DeleteVoucherStudent : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });

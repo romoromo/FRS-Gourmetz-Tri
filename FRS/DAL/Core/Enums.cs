@@ -175,7 +175,12 @@ namespace DAL.Core
         ABANDONED_CART_2,
         CANCEL_REQUEST_APPROVED,
         CANCEL_REQUEST_CANCELLED,
-        ORDER_NOT_COLLECTED
+        ORDER_NOT_COLLECTED,
+
+        PAYMENT_FAILED,
+        DELIVERED,
+        OUT_OF_DELIVERY,
+        MEAL_ORDER_CONFIRMED
     }
 
     public enum UserAlertType
