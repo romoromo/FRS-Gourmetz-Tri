@@ -8,6 +8,10 @@
         <mat-form-field class="col-md-12">
           <input matInput autocomplete="off" [disabled]="!canManagePaymentTypes" type="text" id="paymentTypeName" name="paymentTypeName" placeholder="Name" [(ngModel)]="paymentTypeEdit.name" #paymentTypeName="ngModel" required minlength="2" maxlength="200" />
         </mat-form-field>
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManagePaymentTypes" type="number" id="minimumPaymentValue" name="minimumPaymentValue" placeholder="Minimum Payment Value" 
+            [(ngModel)]="paymentTypeEdit.minimumPaymentValue" #paymentTypeMinimumPaymentValue="ngModel" [min]="0"/>
+        </mat-form-field>
       </div>
 
       <div class="clearfix"></div>

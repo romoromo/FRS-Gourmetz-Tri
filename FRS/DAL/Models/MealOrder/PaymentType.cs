@@ -23,5 +23,7 @@ namespace DAL.Models.MealOrder
         public virtual Institution Institution { get; set; }
 
         public virtual ICollection<TransactionFee> TransactionFees { get; set; }
+
+        public decimal MinimumPaymentValue { get; set; }
     }
 }

@@ -10,4 +10,5 @@ export class PaymentType {
   public id: string;
   public name: string;
   public institutionId: string;
+  public minimumPaymentValue: number;
 }
