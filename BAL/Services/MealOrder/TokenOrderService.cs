@@ -5318,7 +5318,8 @@ namespace BAL.Services.MealOrder
 
             if (isApproved && result.IsSuccess && result.Data != null)
             {
-                TokenOrder to = (TokenOrder)result.Data;
+                //TokenOrder to = (TokenOrder)result.Data;
+                TokenOrder to = await this._uow.TokenOrders.GetByIdAsync(dto.OrderId);
                 result = await this._studentWalletService.RefundToWalletBalanceAsync(to.ProfileId.Value, to.TotalAmount, dto.UserId, WalletType.BASIC, to.Id);
 
                 var history = _mapper.Map<TokensOrderHistoryDTO>(result.Data);
@@ -5351,7 +5352,8 @@ namespace BAL.Services.MealOrder
 
             if (result.IsSuccess && result.Data != null)
             {
-                TokenOrder order = (TokenOrder)result.Data;
+                //TokenOrder order = (TokenOrder)result.Data;
+                TokenOrder order = await this._uow.TokenOrders.GetByIdAsync(dto.OrderId);
                 result = await this._studentWalletService.RefundToWalletBalanceAsync(order.ProfileId.Value, order.TotalAmount, dto.UserId, WalletType.BASIC, order.Id);
 
                 var history = _mapper.Map<TokensOrderHistoryDTO>(result.Data);

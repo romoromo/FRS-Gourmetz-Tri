@@ -435,6 +435,8 @@ namespace DAL.Repositories
         {
             var result = new BaseOperationResponse();
 
+            amount = Math.Round(amount, 2);
+
             if (amount <= 0)
             {
                 result.IsSuccess = false;
@@ -543,8 +545,8 @@ namespace DAL.Repositories
                 if (fasTrans != null && normalTrans != null)
                 {
                     double remainingAmount = amount;
-                    double fasBalance = fasTrans.Amount - fasTrans.AmountRefunded;
-                    double normalBalance = normalTrans.Amount - normalTrans.AmountRefunded;
+                    double fasBalance = Math.Round(fasTrans.Amount,2) - fasTrans.AmountRefunded;
+                    double normalBalance = Math.Round(normalTrans.Amount, 2) - normalTrans.AmountRefunded;
 
                     if (remainingAmount <= fasBalance)
                     {
@@ -557,7 +559,7 @@ namespace DAL.Repositories
                         remainingAmount -= fasBalance;
                         fasTrans.AmountRefunded = fasTrans.Amount;
                         fasRefund += fasBalance;
-                        if (normalBalance >= remainingAmount)
+                        if (normalBalance > 0)
                         {
                             normalTrans.AmountRefunded += remainingAmount;
                             normalRefund += remainingAmount;
