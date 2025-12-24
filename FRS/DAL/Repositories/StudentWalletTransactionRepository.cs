@@ -463,7 +463,7 @@ namespace DAL.Repositories
                 }
 
                 var order = await _appContext.TokenOrders
-                    .FirstOrDefaultAsync(e => e.IsActive && e.Id == tokenOrderId );
+                    .FirstOrDefaultAsync(e => e.IsActive && e.Id == tokenOrderId);
 
 
                 var paymentTransaction = await _appContext.StudentWalletTransactions
@@ -474,41 +474,42 @@ namespace DAL.Repositories
                 var fasTrans = paymentTransaction.Details.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());
                 var normalTrans = paymentTransaction.Details.FirstOrDefault(x => x.Type == WalletType.BASIC.ToString());
 
-                double remainingAmount = amount;
-                double fasBalance = fasTrans.Amount - fasTrans.AmountRefunded;
-                double normalBalance = normalTrans.Amount - normalTrans.AmountRefunded;
-
                 double fasRefund = 0;
                 double normalRefund = 0;
 
+                if (fasTrans != null && normalTrans != null)
+                {
+                    double remainingAmount = amount;
+                    double fasBalance = fasTrans.Amount - fasTrans.AmountRefunded;
+                    double normalBalance = normalTrans.Amount - normalTrans.AmountRefunded;
 
-                if (remainingAmount <= fasBalance)
-                {
-                    fasTrans.AmountRefunded += remainingAmount;
-                    fasRefund += remainingAmount;
-                    remainingAmount = 0;
-                }
-                else
-                {
-                    remainingAmount -= fasBalance;
-                    fasTrans.AmountRefunded = fasTrans.Amount;
-                    fasRefund += fasBalance;
-                    if (normalBalance >= remainingAmount)
+                    if (remainingAmount <= fasBalance)
                     {
-                        normalTrans.AmountRefunded += remainingAmount;
-                        normalRefund += remainingAmount;
+                        fasTrans.AmountRefunded += remainingAmount;
+                        fasRefund += remainingAmount;
                         remainingAmount = 0;
                     }
                     else
                     {
-                        result.IsSuccess = false;
-                        result.Message = "Insufficient payment to refund.";
-                        return result;
+                        remainingAmount -= fasBalance;
+                        fasTrans.AmountRefunded = fasTrans.Amount;
+                        fasRefund += fasBalance;
+                        if (normalBalance >= remainingAmount)
+                        {
+                            normalTrans.AmountRefunded += remainingAmount;
+                            normalRefund += remainingAmount;
+                            remainingAmount = 0;
+                        }
+                        else
+                        {
+                            result.IsSuccess = false;
+                            result.Message = "Insufficient payment to refund.";
+                            return result;
+                        }
                     }
+
+                    await this.UpdateAsync(paymentTransaction);
                 }
-
-                await this.UpdateAsync(paymentTransaction);
-
                 double oldFasBalance = 0;
                 double oldNormalBalance = 0;
 
@@ -547,7 +548,6 @@ namespace DAL.Repositories
 
                 if (normalRefund > 0)
                 {
-
                     if (normalWallet == null)
                     {
                         normalWallet = new StudentWallet
