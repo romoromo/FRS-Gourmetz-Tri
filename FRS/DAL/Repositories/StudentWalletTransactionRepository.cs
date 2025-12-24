@@ -428,7 +428,7 @@ namespace DAL.Repositories
 
         public async Task<BaseOperationResponse> RefundToWalletBalanceAsync(
             int studentId,
-            float amount,
+            double amount,
             int userId,
             WalletType walletTypeData,
             int? tokenOrderId)
@@ -537,14 +537,14 @@ namespace DAL.Repositories
                 var fasTrans = paymentTransaction.Details.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());
                 var normalTrans = paymentTransaction.Details.FirstOrDefault(x => x.Type == WalletType.BASIC.ToString());
 
-                var fasRefund = 0.0;
-                var normalRefund = 0.0;
+                double fasRefund = 0;
+                double normalRefund = 0;
 
                 if (fasTrans != null && normalTrans != null)
                 {
-                    var remainingAmount = amount;
-                    var fasBalance = fasTrans.Amount - fasTrans.AmountRefunded;
-                    var normalBalance = normalTrans.Amount - normalTrans.AmountRefunded;
+                    double remainingAmount = amount;
+                    double fasBalance = fasTrans.Amount - fasTrans.AmountRefunded;
+                    double normalBalance = normalTrans.Amount - normalTrans.AmountRefunded;
 
                     if (remainingAmount <= fasBalance)
                     {
