@@ -214,6 +214,15 @@ export class StudentService {
     return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/student`, param);
   }
 
+  getStudentLite(outletId) {
+    return this.commonEndpoint.get<any>(`${this.studentUrl}/byoutlet?outletId=${outletId}`);
+  }
+
+  walletTransfer(studentIdFrom: string, studentIdTo: string, amount: number, userId: string){
+    const param = { studentIdFrom: studentIdFrom, studentIdTo: studentIdTo, amount: amount, userId: userId }
+    return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/transfer`, param);
+  }
+
   getStudentPointTransactionsByFilter(filter: Filter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.pointUrl + '/transactions/sieve/list', filter);
   }

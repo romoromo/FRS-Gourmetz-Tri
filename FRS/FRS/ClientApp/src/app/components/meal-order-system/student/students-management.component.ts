@@ -22,6 +22,7 @@ import { Subscription } from 'rxjs';
 import { ClassService } from '../../../services/meal-order/class.service';
 import { StudentWalletTopupComponent } from './student-wallet-topup/student-wallet-topup.component';
 import { StudentPointTopupComponent } from './student-point-topup/student-point-topup.component';
+import { StudentWalletTransferComponent } from './student-wallet-transfer/student-wallet-transfer.component';
 
 @Component({
   selector: 'students-management',
@@ -566,7 +567,19 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
       });
   }
 
+  walletTransfer(studentId: string) {
+    const dialogRef = this.dialog.open(StudentWalletTransferComponent, {
+      data: { studentId: studentId, outletId: this.outletId },
+      width: '350px',
+      disableClose: true
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadData();
+      }
+    });
+  }
 
   get canManageStudents() {
     return true; //this.accountService.userHasPermission(Permission.manageStudentsPermission)
