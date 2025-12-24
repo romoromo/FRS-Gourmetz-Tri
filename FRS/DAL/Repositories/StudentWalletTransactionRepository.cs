@@ -428,7 +428,7 @@ namespace DAL.Repositories
 
         public async Task<BaseOperationResponse> RefundToWalletBalanceAsync(
             int studentId,
-            double amount,
+            float amount,
             int userId,
             WalletType walletTypeData,
             int? tokenOrderId)
@@ -443,12 +443,6 @@ namespace DAL.Repositories
             }
 
             string walletType = walletTypeData.ToString();
-            //if (string.IsNullOrWhiteSpace(walletType))
-            //{
-            //    result.IsSuccess = false;
-            //    result.Message = "Wallet type must be provided.";
-            //    return result;
-            //}
 
             try
             {
@@ -463,52 +457,122 @@ namespace DAL.Repositories
                 }
 
                 var order = await _appContext.TokenOrders
-                    .FirstOrDefaultAsync(e => e.IsActive && e.Id == tokenOrderId );
+                    .FirstOrDefaultAsync(e => e.IsActive && e.Id == tokenOrderId);
 
 
                 var paymentTransaction = await _appContext.StudentWalletTransactions
                     .FirstOrDefaultAsync(e => e.IsActive && e.TransactionType == WalletTransactionType.DEBIT.ToString() && e.PaymentId == order.PaymentId);
 
-                //
+                //add old flow back when details is null 
+
+                if (paymentTransaction == null || paymentTransaction.Details == null || !paymentTransaction.Details.Any())
+                {
+
+                    if (string.IsNullOrWhiteSpace(walletType))
+                    {
+                        result.IsSuccess = false;
+                        result.Message = "Wallet type must be provided.";
+                        return result;
+                    }
+
+                    try
+                    {
+                        var wallet = await _appContext.StudentWallets
+                            .FirstOrDefaultAsync(w => w.StudentId == studentId && w.Type == walletType);
+
+                        double oldBalance = 0;
+                        if (wallet == null)
+                        {
+                            wallet = new StudentWallet
+                            {
+                                StudentId = studentId,
+                                Balance = amount,
+                                Type = walletType,
+                                CreatedBy = userId,
+                                UpdatedBy = userId
+                            };
+                            await _appContext.StudentWallets.AddAsync(wallet);
+                        }
+                        else
+                        {
+                            oldBalance = wallet.Balance;
+                            wallet.Balance += amount;
+                            wallet.UpdatedBy = userId;
+                        }
+
+                        var oldTransaction = new StudentWalletTransaction
+                        {
+                            Amount = amount,
+                            TransactionType = WalletTransactionType.CREDIT.ToString(),
+                            StudentId = studentId,
+                            Description = $"Refund to {walletType} wallet by {amount:C} for student '{studentData.Name}' (ID={studentId}). " +
+                                          $"Old Balance: {oldBalance:C}, New Balance: {wallet.Balance:C}.",
+                            CreatedBy = userId,
+                            UpdatedBy = userId,
+                            TokenOrderId = tokenOrderId
+                        };
+
+                        var totalWalletBalance = await _appContext.StudentWallets
+                            .AsNoTracking()
+                            .Where(w => w.StudentId == studentId && w.Type != walletType)
+                            .SumAsync(w => (double?)w.Balance) ?? 0;
+                        studentData.WalletBalance = totalWalletBalance + wallet.Balance;
+
+                        await _appContext.StudentWalletTransactions.AddAsync(oldTransaction);
+                        await _appContext.SaveChangesAsync();
+
+                        result.IsSuccess = true;
+                        result.Message = $"Successfully refund to {amount:C} to '{walletType}' wallet for student '{studentData.Name}'. " +
+                                         $"New balance: {wallet.Balance:C}";
+                    }
+                    catch (Exception ex)
+                    {
+                        result.IsSuccess = false;
+                        result.Message = $"Error while Refund '{walletType}' wallet for StudentId={studentId}. Details: {ex.Message}";
+                    }
+
+                    return result;
+                }
 
                 var fasTrans = paymentTransaction.Details.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());
                 var normalTrans = paymentTransaction.Details.FirstOrDefault(x => x.Type == WalletType.BASIC.ToString());
 
-                double remainingAmount = amount;
-                double fasBalance = fasTrans.Amount - fasTrans.AmountRefunded;
-                double normalBalance = normalTrans.Amount - normalTrans.AmountRefunded;
+                var fasRefund = 0.0;
+                var normalRefund = 0.0;
 
-                double fasRefund = 0;
-                double normalRefund = 0;
-
-
-                if (remainingAmount <= fasBalance)
+                if (fasTrans != null && normalTrans != null)
                 {
-                    fasTrans.AmountRefunded += remainingAmount;
-                    fasRefund += remainingAmount;
-                    remainingAmount = 0;
-                }
-                else
-                {
-                    remainingAmount -= fasBalance;
-                    fasTrans.AmountRefunded = fasTrans.Amount;
-                    fasRefund += fasBalance;
-                    if (normalBalance >= remainingAmount)
+                    var remainingAmount = amount;
+                    var fasBalance = fasTrans.Amount - fasTrans.AmountRefunded;
+                    var normalBalance = normalTrans.Amount - normalTrans.AmountRefunded;
+
+                    if (remainingAmount <= fasBalance)
                     {
-                        normalTrans.AmountRefunded += remainingAmount;
-                        normalRefund += remainingAmount;
+                        fasTrans.AmountRefunded += remainingAmount;
+                        fasRefund += remainingAmount;
                         remainingAmount = 0;
                     }
                     else
                     {
-                        result.IsSuccess = false;
-                        result.Message = "Insufficient payment to refund.";
-                        return result;
+                        remainingAmount -= fasBalance;
+                        fasTrans.AmountRefunded = fasTrans.Amount;
+                        fasRefund += fasBalance;
+                        if (normalBalance >= remainingAmount)
+                        {
+                            normalTrans.AmountRefunded += remainingAmount;
+                            normalRefund += remainingAmount;
+                            remainingAmount = 0;
+                        }
+                        else
+                        {
+                            result.IsSuccess = false;
+                            result.Message = "Insufficient payment to refund.";
+                            return result;
+                        }
                     }
+
+                    await this.UpdateAsync(paymentTransaction);
                 }
-
-                await this.UpdateAsync(paymentTransaction);
-
                 double oldFasBalance = 0;
                 double oldNormalBalance = 0;
 
@@ -547,7 +611,6 @@ namespace DAL.Repositories
 
                 if (normalRefund > 0)
                 {
-
                     if (normalWallet == null)
                     {
                         normalWallet = new StudentWallet
