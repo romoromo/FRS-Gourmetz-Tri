@@ -18,4 +18,12 @@ namespace FRS.ViewModels.MealOrder
         public double Amount { get; set; }
         public int UserId { get; set; }
     }
+
+    public class StudentWalletTransfer
+    {
+        public int StudentIdFrom { get; set; }
+        public int StudentIdTo { get; set; }
+        public double Amount { get; set; }
+        public int UserId { get; set; }
+    }
 }

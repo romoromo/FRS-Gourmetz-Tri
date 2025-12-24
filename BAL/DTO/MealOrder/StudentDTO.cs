@@ -239,4 +239,10 @@ namespace BAL.DTO.MealOrder
         public string ConfirmationCode { get; set; }
         public DateTime? Date { get; set; }
     }
+
+    public class StudentLiteDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
 }

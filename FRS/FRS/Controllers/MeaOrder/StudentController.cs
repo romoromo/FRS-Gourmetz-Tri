@@ -570,6 +570,16 @@ namespace FRS.Controllers
 
         }
 
+        [HttpGet("students/byoutlet")]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(List<StudentLiteDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetStudentByOutlet(int outletId)
+        {
+            var results = await this._service.GetStudentByOutletAsync(outletId);
+            return Ok(results);
+        }
+
         #endregion
 
         #region Student Cards
@@ -1476,6 +1486,37 @@ namespace FRS.Controllers
             );
         }
 
+        [ApiKeyAuthorize]
+        [HttpPost("wallet/transfer")]
+        [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> TransferWallet([FromBody] StudentWalletTransfer model)
+        {
+            string dataJSON = JsonConvert.SerializeObject(model);
+            _logger.LogInformation($"TransferWallet Model : {dataJSON}");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (model == null)
+                        return BadRequest($"{nameof(model)} cannot be null");
+
+                    var result = await this._walletService.WalletTransfer(model.StudentIdFrom, model.StudentIdTo, model.Amount, model.UserId);
+                    return Ok(result);
+
+                }
+
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error TransferWallet : {ex.Message}", ex);
+                _logger.LogError($"Error TransferWallet : {ex.StackTrace}", ex);
+                return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
+            }
+        }
         #endregion
 
         #region point

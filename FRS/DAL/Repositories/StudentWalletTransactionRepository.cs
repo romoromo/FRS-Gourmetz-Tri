@@ -175,7 +175,8 @@ namespace DAL.Repositories
                         result.IsSuccess = false;
                         result.Message = "Insufficient balance.";
                         return result;
-                    } else if (student.IsWalletFreeze)
+                    }
+                    else if (student.IsWalletFreeze)
                     {
                         result.IsSuccess = false;
                         result.Message = "Wallet is Freezed";
@@ -219,8 +220,8 @@ namespace DAL.Repositories
         }
 
         public async Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(
-            int studentGroupId, 
-            double amount, 
+            int studentGroupId,
+            double amount,
             int userId,
             WalletType walletTypeData)
         {
@@ -463,7 +464,7 @@ namespace DAL.Repositories
                 }
 
                 var order = await _appContext.TokenOrders
-                    .FirstOrDefaultAsync(e => e.IsActive && e.Id == tokenOrderId );
+                    .FirstOrDefaultAsync(e => e.IsActive && e.Id == tokenOrderId);
 
 
                 var paymentTransaction = await _appContext.StudentWalletTransactions
@@ -663,6 +664,117 @@ namespace DAL.Repositories
             return result;
         }
 
+        public async Task<BaseOperationResponse> WalletTransfer(int studentIdFrom, int studentIdTo, double amount, int userId)
+        {
+            var result = new BaseOperationResponse();
+
+            if (amount <= 0)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Invalid top-up amount: {amount}. Amount must be greater than zero.";
+                return result;
+            }
+
+            if (studentIdFrom == studentIdTo)
+            {
+                result.IsSuccess = false;
+                result.Message = "Source and destination students must be different.";
+                return result;
+            }
+
+            var studentSource = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive && e.Id == studentIdFrom);
+            if (studentSource == null)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Student with Id={studentIdFrom} not found or inactive.";
+                return result;
+            }
+
+            var studentDestination = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive && e.Id == studentIdTo);
+            if (studentDestination == null)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Student with Id={studentIdTo} not found or inactive.";
+                return result;
+            }
+
+            var sourceWalletBalance = await _appContext.StudentWallets.FirstOrDefaultAsync(m => m.StudentId == studentIdFrom && m.IsActive && m.Type == WalletType.BASIC.ToString());
+            if (sourceWalletBalance == null || sourceWalletBalance?.Balance < amount)
+            {
+                result.IsSuccess = false;
+                result.Message = $"Student with Id={studentIdFrom} does not have enough balance.";
+                return result;
+            }
+
+            using var transaction = await _appContext.Database.BeginTransactionAsync();
+            try
+            {
+                //Debit from source student
+                sourceWalletBalance.Balance -= amount;
+                studentSource.WalletBalance -= amount;
+
+                //Credit to destination student
+                var destinationWallet = await _appContext.StudentWallets.FirstOrDefaultAsync(m => m.StudentId == studentIdTo && m.IsActive && m.Type == WalletType.BASIC.ToString());
+                if (destinationWallet == null)
+                {
+                    destinationWallet = new StudentWallet
+                    {
+                        StudentId = studentIdTo,
+                        Balance = amount,
+                        Type = WalletType.BASIC.ToString(),
+                        CreatedBy = userId,
+                        UpdatedBy = userId
+                    };
+                    await _appContext.StudentWallets.AddAsync(destinationWallet);
+                }
+                else
+                {
+                    destinationWallet.Balance += amount;
+                    destinationWallet.UpdatedBy = userId;
+                }
+
+                var totalWalletBalance = await _appContext.StudentWallets
+                    .AsNoTracking()
+                    .Where(w => w.StudentId == studentIdTo)
+                    .SumAsync(w => (double?)w.Balance) ?? 0;
+
+                studentDestination.WalletBalance = totalWalletBalance;
+
+
+                await _appContext.StudentWalletTransactions.AddRangeAsync(
+                            new StudentWalletTransaction
+                            {
+                                StudentId = studentIdFrom,
+                                Amount = amount,
+                                TransactionType = WalletTransactionType.DEBIT.ToString(),
+                                Description = $"Transfer to StudentId {studentIdTo} - amount: {amount: C}",
+                                CreatedBy = userId
+                            },
+                            new StudentWalletTransaction
+                            {
+                                StudentId = studentIdTo,
+                                Amount = amount,
+                                TransactionType = WalletTransactionType.CREDIT.ToString(),
+                                Description = $"Transfer from StudentId {studentIdFrom} - amount: {amount: C}",
+                                CreatedBy = userId
+                            }
+                        );
+                await _appContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                result.IsSuccess = true;
+                result.Message = $"Successfully transfer balance {amount:C} from '{studentIdFrom} - {studentSource.Name}' wallet to student '{studentIdFrom} - {studentDestination.Name}'. ";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+
+                result.IsSuccess = false;
+                result.Message = $"Error while transfer wallet for StudentId={studentIdFrom} to StudentId={studentIdTo}. Details: {ex.Message}";
+            }
+
+            return result;
+        }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
