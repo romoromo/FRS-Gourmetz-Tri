@@ -1,4 +1,5 @@
 ﻿using DAL.Core;
+using DAL.Core.Helpers;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
@@ -670,50 +671,71 @@ namespace DAL.Repositories
 
             if (amount <= 0)
             {
-                result.IsSuccess = false;
-                result.Message = $"Invalid top-up amount: {amount}. Amount must be greater than zero.";
-                return result;
+                return new BaseOperationResponse
+                {
+                    IsSuccess = false,
+                    Message = "Transfer amount must be greater than zero."
+                };
             }
 
             if (studentIdFrom == studentIdTo)
             {
-                result.IsSuccess = false;
-                result.Message = "Source and destination students must be different.";
-                return result;
+                return new BaseOperationResponse
+                {
+                    IsSuccess = false,
+                    Message = "Source and destination students must be different."
+                };
             }
 
             var studentSource = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive && e.Id == studentIdFrom);
             if (studentSource == null)
             {
-                result.IsSuccess = false;
-                result.Message = $"Student with Id={studentIdFrom} not found or inactive.";
-                return result;
+                return new BaseOperationResponse
+                {
+                    IsSuccess = false,
+                    Message = $"Source student (Id={studentIdFrom}) not found or inactive."
+                };
             }
 
             var studentDestination = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive && e.Id == studentIdTo);
             if (studentDestination == null)
             {
-                result.IsSuccess = false;
-                result.Message = $"Student with Id={studentIdTo} not found or inactive.";
-                return result;
-            }
-
-            var sourceWalletBalance = await _appContext.StudentWallets.FirstOrDefaultAsync(m => m.StudentId == studentIdFrom && m.IsActive && m.Type == WalletType.BASIC.ToString());
-            if (sourceWalletBalance == null || sourceWalletBalance?.Balance < amount)
-            {
-                result.IsSuccess = false;
-                result.Message = $"Student with Id={studentIdFrom} does not have enough balance.";
-                return result;
+                return new BaseOperationResponse
+                {
+                    IsSuccess = false,
+                    Message = $"Destination student (Id={studentIdTo}) not found or inactive."
+                };
             }
 
             using var transaction = await _appContext.Database.BeginTransactionAsync();
             try
             {
+                _appContext.AuditUserActivityType = new AuditUserActivityType
+                {
+                    GroupId = Common.GenerateUniqueStringId(),
+                    ActionName = UserActivityType.STUDENT_WALLET_TRANSFER.ToString(),
+                    Remarks = $"Transfer {amount} from StudentId {studentIdFrom} to StudentId {studentIdTo}"
+                };
+
+                var sourceWalletBalance = await _appContext.StudentWallets.FirstOrDefaultAsync(m => m.StudentId == studentIdFrom && m.IsActive && m.Type == WalletType.BASIC.ToString());
+                if (sourceWalletBalance == null || sourceWalletBalance?.Balance < amount)
+                {
+                    return new BaseOperationResponse
+                    {
+                        IsSuccess = false,
+                        Message = $"Student '{studentSource.Name}' does not have sufficient balance."
+                    };
+                }
+
                 //Debit from source student
                 sourceWalletBalance.Balance -= amount;
+                sourceWalletBalance.UpdatedBy = userId;
+
                 studentSource.WalletBalance -= amount;
 
                 //Credit to destination student
+                var totalWalletBalance = await _appContext.StudentWallets.Where(m => m.StudentId == studentIdTo && m.IsActive).SumAsync(w => (double?)w.Balance) ?? 0;
+
                 var destinationWallet = await _appContext.StudentWallets.FirstOrDefaultAsync(m => m.StudentId == studentIdTo && m.IsActive && m.Type == WalletType.BASIC.ToString());
                 if (destinationWallet == null)
                 {
@@ -733,13 +755,8 @@ namespace DAL.Repositories
                     destinationWallet.UpdatedBy = userId;
                 }
 
-                var totalWalletBalance = await _appContext.StudentWallets
-                    .AsNoTracking()
-                    .Where(w => w.StudentId == studentIdTo)
-                    .SumAsync(w => (double?)w.Balance) ?? 0;
 
-                studentDestination.WalletBalance = totalWalletBalance;
-
+                studentDestination.WalletBalance = totalWalletBalance + amount;
 
                 await _appContext.StudentWalletTransactions.AddRangeAsync(
                             new StudentWalletTransaction
@@ -747,7 +764,7 @@ namespace DAL.Repositories
                                 StudentId = studentIdFrom,
                                 Amount = amount,
                                 TransactionType = WalletTransactionType.DEBIT.ToString(),
-                                Description = $"Transfer to StudentId {studentIdTo} - amount: {amount: C}",
+                                Description = $"Transfer to StudentId {studentIdTo} - amount: {amount}",
                                 CreatedBy = userId
                             },
                             new StudentWalletTransaction
@@ -755,7 +772,7 @@ namespace DAL.Repositories
                                 StudentId = studentIdTo,
                                 Amount = amount,
                                 TransactionType = WalletTransactionType.CREDIT.ToString(),
-                                Description = $"Transfer from StudentId {studentIdFrom} - amount: {amount: C}",
+                                Description = $"Transfer from StudentId {studentIdFrom} - amount: {amount}",
                                 CreatedBy = userId
                             }
                         );
@@ -763,14 +780,14 @@ namespace DAL.Repositories
                 await transaction.CommitAsync();
 
                 result.IsSuccess = true;
-                result.Message = $"Successfully transfer balance {amount:C} from '{studentIdFrom} - {studentSource.Name}' wallet to student '{studentIdFrom} - {studentDestination.Name}'. ";
+                result.Message = $"Successfully transfer balance {amount} from '{studentIdFrom} - {studentSource.Name}' wallet to student '{studentIdTo} - {studentDestination.Name}'. ";
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
 
                 result.IsSuccess = false;
-                result.Message = $"Error while transfer wallet for StudentId={studentIdFrom} to StudentId={studentIdTo}. Details: {ex.Message}";
+                result.Message = $"Error while transfer wallet from StudentId={studentIdFrom} to StudentId={studentIdTo}. Details: {ex.Message}";
             }
 
             return result;

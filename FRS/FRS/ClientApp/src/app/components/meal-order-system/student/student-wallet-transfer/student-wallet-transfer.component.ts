@@ -1,7 +1,7 @@
 import { Component, Inject } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
 import { AccountService } from "src/app/services/account.service";
-import { AlertService, MessageSeverity } from "src/app/services/alert.service";
+import { AlertService, DialogType, MessageSeverity } from "src/app/services/alert.service";
 import { StudentService } from "src/app/services/meal-order/student.service";
 
 @Component({
@@ -53,33 +53,36 @@ export class StudentWalletTransferComponent {
 
     const normalized = val;
     const amount = parseFloat(normalized);
-
     console.log("Parsed amount:", this.data);
     if (isNaN(amount) || amount <= 0) {
-      this.alertService.showStickyMessage("Invalid Input", "Please enter a valid positive amount (numbers only, decimals allowed).", MessageSeverity.error);
-      return;
+        this.alertService.showStickyMessage("Invalid Input", "Please enter a valid positive amount (numbers only, decimals allowed).", MessageSeverity.error);
+        return;
     }
-    this.isSaving = true;
-    this.alertService.startLoadingMessage("Processing Wallet Transfer...");
-    this.studentService.walletTransfer(studentIdFrom, studentIdTo, amount, this.accountService.currentUser.id)
-      .subscribe({
-        next: (response) => {
-          this.alertService.stopLoadingMessage();
-          this.isSaving = false;
-          this.alertService.showMessage(response.message);
 
-          if (response.data && response.data.length > 0) {
-            const messageData = response.data.join("<br/><br/>");
-            this.alertService.showStickyMessage("Wallet Transfer Info", messageData, MessageSeverity.info);
-          }
-          this.dialogRef.close(this.data);
-        },
-        error: () => {
-          this.alertService.stopLoadingMessage();
-          this.isSaving = false;
-          this.alertService.showStickyMessage("Wallet Transfer Error", "Unable to transfer amount.", MessageSeverity.error );
-        },
-      });
+    this.alertService.showDialog('Are you sure you want to transfer the amount \"' + amount + '\"?', DialogType.confirm, () => {
+        
+        this.isSaving = true;
+        this.alertService.startLoadingMessage("Processing Wallet Transfer...");
+        this.studentService.walletTransfer(studentIdFrom, studentIdTo, amount, this.accountService.currentUser.id)
+          .subscribe({
+            next: (response) => {
+              this.alertService.stopLoadingMessage();
+              this.isSaving = false;
+              this.alertService.showMessage(response.message);
+
+              if (response.data && response.data.length > 0) {
+                const messageData = response.data.join("<br/><br/>");
+                this.alertService.showStickyMessage("Wallet Transfer Info", messageData, MessageSeverity.info);
+              }
+              this.dialogRef.close(this.data);
+            },
+            error: () => {
+              this.alertService.stopLoadingMessage();
+              this.isSaving = false;
+              this.alertService.showStickyMessage("Wallet Transfer Error", "Unable to transfer amount.", MessageSeverity.error );
+            },
+          });
+    });
   }
 
   close() {
