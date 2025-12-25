@@ -105,9 +105,9 @@ namespace BAL.Services.MealOrder
             return _mapper.Map<StudentDTO>(await this._uow.Students.GetStudentByEmailAsync(email));
         }
 
-        public async Task<StudentDTO> GetStudentByEmailOrIdAsync(string email,int id)
+        public async Task<StudentDTO> GetStudentByEmailOrIdAsync(string email, int id)
         {
-            if(string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(email))
                 return await GetStudentByIdAsync(id);
             else
                 return await GetStudentByEmailAsync(email);
@@ -190,7 +190,7 @@ namespace BAL.Services.MealOrder
                     headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
                     headerStyle.SetFont(headerFont);
                     headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
-                    var row = sheet.CreateRow(rowCount);var borderedHeaderStyle = wb.CreateCellStyle();
+                    var row = sheet.CreateRow(rowCount); var borderedHeaderStyle = wb.CreateCellStyle();
                     borderedHeaderStyle.SetFont(headerFont);
                     borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
                     borderedHeaderStyle.BorderTop = BorderStyle.Thin;
@@ -420,7 +420,7 @@ namespace BAL.Services.MealOrder
             }
         }
 
-        public async Task<byte[]> GenerateStudentListXls(int outletId,int studentGroupId)
+        public async Task<byte[]> GenerateStudentListXls(int outletId, int studentGroupId)
         {
             var studentGroup = await _uow.StudentGroups.GetAllStudentGroupDetailByIdAsync(studentGroupId);
             var studentIdLinked = studentGroup.Select(x => x.StudentId).Distinct().ToList();
@@ -431,7 +431,7 @@ namespace BAL.Services.MealOrder
                 var wb = new XSSFWorkbook();
                 var rowCount = 0;
                 var sheet = (XSSFSheet)wb.CreateSheet("Students");
-                var headers = new string[] { "Student ID","Name"};
+                var headers = new string[] { "Student ID", "Name" };
 
                 #region Headers
 
@@ -495,9 +495,9 @@ namespace BAL.Services.MealOrder
             }
         }
 
-        public async Task<bool> ImportStudentGroupAsync(List<int> studentids,int studentGroupId,int userId)
+        public async Task<bool> ImportStudentGroupAsync(List<int> studentids, int studentGroupId, int userId)
         {
-            var result = await _uow.Students.ImportStudentGroupAsync(studentids, studentGroupId,userId);
+            var result = await _uow.Students.ImportStudentGroupAsync(studentids, studentGroupId, userId);
             return result;
         }
 
@@ -511,6 +511,16 @@ namespace BAL.Services.MealOrder
             return await this._uow.Students.UpdateDailyLimit(studentId, dailyLimit);
         }
 
+        public async Task<List<StudentLiteDTO>> GetStudentByOutletAsync(int outletId)
+        {
+            var query = await this._uow.Students.GetAllStudentsAsync();
+            return query.Where(m => m.OutletId == outletId && m.IsActive)
+                .Select(m => new StudentLiteDTO
+                {
+                    Id = m == null ? 0 : m.Id,
+                    Name = m == null ? "" : m.Name,
+                })?.ToList();
+        }
         #endregion
 
         #region Student Card
@@ -617,7 +627,7 @@ namespace BAL.Services.MealOrder
                 result.IsSuccess = false;
                 result.Message = ex.Message;
             }
-            
+
             return result;
         }
 
@@ -713,7 +723,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<bool> CreateOrUpdateStudentGroupDetailAsync(int StudentGroupId, int StudentId, bool IsActive)
         {
-            
+
             var result = await this._uow.StudentGroups.CreateOrUpdateStudentGroupDetailAsync(StudentGroupId, StudentId, IsActive);
             return result;
         }
@@ -728,7 +738,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<List<StudentVoucherDTO>> GetStudentVouchersAsync(int studentId)
         {
-            return _mapper.Map< List<StudentVoucherDTO>>(await this._uow.StudentCards.GetStudentVouchersAsync(studentId));
+            return _mapper.Map<List<StudentVoucherDTO>>(await this._uow.StudentCards.GetStudentVouchersAsync(studentId));
         }
 
         public async Task<List<VoucherDTO>> GetVouchersAsync(int studentId)
@@ -801,6 +811,5 @@ namespace BAL.Services.MealOrder
         {
             return await this._uow.EmailConfirms.GetByIdAsync(id);
         }
-
     }
 }

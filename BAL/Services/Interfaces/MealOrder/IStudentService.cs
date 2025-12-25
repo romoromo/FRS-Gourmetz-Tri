@@ -22,6 +22,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateAccountAsync(List<int> ids, bool generateRandomPassword, string defaultPassword);
         Task<BaseOperationResponse> ImportStudentAsync(List<StudentImportDTO> dto);
         Task<byte[]> GenerateStudentReportXls(BaseFilter filter);
+        Task<List<StudentLiteDTO>> GetStudentByOutletAsync(int outletId);
 
         Task<StudentDTO> GetStudentByCardIdAsync(string cardId);
         Task<BaseOperationResponse> ActivateStudentCardByIdAsync(string cardId);

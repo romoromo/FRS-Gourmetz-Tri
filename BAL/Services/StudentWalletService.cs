@@ -6,6 +6,7 @@ using DAL;
 using DAL.Core;
 using DAL.Filters;
 using DAL.Models;
+using DAL.Models.MealOrder;
 using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -233,6 +234,11 @@ namespace BAL.Services
             {
                 return null;
             }
+        }
+
+        public async Task<BaseOperationResponse> WalletTransfer(int studentIdFrom, int studentIdTo, double amount, int userId)
+        {
+            return await this._uow.StudentWalletTransactions.WalletTransfer(studentIdFrom, studentIdTo, amount, userId);
         }
     }
 }

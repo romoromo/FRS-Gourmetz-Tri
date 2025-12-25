@@ -210,6 +210,7 @@ namespace DAL.Core
         CANCEL_ORDER_CREATE,
         CANCEL_ORDER_UPDATE,
         CANCEL_ORDER_DELETE,
+        STUDENT_WALLET_TRANSFER,
     }
 
     public enum MealCollectionType
