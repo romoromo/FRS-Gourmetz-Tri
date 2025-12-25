@@ -76,6 +76,7 @@ export class PrintAllocationComponent implements OnInit {
   periodPlaceholder = "Meal Period have not been setup";
   mealPeriods: any[];
   mealSessions: any[];
+  routes = [];
   //dish_count: TokenDishLabel[] = [];
 
   constructor(
@@ -103,6 +104,7 @@ export class PrintAllocationComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getRoutes();
     this.getMenuDishes();
     this.getMealTypes();
     this.getPeriodsByDate();
@@ -149,8 +151,13 @@ export class PrintAllocationComponent implements OnInit {
         (x) => x.id === sessionDetailSelected.mealSessionId
       );
 
+      let routeSelected = this.routes.find(
+        (x) => x.id === sessionDetailSelected.routeId
+      );
+
       this.allocation.outletId = sessionSelected.mealPeriodId;
-      this.allocation.timePacked = sessionDetailSelected.routeTime;
+      this.allocation.timePacked = routeSelected.pickup;
+      this.allocation.color = routeSelected.color;
       this.selectedPeriodName = sessionDetailSelected.name;
 
       console.log("Allocation : ", this.allocation);
@@ -196,6 +203,19 @@ export class PrintAllocationComponent implements OnInit {
         );
       }
     );
+  }
+
+  getRoutes() {
+    let filter = new Filter();
+    filter.filters = '(IsActive)==true';
+    this.deliveryService.getRoutesByFilter(filter)
+      .subscribe(results => {
+        this.routes = results.pagedData;
+      },
+        error => {
+          this.alertService.showStickyMessage("Get Error", `An error occured while retrieving routes.\r\n"`,
+            MessageSeverity.error);
+        })
   }
 
   private cancel() {
@@ -288,16 +308,29 @@ export class PrintAllocationComponent implements OnInit {
         }
 
         if (!this.isNewAllocation) {
+          console.log("edit allocation: ", this.token_count)
           this.token_count.forEach((t) => {
             if (t.timePacked == null) {
               let sessionDetailSelected = this.sessions.find(
                 (x) => x.id === this.allocation.mealSessionId
               );
 
-              t.timePacked = sessionDetailSelected.routeTime;
-              t.color = sessionDetailSelected.routeColor;
+              console.log("session selected: ", sessionDetailSelected)
+
+              console.log("routes: ", this.routes)
+
+              let routeSelected = this.routes.find(
+                (x) => x.id === sessionDetailSelected.routeId
+              );
+
+              console.log("route selected: ", routeSelected)
+
+              t.timePacked = routeSelected.pickup;
+              t.color = routeSelected.color;
             }
           });
+
+          console.log("token_count: ", this.token_count )
         }
 
         this.filterLoading = false;
@@ -403,6 +436,7 @@ export class PrintAllocationComponent implements OnInit {
               token.token_id = t.tokenId;
               token.meal_allocation_id = this.allocation.id;
               token.timePacked = this.allocation.timePacked;
+              token.color = this.allocation.color;
               token.token_name = this.getTokenName(t.tokenId);
               console.log("combined dish: ", t.selectedCombinedDishes.length);
               if (t.selectedCombinedDishes.length > 0) {
@@ -622,6 +656,7 @@ export class PrintAllocationComponent implements OnInit {
                 newToken.qty_tdishes = 0;
                 newToken.deliveryDate = strDate[0];
                 newToken.timePacked = this.allocation.timePacked;
+                newToken.color = this.allocation.color;
                 newToken.dishes = [];
                 return newToken;
               });

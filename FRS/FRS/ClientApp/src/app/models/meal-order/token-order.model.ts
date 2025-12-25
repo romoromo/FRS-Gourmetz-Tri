@@ -102,6 +102,7 @@ export class MealAllocation {
   public outletId: string;
   public kitchenId: string;
   public timePacked: Date;
+  public color: string;
   public tokens: TokenLabel[];
 }
 
