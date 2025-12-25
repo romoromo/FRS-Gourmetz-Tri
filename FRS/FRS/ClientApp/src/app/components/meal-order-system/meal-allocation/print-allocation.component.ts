@@ -108,7 +108,6 @@ export class PrintAllocationComponent implements OnInit {
     this.getMenuDishes();
     this.getMealTypes();
     this.getPeriodsByDate();
-    this.getAllSessions();
     //this.getTokenOrder();
   }
 
@@ -211,6 +210,7 @@ export class PrintAllocationComponent implements OnInit {
     this.deliveryService.getRoutesByFilter(filter)
       .subscribe(results => {
         this.routes = results.pagedData;
+        this.getAllSessions();
       },
         error => {
           this.alertService.showStickyMessage("Get Error", `An error occured while retrieving routes.\r\n"`,
