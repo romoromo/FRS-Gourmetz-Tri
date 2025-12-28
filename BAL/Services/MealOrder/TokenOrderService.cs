@@ -2797,13 +2797,15 @@ namespace BAL.Services.MealOrder
 
                                 string uniqueCode = "B" + cleanDate + dto[i].meal_allocation_id.ToString().PadLeft(5, '0') + dto[i].dishes[j].dish_id.ToString().PadLeft(4, '0') + dto[i].dishes[j].token_id.ToString().PadLeft(3, '0') + k.ToString().PadLeft(3, '0');
 
-                                
+                                var timePacked = dto[i].timePacked == null ? "-" : dto[i].timePacked.Value.ToString("hh:mm tt");
+                                var timeConsume = dto[i].timePacked == null ? "-" : dto[i].timePacked.Value.AddHours(4).ToString("hh:mm tt");
+
                                 string qrCodeData = uniqueCode + 
                                     " Dish : " + dto[i].dishes[j].dish_name 
-                                    + "', Packed: " + dto[i].deliveryDate + " " + 
-                                    dto[i].timePacked.Value.ToString("hh:mm tt") + ", Consume By: " + 
-                                    dto[i].deliveryDate + " " + 
-                                    dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt") + "\n";
+                                    + "', Packed: " + dto[i].deliveryDate + " " +
+                                    timePacked + ", Consume By: " + 
+                                    dto[i].deliveryDate + " " +
+                                    timeConsume + "\n";
                                 BarcodeQRCode barcodeQRCode = new BarcodeQRCode(qrCodeData, 15, 15, null); // width, height, parameters
 
                                 iTextSharp.text.Image qrCodeImage = barcodeQRCode.GetImage();
@@ -2839,7 +2841,7 @@ namespace BAL.Services.MealOrder
                                 para3.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para3);
 
-                                Chunk c = new Chunk("Time Packed: " + dto[i].timePacked.Value.ToString("hh:mm tt"), new iTextSharp.text.Font(allerfont, 4));
+                                Chunk c = new Chunk("Time Packed: " + timePacked, new iTextSharp.text.Font(allerfont, 4));
                                 if (dto[i].color != null && dto[i].color != "")
                                 {
                                     c.SetBackground(new BaseColor(ColorTranslator.FromHtml(dto[i].color)));
@@ -2852,7 +2854,7 @@ namespace BAL.Services.MealOrder
                                 para5.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para5);
 
-                                Paragraph para6 = new Paragraph("At: " + dto[i].timePacked.Value.AddHours(4).ToString("hh: mm tt"), new iTextSharp.text.Font(allerfont, 4));
+                                Paragraph para6 = new Paragraph("At: " + timeConsume, new iTextSharp.text.Font(allerfont, 4));
                                 para6.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para6);
 
