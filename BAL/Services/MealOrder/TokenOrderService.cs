@@ -33,6 +33,7 @@ using NodaTime.Calendars;
 using NPOI.HSSF.Util;
 using static System.Net.WebRequestMethods;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 
 namespace BAL.Services.MealOrder
 {
@@ -47,9 +48,10 @@ namespace BAL.Services.MealOrder
         private IDishService _dishService;
         private IStudentWalletService _studentWalletService;
         private readonly IMapper _mapper;
+        readonly ILogger<TokenOrderService> _logger;
 
         public TokenOrderService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, ApplicationDbContext context,
-            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService, IStudentWalletService studentWalletService)
+            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService, IStudentWalletService studentWalletService, ILogger<TokenOrderService> logger)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
@@ -60,6 +62,7 @@ namespace BAL.Services.MealOrder
             this._deliveryService = deliveryService;
             this._dishService = dishService;
             this._studentWalletService = studentWalletService;
+            _logger = logger;
         }
 
         #region TokenOrder
@@ -1355,7 +1358,8 @@ namespace BAL.Services.MealOrder
                             }
                         }
 
-                    };
+                    }
+                    ;
 
                     AllSessions = AllSessions.OrderBy(o => o.startTime).ToList();
 
@@ -1715,7 +1719,8 @@ namespace BAL.Services.MealOrder
                             }
                         }
 
-                    };
+                    }
+                    ;
 
                     //AllSessions = AllSessions.OrderBy(o => o.startTime).ToList();
                     AllRoutes.Sort((x, y) => TimeSpan.Compare(x.startTime, y.startTime));
@@ -2067,8 +2072,8 @@ namespace BAL.Services.MealOrder
                                 {
                                     DOReportSessionDTO als = rot.
                                         sessions.
-                                        Find(r => (r.mealSessionDetailId == 
-                                        a.MealSessionDetail.Id) 
+                                        Find(r => (r.mealSessionDetailId ==
+                                        a.MealSessionDetail.Id)
                                         && (!r.isFas));
                                     sess.isFas = false;
 
@@ -2133,7 +2138,7 @@ namespace BAL.Services.MealOrder
                                         //route
                                         var routeIn = new DOReportRouteDTO();
                                         routeIn.isFas = false;
-                                        if(t.order_id.HasValue && t.order_id != 0 && t.Order.IsFAS)
+                                        if (t.order_id.HasValue && t.order_id != 0 && t.Order.IsFAS)
                                         {
                                             routeIn.isFas = true;
                                         }
@@ -2214,7 +2219,8 @@ namespace BAL.Services.MealOrder
                             }
                         }
 
-                    };
+                    }
+                    ;
 
                     //AllSessions = AllSessions.OrderBy(o => o.startTime).ToList();
                     AllRoutes.Sort((x, y) => TimeSpan.Compare(x.startTime, y.startTime));
@@ -2744,6 +2750,9 @@ namespace BAL.Services.MealOrder
                     PdfWriter writer = PdfWriter.GetInstance(document, stream);
                     document.Open();
 
+                    var mealAllocationIDs = dto.Select(m => m.meal_allocation_id).Distinct();
+                    var mealAllocations = _appContext.MealAllocations.Where(m => mealAllocationIDs.Contains(m.Id))
+                        .Include(m => m.MealSessionDetail).ThenInclude(m => m.Route);
 
                     for (int i = 0; i < dto.Length; i++)
                     {
@@ -2799,11 +2808,31 @@ namespace BAL.Services.MealOrder
 
                                 var timePacked = dto[i].timePacked == null ? "-" : dto[i].timePacked.Value.ToString("hh:mm tt");
                                 var timeConsume = dto[i].timePacked == null ? "-" : dto[i].timePacked.Value.AddHours(4).ToString("hh:mm tt");
+                                var color = "";
 
-                                string qrCodeData = uniqueCode + 
-                                    " Dish : " + dto[i].dishes[j].dish_name 
+                                _logger.LogInformation("GenerateOrderLabel - timePacked has value : " + dto[i].timePacked.HasValue);
+                                _logger.LogInformation("GenerateOrderLabel - timePacked: " + timePacked);
+
+                                if (dto[i].timePacked == null)
+                                {
+                                    var mealAllocation = await mealAllocations.FirstOrDefaultAsync(m => m.Id == dto[i].meal_allocation_id);
+                                    DateTime? pickupTime = mealAllocation?.MealSessionDetail?.Route?.Pickup;
+                                    if (pickupTime.HasValue)
+                                    {
+                                        timePacked = pickupTime.Value.ToString("hh:mm tt");
+                                        timeConsume = pickupTime.Value.AddHours(4).ToString("hh:mm tt");
+
+                                        color = mealAllocation?.MealSessionDetail?.Route?.Color;
+
+                                        _logger.LogInformation("GenerateOrderLabel - timePacked: " + timePacked);
+                                    }
+                                }
+
+
+                                string qrCodeData = uniqueCode +
+                                    " Dish : " + dto[i].dishes[j].dish_name
                                     + "', Packed: " + dto[i].deliveryDate + " " +
-                                    timePacked + ", Consume By: " + 
+                                    timePacked + ", Consume By: " +
                                     dto[i].deliveryDate + " " +
                                     timeConsume + "\n";
                                 BarcodeQRCode barcodeQRCode = new BarcodeQRCode(qrCodeData, 15, 15, null); // width, height, parameters
@@ -2842,9 +2871,9 @@ namespace BAL.Services.MealOrder
                                 columnLeft.AddElement(para3);
 
                                 Chunk c = new Chunk("Time Packed: " + timePacked, new iTextSharp.text.Font(allerfont, 4));
-                                if (dto[i].color != null && dto[i].color != "")
+                                if (color != "")
                                 {
-                                    c.SetBackground(new BaseColor(ColorTranslator.FromHtml(dto[i].color)));
+                                    c.SetBackground(new BaseColor(ColorTranslator.FromHtml(color)));
                                 }
                                 Paragraph para4 = new Paragraph(c);
                                 para4.Alignment = Element.ALIGN_CENTER;
