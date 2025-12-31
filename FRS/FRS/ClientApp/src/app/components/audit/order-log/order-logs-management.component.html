@@ -76,6 +76,7 @@
       <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>
       <button type="button" class="btn btn-sm btn-info" (click)="downloadResults();" style="margin-left:5px;">Download (Financial) </button>
       <button type="button" class="btn btn-sm btn-info" (click)="downloadFlattentResults();" style="margin-left:5px;">Download (Operations)</button>
+      <button type="button" class="btn btn-sm btn-warning" (click)="cancelSelectedOrders();" style="margin-left: 5px;" [disabled]="loadingIndicator">Cancel Order</button>
     </div>
   </div>
 
@@ -90,7 +91,7 @@
     </select>
   </div>
   
-  <div class="table-responsive">
+  <div class="table-responsive" style="padding-top: 5px;">
     <ngx-datatable class="material colored-header" #orderLogTable
                    [loadingIndicator]="loadingIndicator"
                    [rows]="rows"
@@ -104,11 +105,25 @@
                    [count]="pagedResult.totalCount"
                    [limit]="pagedResult.filter.pageSize"
                    (page)="loadData($event)"
-                   (sort)="loadData($event)">
+                   (sort)="loadData($event)"
+                   
+                   [selected]="selected"
+                   [selectionType]="'checkbox'"
+                   [selectAllRowsOnPage]="true"
+                   (select)="onSelect($event)">
     </ngx-datatable>
   </div>
-  <ng-template #indexTemplate let-value="value" let-rowCount="rowCount" let-pageSize="pageSize" let-curPage="curPage" let-offset="offset">
-    <strong>{{value}}</strong>
+   <ng-template #indexTemplate
+               let-value="value"
+               let-isSelected="isSelected"
+               let-onCheckboxChangeFn="onCheckboxChangeFn"
+               let-rowCount="rowCount"
+               let-pageSize="pageSize"
+               let-curPage="curPage"
+               let-offset="offset">
+    <input type="checkbox"
+           [checked]="isSelected"
+           (change)="onCheckboxChangeFn($event)" />
   </ng-template>
   <ng-template #mealDescription let-row="row" let-rowCount="rowCount" let-pageSize="pageSize" let-curPage="curPage" let-offset="offset">
     <div *ngFor="let token of row.tokens">
@@ -116,5 +131,11 @@
         {{dish.dishLabel}}
       </div>
     </div>
+  </ng-template>
+  <ng-template #hdrTpl let-column="column"
+               let-selectFn="selectFn"
+               let-allRowsSelected="allRowsSelected"
+               let-value="value">
+    <input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" />
   </ng-template>
 </div>
