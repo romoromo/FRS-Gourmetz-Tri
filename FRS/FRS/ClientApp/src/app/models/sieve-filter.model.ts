@@ -78,6 +78,7 @@ export class SalesOrderReportFilter extends Filter {
   public reportType: number;
   public studentGroupIds?: number[];
   public collectionStatuses?: string[];
+  public outletId: string;
 }
 
 export class VoucherUtilisationReportFilter extends Filter {

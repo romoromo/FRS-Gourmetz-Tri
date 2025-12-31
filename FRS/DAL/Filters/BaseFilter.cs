@@ -68,6 +68,7 @@ namespace DAL.Filters
         public int ReportType { get; set; }
         public List<int> StudentGroupIds { get; set; }
         public List<string> CollectionStatuses { get; set; }
+        public string OutletId { get; set; }
     }
 
     public class VoucherUtilisationReportFilter : BaseFilter

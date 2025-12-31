@@ -61,6 +61,7 @@ namespace DAL.Repositories.MealOrder
             var studentGroupIds = new SqlParameter("@StudentGroupIds", System.Data.SqlDbType.VarChar);
             var orderType = new SqlParameter("@OrderType", System.Data.SqlDbType.VarChar);
             var collectionStatuses = new SqlParameter("@CollectionStatuses", System.Data.SqlDbType.VarChar);
+            var outletId = new SqlParameter("@OutletId", System.Data.SqlDbType.VarChar);
 
             from.Value = filter.ReportDateFrom;
             to.Value = filter.ReportDateTo;
@@ -74,14 +75,15 @@ namespace DAL.Repositories.MealOrder
             orderType.Value = (object)filter.OrderType ?? DBNull.Value;
             studentGroupIds.Value = string.Join(",", filter.StudentGroupIds ?? new List<int>());
             collectionStatuses.Value = string.Join(",", filter.CollectionStatuses ?? new List<string>());
+            outletId.Value = !string.IsNullOrEmpty(filter.OutletId) ? filter.OutletId : DBNull.Value;
 
             bool isDesc = filter.Sorts.Contains("-");
             sortByCol.Value = isDesc ? filter.Sorts.Substring(1) : filter.Sorts;
             sortBy.Value = isDesc;
 
             var orders = await _appContext.spSalesOrderReport
-                            .FromSqlRaw($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @IsActive, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupIds, @OrderType, @CollectionStatuses",
-                                    from, to, status, isFas, isActive, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupIds, orderType, collectionStatuses).ToListAsync();
+                            .FromSqlRaw($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @IsActive, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupIds, @OrderType, @CollectionStatuses, @OutletId",
+                                    from, to, status, isFas, isActive, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupIds, orderType, collectionStatuses, outletId).ToListAsync();
 
             return orders;
         }

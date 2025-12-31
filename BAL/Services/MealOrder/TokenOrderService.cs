@@ -1,39 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
-using DAL;
-using BAL.Services.Interfaces;
-using BAL.DTO;
-using AutoMapper;
-using DAL.Repositories.Interfaces;
-using System.IO;
-using NPOI.HSSF.UserModel;
-using BAL.Services.Interfaces.MealOrder;
+﻿using AutoMapper;
 using BAL.DTO.MealOrder;
-using DAL.Models.MealOrder;
-using DAL.Core.Interfaces;
+using BAL.Services.Interfaces;
+using BAL.Services.Interfaces.MealOrder;
+using DAL;
+using DAL.Core;
 using DAL.Core.DTO;
+using DAL.Core.Interfaces;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using DAL.Models.StoredProcedures;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
-using Microsoft.Data.SqlClient;
-using System.Data;
-using DAL.Models.StoredProcedures;
-using System.Drawing;
-using NPOI.SS.Util;
-using NodaTime.Calendars;
-using NPOI.HSSF.Util;
-using static System.Net.WebRequestMethods;
-using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NPOI.HSSF.Util;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
+using Sieve.Services;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace BAL.Services.MealOrder
 {
@@ -92,7 +85,32 @@ namespace BAL.Services.MealOrder
 
         public async Task<BaseOperationResponse> CancelOrders(List<int> orderIds, int cancelledById, string reason)
         {
-            var result = _mapper.Map<BaseOperationResponse>(await this._uow.TokenOrders.CancelOrders(orderIds, cancelledById, reason));
+            var result = new BaseOperationResponse();
+
+            try
+            {
+                foreach (var item in orderIds)
+                {
+                    _logger.LogInformation($"Cancel Order - ID: {item}, cancelledById: {cancelledById}, reason: {reason}");
+                    var resultCancel = await DirectCancelOrderAsync(new DirectCancelOrderDTO { OrderId = item, UserId = cancelledById, Reason = reason });
+                    _logger.LogInformation($"Cancel Order - ID: {item}, cancelledById: {cancelledById}, reason: {reason}, Result: {resultCancel.IsSuccess}, Message: {resultCancel.Message}");
+                }
+
+                result.IsSuccess = true;
+                result.Message = $"Successfully saved!";
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = true;
+                result.Message = $"Error while CancelOrders. Details: {ex.Message}";
+
+                _logger.LogError($"OrderIDs : {string.Join(",", orderIds.ToArray())}");
+                _logger.LogError($"cancelledById : {cancelledById}");
+                _logger.LogError($"reason : {reason}");
+                _logger.LogError(ex.Message, ex.StackTrace, ex);
+            }
+
+            //var result = _mapper.Map<BaseOperationResponse>(await this._uow.TokenOrders.CancelOrders(orderIds, cancelledById, reason));
             return result;
         }
 

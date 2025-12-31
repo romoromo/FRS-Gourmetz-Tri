@@ -35,6 +35,7 @@ import { StudentService } from "src/app/services/meal-order/student.service";
 import { PaymentTypes } from "../../../models/enums";
 import { FormControl } from "@angular/forms";
 import { OrderService } from "src/app/services/meal-order/order.service";
+import { DeliveryService } from "src/app/services/meal-order/delivery.service";
 
 @Component({
   selector: "order-logs-management",
@@ -64,10 +65,11 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
   start = new Date();
   end = new Date();
   groups: any[] = [];
-
+  outlets: any[] = [];
   tstart = new Date();
   tend = new Date();
   studentGroupIds = new FormControl();
+  outletId: string = "";
 
   public currentPageLimit: number = 10;
   public pageLimitOptions = [
@@ -103,7 +105,8 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     private accountService: AccountService,
     private orderLogService: AuditService,
     private studentService: StudentService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private deliveryService: DeliveryService
   ) {}
 
   ngOnDestroy(): void {
@@ -120,6 +123,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.isFAS = false;
     this.status = "paid";
     this.ordertype = "";
+    this.outletId = "";
   }
 
   initializePagedResult() {
@@ -204,6 +208,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getStudentGroups();
+    this.getOutlet();
     this.initializeFilter();
     this.initializePagedResult();
     this.initializeTableDefinition();
@@ -247,6 +252,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.orderType = this.ordertype == "All" ? "" : this.ordertype;
     this.filter.keyword = this.keyword;
     if (this.isFAS) this.filter.isFas = true;
+    this.filter.outletId = this.outletId;
 
     this.orderLogService.getOrderLogsByFilter(this.filter).subscribe(
       (results) => {
@@ -326,6 +332,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
 
   getStudentGroups() {
     let filter = new Filter();
+    filter.sorts = "name";
     filter.filters = "(IsActive)==true";
     this.subscription.add(
       this.studentService.getStudentGroupsSimpleByFilter(filter).subscribe(
@@ -345,6 +352,25 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     );
   }
 
+  getOutlet() {    
+    let filter = new Filter();
+    filter.filters = `(IsActive)==true,(Name)@=${this.keyword},(OutletByUserId)==${this.accountService.currentUser.id}`;
+    this.subscription.add(
+      this.deliveryService.getOutletsSimpleByFilter(filter).subscribe(
+        (results) => {
+          this.outlets = results.pagedData;
+        },
+        (error) => {
+          this.alertService.showStickyMessage(
+            "Get Error",
+            `An error occured while retrieving student outlets.\r\n"`,
+            MessageSeverity.error
+          );
+        }
+      )
+    );
+  }
+
   downloadResults() {
     const fileName = moment().format("DDMMYYYY_hhmmss") + "_Orders.xlsx";
     this.filter.page = null;
@@ -354,6 +380,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.status = this.status == "All" ? "" : this.status;
     this.filter.orderType = this.ordertype == "All" ? "" : this.ordertype;
     this.filter.keyword = this.keyword;
+    this.filter.outletId = this.outletId;
     if (this.isFAS) this.filter.isFas = true;
     this.orderLogService.downloadOrderLogsReport(this.filter).subscribe(
       (data) => {
@@ -376,6 +403,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.status = this.status == "All" ? "" : this.status;
     this.filter.orderType = this.ordertype == "All" ? "" : this.ordertype;
     this.filter.keyword = this.keyword;
+    this.filter.outletId = this.outletId;
     if (this.isFAS) this.filter.isFas = true;
     this.orderLogService.downloadFlattenOrderLogsReport(this.filter).subscribe(
       (data) => {
