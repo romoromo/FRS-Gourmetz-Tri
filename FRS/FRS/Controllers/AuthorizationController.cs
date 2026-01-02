@@ -623,6 +623,8 @@ namespace FRS.Controllers
         [HttpGet]
         public IActionResult ResetPasswordConfirmation()
         {
+            var url = _configuration["AppSettings:TAPPEE_URL"];
+            ViewBag.TappeeUrl = url + "/login" ?? "/login";
             return View();
         }
 
