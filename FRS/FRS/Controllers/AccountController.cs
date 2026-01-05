@@ -383,7 +383,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error UpdateUser : {ex.Message}", ex);
                 _logger.LogError($"Error UpdateUser : {ex.StackTrace}", ex);
@@ -482,7 +482,7 @@ namespace FRS.Controllers
                 }
                 else
                 {
-                    return BadRequest(new { Error = "Invalid", ErrorDescription = "Need to provide Current Password and New Password." } );
+                    return BadRequest(new { Error = "Invalid", ErrorDescription = "Need to provide Current Password and New Password." });
                 }
 
                 return Ok(new { Error = "", ErrorDescription = "" });
@@ -550,11 +550,11 @@ namespace FRS.Controllers
                     throw new Exception("Invalid email.");
                 }
 
-                var dto = await this._studentService.GetStudentByEmailOrIdAsync(student.CurrentEmail,id);
+                var dto = await this._studentService.GetStudentByEmailOrIdAsync(student.CurrentEmail, id);
                 if (dto == null)
                 {
                     var studentAccount = await _accountManager.GetUserByEmailAsync(student.CurrentEmail);
-                    if(studentAccount == null)
+                    if (studentAccount == null)
                         throw new Exception("Student not found.");
                     else
                     {
@@ -717,7 +717,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error UpdateUser : {ex.Message}", ex);
                 _logger.LogError($"Error UpdateUser : {ex.StackTrace}", ex);
@@ -786,7 +786,7 @@ namespace FRS.Controllers
                 _logger.LogInformation($"Error Model State");
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error Register : {ex.Message}", ex);
                 _logger.LogError($"Error Register : {ex.StackTrace}", ex);
@@ -899,7 +899,7 @@ namespace FRS.Controllers
                 bool sendEmail = appUser != null && !appUser.IsEnabled;//(!appUser.DepartmentId.HasValue || !appUser.Roles.Any() ||);
                 string[] currentRoles = appUser != null ? (await _accountManager.GetUserRolesAsync(appUser)).ToArray() : null;
 
-                var manageUsersPolicy = _authorizationService.AuthorizeAsync(this.User, id, AccountManagementOperations.Update);               
+                var manageUsersPolicy = _authorizationService.AuthorizeAsync(this.User, id, AccountManagementOperations.Update);
 
 
                 if (ModelState.IsValid)
@@ -923,7 +923,7 @@ namespace FRS.Controllers
                         if (sendEmail) appUser.IsEnabled = true;
 
                         appUser.IsEnabled = true;
-                        appUser.IsActive =  true;
+                        appUser.IsActive = true;
 
                         var result = await _accountManager.UpdateUserAsync(appUser);
                         if (result.Item1)
@@ -992,7 +992,7 @@ namespace FRS.Controllers
                 _logger.LogDebug($"Error DeleteUser : {string.Join(", ", result.Item2)}");
                 throw new Exception("The following errors occurred while deleting user: " + string.Join(", ", result.Item2));
             }
-                
+
 
 
             //broadcast newly deleted user
@@ -1105,7 +1105,7 @@ namespace FRS.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetRolePermissionsByName([FromBody] List<string> roleNames)
         {
-            if(roleNames == null)
+            if (roleNames == null)
                 return NotFound();
 
             var permissions = await _accountManager.GetRolePermissionsByRoleName(roleNames);
@@ -1226,7 +1226,7 @@ namespace FRS.Controllers
                 _logger.LogDebug($"Error DeleteRole : {string.Join(", ", result.Item2)}");
                 throw new Exception("The following errors occurred while deleting role: " + string.Join(", ", result.Item2));
             }
-                
+
 
 
             return Ok(roleVM);
@@ -1348,13 +1348,13 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error DeleteUser : {ex.Message}", ex);
                 _logger.LogError($"Error DeleteUser : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
-            
+
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -1455,7 +1455,7 @@ namespace FRS.Controllers
                 //var errors = ModelState.SelectMany(x => x.Value.Errors.Select(z => z.Exception));
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error ApiRegister : {ex.Message}", ex);
                 _logger.LogError($"Error ApiRegister : {ex.StackTrace}", ex);
@@ -1609,8 +1609,8 @@ namespace FRS.Controllers
                 if (user != null && user.IsActive)
                 {
                     // check if email is a student
-                    var student = _studentService.GetStudentsByUserAsync(user.Id);
-                    if(student != null)
+                    var student = _studentService.GetStudentByEmailAsync(user.Email);
+                    if (student != null)
                     {
                         throw new Exception("Cannot link one student account to another.");
                     }
@@ -1736,7 +1736,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error CreateUserPhonebook : {ex.Message}", ex);
                 _logger.LogError($"Error CreateUserPhonebook : {ex.StackTrace}", ex);
@@ -1817,7 +1817,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error UpdateUserPhonebook : {ex.Message}", ex);
                 _logger.LogError($"Error UpdateUserPhonebook : {ex.StackTrace}", ex);
@@ -1910,7 +1910,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error DeleteUser : {ex.Message}", ex);
                 _logger.LogError($"Error DeleteUser : {ex.StackTrace}", ex);
@@ -2000,7 +2000,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error UpdateUserVehicle : {ex.Message}", ex);
                 _logger.LogError($"Error UpdateUserVehicle : {ex.StackTrace}", ex);
@@ -2123,7 +2123,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error CreateUserCardIdActivate : {ex.Message}", ex);
                 _logger.LogError($"Error CreateUserCardIdActivate : {ex.StackTrace}", ex);
@@ -2167,13 +2167,13 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error CreateUserCardId : {ex.Message}", ex);
                 _logger.LogError($"Error CreateUserCardId : {ex.StackTrace}", ex);
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
-            
+
         }
 
 
@@ -2204,7 +2204,7 @@ namespace FRS.Controllers
                 _logger.LogDebug($"Error DeleteUserCardId : {string.Join(", ", result.Message)}");
                 throw new Exception("The following errors occurred while deleting user Card Id: " + string.Join(", ", result.Message));
             }
-                
+
 
 
             return Ok(userCardIdVM);
@@ -2257,7 +2257,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error UpdateUserCardId : {ex.Message}", ex);
                 _logger.LogError($"Error UpdateUserCardId : {ex.StackTrace}", ex);
@@ -2384,7 +2384,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error TopUpWallet : {ex.Message}", ex);
                 _logger.LogError($"Error TopUpWallet : {ex.StackTrace}", ex);
@@ -2429,7 +2429,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error WalletTransaction : {ex.Message}", ex);
                 _logger.LogError($"Error WalletTransaction : {ex.StackTrace}", ex);
@@ -2530,7 +2530,7 @@ namespace FRS.Controllers
 
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error RewardTransaction : {ex.Message}", ex);
                 _logger.LogError($"Error RewardTransaction : {ex.StackTrace}", ex);

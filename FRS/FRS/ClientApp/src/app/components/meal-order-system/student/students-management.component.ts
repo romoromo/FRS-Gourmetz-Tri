@@ -570,7 +570,7 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
   walletTransfer(studentId: string) {
     const dialogRef = this.dialog.open(StudentWalletTransferComponent, {
       data: { studentId: studentId, outletId: this.outletId },
-      width: '350px',
+      width: '500px',
       disableClose: true
     });
 

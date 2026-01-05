@@ -521,6 +521,18 @@ namespace BAL.Services.MealOrder
                     Name = m == null ? "" : m.Name,
                 })?.ToList();
         }
+
+        public async Task<List<StudentLiteWithClassDTO>> GetStudentByOutletWithClassAsync(int outletId)
+        {
+            var query = await this._uow.Students.GetAllStudentsAsync();
+            return query.Where(m => m.OutletId == outletId && m.IsActive)
+                .Select(m => new StudentLiteWithClassDTO
+                {
+                    Id = m == null ? 0 : m.Id,
+                    Name = m == null ? "" : m.Name,
+                    Class = m == null ? "" : (m.Class == null ? "" : m.Class.Name)
+                })?.Distinct()?.OrderBy(m => m.Name)?.ToList();
+        }
         #endregion
 
         #region Student Card

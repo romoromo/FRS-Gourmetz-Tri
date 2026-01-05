@@ -218,6 +218,10 @@ export class StudentService {
     return this.commonEndpoint.get<any>(`${this.studentUrl}/byoutlet?outletId=${outletId}`);
   }
 
+  getStudentLiteWithClass(outletId) {
+    return this.commonEndpoint.get<any>(`${this.studentUrl}/byoutletwithclass?outletId=${outletId}`);
+  }
+
   walletTransfer(studentIdFrom: string, studentIdTo: string, amount: number, userId: string){
     const param = { studentIdFrom: studentIdFrom, studentIdTo: studentIdTo, amount: amount, userId: userId }
     return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/transfer`, param);
