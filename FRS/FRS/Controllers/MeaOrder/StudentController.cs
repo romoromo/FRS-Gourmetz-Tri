@@ -580,6 +580,16 @@ namespace FRS.Controllers
             return Ok(results);
         }
 
+        [HttpGet("students/byoutletwithclass")]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(List<StudentLiteWithClassDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetStudentByOutletWithClass(int outletId)
+        {
+            var results = await this._service.GetStudentByOutletWithClassAsync(outletId);
+            return Ok(results);
+        }
+
         #endregion
 
         #region Student Cards

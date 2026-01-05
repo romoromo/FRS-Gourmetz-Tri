@@ -1,4 +1,5 @@
 import { Component, Inject } from "@angular/core";
+import { FormControl } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
 import { AccountService } from "src/app/services/account.service";
 import { AlertService, DialogType, MessageSeverity } from "src/app/services/alert.service";
@@ -9,12 +10,14 @@ import { StudentService } from "src/app/services/meal-order/student.service";
   templateUrl: "./student-wallet-transfer.component.html",
   styleUrls: ["./student-wallet-transfer.component.css"],
 })
+
 export class StudentWalletTransferComponent {
   data = { studentIdFrom: "", studentIdTo: "", amount: 0, userId: "" };
   isSaving: boolean;
   private studentId: string;
   private outletId: string;
   private students: any[];
+  private studentSearchCtrl = new FormControl('');
 
   constructor(
     public dialogRef: MatDialogRef<StudentWalletTransferComponent>,
@@ -36,7 +39,7 @@ export class StudentWalletTransferComponent {
   }
 
   getStudents(){
-    this.studentService.getStudentLite(this.outletId).subscribe(
+    this.studentService.getStudentLiteWithClass(this.outletId).subscribe(
       (results) => {
         this.students = results;
       },

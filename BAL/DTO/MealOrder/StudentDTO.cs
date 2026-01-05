@@ -245,4 +245,9 @@ namespace BAL.DTO.MealOrder
         public int Id { get; set; }
         public string Name { get; set; }
     }
+
+    public class StudentLiteWithClassDTO : StudentLiteDTO
+    {
+        public string Class { get; set; }
+    }
 }
