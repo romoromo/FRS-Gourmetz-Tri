@@ -1,25 +1,27 @@
-﻿using System;
+﻿using AutoMapper;
+using BAL.DTO;
+using BAL.DTO.MealOrder;
+using BAL.Services.Interfaces;
+using DAL;
+using DAL.Core;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using NPOI.HSSF.Util;
+using NPOI.SS.Formula.Functions;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
+using Sieve.Services;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
-using DAL;
-using BAL.Services.Interfaces;
-using BAL.DTO;
-using AutoMapper;
-using DAL.Repositories.Interfaces;
-using NPOI.XSSF.UserModel;
-using NPOI.SS.UserModel;
-using System.Drawing;
-using NPOI.HSSF.Util;
-using NPOI.SS.Util;
-using DAL.Models.MealOrder;
-using BAL.DTO.MealOrder;
 
 namespace BAL.Services
 {
@@ -38,6 +40,11 @@ namespace BAL.Services
 
         public async Task<PagedEntity<NotificationDTO>> GetNotificationsAsync(BaseFilter filter)
         {
+            //Get UserId from filter
+            var match = Regex.Match(filter.Filters, @"\(UserId\)==(\d+)");
+            if (match.Success && int.TryParse(match.Groups[1].Value, out var parsedId))
+                await this._uow.Notifications.InitNotificationByUserId(parsedId);
+
             var result = _mapper.Map<PagedEntity<NotificationDTO>>(await this._uow.Notifications.GetNotificationsAsync(filter));
             return result;
         }
@@ -58,7 +65,7 @@ namespace BAL.Services
         {
             var result = new BaseOperationResponse();
             result = await this._uow.Notifications.CreateAsync(_mapper.Map<Notification>(dto));
-            if(result != null && result.Data is Notification)
+            if (result != null && result.Data is Notification)
             {
                 result.Data = _mapper.Map<NotificationDTO>(result.Data as Notification);
             }
@@ -141,12 +148,12 @@ namespace BAL.Services
         public async Task<BaseOperationResponse> BulkUpdateNotificationSettingAsync(List<NotificationSettingDTO> dto)
         {
             var result = new BaseOperationResponse();
-            foreach(var setting in dto)
+            foreach (var setting in dto)
             {
                 result = await this._uow.NotificationSettings.UpdateAsync(_mapper.Map<NotificationSetting>(setting));
                 result.Data = null;
             }
-            
+
             return result;
         }
 
@@ -154,7 +161,7 @@ namespace BAL.Services
         {
             var result = new BaseOperationResponse();
             result = await this._uow.Notifications.CreateUserAlertAsync(_mapper.Map<UserOrderAlert>(dto));
-            
+
             return result;
         }
 
