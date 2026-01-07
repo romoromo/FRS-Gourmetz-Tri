@@ -459,6 +459,22 @@ namespace BAL.Services.MealOrder
         public async Task<List<DishCycleDTO>> GetOutletDishCyclesAsync(int outletId, int catererId)
         {
             var result = _mapper.Map<List<DishCycleDTO>>(await this._uow.DishCycles.GetOutletDishCyclesAsync(outletId, catererId));
+
+            foreach (var cycle in result)
+            {
+                List<OutletDishBlockedDateDTO> outletBlocks = [];
+
+                foreach (var block in cycle.OutletDishBlockedDates)
+                {
+                    if (block.OutletId == outletId)
+                    {
+                        outletBlocks.Add(block);
+                    }
+                }
+
+                cycle.OutletDishBlockedDates = outletBlocks;
+            }
+
             return result;
         }
 

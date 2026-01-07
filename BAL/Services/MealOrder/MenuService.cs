@@ -134,6 +134,22 @@ namespace BAL.Services.MealOrder
         public async Task<List<MenuCycleDTO>> GetOutletMenuCyclesAsync(int outletId, int catererId)
         {
             var result = _mapper.Map<List<MenuCycleDTO>>(await this._uow.MenuCycles.GetOutletMenuCyclesAsync(outletId, catererId));
+
+            foreach (var cycle in result)
+            {
+                List<OutletBlockedDateDTO> outletBlocks = [];
+
+                foreach (var block in cycle.OutletBlockedDates)
+                {
+                    if (block.OutletId == outletId)
+                    {
+                        outletBlocks.Add(block);
+                    }
+                }
+
+                cycle.OutletBlockedDates = outletBlocks;
+            }
+
             return result;
         }
 
@@ -405,6 +421,30 @@ namespace BAL.Services.MealOrder
         public async Task<List<MenuGroupDTO>> GetActiveMenuGroupDishCyclesAsync(int studentId)
         {
             var result = _mapper.Map<List<MenuGroupDTO>>(await this._uow.MenuGroups.GetActiveMenuGroupDishCyclesAsync(studentId));
+
+            var student = await this._uow.MenuCycles.GetStudentAsync(studentId);
+
+            var outletId = student.OutletId.HasValue ? student.OutletId.Value : 0;
+
+            foreach (var mg in result)
+            {
+                foreach (var cycle in mg.MenuGroupDishCycles)
+                {
+                    List<OutletDishBlockedDateDTO> outletBlocks = [];
+
+                    foreach (var block in cycle.DishCycle.OutletDishBlockedDates)
+                    {
+                        if (block.OutletId == outletId)
+                        {
+                            outletBlocks.Add(block);
+                        }
+                    }
+
+                    cycle.DishCycle.OutletDishBlockedDates = outletBlocks;
+                }
+
+            }
+
             return result.Distinct().ToList();
         }
 
