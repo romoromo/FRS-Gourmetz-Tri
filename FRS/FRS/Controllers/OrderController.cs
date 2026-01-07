@@ -1698,18 +1698,11 @@ namespace MealOrderPayments.Controllers
 
             var service = new SessionService();
             Session session = service.Create(options);
-            // old Stripe API version cant use `Session.Url` directly. 
-            // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#39540---2021-06-16
             try
             {
                 PaymentResult ret = new PaymentResult();
-                var rawjsonstring = session.StripeResponse.Content;
-                var splitted = rawjsonstring.Split(",");
-                var uri = splitted.Where(s => s.Contains("checkout.stripe.com")).First();
-                var s2 = uri.Split(": ");
-                var uri2 = s2[1].Replace('\"', ' ').Trim();
-                ret.responseURI = uri2;
-                // TODO this is dirty. fix it later.
+                // now that we use slightly newer stripe sdk we can use session.Url directly again.
+                ret.responseURI = session.Url; 
                 // because we dont want to break paymentresult, reuse this for now.
                 ret.fomoPaymentResponse = new FomoPaymentResponse();
                 ret.fomoPaymentResponse.id = session.Id;
