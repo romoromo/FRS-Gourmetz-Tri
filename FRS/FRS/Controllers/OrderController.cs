@@ -1671,7 +1671,7 @@ namespace MealOrderPayments.Controllers
                       Currency = order.currencyCode,
                       ProductData = new SessionLineItemPriceDataProductDataOptions
                       {
-                        Name = order.subject, //subject: 'Token Meal Payment',
+                        Name = order.subject, //subject: 'Token Meal Payment', / 'Top Up Wallet'
                         Description = order.description,// description: `Payment for ${student.name}`,
                         Metadata = new Dictionary<string, string>
                         {
@@ -1692,6 +1692,7 @@ namespace MealOrderPayments.Controllers
                 //SuccessUrl = order.returnUrl,
                 SuccessUrl = order.returnUrl + "?&session_id={CHECKOUT_SESSION_ID}",
                 CancelUrl = order.backUrl,
+                ClientReferenceId = order.orderNo,
                 PaymentMethodTypes = paymentMethods
             };
 
