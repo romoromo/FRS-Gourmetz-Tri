@@ -113,6 +113,7 @@ namespace DAL.Filters
     public class BentoAssetsFilter : BaseFilter
     {
         public int CatererInfoId { get; set; }
+        public DateTime? LastUpdatetime { get; set; }
     }
 
     public class CartonAssetsFilter : BaseFilter

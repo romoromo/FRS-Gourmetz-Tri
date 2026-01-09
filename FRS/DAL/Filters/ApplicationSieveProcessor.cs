@@ -1558,6 +1558,15 @@ namespace DAL.Filters
                .CanFilter()
                .CanSort()
                .HasName("routeLabel");
+
+            mapper.Property<BentoAsset>(p => p.LastUpdateTime)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<BentoAsset>(p => p.LastPackingTime)
+                .CanFilter()
+                .CanSort();
+
         }
 
         private void CartonAssetMapping(ref SievePropertyMapper mapper)

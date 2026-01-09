@@ -40,7 +40,13 @@ namespace DAL.Repositories.MealOrder
         public async Task<PagedEntity<BentoAsset>> GetBentoAssetsAsync(BentoAssetsFilter filter)
         {
             IQueryable<BentoAsset> query = _appContext.BentoAssets.Where(m => m.BentoBoxType.CatererInfoId == filter.CatererInfoId)
-                .Include(e => e.Institution);
+                    .Include(e => e.Institution);
+
+            if (filter.LastUpdatetime is not null)
+            {
+                query = _appContext.BentoAssets.Where(m => m.BentoBoxType.CatererInfoId == filter.CatererInfoId && m.LastUpdateTime >= filter.LastUpdatetime)
+                    .Include(e => e.Institution);
+            }
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
 
