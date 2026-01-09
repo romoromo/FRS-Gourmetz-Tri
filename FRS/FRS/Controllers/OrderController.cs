@@ -23,6 +23,7 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NodaTime.Calendars;
+using NPOI.SS.Formula.Functions;
 using Org.BouncyCastle.Crypto.Operators;
 using RestSharp;
 using SMV.FOMOPay.CommonHelper;
@@ -598,6 +599,7 @@ namespace MealOrderPayments.Controllers
         /// <returns>order status</returns>
         private string QueryOrderStatusStripe(string sessionId, bool fromWebhook = false)
         {
+            var eid = new EventId(31290, "QueryOrderStatusStripe");
             //  Quick check ...
             if (!String.IsNullOrEmpty(sessionId))
             {
@@ -606,7 +608,7 @@ namespace MealOrderPayments.Controllers
                     // Set your secret key. Remember to switch to your live secret key in production.
                     // See your keys here: https://dashboard.stripe.com/apikeys
                     StripeConfiguration.ApiKey = _configuration.GetSection("StripeConfiguration:ApiKey").Value;
-                    Console.WriteLine("Fulfilling Checkout Session " + sessionId);
+                    _logger.LogInformation(eid, $"QOSS sessionId is {sessionId}");
 
                     // TODO: Make this function safe to run multiple times,
                     // even concurrently, with the same session ID
@@ -629,6 +631,8 @@ namespace MealOrderPayments.Controllers
                     //{
                     if (checkoutSession != null)
                     {
+                        _logger.LogInformation(eid, $"QOSS sessId {sessionId} checkoutSession.clientReferenceId (should be orderNo) is {checkoutSession.ClientReferenceId}");
+                        _logger.LogInformation(eid, $"QOSS sessId {sessionId} checkoutSession.paymentStatus is {checkoutSession.PaymentStatus}");
                         if (checkoutSession.PaymentStatus != "unpaid")
                         {
                             return "SUCCESS";
@@ -636,6 +640,7 @@ namespace MealOrderPayments.Controllers
                     }
                 } catch (Exception ex)
                 {
+                    _logger.LogError(eid, ex, "exception in qoss");
                     WriteToEventLog("Exception", ex.Message);
                 } finally
                 {
@@ -1671,7 +1676,7 @@ namespace MealOrderPayments.Controllers
                       Currency = order.currencyCode,
                       ProductData = new SessionLineItemPriceDataProductDataOptions
                       {
-                        Name = order.subject, //subject: 'Token Meal Payment',
+                        Name = order.subject, //subject: 'Token Meal Payment', / 'Top Up Wallet'
                         Description = order.description,// description: `Payment for ${student.name}`,
                         Metadata = new Dictionary<string, string>
                         {
@@ -1692,23 +1697,17 @@ namespace MealOrderPayments.Controllers
                 //SuccessUrl = order.returnUrl,
                 SuccessUrl = order.returnUrl + "?&session_id={CHECKOUT_SESSION_ID}",
                 CancelUrl = order.backUrl,
+                ClientReferenceId = order.orderNo,
                 PaymentMethodTypes = paymentMethods
             };
 
             var service = new SessionService();
             Session session = service.Create(options);
-            // old Stripe API version cant use `Session.Url` directly. 
-            // see https://github.com/stripe/stripe-dotnet/blob/master/CHANGELOG.md#39540---2021-06-16
             try
             {
                 PaymentResult ret = new PaymentResult();
-                var rawjsonstring = session.StripeResponse.Content;
-                var splitted = rawjsonstring.Split(",");
-                var uri = splitted.Where(s => s.Contains("checkout.stripe.com")).First();
-                var s2 = uri.Split(": ");
-                var uri2 = s2[1].Replace('\"', ' ').Trim();
-                ret.responseURI = uri2;
-                // TODO this is dirty. fix it later.
+                // now that we use slightly newer stripe sdk we can use session.Url directly again.
+                ret.responseURI = session.Url; 
                 // because we dont want to break paymentresult, reuse this for now.
                 ret.fomoPaymentResponse = new FomoPaymentResponse();
                 ret.fomoPaymentResponse.id = session.Id;
@@ -2546,13 +2545,15 @@ namespace MealOrderPayments.Controllers
         /// <returns>order status</returns>
         private async Task<string> QueryOrderStatusIndependent(int? paymentTypeId, string fomoid)
         {
-            // we cant use stripe anymore.
+            var eid = new EventId(31289, "QueryOrderStatusIndependent");
+            // we cant use paymentTypeId anymore to differentiate
             // use another thing, like fomoid stripe pattern.
             // TODO verify that actual stripe prod checkout session id actually starts with cs_
             bool fromStripe = fomoid.StartsWith("cs_") || fomoid.StartsWith("cs_test_");
             string qos;
             if (fromStripe)
             {
+                _logger.LogInformation(eid, $"QOSI fromStripe is {fromStripe}, fomoid is {fomoid}");
                 qos = QueryOrderStatusStripe(fomoid);
             } else
             {
@@ -2571,10 +2572,12 @@ namespace MealOrderPayments.Controllers
         /// <returns></returns>
         public async Task QueryAndUpdateWalletPaymentStatus(int? studentId = null)
         {
+            var eid = new EventId(31288, "QueryAndUpdateWalletPaymentStatus");
             try
             {
+                _logger.LogInformation(eid, "QueryAndUpdateWalletPaymentStatus");
                 List<WalletPaymentDTO> payments = await _paymentService.GetCreatedWalletPaymentsAsync(studentId);
-
+                _logger.LogInformation(eid, $"  Payments has {payments.Count} records");
                 foreach (var p in payments)
                 {
                     var updated = false;
@@ -2584,7 +2587,9 @@ namespace MealOrderPayments.Controllers
 
                     try
                     {
+                        _logger.LogInformation(eid, $"  about to qosi ptypeid = {p.PaymentTypeId}, fomoid = {p.fomoid}");
                         var qos = await QueryOrderStatusIndependent(p.PaymentTypeId, p.fomoid);
+                        _logger.LogInformation(eid, $"  qosi returning {qos}");
                         strOrderStatus = String.IsNullOrWhiteSpace(p.fomoid) ? "" : qos;
 
                         if (!String.IsNullOrEmpty(strOrderStatus))
@@ -2595,12 +2600,14 @@ namespace MealOrderPayments.Controllers
 
                                 if (!p.invoiceSent && p.Status == "SUCCESS")
                                 {
+                                    _logger.LogInformation(eid, $"  about to topupWallet to {p.StudentId.Value}");
                                     await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value,WalletType.BASIC);
+                                    _logger.LogInformation(eid, $"  about to sendWalletInvoice to {p.StudentId.Value}");
                                     await SendWalletInvoice(p);
                                     emailSent = true;
                                     p.invoiceSent = true;
                                 }
-
+                                _logger.LogInformation(eid, $"  about to UpdateWalletPaymentAsync to {p.StudentId.Value}");
                                 await _paymentService.UpdateWalletPaymentAsync(p);
                             }
                         }
