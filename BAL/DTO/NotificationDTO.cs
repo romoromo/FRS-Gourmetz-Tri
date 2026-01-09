@@ -14,6 +14,8 @@ namespace BAL.DTO
         public bool IsRead { get; set; }
         public string Body { get; set; }
         public DateTime Date { get; set; }
+
+        public NotificationSettingType? Type { get; set; }
     }
 
     public class NotificationEventDTO
