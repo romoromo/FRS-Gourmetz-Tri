@@ -1,0 +1,59 @@
+<h1 mat-dialog-title>Upload Bank Transaction</h1>
+<div>
+  <form *ngIf="formResetToggle" class="form-horizontal" name="walletTransactionLogForm" #f="ngForm" novalidate
+        (ngSubmit)="save">
+    <div mat-dialog-content>
+      <div class="row">
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off"  type="text" id="studentName" name="studentName" placeholder="Student Name" 
+                [(ngModel)]="studentWalletTransaction.studentName" #studentName="ngModel" readonly/>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off"  type="text" id="concurrencyStamp" name="concurrencyStamp" placeholder="Date" 
+                [(ngModel)]="studentWalletTransaction.concurrencyStamp" #concurrencyStamp="ngModel" readonly/>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off"  type="text" id="description" name="description" placeholder="Description" 
+                [(ngModel)]="studentWalletTransaction.description" #description="ngModel" readonly/>
+        </mat-form-field>
+
+        <div class="col-md-12">
+          <mat-label>
+            <span class="upload-title">Document Transaction</span>
+            <!-- <span class="upload-hint-filetype">Accepts: </span>
+            <span class="upload-hint-filetype-values">(*.jpg,*.png)</span>
+            <span class="upload-hint-resolution">Resolution: </span>
+            <span class="upload-hint-resolution-values">(1200x800)</span> -->
+          </mat-label>
+          <div >
+            <div style="float:left; margin-right: 10px;">
+              <file-upload showTxt="false" (onUploadFinished)="uploadFinished($event)" [fileName]="studentWalletTransaction.id" [useOriginalFilename]="true" 
+              fileTypes=".jpg, .jpeg, .png"></file-upload>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+          <div *ngIf="studentWalletTransaction.filePath" class="col-md-6" style="padding:10px; border: 1px dashed #808080;text-align:center">
+            <img [src]="getFileImage(studentWalletTransaction.filePath)" alt="icon" style="width:100px; height:100px;" />
+          </div>
+          <div class="clearfix"></div>
+          <div class="col-md-6 text-center" *ngIf="studentWalletTransaction.filePath">
+            <a  class="btn btn-link btn-xs font-color-danger" href="javascript:;" (click)="removePhoto()"><i class="fa fa-trash-o" aria-hidden="true"></i> Remove</a>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+
+
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+    <div mat-dialog-actions align="center">
+      <button  type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i> {{'common.editor.Cancel' | translate}}</button>
+      <button  type="submit" mat-button [disabled]="isSaving">
+        <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i> {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
+      </button>
+    </div>
+  </form>
+</div>
