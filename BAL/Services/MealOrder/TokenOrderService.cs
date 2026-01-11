@@ -2764,7 +2764,7 @@ namespace BAL.Services.MealOrder
                     iTextSharp.text.Font aller = new iTextSharp.text.Font(allerfont, 12);
 
                     var pgSize = new iTextSharp.text.Rectangle(88, 66);
-                    Document document = new Document(pgSize, 2, 2, 2, 2);
+                    Document document = new Document(pgSize, 1, 1, 1, 1);
                     PdfWriter writer = PdfWriter.GetInstance(document, stream);
                     document.Open();
 
@@ -2797,17 +2797,30 @@ namespace BAL.Services.MealOrder
                                 float margin = document.LeftMargin;
                                 float totalWidth = document.PageSize.Width - document.LeftMargin - document.RightMargin;
                                 float columnWidth = 50;
+                                float columnHeight = 23;
 
                                 iTextSharp.text.Rectangle leftColumn = new iTextSharp.text.Rectangle(
                                     document.Left,        // x1
                                     document.Bottom,      // y1
                                     document.Left + columnWidth, // x2
-                                    document.Top          // y2
+                                    document.Top         // y2
                                 );
 
                                 // Create a ColumnText for the left column
                                 ColumnText columnLeft = new ColumnText(writer.DirectContent);
                                 columnLeft.SetSimpleColumn(leftColumn);
+
+
+                                iTextSharp.text.Rectangle bottomColumn = new iTextSharp.text.Rectangle(
+                                  document.Left,        // x1
+                                  document.Bottom,      // y1
+                                  document.Right, // x2
+                                  document.Bottom + columnHeight          // y2
+                              );
+
+                                // Create a ColumnText for the left column
+                                ColumnText columnBottom = new ColumnText(writer.DirectContent);
+                                columnBottom.SetSimpleColumn(bottomColumn);
 
 
                                 if (toIconFilePath != "")
@@ -2857,7 +2870,7 @@ namespace BAL.Services.MealOrder
 
                                 iTextSharp.text.Image qrCodeImage = barcodeQRCode.GetImage();
                                 qrCodeImage.ScaleToFit(36, 36);
-                                qrCodeImage.SetAbsolutePosition(51f, 20f);
+                                qrCodeImage.SetAbsolutePosition(51f, 25f);
                                 document.Add(qrCodeImage);
 
                                 BentoAssetDTO bentoAsset = new BentoAssetDTO();
@@ -2909,12 +2922,15 @@ namespace BAL.Services.MealOrder
                                 //phrase.Add(new Chunk("(" + dto[i].dishes[j].dish_code + ") - ", new Font(Font.FontFamily.HELVETICA, 8)));
                                 phrase.Add(new Chunk(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 5, iTextSharp.text.Font.BOLD)));
 
-                                //Paragraph para7 = new Paragraph(phrase);
-                                Paragraph para7 = new Paragraph(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 5, iTextSharp.text.Font.BOLD));
-                                para7.Alignment = Element.ALIGN_CENTER;
-                                columnLeft.AddElement(para7);
-
                                 columnLeft.Go();
+
+
+                                //Paragraph para7 = new Paragraph(phrase);
+                                Paragraph para7 = new Paragraph(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 6, iTextSharp.text.Font.BOLD));
+                                para7.Alignment = Element.ALIGN_CENTER;
+                                columnBottom.AddElement(para7);
+
+                                columnBottom.Go();
                             }
                         }
                     }
