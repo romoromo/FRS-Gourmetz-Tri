@@ -180,7 +180,8 @@ namespace DAL.Core
         PAYMENT_FAILED,
         DELIVERED,
         OUT_OF_DELIVERY,
-        MEAL_ORDER_CONFIRMED
+        MEAL_ORDER_CONFIRMED,
+        NO_CARD_SETUP
     }
 
     public enum UserAlertType

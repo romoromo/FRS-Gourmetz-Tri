@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Core;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,5 +20,7 @@ namespace DAL.Models
 
         [ForeignKey("EventId")]
         public virtual NotificationEvent NotificationEvent { get; set; }
+
+        public NotificationSettingType? Type { get; set; }
     }
 }

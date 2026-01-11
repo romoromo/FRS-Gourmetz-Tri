@@ -1,4 +1,5 @@
-﻿using FRS.Helpers;
+﻿using DAL.Core;
+using FRS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,6 +18,8 @@ namespace FRS.ViewModels
         public bool IsRead { get; set; }
         public string Body { get; set; }
         public DateTime Date { get; set; }
+
+        public NotificationSettingType? Type { get; set; }
     }
 
     public class NotificationEventViewModel

@@ -547,7 +547,7 @@ namespace DAL.Repositories
                 if (fasTrans != null && normalTrans != null)
                 {
                     double remainingAmount = amount;
-                    double fasBalance = Math.Round(fasTrans.Amount,2) - fasTrans.AmountRefunded;
+                    double fasBalance = Math.Round(fasTrans.Amount, 2) - fasTrans.AmountRefunded;
                     double normalBalance = Math.Round(normalTrans.Amount, 2) - normalTrans.AmountRefunded;
 
                     if (remainingAmount <= fasBalance)
@@ -654,6 +654,23 @@ namespace DAL.Repositories
                 //    .SumAsync(w => (double?)w.Balance) ?? 0;
 
                 studentData.WalletBalance = fasWallet.Balance + normalWallet.Balance;
+
+                if (studentData.isNotifCancellationRequestStatus)
+                {
+                    var notificationSetting = await _appContext.NotificationSettings.FirstOrDefaultAsync(m => m.Type == NotificationSettingType.CANCEL_REQUEST_APPROVED && m.IsActive);
+                    if (notificationSetting != null)
+                    {
+                        var notification = new Notification
+                        {
+                            Header = notificationSetting.Subject,
+                            Body = notificationSetting.Template.Replace("{user}", studentData.Name),
+                            IsRead = false,
+                            CreatedBy = userId,
+                            UpdatedBy = userId
+                        };
+                        await _appContext.Notifications.AddAsync(notification);
+                    }
+                }
 
                 await _appContext.StudentWalletTransactions.AddAsync(transaction);
                 await _appContext.SaveChangesAsync();
