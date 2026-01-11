@@ -21,5 +21,7 @@ namespace DAL.Repositories.Interfaces
         Task<BaseOperationResponse> CreateUserAlertAsync(UserOrderAlert alert);
         Task<BaseOperationResponse> UpdateUserAlertAsync(UserOrderAlert alert);
         Task<BaseOperationResponse> BulkUpdateUserAlertAsync(List<int> userIds, UserAlertType type);
+
+        Task InitNotificationByUserId(int? userId);
     }
 }
