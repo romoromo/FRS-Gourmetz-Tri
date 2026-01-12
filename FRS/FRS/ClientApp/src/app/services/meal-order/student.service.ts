@@ -8,7 +8,7 @@ import { AuthService } from '../auth.service';
 import { CommonEndpoint } from '../common-endpoint.service';
 import { ConfigurationService } from '../configuration.service';
 import { Filter, PagedResult } from 'src/app/models/sieve-filter.model';
-import { Student } from 'src/app/models/meal-order/student.model';
+import { Student, StudentWalletTransaction } from 'src/app/models/meal-order/student.model';
 import { StudentGroup, StudentGroupDetail } from 'src/app/models/meal-order/student-group.model';
 import { InterestGroup } from 'src/app/models/meal-order/interest-group.model';
 import { Class } from 'src/app/models/meal-order/class.model';
@@ -188,6 +188,13 @@ export class StudentService {
 
   getStudentWalletTransactionsByFilter(filter: Filter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.walletUrl + '/transactions/sieve/list', filter);
+  }
+
+  updateWalletTransactionLog(studentWalletTransaction: StudentWalletTransaction){
+    if(studentWalletTransaction.id)
+    {
+      return this.commonEndpoint.getUpdateEndpoint(this.walletUrl + '/transactions', studentWalletTransaction, studentWalletTransaction.id + '' );
+    }
   }
 
   downloadWalletTransactions(filter: Filter){

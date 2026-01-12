@@ -198,6 +198,10 @@ namespace BAL.DTO.MealOrder
         public int? TokenOrderId { get; set; }
         public TokenOrderDTO TokenOrder { get; set; }
         public List<StudentWalletTransactionDetailDTO> Details { get; set; }
+
+        public int? FileId { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
     }
 
     public class StudentWalletTransactionDetailDTO

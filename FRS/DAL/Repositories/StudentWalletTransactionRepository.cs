@@ -875,6 +875,58 @@ namespace DAL.Repositories
             return result;
         }
 
+        public async Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransaction walletTransaction)
+        {
+            var result = new BaseOperationResponse();
+
+            var f = await GetSingleOrDefaultAsync(e => e.Id == walletTransaction.Id);
+
+            f.CopyFrom(walletTransaction);
+
+            if (walletTransaction.File != null && !string.IsNullOrEmpty(walletTransaction.File.Path))
+            {
+                if (!f.FileId.HasValue)
+                {
+                    f.File = walletTransaction.File;
+                }
+                else
+                {
+                    if (f.File == null)
+                    {
+                        //TODO: check why EF Core is not loading the Icon property; interim solution
+                        var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == f.FileId);
+                        if (icon == null)
+                        {
+                            f.File = new Models.File();
+                        }
+                        else
+                        {
+                            f.File = icon;
+                            f.FileId = icon.Id;
+                        }
+                    }
+
+                    f.File.Path = walletTransaction.File.Path;
+                    f.File.FileName = walletTransaction.File.FileName ?? System.IO.Path.GetFileName(walletTransaction.File.Path);
+                }
+            }
+
+            Update(f);
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+                result.Data = f;
+            }
+            else
+            {
+                result.Message = "Failed to save!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }

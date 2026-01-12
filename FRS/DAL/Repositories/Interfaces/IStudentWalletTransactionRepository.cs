@@ -17,5 +17,6 @@ namespace DAL.Repositories.Interfaces
         Task<BaseOperationResponse> RefundToWalletBalanceAsync(int studentId, double amount, int userId, WalletType walletType, int? tokenOrderId);
         Task<BaseOperationResponse> OffBoardingStudent(int studentId, int userId);
         Task<BaseOperationResponse> WalletTransfer(int studentIdFrom, int studentIdTo, double amount, int userId);
+        Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransaction walletTransaction);
     }
 }
