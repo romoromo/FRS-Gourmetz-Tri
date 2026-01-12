@@ -10,6 +10,7 @@ import { DeliveryService } from "src/app/services/meal-order/delivery.service";
 import { Filter } from "src/app/models/sieve-filter.model";
 import { MealService } from "src/app/services/meal-order/meal.service";
 import { ClassLevelDetailComponent } from "./class-level-detail.components";
+import { DAYS } from "src/app/helpers/enums";
 
 @Component({
   selector: "class-level-editor",
@@ -29,6 +30,7 @@ export class ClassLevelEditorComponent {
   private selectedValues: { [key: string]: boolean } = {};
   public formResetToggle = true;
   loadingLoadMealSession = false;
+  days = DAYS;
 
   public changesSavedCallback: () => void;
   public changesFailedCallback: () => void;
@@ -261,6 +263,15 @@ export class ClassLevelEditorComponent {
     const index = this.classLevelEdit.detail.indexOf(row);
     if (index !== -1) {
       this.classLevelEdit.detail.splice(index, 1);
+    }
+  }
+
+
+  onFasRechargeableChange(isChecked: boolean) {
+    if (!isChecked) {
+      this.classLevelEdit.day = null;
+      this.classLevelEdit.time = null;
+      this.classLevelEdit.amount = null;
     }
   }
 }

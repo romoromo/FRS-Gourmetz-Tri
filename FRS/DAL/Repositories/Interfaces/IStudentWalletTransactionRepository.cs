@@ -1,6 +1,7 @@
 ﻿using DAL.Core;
 using DAL.Filters;
 using DAL.Models;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DAL.Repositories.Interfaces
@@ -18,5 +19,7 @@ namespace DAL.Repositories.Interfaces
         Task<BaseOperationResponse> OffBoardingStudent(int studentId, int userId);
         Task<BaseOperationResponse> WalletTransfer(int studentIdFrom, int studentIdTo, double amount, int userId);
         Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransaction walletTransaction);
+
+        Task FASRechargeable(CancellationToken ct = default);
     }
 }

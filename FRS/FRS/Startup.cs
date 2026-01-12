@@ -1,62 +1,50 @@
-using AutoMapper;
+using AspNetCore.Proxy;
+using BAL.DTO;
+using BAL.Mapping;
+using BAL.Services;
+using BAL.Services.Interfaces;
+using BAL.Services.Interfaces.MealOrder;
+using BAL.Services.MealOrder;
+using BAL.Utilities;
 using DAL;
 using DAL.Core;
 using DAL.Core.Interfaces;
+using DAL.Filters;
 using DAL.Models;
+using DAL.Repositories;
+using DAL.Repositories.Interfaces;
+using FRS.Authorization;
+using FRS.Filters;
+using FRS.Helpers;
+using FRS.Hubs;
+using FRS.Middleware;
+using FRS.ViewModels;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using OpenIddict.Abstractions;
-using FRS.Authorization;
-using FRS.Helpers;
-using FRS.ViewModels;
-using Swashbuckle.AspNetCore.Swagger;
-using System;
-using AppPermissions = DAL.Core.ApplicationPermissionsTrees;
-using System.IO;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.Http;
-using FRS.Hubs;
-using Microsoft.AspNetCore.Http.Connections;
-using DAL.Repositories.Interfaces;
-using DAL.Repositories;
+using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using OpenIddict.Abstractions;
+using OpenIddict.Validation.AspNetCore;
+using ServiceModels;
 using Sieve.Models;
 using Sieve.Services;
-using DAL.Filters;
-using BAL.Mapping;
-using BAL.Services.Interfaces;
-using BAL.Services;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using AspNetCore.Proxy;
-using ServiceModels;
-using SoapCore;
-using System.ServiceModel;
-using BAL.Utilities;
-using BAL.Services.MealOrder;
-using BAL.Services.Interfaces.MealOrder;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using Microsoft.AspNetCore.Http.Features;
-using BAL.DTO;
-using FRS.Middleware;
-using Microsoft.AspNetCore.DataProtection;
+using System;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using WebSocketOptions = Microsoft.AspNetCore.Builder.WebSocketOptions;
-using OpenIddict.Validation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using DAL.Core.Helpers;
-using Microsoft.OpenApi.Models;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Net.Http;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
+using AppPermissions = DAL.Core.ApplicationPermissionsTrees;
 
 namespace FRS
 {
@@ -452,6 +440,14 @@ namespace FRS
                 //}
             });
 
+            services.AddHangfire(hangfire =>
+            {
+                hangfire.UseSqlServerStorage(Configuration["ConnectionStrings:DefaultConnection"]);
+            });
+            services.AddHangfireServer(option =>
+            {
+                option.WorkerCount = 2;
+            });   
 
             //Todo: ***Using DataAnnotations for validation until Swashbuckle supports FluentValidation***
             //services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
@@ -672,6 +668,10 @@ namespace FRS
             services.AddScoped<MealSessionByClassLevel>();
             services.AddScoped<MealSessionByStudentSelect>();
             services.AddScoped<IMealSessionResolver, MealSessionResolver>();
+            services.AddScoped<BackgroundService>();
+
+            services.AddScoped<ISqlAppLock, SqlAppLock>();
+            services.AddSingleton<ISqlAppLock>(sp => new SqlAppLock(Configuration["ConnectionStrings:DefaultConnection"]));
             #endregion
         }
 
@@ -861,7 +861,7 @@ namespace FRS
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseFileServer();
+            //app.UseFileServer();
 
             //Sanitize models
             app.UseMiddleware<SanitizeMiddleware<Sanitizeable>>();
@@ -1010,21 +1010,25 @@ namespace FRS
             //                opt.SoapSerializer = SoapSerializer.DataContractSerializer;
             //            });
             //});
+            GlobalJobFilters.Filters.Add(new JobExpirationAttribute(7));
+            app.UseHangfireDashboard("/dashboard-hangfire");
+
+            RecurringJob.AddOrUpdate<BackgroundService>("fas-recharge", m => m.FASRechargeable(CancellationToken.None), Cron.Minutely);
 
             app.UseSpa(spa =>
             {
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
                 spa.Options.SourcePath = "ClientApp";
-
-                //if (env.IsDevelopment())
-                //{
-                //    spa.UseAngularCliServer(npmScript: "start");
-                //    spa.Options.StartupTimeout = TimeSpan.FromSeconds(240); // Increase the timeout if angular app is taking longer to startup
-                //                                                            //spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"); // Use this instead to use the angular cli server
-                //}
-            });
-
+#if DEBUG
+                if (env.IsDevelopment())
+                {
+                    spa.UseAngularCliServer(npmScript: "start");
+                    spa.Options.StartupTimeout = TimeSpan.FromSeconds(240); // Increase the timeout if angular app is taking longer to startup
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"); // Use this instead to use the angular cli server
+                }
+#endif
+            });            
         }
 
         private StaticFileOptions GetStaticFileOptions()
@@ -1032,6 +1036,7 @@ namespace FRS
             //var p = new FileExtensionContentTypeProvider();
             //p.Mappings[".exe"] = "application/octet-stream";
             //return new StaticFileOptions { ContentTypeProvider = p };
+
             var staticFileOptions = new StaticFileOptions
             {
                 // Configure options here if needed

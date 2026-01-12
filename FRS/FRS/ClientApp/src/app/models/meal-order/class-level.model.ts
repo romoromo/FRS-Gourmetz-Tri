@@ -16,6 +16,11 @@ export class ClassLevel {
   public mealSessionId: string;
   public mealSessionDetailId: string;
   public detail: ClassLevelDetail[];
+
+  public fasRechargeable: boolean = false;
+  public day: string | null = null;
+  public time: Date | null = null;
+  public amount: number | null = null;
 }
 
 export class ClassLevelDetail{

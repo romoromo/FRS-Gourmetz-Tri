@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using DAL.Core.Interfaces;
 using DAL.Core.Logging;
 using DAL.Filters;
@@ -13,7 +8,13 @@ using DAL.Repositories.Interfaces.MealOrder;
 using DAL.Repositories.MealOrder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Sieve.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DAL
 {
@@ -158,8 +159,9 @@ namespace DAL
         private CatererAssetRepository _catererAssetRepository;
         private AssetComponentRepository _assetComponentRepository;
         private SortingAreaRepository _sortingAreaRepository;
+        private ISqlAppLock _sqlAppLock;
 
-        public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper, IUserActivityRepository userActivityRepository)
+        public UnitOfWork(IConfiguration configuration, ApplicationDbContext context, ISieveProcessor sieveProcessor, ILoggerFactory loggerFactory, IMapper mapper, IUserActivityRepository userActivityRepository, ISqlAppLock sqlAppLock)
         {
             _context = context;
             _configuration = configuration;
@@ -168,6 +170,7 @@ namespace DAL
             _userActivityRepository = userActivityRepository;
             _mapper = mapper;
             Logger.ConfigureLogger(loggerFactory, configuration);
+            _sqlAppLock = sqlAppLock;
         }
 
 
@@ -740,7 +743,8 @@ namespace DAL
             get
             {
                 if (_studentWalletTransactions == null)
-                    _studentWalletTransactions = new StudentWalletTransactionRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+                    _studentWalletTransactions = new StudentWalletTransactionRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,
+                        NullLogger<StudentWalletTransactionRepository>.Instance, _sqlAppLock);
 
                 return _studentWalletTransactions;
             }

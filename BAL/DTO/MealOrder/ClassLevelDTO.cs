@@ -1,6 +1,8 @@
-﻿using System;
+﻿using DAL.Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace BAL.DTO.MealOrder
 {
@@ -23,6 +25,12 @@ namespace BAL.DTO.MealOrder
         public int? MealSessionDetailId { get; set; }
         public string MealSessionDetailName { get; set; }
         public List<ClassLevelDetailDTO> Detail { get; set; }
+
+        [JsonPropertyName("fasRechargeable")]
+        public bool? FASRechargeable { get; set; }
+        public ScheduleDay? Day { get; set; }
+        public TimeSpan? Time { get; set; }
+        public double? Amount { get; set; }
     }
 
     public class ClassLevelDetailDTO
