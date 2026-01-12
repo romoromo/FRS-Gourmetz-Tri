@@ -665,7 +665,15 @@ namespace FRS.Controllers
 
                 var card = await this._service.GetStudentCardByIdAsync(0, dto.CardId);
                 if (card != null)
-                    return BadRequest("Card already exists.");
+                {
+                    dto.Id = card.Id;
+                    var result2 = await this._service.UpdateStudentCardAsync(dto);
+                    if (result2.IsSuccess)
+                    {
+                        StudentCardDTO vm = _mapper.Map<StudentCardDTO>(result2.Data);
+                        return CreatedAtAction("UpdatedExistingCard", new { id = vm.Id }, vm);
+                    }
+                }
 
                 var result = await this._service.CreateStudentCardAsync(dto);
                 if (result.IsSuccess)

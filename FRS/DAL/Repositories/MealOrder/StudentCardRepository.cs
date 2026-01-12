@@ -57,27 +57,75 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            var cards = _appContext.StudentCards.Select(t => t.IsActive).ToList();
+            //var cards = _appContext.StudentCards.Select(t => t.IsActive).ToList();
             var cardExists = _appContext.StudentCards.Where(e => e.IsActive && e.CardId.ToLower() == studentCard.CardId.ToLower()).ToList();
 
 
-            if (cardExists != null && cardExists.Count > 0)
+            if (cardExists.Count != 0)
             {
-                result.Message = "Failed to save! Card Id already exists.";
-                result.IsSuccess = false;
+                //result.Message = "Failed to save! Card Id already exists.";
+                //result.IsSuccess = false;
+
+                //set all existing cards to inactive
+                cardExists.ToList().ForEach(e =>
+                {
+                    e.Status = StudentCardStatus.INACTIVE.ToString();
+                    e.IsActive = false;
+                    _appContext.StudentCards.Update(e);
+                });
+
+                //set all existing cards of the student to inactive
+                var existingCardsOfStudent = _appContext.StudentCards.Where(e => e.IsActive && e.StudentId == studentCard.StudentId);
+                existingCardsOfStudent.ToList().ForEach(e =>
+                {
+                    e.Status = StudentCardStatus.INACTIVE.ToString();
+                    e.IsActive = false;
+                    _appContext.StudentCards.Update(e);
+                });
+
+                var existingCard = _appContext.StudentCards.FirstOrDefault(m => m.StudentId == studentCard.StudentId && m.CardId.ToLower() == studentCard.CardId.ToLower());
+                if (existingCard != null)
+                {
+                    existingCard.Status = StudentCardStatus.ACTIVE.ToString();
+                    existingCard.IsActive = true;
+                    _appContext.StudentCards.Update(existingCard);
+                }
+                else
+                {
+                    studentCard.Status = StudentCardStatus.ACTIVE.ToString();
+                    studentCard.IsActive = true;
+                    studentCard.StudentId = studentCard.StudentId;
+                    var f = await AddAsync(studentCard);
+                }
+
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Successfully saved!";
+                    result.IsSuccess = true;
+                    result.Data = studentCard;
+                }
+                else
+                {
+                    result.Message = "Failed to save!";
+                    result.IsSuccess = false;
+                }
             }
             else
             {
                 var otherStudentCards = _appContext.StudentCards.Where(e => e.IsActive && e.StudentId == studentCard.StudentId);
                 if (otherStudentCards != null)
                 {
-                    otherStudentCards.ToList().ForEach(e => {
+                    otherStudentCards.ToList().ForEach(e =>
+                    {
                         e.Status = StudentCardStatus.INACTIVE.ToString();
+                        e.IsActive = false;
                         _appContext.StudentCards.Update(e);
                     });
                 }
 
                 studentCard.Status = StudentCardStatus.ACTIVE.ToString();
+                studentCard.IsActive = true;
+
                 var f = await AddAsync(studentCard);
                 if (await _appContext.SaveChangesAsync() > 0)
                 {
@@ -99,33 +147,32 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
             var f = await GetSingleOrDefaultAsync(e => e.Id == studentCard.Id);
-            //var cardExists = _appContext.StudentCards.Any(e =>
-            //                e.IsActive && e.Id != studentCard.Id &&
-            //                e.CardId.ToLower() == studentCard.CardId.ToLower());
 
             var cardExists = _appContext.StudentCards.Where(e => e.IsActive && e.Id != studentCard.Id && e.CardId.ToLower() == studentCard.CardId.ToLower()).ToList();
 
             if (cardExists != null && cardExists.Count > 0)
             {
-                result.Message = "Failed to save! Duplicate card found.";
-                result.IsSuccess = false;
+                //result.Message = "Failed to save! Duplicate card found.";
+                //result.IsSuccess = false;
+
+                cardExists.ToList().ForEach(e => { e.Status = StudentCardStatus.INACTIVE.ToString(); e.IsActive = false; _appContext.StudentCards.Update(e); });
+
+
+            }
+
+            f.CopyFrom(studentCard);
+
+            Update(f);
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+                result.Data = f;
             }
             else
             {
-                f.CopyFrom(studentCard);
-
-                Update(f);
-                if (await _appContext.SaveChangesAsync() > 0)
-                {
-                    result.Message = "Successfully saved!";
-                    result.IsSuccess = true;
-                    result.Data = f;
-                }
-                else
-                {
-                    result.Message = "Failed to save!";
-                    result.IsSuccess = false;
-                }
+                result.Message = "Failed to save!";
+                result.IsSuccess = false;
             }
 
             return result;
