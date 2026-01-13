@@ -151,7 +151,14 @@ export class CancelOrderRequestEditorComponent {
 
 
   downloadFile(path) {
-    window.open(getBaseUrl() + '/gateway/Download/FileByPath?filePath=/' + encodeURIComponent(path), '_blank');
+
+    var baseUrl = getBaseUrl();
+
+    var url = new URL(baseUrl);
+
+    var cleanUrl = url.origin;
+
+    window.open(cleanUrl + '/Download/FileByPath?filePath=/' + encodeURIComponent(path), '_blank');
   }
 
   get canManageCancelOrderRequests() {
