@@ -10,7 +10,7 @@ using System.Text;
 
 namespace BAL.DTO.MealOrder
 {
-    public class StudentDTO
+    public class StudentSimpleDTO
     {
         public int Id { get; set; }
 
@@ -81,7 +81,14 @@ namespace BAL.DTO.MealOrder
         public double PointBalance { get; set; }
         public bool IsWalletFreeze { get; set; }
         public double WalletDailyLimit { get; set; }
+        public int? PhotoId { get; set; }
+        public string PhotoName { get; set; }
+        public string PhotoPath { get; set; }
+        public string ImgUrl { get; set; }
+    }
 
+    public class StudentDTO : StudentSimpleDTO
+    {
         public List<UserCardIdDTO> Cards { get; set; }
         public List<StudentCardDTO> StudentCards { get; set; }
         public List<StudentRestrictionDTO> Restrictions { get; set; }
@@ -93,12 +100,9 @@ namespace BAL.DTO.MealOrder
         public List<WalletPaymentDTO> WalletPayments { get; set; }
         public List<StudentWalletDTO> StudentWallets { get; set; }
         public List<StudentPointDTO> StudentPoints { get; set; }
-
-        public int? PhotoId { get; set; }
-        public string PhotoName { get; set; }
-        public string PhotoPath { get; set; }
-        public string ImgUrl { get; set; }
     }
+
+
 
     public class StudentManageAccountDTO
     {

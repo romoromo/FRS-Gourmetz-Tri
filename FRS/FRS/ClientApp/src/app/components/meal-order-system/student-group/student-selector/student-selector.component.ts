@@ -203,7 +203,7 @@ export class StudentSelectorComponent implements OnInit {
     this.filter.filters = f + c + ig + fas + '(IsActive)==true,(Name)@=' + this.keyword;
     this.alertService.startLoadingMessage();
     this.isLoading = true;
-    this.studentService.getStudentsByFilter(this.filter)
+    this.studentService.getSimpleStudentsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
 
@@ -251,7 +251,7 @@ export class StudentSelectorComponent implements OnInit {
     let fas = this.filterIsFas != null ? '(IsFAS)==' + this.filterIsFas + ',' : '';
     allFilter.filters = f + c + ig + fas + '(IsActive)==true,(Name)@=' + this.keyword;
 
-    this.studentService.getStudentsByFilter(allFilter)
+    this.studentService.getSimpleStudentsByFilter(this.filter)
       .subscribe(results => {
         //this.pagedResult = results;
 

@@ -199,6 +199,26 @@ namespace BAL.Mapping
                 .ForMember(e => e.AccountLinkRequests, map => map.MapFrom(e => e.AccountLinkRequests.Where(f => f.IsActive && f.Status == "Pending").ToList()))
                 .ForMember(d => d.PhotoPath, map => map.MapFrom(s => s.Photo.Path));
 
+
+            CreateMap<StudentSimpleDTO, Student>();
+
+            CreateMap<Student, StudentSimpleDTO>()
+                .ForMember(e => e.ClassLevelId, map => map.MapFrom(e => e.Class.ClassLevelId))
+                .ForMember(e => e.ClassLevelName, map => map.MapFrom(e => e.Class.ClassLevel.Name))
+                .ForMember(e => e.ClassBatchName, map => map.MapFrom(e => e.ClassBatch.Name))
+                .ForMember(e => e.Year, map => map.MapFrom(e => e.ClassBatch.Year))
+                .ForMember(e => e.ClassName, map => map.MapFrom(e => e.Class.Name))
+                .ForMember(e => e.UserType, map => map.MapFrom(e => e.Account.User.UserType))
+                .ForMember(e => e.UserId, map => map.MapFrom(e => e.Account.User.Id))
+                .ForMember(e => e.StudentId, map => map.MapFrom(e => e.Id))
+                .ForMember(e => e.Username, map => map.MapFrom(e => e.Account.User.UserName))
+                //.ForMember(e => e.CurrentPassword, map => map.MapFrom(e => e.Account.User.))
+                .ForMember(e => e.Email, map => map.MapFrom(e => e.Account.User.Email))
+                .ForMember(e => e.FullName, map => map.MapFrom(e => e.Account.User.FullName))
+                .ForMember(e => e.OutletName, map => map.MapFrom(e => e.Outlet.Name))
+                .ForMember(e => e.DaysToFreezeOrdering, map => map.MapFrom(e => e.Outlet.DaysToFreezeOrdering));
+
+
             CreateMap<StudentWallet, StudentWalletDTO>();
             CreateMap<StudentPoint, StudentPointDTO>();
 

@@ -143,7 +143,7 @@ export class StudentSelectorComponent implements OnInit {
     let fas = this.filterIsFas != null ? '(IsFAS)==' + this.filterIsFas + ',' : '';
     this.filter.filters = f + c + ig + fas + '(IsActive)==true,(Name)@=' + this.keyword;
 
-    this.studentService.getStudentsByFilter(this.filter)
+    this.studentService.getSimpleStudentsByFilter(this.filter)
       .subscribe(results => {
         this.pagedResult = results;
 
