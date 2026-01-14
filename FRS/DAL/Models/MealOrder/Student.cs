@@ -92,6 +92,6 @@ namespace DAL.Models.MealOrder
         [ForeignKey("PhotoId")]
         public virtual File Photo { get; set; }
 
-
+        public bool? IsStaff { get; set; }
     }
 }
