@@ -1,10 +1,19 @@
 ﻿using Hangfire.Common;
+using Hangfire.Dashboard;
 using Hangfire.States;
 using Hangfire.Storage;
 using System;
 
 namespace FRS.Filters
 {
+    public class HanfireAuthorizationFilter : IDashboardAuthorizationFilter
+    {
+        public bool Authorize(DashboardContext context)
+        {
+            return true;
+        }
+    }
+
     public class JobExpirationAttribute : JobFilterAttribute, IApplyStateFilter
     {
         private readonly TimeSpan _expiration;
