@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DAL.Core;
+﻿using DAL.Core;
 using DAL.Core.DTO;
 using DAL.Core.Interfaces;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DAL.Repositories.Interfaces.MealOrder
 {
@@ -40,5 +41,6 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdateStudentClassByClassIdAsync(Student data, int originClassId);
         Task<BaseOperationResponse> UpdateDailyLimit(int studentId, int dailyLimit);
         Task<BaseOperationResponse> UpdateWalletFreze(int studentId, bool isFreeze);
+
     }
 }

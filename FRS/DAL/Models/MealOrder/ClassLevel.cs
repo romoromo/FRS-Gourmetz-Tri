@@ -40,6 +40,11 @@ namespace DAL.Models.MealOrder
         public virtual MealSessionDetail MealSessionDetail { get; set; }
 
         public virtual ICollection<ClassLevelDetail> ClassLevelDetails { get; set; } = new HashSet<ClassLevelDetail>();
+
+        public bool? FASRechargeable { get; set; }
+        public ScheduleDay? Day { get; set; }
+        public TimeSpan? Time { get; set; }
+        public double? Amount { get; set; }
     }
 
     public class ClassLevelDetail

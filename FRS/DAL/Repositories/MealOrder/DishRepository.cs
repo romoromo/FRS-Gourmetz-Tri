@@ -39,7 +39,7 @@ namespace DAL.Repositories.MealOrder
         }
 
         public async Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter)
-        {   
+        {
             IQueryable<Dish> query = _appContext.Dishes
                 .AsNoTracking()
                 .AsSplitQuery();
@@ -97,7 +97,7 @@ namespace DAL.Repositories.MealOrder
             var cycleSetsData = await _appContext.DishCycleScheduleSets
                 .AsNoTracking()
                 .Where(x => x.DishCycleId == dishCycleId && x.IsActive)
-                .Select(x => new { x.CycleTypeId, x.CycleTypeSequence,x.DishCycle.NumOfDays })
+                .Select(x => new { x.CycleTypeId, x.CycleTypeSequence, x.DishCycle.NumOfDays })
                 .ToListAsync();
 
             var numOfDays = cycleSetsData.Select(x => x.NumOfDays).FirstOrDefault();
@@ -106,11 +106,11 @@ namespace DAL.Repositories.MealOrder
                 .AsSplitQuery()
                 .AsNoTracking()
                 .Where(x => cycleSetsData.Select(x => x.CycleTypeId).Contains(x.Id))
-                .SelectMany(cycle => 
+                .SelectMany(cycle =>
                     cycle.Schedules.Where(y => y.Day <= numOfDays)
                         .SelectMany(y => y.Details
                             .SelectMany(z => z.Menus
-                                .Select(x => new { x.DishId,DishCycleId = cycle.Id, z.Sequence}))))
+                                .Select(x => new { x.DishId, DishCycleId = cycle.Id, z.Sequence }))))
                 .ToListAsync();
 
             var filteredIds = queryDish
@@ -140,7 +140,7 @@ namespace DAL.Repositories.MealOrder
             string code = string.Empty;
             var caterer = await _appContext.CatererInfos.FirstOrDefaultAsync(e => e.Id == id);
 
-            if(caterer != null)
+            if (caterer != null)
             {
                 int dishCount = await _appContext.Dishes.CountAsync(e => e.CatererId == id && e.IsActive) + 1;
                 code = string.Format("{0}{1}{2}", caterer.Code, DateTime.UtcNow.ToString("yyyyMMddHHmm"), dishCount);
@@ -167,6 +167,14 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
+            var existingDishCode = _appContext.Dishes.AsNoTracking().FirstOrDefault(e => e.Code == dish.Code && e.IsActive);
+            if (existingDishCode != null)
+            {
+                result.Message = "Dish code already exists!";
+                result.IsSuccess = false;
+                return result;
+            }
+
             var f = await AddAsync(dish);
             if (await _appContext.SaveChangesAsync() > 0)
             {
@@ -187,6 +195,14 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
+            var existingDishCode = _appContext.Dishes.AsNoTracking().FirstOrDefault(e => e.Code == dish.Code && e.IsActive && e.Id != dish.Id);
+            if (existingDishCode != null)
+            {
+                result.Message = "Dish code already exists!";
+                result.IsSuccess = false;
+                return result;
+            }
+
             var f = await GetSingleOrDefaultAsync(e => e.Id == dish.Id);
 
             //delete old dish periods
@@ -198,7 +214,8 @@ namespace DAL.Repositories.MealOrder
 
             var toBeAdded = selectedPeriodIds.Except(periods.Select(e => e.PeriodId));
 
-            toBeAdded.ToList().ForEach(e => {
+            toBeAdded.ToList().ForEach(e =>
+            {
                 this._appContext.DishPeriods.AddAsync(new DishPeriod { DishId = dish.Id, PeriodId = e });
             });
 
@@ -211,7 +228,8 @@ namespace DAL.Repositories.MealOrder
 
             var rtoBeAdded = selectedRestrictionIds.Except(restrictions.Select(e => e.RestrictionId));
 
-            rtoBeAdded.ToList().ForEach(e => {
+            rtoBeAdded.ToList().ForEach(e =>
+            {
                 this._appContext.DishRestrictions.AddAsync(new DishRestriction { DishId = dish.Id, RestrictionId = e });
             });
 
@@ -224,12 +242,13 @@ namespace DAL.Repositories.MealOrder
 
             var sdtoBeAdded = selectedSubDishIds.Except(currentSubdishes.Select(e => e.DishId));
 
-            sdtoBeAdded.ToList().ForEach(e => {
+            sdtoBeAdded.ToList().ForEach(e =>
+            {
                 this._appContext.DishDetails.AddAsync(new DishDetail { ParentDishId = dish.Id, DishId = e });
             });
 
             //delete old components
-            
+
             var selectedComponentIds = dish.DishComponents.Select(a => a.Id);
             var currentComponents = this._appContext.DishComponents.Where(e => e.DishId == dish.Id);
 
@@ -410,7 +429,7 @@ namespace DAL.Repositories.MealOrder
                 );
 
 
-            var (validatedDtos, validationResult) = ValidateDishImport(dtos, dishTypeMap, bentoBoxTypeMap, cuisineMap,storeInfo,restrictions, dishes);
+            var (validatedDtos, validationResult) = ValidateDishImport(dtos, dishTypeMap, bentoBoxTypeMap, cuisineMap, storeInfo, restrictions, dishes);
 
             if (!validationResult.IsSuccess)
                 return validationResult;
@@ -534,15 +553,15 @@ namespace DAL.Repositories.MealOrder
         }
 
 
-    private (List<ValidatedDishInputDTO> ValidatedDtos, DishImportDTO Result) ValidateDishImport(
-        List<DishImportInputDTO> dtos,
-        Dictionary<string, int> dishTypeMap,
-        Dictionary<string, int> bentoBoxTypeMap,
-        Dictionary<string, int> cuisineMap,
-        Dictionary<string, int> storeInfoMap,
-        Dictionary<string, int> restrictions,
-        Dictionary<string, int> dishes
-        )
+        private (List<ValidatedDishInputDTO> ValidatedDtos, DishImportDTO Result) ValidateDishImport(
+            List<DishImportInputDTO> dtos,
+            Dictionary<string, int> dishTypeMap,
+            Dictionary<string, int> bentoBoxTypeMap,
+            Dictionary<string, int> cuisineMap,
+            Dictionary<string, int> storeInfoMap,
+            Dictionary<string, int> restrictions,
+            Dictionary<string, int> dishes
+            )
         {
             var result = new DishImportDTO
             {

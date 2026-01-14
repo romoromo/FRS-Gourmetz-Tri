@@ -1,28 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
-using DAL.Models.MealOrder;
-using DAL.Repositories.Interfaces.MealOrder;
-using System.Transactions;
-using Microsoft.AspNetCore.Identity;
-using DAL.Core.Interfaces;
+﻿using DAL.Core;
 using DAL.Core.DTO;
-using System.ComponentModel.DataAnnotations;
 using DAL.Core.Helpers;
-using System.Text.RegularExpressions;
-using Microsoft.Data.SqlClient;
-using System.Data;
-using IsolationLevel = System.Transactions.IsolationLevel;
-using Microsoft.Extensions.Logging;
+using DAL.Core.Interfaces;
 using DAL.Core.Logging;
-using Microsoft.Extensions.Configuration;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces;
+using DAL.Repositories.Interfaces.MealOrder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Sieve.Services;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Data;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Transactions;
+using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -36,7 +37,7 @@ namespace DAL.Repositories.MealOrder
         private IConfiguration _configuration;
         private IUserActivityRepository _userActivityRepository;
 
-        public StudentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId,IConfiguration configuration,IUserActivityRepository userActivityRepository) : base(context)
+        public StudentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId, IConfiguration configuration, IUserActivityRepository userActivityRepository) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
@@ -77,7 +78,7 @@ namespace DAL.Repositories.MealOrder
 
             var students = new List<Student>();
 
-            if(user.Account != null && user.Account.Student != null) students.Add(user.Account.Student);
+            if (user.Account != null && user.Account.Student != null) students.Add(user.Account.Student);
 
             if (user.Students != null)
             {
@@ -840,15 +841,15 @@ namespace DAL.Repositories.MealOrder
                 var user = new ApplicationUser();
                 user.IsEnabled = true;
                 user.EmailConfirmed = true;
-                user.UserName = student.Email?.Substring(0, student.Email.IndexOf('@') );
+                user.UserName = student.Email?.Substring(0, student.Email.IndexOf('@'));
                 user.Email = student.Email;
                 user.IsActive = true;
                 user.InstitutionId = (await accountManager.GetCurrentInstitution())?.Id;
-                
+
                 var createUserResult = await accountManager.CreateUserAsync(user, new List<string>(), newPassword);
                 if (createUserResult.Item1)
                 {
-                   if (student.Account == null)
+                    if (student.Account == null)
                     {
                         student.Account = new StudentAccount();
                     }
@@ -915,7 +916,7 @@ namespace DAL.Repositories.MealOrder
             var result = new BaseOperationResponse();
             var student = await GetFirstOrDefaultAsync(r => r.Id == id);
 
-            if(student != null)
+            if (student != null)
             {
                 student.Email = email;
                 Update(student);
@@ -1480,7 +1481,7 @@ namespace DAL.Repositories.MealOrder
             return result;
         }
 
-        public async Task<bool> ImportStudentGroupAsync(List<int> studentIds,int studentGroupId,int userId)
+        public async Task<bool> ImportStudentGroupAsync(List<int> studentIds, int studentGroupId, int userId)
         {
             try
             {
@@ -1488,7 +1489,7 @@ namespace DAL.Repositories.MealOrder
                     .Include(x => x.StudentGroup)
                     .AsSplitQuery()
                     .AsNoTracking()
-                    .Where(x => x.StudentGroupId == studentGroupId).Select(x => new { x.StudentId,StudentGroupName =  x.StudentGroup.Name }).ToListAsync();
+                    .Where(x => x.StudentGroupId == studentGroupId).Select(x => new { x.StudentId, StudentGroupName = x.StudentGroup.Name }).ToListAsync();
 
                 var selectedStudents = await _appContext.Students.AsNoTracking().Where(x => studentIds.Contains(x.Id) && x.IsActive).ToListAsync();
                 var studentGroupData = await _appContext.StudentGroups.AsNoTracking().FirstOrDefaultAsync(x => x.Id == studentGroupId);
@@ -1512,13 +1513,14 @@ namespace DAL.Repositories.MealOrder
 
                 await _appContext.SaveChangesAsync();
                 return true;
-            }catch(Exception)
+            }
+            catch (Exception)
             {
                 throw;
             }
         }
 
-        public async Task<BaseOperationResponse> UpdateStudentClassByClassIdAsync(Student data,int originClassId)
+        public async Task<BaseOperationResponse> UpdateStudentClassByClassIdAsync(Student data, int originClassId)
         {
             var result = new BaseOperationResponse();
 
@@ -1571,7 +1573,7 @@ namespace DAL.Repositories.MealOrder
                 var studentData = await _appContext.Students
                     .FirstOrDefaultAsync(u => u.Id == studentId);
 
-                if(studentData == null)
+                if (studentData == null)
                 {
                     result.IsSuccess = false;
                     result.Message = "Student not found";

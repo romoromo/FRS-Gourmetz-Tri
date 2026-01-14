@@ -22,5 +22,7 @@ namespace BAL.Services.Interfaces
 
         Task<byte[]> GenerateXls(BaseFilter filter);
         Task<BaseOperationResponse> WalletTransfer(int studentIdFrom, int studentIdTo, double amount, int userId);
+
+        Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransactionDTO dto);
     }
 }

@@ -1,22 +1,23 @@
-﻿using DAL.Models;
+﻿using DAL.Core;
+using DAL.Core.Audit.Auditors;
+using DAL.Core.Audit.Extensions;
+using DAL.Models;
+using DAL.Models.Interfaces;
+using DAL.Models.MealOrder;
+using DAL.Models.StoredProcedures;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
-using DAL.Models.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using DAL.Core;
-using DAL.Core.Audit.Auditors;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using DAL.Core.Audit.Extensions;
-using DAL.Models.MealOrder;
-using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
-using DAL.Models.StoredProcedures;
-using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace DAL
 {
@@ -399,6 +400,15 @@ namespace DAL
             builder.Entity<Student>().HasMany(s => s.StudentPoints).WithOne(s => s.Student);
             builder.Entity<Student>().HasMany(s => s.StudentWallets).WithOne(s => s.Student);
             builder.Entity<Student>().Property(u => u.ConcurrencyStamp).ValueGeneratedOnAddOrUpdate().IsConcurrencyToken(true).IsRowVersion();
+            builder.Entity<Student>(m =>
+            {
+                m.HasKey(x => x.Id);
+                m.HasIndex(x => new
+                {
+                    x.ClassLevelId,
+                    x.Id
+                }).HasDatabaseName("IX_Students_ClassLevelId_Id");
+            });
             builder.Entity<StudentGroup>().HasMany(s => s.Sgdetails).WithOne(s => s.StudentGroup);
             builder.Entity<StudentAccount>().HasKey(lf => new { lf.StudentId, lf.UserId });
             builder.Entity<TokenOrder>().HasMany(s => s.Tokens).WithOne(s => s.Order);
@@ -760,6 +770,12 @@ namespace DAL
 
             builder.Entity<SortingArea>().TrackAllProperties();
             builder.Entity<SortingArea>().HasIndex(p => new { p.Code, p.Description, p.CatererInfoId, p.RouteId });
+            builder.Entity<FasRunLog>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.HasIndex(x => x.RunKey).IsUnique();
+                e.HasIndex(x => new { x.ClassLevelId, x.CreatedAt });
+            });
 
         }
 

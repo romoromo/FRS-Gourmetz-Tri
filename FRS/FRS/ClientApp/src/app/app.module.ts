@@ -568,6 +568,7 @@ import { AssetCmpManagementComponent } from "./components/meal-order-system/asse
 import { SortingAreaManagementComponent } from "./components/meal-order-system/sorting-area/sorting-area-management.component";
 import { SortingAreaEditorComponent } from "./components/meal-order-system/sorting-area/sorting-area-editor.component";
 import { ClassLevelSchedule } from "./components/meal-order-system/class-level/class-level-schedule.components";
+import { WalletTransactionLogEditorComponent } from "./components/meal-order-system/wallet-transaction-log/wallet-transaction-log-editor.component";
 
 export const configFactory = (configService: ConfigurationService) => {
   return () => {
@@ -1040,7 +1041,8 @@ export const configFactory = (configService: ConfigurationService) => {
     AssetCmpManagementComponent,
     SortingAreaManagementComponent,
     SortingAreaEditorComponent,
-    ClassLevelSchedule
+    ClassLevelSchedule,
+    WalletTransactionLogEditorComponent
   ],
   providers: [
     { provide: "BASE_URL", useFactory: getBaseUrl },
@@ -1412,7 +1414,8 @@ export const configFactory = (configService: ConfigurationService) => {
     AssetCmpManagementComponent,
     SortingAreaManagementComponent,
     SortingAreaEditorComponent,
-    ClassLevelSchedule
+    ClassLevelSchedule,
+    WalletTransactionLogEditorComponent
   ],
 })
 export class AppModule {}

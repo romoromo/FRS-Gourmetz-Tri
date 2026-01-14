@@ -100,6 +100,7 @@ export class StudentWalletTransaction {
   constructor() {
   }
 
+  public id: number;
   public studentId: string;
   public amount: number;
   public concurrencyStamp: string;
@@ -110,6 +111,9 @@ export class StudentWalletTransaction {
   public userName: string;
   public studentName: string;
 
+  public fileId: string = '';
+  public fileName: string = '';
+  public filePath: string = '';
 
 }
 

@@ -42,5 +42,9 @@ namespace DAL.Models
         public virtual TokenOrder TokenOrder { get; set; }
 
         public virtual ICollection<StudentWalletTransactionDetail> Details { get; set; }
+
+        public int? FileId { get; set; }
+        [ForeignKey("FileId")]
+        public virtual File File { get; set; }
     }
 }

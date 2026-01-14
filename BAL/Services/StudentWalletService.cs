@@ -240,5 +240,10 @@ namespace BAL.Services
         {
             return await this._uow.StudentWalletTransactions.WalletTransfer(studentIdFrom, studentIdTo, amount, userId);
         }
+
+        public async Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransactionDTO dto)
+        {
+            return await this._uow.StudentWalletTransactions.UpdateStudentWalletTransaction(_mapper.Map<StudentWalletTransaction>(dto));
+        }
     }
 }

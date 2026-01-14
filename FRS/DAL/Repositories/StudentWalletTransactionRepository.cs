@@ -5,11 +5,15 @@ using DAL.Models;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using NPOI.SS.Formula.Functions;
 using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DAL.Repositories
@@ -19,11 +23,17 @@ namespace DAL.Repositories
         private ISieveProcessor _sieveProcessor;
         private int? _currentUserId;
         private int? _currentInstitutionId;
-        public StudentWalletTransactionRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId) : base(context)
+        readonly ILogger _logger;
+        private readonly ISqlAppLock _sqlAppLock;
+
+        public StudentWalletTransactionRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId, ILogger<StudentWalletTransactionRepository> logger,
+            ISqlAppLock sqlAppLock) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
             this._currentUserId = currentInstitutionId;
+            this._logger = logger;
+            this._sqlAppLock = sqlAppLock;
         }
 
         #region Sieved
@@ -873,6 +883,209 @@ namespace DAL.Repositories
             }
 
             return result;
+        }
+
+        public async Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransaction walletTransaction)
+        {
+            var result = new BaseOperationResponse();
+
+            var f = await GetSingleOrDefaultAsync(e => e.Id == walletTransaction.Id);
+
+            f.CopyFrom(walletTransaction);
+
+            if (walletTransaction.File != null && !string.IsNullOrEmpty(walletTransaction.File.Path))
+            {
+                if (!f.FileId.HasValue)
+                {
+                    f.File = walletTransaction.File;
+                }
+                else
+                {
+                    if (f.File == null)
+                    {
+                        //TODO: check why EF Core is not loading the Icon property; interim solution
+                        var icon = await _appContext.Files.SingleOrDefaultAsync(e => e.Id == f.FileId);
+                        if (icon == null)
+                        {
+                            f.File = new Models.File();
+                        }
+                        else
+                        {
+                            f.File = icon;
+                            f.FileId = icon.Id;
+                        }
+                    }
+
+                    f.File.Path = walletTransaction.File.Path;
+                    f.File.FileName = walletTransaction.File.FileName ?? System.IO.Path.GetFileName(walletTransaction.File.Path);
+                }
+            }
+
+            Update(f);
+            if (await _appContext.SaveChangesAsync() > 0)
+            {
+                result.Message = "Successfully saved!";
+                result.IsSuccess = true;
+                result.Data = f;
+            }
+            else
+            {
+                result.Message = "Failed to save!";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+        public async Task FASRechargeable(CancellationToken ct = default)
+        {
+            var serverDateTimeNow = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Asia/Singapore"));
+            var day = (int)serverDateTimeNow.DayOfWeek;
+            var nowTime = new TimeSpan(serverDateTimeNow.Hour, serverDateTimeNow.Minute, 0);
+            var timeHHmm = $"{serverDateTimeNow:HHmm}";
+
+            var classLevels = await _appContext.ClassLevels
+                .AsNoTracking()
+                .Where(m =>
+                    m.IsActive &&
+                    m.Outlet.IsActive &&
+                    m.FASRechargeable == true &&
+                    m.Day != null && (int)m.Day.Value == day &&
+                    m.Time != null && m.Time.Value == nowTime &&
+                    m.Amount != null && m.Amount > 0)
+                .Select(m => new
+                {
+                    m.Id,
+                    Amount = m.Amount!.Value
+                })
+                .ToListAsync(ct);
+
+            if (classLevels.Count == 0) return;
+
+            _logger.LogInformation($"FAS Rechargeable starting...{serverDateTimeNow}");
+
+            foreach (var classLevel in classLevels)
+            {
+                await using var lockHandle = await _sqlAppLock.TryAcquireAsync(resource: $"lock:fas:classlevel:{classLevel.Id}", timeoutMs: 0, ct: ct);
+                if (lockHandle is null)
+                {
+                    _logger.LogInformation("Skip ClassLevel {ClassLevelId}: lock held (another server/job running).", classLevel.Id);
+                    continue;
+                }
+                var runKey = $"{serverDateTimeNow:yyyyMMdd}-{timeHHmm}-{classLevel.Id}";
+
+                await using var tx = await _appContext.Database.BeginTransactionAsync(ct);
+
+                try
+                {
+                    var alreadyRun = await _appContext.Set<FasRunLog>().AnyAsync(x => x.RunKey == runKey, ct);
+                    if (alreadyRun)
+                    {
+                        _logger.LogInformation("Skip ClassLevel {ClassLevelId}: already ran RunKey {RunKey}", classLevel.Id, runKey);
+                        await tx.RollbackAsync(ct);
+                        continue;
+                    }
+
+                    _logger.LogInformation($"Loop Class Level : {classLevel.Id}");
+
+                    var students = _appContext.Students
+                        .Where(s => s.IsActive && s.ClassLevelId == classLevel.Id);
+                    await foreach (var student in students.AsAsyncEnumerable().WithCancellation(ct))
+                    {
+                        _logger.LogInformation($"Loop Class Level : {classLevel.Id} for Student {student.Name}");
+
+                        _appContext.AuditUserActivityType = new AuditUserActivityType
+                        {
+                            GroupId = Common.GenerateUniqueStringId(),
+                            ActionName = "AUTO DEBIT FAS amount to $0",
+                            Remarks = $"Auto Debit FAS amount to $0 {student.Name}"
+                        };
+
+                        var fasWallet = await _appContext.StudentWallets
+                            .FirstOrDefaultAsync(w => w.StudentId == student.Id && w.IsActive && w.Type == WalletType.FAS.ToString(), ct);
+                        if (fasWallet != null)
+                        {
+                            var oldBalance = fasWallet.Balance;
+                            if (oldBalance != 0)
+                            {
+                                fasWallet.Balance = 0;
+
+                                await _appContext.StudentWalletTransactions.AddAsync(new StudentWalletTransaction
+                                {
+                                    StudentId = student.Id,
+                                    Amount = oldBalance,
+                                    TransactionType = WalletTransactionType.DEBIT.ToString(),
+                                    Description = $"Auto Debit FAS from {oldBalance} to 0 at {serverDateTimeNow:yyyy-MM-dd HH:mm} for {student.Name}",
+                                    CreatedBy = null
+                                }, ct);
+
+                                _logger.LogInformation($"Loop Class Level : {classLevel.Id} for Student {student.Name}. Auto Debit FAS amount to $0");
+                            }
+
+                            await _appContext.StudentWalletTransactions.AddAsync(new StudentWalletTransaction
+                            {
+                                StudentId = student.Id,
+                                Amount = classLevel.Amount,
+                                TransactionType = WalletTransactionType.CREDIT.ToString(),
+                                Description = $"Auto Credit FAS {classLevel.Amount} at {serverDateTimeNow:yyyy-MM-dd HH:mm} for {student.Name}",
+                                CreatedBy = null
+                            }, ct);
+
+                            fasWallet.Balance = classLevel.Amount;
+                            _appContext.StudentWallets.Update(fasWallet);
+
+                            _logger.LogInformation($"Loop Class Level : {classLevel.Id} for Student {student.Name}. Auto Credit FAS amount to ${classLevel.Amount}");
+                        }
+                        else
+                        {
+                            var newWallet = new StudentWallet
+                            {
+                                StudentId = student.Id,
+                                Balance = classLevel.Amount,
+                                Type = WalletType.FAS.ToString(),
+                                CreatedBy = null,
+                                UpdatedBy = null
+                            };
+                            await _appContext.StudentWallets.AddAsync(newWallet, ct);
+
+                            await _appContext.StudentWalletTransactions.AddAsync(new StudentWalletTransaction
+                            {
+                                StudentId = student.Id,
+                                Amount = classLevel.Amount,
+                                TransactionType = WalletTransactionType.CREDIT.ToString(),
+                                Description = $"Auto Credit FAS {classLevel.Amount} at {serverDateTimeNow:yyyy-MM-dd HH:mm} for {student.Name}",
+                                CreatedBy = null
+                            }, ct);
+
+                            _logger.LogInformation($"Loop Class Level : {classLevel.Id} for Student {student.Name}. Auto Credit FAS amount to ${classLevel.Amount}");
+                        }
+
+                        var totalWalletBalance = await _appContext.StudentWallets.FirstOrDefaultAsync(m => m.StudentId == student.Id && m.IsActive && m.Type == WalletType.BASIC.ToString());
+                        student.WalletBalance = (totalWalletBalance?.Balance ?? 0) + classLevel.Amount;
+                        _appContext.Students.Update(student);
+                        _logger.LogInformation($"Loop Class Level : {classLevel.Id} for Student {student.Name}. Total Wallet Balance ${totalWalletBalance}");
+                    }
+
+                    _appContext.Set<FasRunLog>().Add(new FasRunLog
+                    {
+                        ClassLevelId = classLevel.Id,
+                        RunKey = runKey,
+                        CreatedAt = DateTime.UtcNow
+                    });
+
+                    await _appContext.SaveChangesAsync(ct);
+                    await tx.CommitAsync(ct);
+
+                    _logger.LogInformation("Finish ClassLevel {ClassLevelId}", classLevel.Id);
+                }
+                catch (Exception ex)
+                {
+                    await tx.RollbackAsync(ct);
+                    _logger.LogError(ex, "FAS Rechargeable FAILED for ClassLevel {ClassLevelId}", classLevel.Id);
+                }
+            }
+
+            _logger.LogInformation("FAS Rechargeable job finished");
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

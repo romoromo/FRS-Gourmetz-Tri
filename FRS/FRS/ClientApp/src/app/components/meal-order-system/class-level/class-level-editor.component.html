@@ -18,6 +18,49 @@
               required minlength="2" maxlength="200" />
           </mat-form-field>
 
+          <mat-checkbox [(ngModel)]="classLevelEdit.fasRechargeable" name="fasRechargeable" (change)="onFasRechargeableChange($event.checked)">
+            FAS Rechargeable
+          </mat-checkbox>
+
+          <mat-form-field appearance="fill" class="col-md-12">
+            <mat-label>Day</mat-label>
+            <mat-select
+              [(ngModel)]="classLevelEdit.day"
+              name="day"
+              [required]="classLevelEdit.fasRechargeable"
+              [disabled]="!classLevelEdit.fasRechargeable"
+            >
+              <mat-option *ngFor="let d of days" [value]="d.enum">
+                {{ d.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="col-md-12">
+            <mat-label>Time</mat-label>
+            <input
+              matInput
+              type="time"
+              name="time"
+              [(ngModel)]="classLevelEdit.time"
+              [required]="classLevelEdit.fasRechargeable"
+              [disabled]="!classLevelEdit.fasRechargeable"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="col-md-12">
+            <mat-label>Amount</mat-label>
+            <input
+              matInput
+              type="number"
+              name="amount"
+              [(ngModel)]="classLevelEdit.amount"
+              min="0"
+              [required]="classLevelEdit.fasRechargeable"
+              [disabled]="!classLevelEdit.fasRechargeable"
+            />
+          </mat-form-field>
+
           <div>
             <button type="button" mat-button style="margin-top:20px" (click)="openAddDetailDialog()">
               <mat-icon>

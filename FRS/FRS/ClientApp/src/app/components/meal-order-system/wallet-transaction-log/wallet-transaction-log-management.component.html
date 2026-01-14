@@ -105,4 +105,9 @@
            [checked]="isSelected"
            (change)="onCheckboxChangeFn($event)" />
   </ng-template>
+
+  <ng-template #actionTemplate let-row="row" let-value="value" let-i="index">
+     <a class="btn btn-link btn-xs" href="javascript:;" (click)="uploadTransaction(row)"><i
+        class="fa fa-upload" aria-hidden="true"></i> Upload Transaction</a>
+  </ng-template>
 </div>

@@ -4,14 +4,17 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260112115905_AddIndex")]
+    partial class AddIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2236,34 +2239,6 @@ namespace FRS.Migrations
                     b.HasIndex("UpdatedBy");
 
                     b.ToTable("FacilityTypes");
-                });
-
-            modelBuilder.Entity("DAL.Models.FasRunLog", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("ClassLevelId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RunKey")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RunKey")
-                        .IsUnique()
-                        .HasFilter("[RunKey] IS NOT NULL");
-
-                    b.HasIndex("ClassLevelId", "CreatedAt");
-
-                    b.ToTable("FasRunLog");
                 });
 
             modelBuilder.Entity("DAL.Models.File", b =>

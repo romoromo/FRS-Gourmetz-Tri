@@ -116,7 +116,7 @@ namespace FRS.Controllers
 
                 return Ok(_mapper.Map<List<StudentDTO>>(results));
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest(ex.ToString());
             }
@@ -253,7 +253,7 @@ namespace FRS.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> TransferClass([FromRoute]int originClassId, [FromBody] StudentDTO model)
+        public async Task<IActionResult> TransferClass([FromRoute] int originClassId, [FromBody] StudentDTO model)
         {
             try
             {
@@ -565,14 +565,15 @@ namespace FRS.Controllers
 
                         }
                     }
-                    bool isSuccess = await _service.ImportStudentGroupAsync(studentIds, studentGroupId,userId);
+                    bool isSuccess = await _service.ImportStudentGroupAsync(studentIds, studentGroupId, userId);
                     return Ok(new { IsSuccess = isSuccess, Message = isSuccess ? "File Imported!" : "Import Failed!" });
                 }
                 else
                 {
                     return BadRequest();
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogError($"Error ImportStudentGroup Id : {Request.Form["studentGroupId"]}");
                 _logger.LogError($"Error ImportStudentGroup : {ex.Message}", ex);
@@ -1161,7 +1162,7 @@ namespace FRS.Controllers
         [HttpGet("vouchers/addbystudentgroup/{studentGroupId:int}/{code}")]
         [ProducesResponseType(200, Type = typeof(BaseOperationResponse))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> AddVoucherByStudentGroup([FromRoute] int studentGroupId,[FromRoute] string code)
+        public async Task<IActionResult> AddVoucherByStudentGroup([FromRoute] int studentGroupId, [FromRoute] string code)
         {
             try
             {
@@ -1228,6 +1229,26 @@ namespace FRS.Controllers
             return Ok(result);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpPut("wallet/transactions/update/{id}")]
+        [ProducesResponseType(200, Type = typeof(StudentWalletTransactionDTO))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> StudentWalletTransaction(string id, [FromBody] StudentWalletTransactionDTO dto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (dto == null)
+                    return BadRequest($"{nameof(dto)} cannot be null");
+
+                var result = await this._walletService.UpdateStudentWalletTransaction(dto);
+                if (result.IsSuccess)
+                    return NoContent();
+                AddErrors(new string[] { result.Message });
+            }
+
+            return BadRequest(ModelState);
+        }
         //[ApiExplorerSettings(IgnoreApi = true)]
         //[ApiKeyAuthorize]
         //[HttpPut("wallet/topup/{id}")]
@@ -1337,7 +1358,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._walletService.TopupWalletBalanceByStudentGroupIdAsync(model.StudentGroupId,model.Amount, model.UserId,model.Type);
+                    var result = await this._walletService.TopupWalletBalanceByStudentGroupIdAsync(model.StudentGroupId, model.Amount, model.UserId, model.Type);
                     return Ok(result);
 
                 }
@@ -1372,7 +1393,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._walletService.TopupWalletBalanceByStudentIdAsync(model.StudentGroupId, model.Amount, model.UserId,model.Type);
+                    var result = await this._walletService.TopupWalletBalanceByStudentIdAsync(model.StudentGroupId, model.Amount, model.UserId, model.Type);
                     return Ok(result);
 
                 }
@@ -1406,7 +1427,7 @@ namespace FRS.Controllers
 
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
-                    var result = await this._walletService.OffBoardingStudent(model.StudentGroupId,  model.UserId);
+                    var result = await this._walletService.OffBoardingStudent(model.StudentGroupId, model.UserId);
                     if (result.IsSuccess)
                     {
                         await _service.DeleteStudentAsync(model.StudentGroupId);
@@ -1687,7 +1708,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._pointService.TopupPointBalanceByStudentGroupIdAsync(model.StudentGroupId, model.Amount,model.UserId, model.Type);
+                    var result = await this._pointService.TopupPointBalanceByStudentGroupIdAsync(model.StudentGroupId, model.Amount, model.UserId, model.Type);
                     return Ok(result);
 
                 }
@@ -1722,7 +1743,7 @@ namespace FRS.Controllers
                     if (model.StudentGroupId == 0)
                         return BadRequest("Conflicting type id in parameter and model data");
 
-                    var result = await this._pointService.TopupPointBalanceByStudentIdAsync(model.StudentGroupId, model.Amount,model.UserId,model.Type);
+                    var result = await this._pointService.TopupPointBalanceByStudentIdAsync(model.StudentGroupId, model.Amount, model.UserId, model.Type);
                     return Ok(result);
 
                 }
@@ -1756,7 +1777,7 @@ namespace FRS.Controllers
                 StudentDTO vm = _mapper.Map<CreateStudentLiteRequestDto, StudentDTO>(dto);
                 vm.StudentCards = new List<StudentCardDTO>();
                 if (!string.IsNullOrEmpty(dto.CardId))
-                    vm.StudentCards.Add(new StudentCardDTO { CardId = dto?.CardId, IssueDate = dto?.CardIssueDate,  Status = "ACTIVE" });
+                    vm.StudentCards.Add(new StudentCardDTO { CardId = dto?.CardId, IssueDate = dto?.CardIssueDate, Status = "ACTIVE" });
 
                 if (dto.CurrentUserId != null)
                 {
@@ -1826,7 +1847,7 @@ namespace FRS.Controllers
                     if (result.IsSuccess)
                     {
                         var isSuccess = await _emailSender.SendEmailAsync("Gourmetz meal system", "smv_noreply@realtimesys.my.id", ec.Email, ec.Email, "Confirmation Code", $"Confirmation Code is {ec.ConfirmationCode}, \n\nDo not give the code to anyone, including system admin.");
-                        
+
                         _logger.LogInformation($"Email Successfully sent");
                         return CreatedAtAction("Email Confirmationn", new { id = ecModel.Id }, ecModel);
                     }
@@ -1875,7 +1896,7 @@ namespace FRS.Controllers
                     if (isValid)
                     {
                         return NoContent();
-                    } 
+                    }
                 }
 
                 return BadRequest(ModelState);
