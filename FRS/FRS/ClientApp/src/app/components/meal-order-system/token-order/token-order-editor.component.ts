@@ -91,7 +91,7 @@ export class TokenOrderEditorComponent {
   getStudents() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.studentService.getStudentsByFilter(filter)
+    this.studentService.getSimpleStudentsByFilter(filter)
       .subscribe(results => {
         this.students = results.pagedData;
         console.log("students: ", this.students)

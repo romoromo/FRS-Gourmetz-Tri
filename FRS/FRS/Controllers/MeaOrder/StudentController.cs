@@ -82,6 +82,18 @@ namespace FRS.Controllers
             return Ok(_mapper.Map<PagedEntityViewModel<StudentDTO>>(results));
         }
 
+        //[ApiKeyAuthorize]
+        [HttpGet("students/simple/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllStudentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<StudentSimpleDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetSimpleStudents(BaseFilter filter, bool noAccount = false)
+        {
+            var results = await this._service.GetSimpleStudentsAsync(filter, noAccount);
+            return Ok(_mapper.Map<PagedEntityViewModel<StudentSimpleDTO>>(results));
+        }
+
         #endregion
 
         [HttpGet("students/get/user/{userId}")]

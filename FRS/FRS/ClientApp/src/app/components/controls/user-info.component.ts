@@ -155,7 +155,7 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   getStudents() {
     let filter = new Filter();
     filter.filters = '(IsActive)==true';
-    this.studentService.getStudentsByFilter(filter)
+    this.studentService.getSimpleStudentsByFilter(filter)
       .subscribe(results => {
         this.students = results.pagedData;
       },

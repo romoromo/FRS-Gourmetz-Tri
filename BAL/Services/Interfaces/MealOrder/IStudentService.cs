@@ -17,6 +17,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<StudentDTO> GetStudentByIdAsync(int id);
         Task<StudentDTO> GetStudentByEmailAsync(string email);
         Task<PagedEntity<StudentDTO>> GetStudentsAsync(BaseFilter filter, bool noAccount = false);
+        Task<PagedEntity<StudentSimpleDTO>> GetSimpleStudentsAsync(BaseFilter filter, bool noAccount = false);
         Task<List<StudentDTO>> GetStudentsByUserAsync(int userId);
         Task<BaseOperationResponse> UpdateStudentAsync(StudentDTO dto);
         Task<BaseOperationResponse> CreateAccountAsync(List<int> ids, bool generateRandomPassword, string defaultPassword);

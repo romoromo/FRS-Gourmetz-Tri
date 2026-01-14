@@ -54,6 +54,10 @@ export class StudentService {
     return this.commonEndpoint.getSieve<PagedResult>(this.studentUrl + '/sieve/list', filter);
   }
 
+  getSimpleStudentsByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.studentUrl + '/simple/sieve/list', filter);
+  }
+
   updateStudent(student: Student) {
     if (student.id) {
       return this.commonEndpoint.getUpdateEndpoint(this.studentUrl, student, student.id);

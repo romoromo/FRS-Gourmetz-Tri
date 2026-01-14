@@ -148,7 +148,7 @@ export class StudentGroupEditorComponent implements OnInit, OnDestroy{
     let filter = new Filter();
     let f = this.outletId ? '(OutletId)==' + this.outletId + ',' : '';
     filter.filters = f + '(IsActive)==true';
-    this.studentService.getStudentsByFilter(filter)
+    this.studentService.getSimpleStudentsByFilter(filter)
       .subscribe(results => {
         this.students = results.pagedData;
         console.log("students: ", this.students)

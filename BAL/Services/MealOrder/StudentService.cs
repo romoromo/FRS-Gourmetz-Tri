@@ -47,6 +47,12 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
+        public async Task<PagedEntity<StudentSimpleDTO>> GetSimpleStudentsAsync(BaseFilter filter, bool noAccount = false)
+        {
+            var result = _mapper.Map<PagedEntity<StudentSimpleDTO>>(await this._uow.Students.GetStudentsAsync(filter, noAccount));
+            return result;
+        }
+
         public async Task<List<StudentDTO>> GetStudentsByUserAsync(int userId)
         {
             var result = _mapper.Map<List<StudentDTO>>(await this._uow.Students.GetStudentsByUserAsync(userId));
