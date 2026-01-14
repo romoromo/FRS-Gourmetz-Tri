@@ -321,7 +321,7 @@ namespace FRS.Controllers
         //[AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<>))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetCancelOrderRequests(BaseFilter filter)
+        public async Task<IActionResult> GetCancelOrderRequests(CancelOrderRequestFilter filter)
         {
             var results = await this._service.GetCancelOrderRequestsAsync(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<CancelOrderRequestDTO>>(results));

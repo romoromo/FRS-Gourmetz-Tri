@@ -5,7 +5,7 @@ import { AlertService, DialogType, MessageSeverity } from '../../../services/ale
 import { AppTranslationService } from "../../../services/app-translation.service";
 import { AccountService } from '../../../services/account.service';
 import { Utilities } from '../../../services/utilities';
-import { Filter, PagedResult } from '../../../models/sieve-filter.model';
+import { CancelOrderRequestFilter, Filter, PagedResult } from '../../../models/sieve-filter.model';
 import { Permission } from '../../../models/permission.model';
 import { MatDialog } from '@angular/material';
 import { CancelOrderRequestEditorComponent } from './cancel-order-request-editor.component';
@@ -13,6 +13,7 @@ import { DeliveryService } from '../../../services/meal-order/delivery.service';
 import { CancelOrderRequest } from 'src/app/models/meal-order/cancel-order-request.model';
 import { PaymentService } from 'src/app/services/meal-order/payment.service';
 import { DateOnlyPipe } from 'src/app/pipes/datetime.pipe';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -28,7 +29,7 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
   editedCancelOrderRequest: CancelOrderRequest;
   sourceCancelOrderRequest: CancelOrderRequest;
   loadingIndicator: boolean;
-  filter: Filter;
+  filter: CancelOrderRequestFilter;
   pagedResult: PagedResult;
   keyword: string = '';
   fStatusVal: string = '';
@@ -64,8 +65,13 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
   header: string;
   @Input() isHideHeader: boolean;
 
+  private subscription: Subscription = new Subscription();
+  outletId: string = "";
+  outlets: any[] = [];
+
   constructor(private alertService: AlertService, private translationService: AppTranslationService, private accountService: AccountService,
-    private paymentService: PaymentService, public dialog: MatDialog) {
+    private paymentService: PaymentService, public dialog: MatDialog,
+    private deliveryService: DeliveryService) {
   }
 
   openDialog(cancelOrderRequest: CancelOrderRequest, isDisabled: boolean): void {
@@ -81,7 +87,7 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
   }
 
   initializeFilter() {
-    this.filter = new Filter(1, 10);
+    this.filter = new CancelOrderRequestFilter(1, 10);
     this.filter.sorts = 'id';
     this.filter.filters = '';
     this.filter.page = 1;
@@ -114,12 +120,31 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getOutlet();
     this.initializeFilter();
     this.initializePagedResult();
     this.initializeTableDefinition();
     this.loadData();
   }
 
+  getOutlet() {    
+    let filter = new Filter();
+    filter.filters = `(IsActive)==true`;
+    this.subscription.add(
+      this.deliveryService.getOutletsSimpleByFilter(filter).subscribe(
+        (results) => {
+          this.outlets = results.pagedData;
+        },
+        (error) => {
+          this.alertService.showStickyMessage(
+            "Get Error",
+            `An error occured while retrieving student outlets.\r\n"`,
+            MessageSeverity.error
+          );
+        }
+      )
+    );
+  }
 
   loadData(ev?: any) {
     this.alertService.startLoadingMessage();
@@ -136,6 +161,9 @@ export class CancelOrderRequestsManagementComponent implements OnInit {
     if (!this.keyword) this.keyword = '';
     //if (!this.fStatusVal) this.fStatusVal = '';
     this.filter.filters = '(Status)==' + this.fStatusVal + ',(IsActive)==true,(userName|studentName)@=' + this.keyword;
+
+    if(this.outletId)
+      this.filter.catererInfoId = this.outletId;
 
     this.paymentService.getCancelOrderRequestsByFilter(this.filter)
       .subscribe(results => {

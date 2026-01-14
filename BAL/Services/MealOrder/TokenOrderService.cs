@@ -5334,7 +5334,7 @@ namespace BAL.Services.MealOrder
 
         #region CancelOrderRequest
 
-        public async Task<PagedEntity<CancelOrderRequestDTO>> GetCancelOrderRequestsAsync(BaseFilter filter)
+        public async Task<PagedEntity<CancelOrderRequestDTO>> GetCancelOrderRequestsAsync(CancelOrderRequestFilter filter)
         {
             var result = _mapper.Map<PagedEntity<CancelOrderRequestDTO>>(await this._uow.CancelOrderRequests.GetCancelOrderRequestsAsync(filter));
             return result;

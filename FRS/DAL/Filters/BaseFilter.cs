@@ -130,4 +130,9 @@ namespace DAL.Filters
     {
         public int catererInfoId { get; set; }
     }
+
+    public class CancelOrderRequestFilter : BaseFilter
+    {
+        public int catererInfoId { get; set; }
+    }
 }

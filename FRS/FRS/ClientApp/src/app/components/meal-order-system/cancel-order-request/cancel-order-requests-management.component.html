@@ -9,6 +9,16 @@
       </div>
     </div>
     <div class="col-md-6 filter-wrapper">
+      <mat-form-field style="width: 100%;">
+
+        <mat-select name="outletId" [(ngModel)]="outletId" placeholder="Filter by Outlet" (selectionChange)="loadData()">
+          <mat-option value="">All</mat-option>
+          <mat-option *ngFor="let t of outlets" [value]="t.id">
+            {{t.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
       <mat-form-field floatLabel="always" class="filter">
         <mat-label>Filter by Status</mat-label>
         <mat-select [(ngModel)]="fStatusVal" name="fStatus" id="fStatus" #fStatus="ngModel" (selectionChange)="loadData()">

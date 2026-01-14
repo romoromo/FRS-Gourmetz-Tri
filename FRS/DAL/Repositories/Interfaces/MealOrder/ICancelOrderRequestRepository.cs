@@ -15,6 +15,6 @@ namespace DAL.Repositories.Interfaces
         Task<BaseOperationResponse> DeleteAsync(int cancelOrderRequestId);
         Task<CancelOrderRequest> GetByIdAsync(int id);
         Task<BaseOperationResponse> UpdateAsync(CancelOrderRequest cancelOrderRequest);
-        Task<PagedEntity<CancelOrderRequest>> GetCancelOrderRequestsAsync(BaseFilter filter);
+        Task<PagedEntity<CancelOrderRequest>> GetCancelOrderRequestsAsync(CancelOrderRequestFilter filter);
     }
 }

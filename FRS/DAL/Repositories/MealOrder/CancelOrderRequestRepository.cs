@@ -26,14 +26,19 @@ namespace DAL.Repositories.MealOrder
         }
 
         #region Sieved
-        public async Task<PagedEntity<CancelOrderRequest>> GetCancelOrderRequestsAsync(BaseFilter filter)
+        public async Task<PagedEntity<CancelOrderRequest>> GetCancelOrderRequestsAsync(CancelOrderRequestFilter filter)
         {
             IQueryable<CancelOrderRequest> query = _appContext.CancelOrderRequests;
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
+            if (filter?.catererInfoId > 0)
+            {
+                query = query.Where(x => x.TokenOrder.Student.OutletId == filter.catererInfoId);
+            }
+
             int totalCount = query.Count();
             bool applyPaging = filter.PageSize == -1 ? false : true;
-            query = _sieveProcessor.Apply(filter, query, applyFiltering: false, applySorting: false,applyPagination: applyPaging);
+            query = _sieveProcessor.Apply(filter, query, applyFiltering: false, applySorting: false, applyPagination: applyPaging);
             var result = new PagedEntity<CancelOrderRequest>
             {
                 Filter = filter,

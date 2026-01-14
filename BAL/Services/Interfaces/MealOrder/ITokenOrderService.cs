@@ -76,7 +76,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateCancelOrderRequestAsync(CancelOrderRequestDTO dto);
         Task<BaseOperationResponse> DeleteCancelOrderRequestAsync(int id);
         Task<CancelOrderRequestDTO> GetCancelOrderRequestByIdAsync(int id);
-        Task<PagedEntity<CancelOrderRequestDTO>> GetCancelOrderRequestsAsync(BaseFilter filter);
+        Task<PagedEntity<CancelOrderRequestDTO>> GetCancelOrderRequestsAsync(CancelOrderRequestFilter filter);
         Task<BaseOperationResponse> UpdateCancelOrderRequestAsync(CancelOrderRequestDTO dto);
         Task<BaseOperationResponse> ApprovalCancelOrderRequestAsync(CancelOrderRequestDTO dto);
 

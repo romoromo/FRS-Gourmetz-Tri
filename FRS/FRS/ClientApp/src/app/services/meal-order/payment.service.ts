@@ -7,7 +7,7 @@ import { AccountEndpoint } from '../account-endpoint.service';
 import { AuthService } from '../auth.service';
 import { CommonEndpoint } from '../common-endpoint.service';
 import { ConfigurationService } from '../configuration.service';
-import { Filter, PagedResult } from 'src/app/models/sieve-filter.model';
+import { CancelOrderRequestFilter, Filter, PagedResult } from 'src/app/models/sieve-filter.model';
 import { PaymentType } from 'src/app/models/meal-order/payment-type.model';
 import { TransactionFee } from 'src/app/models/meal-order/transaction-fee.model';
 import { VoucherType } from 'src/app/models/meal-order/voucher-type.model';
@@ -185,7 +185,7 @@ export class PaymentService {
     return this.commonEndpoint.getById<any>(this.cancelOrderRequestUrl + '/get', cancelOrderRequestId);
   }
 
-  getCancelOrderRequestsByFilter(filter: Filter) {
+  getCancelOrderRequestsByFilter(filter: CancelOrderRequestFilter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.cancelOrderRequestUrl + '/sieve/list', filter);
   }
 
