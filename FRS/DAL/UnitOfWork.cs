@@ -856,7 +856,7 @@ namespace DAL
             get
             {
                 if (_payments == null)
-                    _payments = new PaymentRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId);
+                    _payments = new PaymentRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId.Value, _loggerFactory.CreateLogger<PaymentRepository>());
 
                 return _payments;
             }
