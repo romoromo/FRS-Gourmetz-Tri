@@ -49,7 +49,7 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<Student> GetStudentByCardIdAsync(string cardId)
         {
-            var card = await _appContext.StudentCards.FirstOrDefaultAsync(e => e.IsActive && e.CardId.ToLower() == cardId.ToLower() && e.Status == StudentCardStatus.ACTIVE.ToString());
+            var card = await _appContext.StudentCards.FirstOrDefaultAsync(e => e.IsActive && e.CardId.ToLower() == cardId.ToLower() && e.Status == StudentCardStatus.ACTIVE.ToString() && e.Student.IsActive);
             return card?.Student;
         }
 
