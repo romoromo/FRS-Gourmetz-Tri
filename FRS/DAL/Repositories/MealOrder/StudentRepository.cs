@@ -13,6 +13,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NPOI.OpenXmlFormats.Wordprocessing;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
@@ -355,6 +356,11 @@ namespace DAL.Repositories.MealOrder
                     student.Account.User = user;
                 }
 
+                if (student.IsStaff == true)
+                {
+                    await EnsureStaffAssignmentsAsync(student);
+                }
+
                 var f = await AddAsync(student);
                 if (await _appContext.SaveChangesAsync() > 0)
                 {
@@ -373,6 +379,90 @@ namespace DAL.Repositories.MealOrder
 
         }
 
+        private async Task EnsureStaffAssignmentsAsync(Student student, CancellationToken ct = default)
+        {
+            var staffName = "Staff";
+
+            var classLevelStaff = await _appContext.ClassLevels
+                .FirstOrDefaultAsync(x => x.IsActive && x.Name == staffName && x.OutletId == student.OutletId, ct);
+
+            if (classLevelStaff == null)
+            {
+                classLevelStaff = new ClassLevel
+                {
+                    Name = staffName,
+                    OutletId = student.OutletId,
+                    InstitutionId = 1,
+                    IsActive = true
+                };
+
+                _appContext.ClassLevels.Add(classLevelStaff);
+            }
+
+            if (!student.ClassLevelId.HasValue || student.ClassLevelId.Value == 0)
+            {
+                student.ClassLevel = classLevelStaff; 
+            }
+
+            if (student.ClassId == 0)
+            {
+                Class classStaff = null;
+                if (classLevelStaff.Id > 0)
+                {
+                    classStaff = await _appContext.Classes
+                        .FirstOrDefaultAsync(x => x.IsActive &&
+                                                 x.ClassLevelId == classLevelStaff.Id &&
+                                                 x.Name == staffName, ct);
+                }
+
+                if (classStaff == null)
+                {
+                    classStaff = new Class
+                    {
+                        Name = staffName,
+                        IsActive = true,
+                        ClassLevel = classLevelStaff
+                    };
+
+                    _appContext.Classes.Add(classStaff);
+                }
+
+                student.Class = classStaff; 
+            }
+            else
+            {
+                if (!student.ClassLevelId.HasValue || student.ClassLevelId.Value == 0)
+                {
+                    var existingClass = await _appContext.Classes
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(x => x.Id == student.ClassId, ct);
+
+                    if (existingClass != null)
+                        student.ClassLevelId = existingClass.ClassLevelId;
+                }
+            }
+
+            if (!student.ClassBatchId.HasValue || student.ClassBatchId.Value == 0)
+            {
+                var batchStaff = await _appContext.ClassBatches
+                    .FirstOrDefaultAsync(x => x.IsActive && x.Year == DateTime.Now.Year && x.OutletId == student.OutletId, ct);
+
+                if (batchStaff == null)
+                {
+                    batchStaff = new ClassBatch
+                    {
+                        Name = DateTime.Now.Year.ToString(),
+                        Year = DateTime.Now.Year,
+                        IsActive = true,
+                        OutletId = student.OutletId,
+                    };
+                    _appContext.ClassBatches.Add(batchStaff);
+                }
+
+                student.ClassBatch = batchStaff;
+            }
+        }
+
         private async Task<BaseOperationResponse> ValidateCreateUser(Student student)
         {
             var response = new BaseOperationResponse
@@ -387,45 +477,47 @@ namespace DAL.Repositories.MealOrder
                 return response;
             }
 
-            var readyClassLevel = await _appContext.ClassLevels.AnyAsync(x => x.IsActive && x.Id == student.ClassLevelId);
-            if (!readyClassLevel)
+            if (student.IsStaff.HasValue && !student.IsStaff.HasValue)
             {
-                response.Message = $"Class Level does not exist with id = {student.ClassLevelId}";
-                response.IsSuccess = false;
-                return response;
+                var readyClassLevel = await _appContext.ClassLevels.AnyAsync(x => x.IsActive && x.Id == student.ClassLevelId);
+                if (!readyClassLevel)
+                {
+                    response.Message = $"Class Level does not exist with id = {student.ClassLevelId}";
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                var readyClass = await _appContext.Classes.AnyAsync(x => x.IsActive && x.Id == student.ClassId);
+                if (!readyClass)
+                {
+                    response.Message = $"Class does not exist with id = {student.ClassId}";
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                var readyBatch = await _appContext.ClassBatches.AnyAsync(x => x.IsActive && x.Id == student.ClassBatchId);
+                if (!readyBatch)
+                {
+                    response.Message = $"Batch does not exist with id = {student.ClassBatchId}";
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                var inputIds = student.Restrictions.Select(x => x.RestrictionId);
+                var existingIds = await _appContext.Restrictions
+                    .AsNoTracking()
+                    .Where(e => inputIds.Contains(e.Id))
+                    .Select(e => e.Id)
+                    .ToListAsync();
+
+                var missingIds = inputIds.Except(existingIds).ToList();
+                if (missingIds.Any())
+                {
+                    response.Message = $"Restriction does not exist with ids = {string.Join(",", missingIds)}";
+                    response.IsSuccess = false;
+                    return response;
+                }
             }
-
-            var readyClass = await _appContext.Classes.AnyAsync(x => x.IsActive && x.Id == student.ClassId);
-            if (!readyClass)
-            {
-                response.Message = $"Class does not exist with id = {student.ClassId}";
-                response.IsSuccess = false;
-                return response;
-            }
-
-            var readyBatch = await _appContext.ClassBatches.AnyAsync(x => x.IsActive && x.Id == student.ClassBatchId);
-            if (!readyBatch)
-            {
-                response.Message = $"Batch does not exist with id = {student.ClassBatchId}";
-                response.IsSuccess = false;
-                return response;
-            }
-
-            var inputIds = student.Restrictions.Select(x => x.RestrictionId);
-            var existingIds = await _appContext.Restrictions
-                .AsNoTracking()
-                .Where(e => inputIds.Contains(e.Id))
-                .Select(e => e.Id)
-                .ToListAsync();
-
-            var missingIds = inputIds.Except(existingIds).ToList();
-            if (missingIds.Any())
-            {
-                response.Message = $"Restriction does not exist with ids = {string.Join(",", missingIds)}";
-                response.IsSuccess = false;
-                return response;
-            }
-
             return response;
         }
 

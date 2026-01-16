@@ -9,14 +9,10 @@ namespace BAL.DTO.MealOrder
     {
         [Required]
         public string Name { get; set; }
-        [Required]
         public string Gender { get; set; }
-        [Required]
-        public int ClassId { get; set; }
-        [Required]
-        public int ClassLevelId { get; set; }
-        [Required]
-        public int ClassBatchId { get; set; }
+        public int? ClassId { get; set; }
+        public int? ClassLevelId { get; set; }
+        public int? ClassBatchId { get; set; }
         public List<int> RestrictionsIds { get; set; } = new List<int>();
         public string CardId { get; set; }
         public DateTime CardIssueDate { get; set; }
@@ -32,5 +28,7 @@ namespace BAL.DTO.MealOrder
         public string PhotoName { get; set; }
         public string PhotoPath { get; set; }
         public string ImgUrl { get; set; }
+
+        public bool? IsStaff { get; set; }
     }
 }

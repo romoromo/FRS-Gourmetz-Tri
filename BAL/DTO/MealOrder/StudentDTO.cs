@@ -85,6 +85,8 @@ namespace BAL.DTO.MealOrder
         public string PhotoName { get; set; }
         public string PhotoPath { get; set; }
         public string ImgUrl { get; set; }
+
+        public bool IsStaff { get; set; }
     }
 
     public class StudentDTO : StudentSimpleDTO
