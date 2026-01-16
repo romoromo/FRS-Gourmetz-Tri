@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using OpenIddict.Validation.AspNetCore;
@@ -191,6 +192,7 @@ namespace FRS.Controllers
                     var mpos = dto.MealPlanOrders;
                     dto.MealPlanOrders = null;
 
+                    _logger.LogInformation($"CreatePayment - {JsonConvert.SerializeObject(dto)}");
 
                     var result = await this._service.CreatePaymentAsync(dto);
                     if (result.IsSuccess)

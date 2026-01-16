@@ -1,13 +1,16 @@
 ﻿using DAL.Core;
 using DAL.Core.Helpers;
+using DAL.Core.Logging;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -19,11 +22,13 @@ namespace DAL.Repositories.MealOrder
         private ISieveProcessor _sieveProcessor;
         private int? _currentUserId;
         private int? _currentInstitutionId;
-        public PaymentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId) : base(context)
+        private ILogger _logger;
+        public PaymentRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId, ILogger<PaymentRepository> logger) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
             this._currentUserId = currentInstitutionId;
+            this._logger = logger;
         }
 
         #region Sieved
@@ -52,8 +57,8 @@ namespace DAL.Repositories.MealOrder
             IQueryable<Payment> query = _appContext.Payments.Where(d => d.Status == "CREATED" && d.CreatedDate >= DateTime.Now.AddDays(-7))
                 .Include(e => e.Institution);
 
-            if(studentId != null) query = query.Where(d => d.StudentId == studentId);
-           
+            if (studentId != null) query = query.Where(d => d.StudentId == studentId);
+
 
             return query.ToList();
         }
@@ -76,16 +81,28 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<BaseOperationResponse> CreateAsync(Payment Payment)
         {
+            _logger.LogInformation(
+                $"[PAYMENT][START] " +
+                $"PaymentId={Payment?.Id}, StudentId={Payment?.StudentId}, VoucherId={Payment?.VoucherId}, " +
+                $"PaymentTypeId={Payment?.PaymentTypeId}, Invoice={Payment?.InvoiceNumber}, Total={Payment?.total}, UserId={Payment?.UserId}"
+            );
+
             var result = new BaseOperationResponse();
             Payment f = new Payment();
 
-            bool useVoucher = await _appContext.Vouchers.AnyAsync(x => x.Id == Payment.VoucherId);
+            _logger.LogInformation("[PAYMENT] Checking flags useVoucher/useWallet...");
 
+            bool useVoucher = await _appContext.Vouchers.AnyAsync(x => x.Id == Payment.VoucherId);
             bool useWallet = await _appContext.PaymentTypes.AnyAsync(x => x.Name == "Wallet" && x.Id == Payment.PaymentTypeId);
+
+            _logger.LogInformation("[PAYMENT] Flags resolved: useVoucher={UseVoucher}, useWallet={UseWallet}",
+            useVoucher, useWallet);
 
             int resultSaveChange = 0;
             if (useVoucher)
             {
+                _logger.LogInformation("[PAYMENT] Voucher flow started. VoucherId={VoucherId}", Payment.VoucherId);
+
                 var voucherData = await _appContext.Vouchers
                     .Where(x => x.Id == Payment.VoucherId)
                     .Select(x => new
@@ -96,19 +113,34 @@ namespace DAL.Repositories.MealOrder
                     })
                     .FirstOrDefaultAsync();
 
+                _logger.LogInformation("[PAYMENT] Voucher fetched. VoucherId={VoucherId}, MaxRedeemCheckout={MaxRedeem}",
+                voucherData?.Id, voucherData?.MaxRedeemCheckout);
+
                 if (voucherData?.MaxRedeemCheckout > 0)
                 {
+                    _logger.LogInformation("[PAYMENT] MaxRedeemCheckout enabled. Begin SERIALIZABLE transaction.");
+
                     using var transaction = await _appContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
                     var getUsedVoucher = await _appContext.StudentVouchers.CountAsync(x => x.VoucherId == voucherData.Id && x.Status == "USED");
-                    if(getUsedVoucher >= voucherData.MaxRedeemCheckout)
+
+                    _logger.LogInformation("[PAYMENT] USED voucher count={UsedCount}, MaxAllowed={MaxAllowed}",
+                   getUsedVoucher, voucherData.MaxRedeemCheckout);
+
+
+                    if (getUsedVoucher >= voucherData.MaxRedeemCheckout)
                     {
                         string defaultMessage = "Sorry the voucher is limited to some users and has been fully redeemed";
                         if (!string.IsNullOrEmpty(voucherData?.MaxRedeemCheckoutMessage))
                         {
                             defaultMessage = voucherData?.MaxRedeemCheckoutMessage;
                         }
+
+                        _logger.LogWarning("[PAYMENT] Voucher fully redeemed. Rejecting payment. Message={Message}",
+                        defaultMessage);
+
                         result.IsSuccess = false;
                         result.Message = defaultMessage;
+
                         return result;
                     }
                     else
@@ -121,12 +153,19 @@ namespace DAL.Repositories.MealOrder
                         };
                         f = await AddAsync(Payment);
                         resultSaveChange = await _appContext.SaveChangesAsync();
+
+                        _logger.LogInformation("[PAYMENT] SaveChangesAsync result={Result}", resultSaveChange);
+
                         await transaction.CommitAsync();
+
+                        _logger.LogInformation("[PAYMENT] Voucher transaction committed successfully.");
                     }
 
                 }
                 else
                 {
+                    _logger.LogInformation("[PAYMENT] Voucher has no MaxRedeemCheckout. Continue normally.");
+
                     _appContext.AuditUserActivityType = new AuditUserActivityType
                     {
                         GroupId = Common.GenerateUniqueStringId(),
@@ -136,10 +175,13 @@ namespace DAL.Repositories.MealOrder
 
                     f = await AddAsync(Payment);
                     resultSaveChange = await _appContext.SaveChangesAsync();
-                }
-            } else if (useWallet)
-            {
 
+                    _logger.LogInformation("[PAYMENT] SaveChangesAsync result={Result}", resultSaveChange);
+                }
+            }
+            else if (useWallet)
+            {
+                _logger.LogInformation("[PAYMENT] Wallet flow started. StudentId={StudentId}", Payment.StudentId);
 
                 var student = await this._appContext.Students
                 .FirstOrDefaultAsync(e => e.IsActive && e.Id == Payment.StudentId);
@@ -148,30 +190,52 @@ namespace DAL.Repositories.MealOrder
                 {
                     result.IsSuccess = false;
                     result.Message = $"Student with Id={Payment.StudentId} not found or inactive.";
+
+                    _logger.LogWarning("[PAYMENT] Wallet validation failed: {Message}", result.Message);
+
                     return result;
                 }
                 if (student.WalletBalance - Decimal.ToDouble(Payment.total) < 0)
                 {
                     result.IsSuccess = false;
                     result.Message = "Insufficient balance.";
+
+                    _logger.LogWarning("[PAYMENT] {Message} {WalletBalance} {total}", result.Message, student.WalletBalance, Payment.total);
+
                     return result;
                 }
                 if (student.IsWalletFreeze)
                 {
                     result.IsSuccess = false;
                     result.Message = "Wallet is Freezed";
+
+                    _logger.LogWarning("[PAYMENT] {Message}", result.Message);
+
                     return result;
-                } 
+                }
+
+
                 if (student.WalletDailyLimit > 0)
                 {
+                    _logger.LogInformation($"[PAYMENT] Daily limit enabled. Limit={student.WalletDailyLimit}");
+
+
                     if (Decimal.ToDouble(Payment.total) > student.WalletDailyLimit)
                     {
                         result.IsSuccess = false;
                         result.Message = "The payment exceed the wallet daily limit";
+
+                        _logger.LogWarning("[PAYMENT] {Message} {total} {wallet}", result.Message, Payment.total, student.WalletDailyLimit);
+
                         return result;
-                    }else
+                    }
+                    else
                     {
                         DateTime today = DateTime.Today;
+
+                        _logger.LogInformation($"[PAYMENT] Loading today's transactions for daily limit calc. Date={today:yyyy-MM-dd}");
+
+
                         var todayTrans = await _appContext.StudentWalletTransactions.Where(t => t.StudentId == student.Id && t.TransactionType == WalletTransactionType.DEBIT.ToString() && t.CreatedDate.Date == today).ToListAsync();
 
                         var totalTrans = 0.0;
@@ -180,21 +244,30 @@ namespace DAL.Repositories.MealOrder
                             totalTrans += trans.Amount;
                         }
 
+                        _logger.LogInformation($"[PAYMENT] Daily spend so far={totalTrans}, " +
+                                $"After this payment={totalTrans}, Limit={student.WalletDailyLimit}");
+
                         if ((totalTrans + Decimal.ToDouble(Payment.total)) > student.WalletDailyLimit)
                         {
                             result.IsSuccess = false;
                             result.Message = "The payment exceed the wallet daily limit";
+
+                            _logger.LogInformation($"[PAYMENT][END] Returning failure (daily limit exceeded cumulative) {totalTrans} - {Payment.total} - {student.WalletDailyLimit}");
+
                             return result;
                         }
 
                     }
                 }
 
+                _logger.LogInformation($"[PAYMENT] Loading wallets...");
+
                 var wallets = await _appContext.StudentWallets.Where(w => w.StudentId == student.Id).ToListAsync();
                 var fasWallet = wallets.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());
                 var normalWallet = wallets.FirstOrDefault(x => x.Type == WalletType.BASIC.ToString());
                 if (fasWallet == null)
                 {
+                    _logger.LogInformation($"[PAYMENT] FAS wallet not found. Creating new FAS wallet...");
                     fasWallet = new StudentWallet
                     {
                         StudentId = student.Id,
@@ -208,6 +281,7 @@ namespace DAL.Repositories.MealOrder
 
                 if (normalWallet == null)
                 {
+                    _logger.LogWarning($"[PAYMENT] FAS wallet not found. Creating new FAS wallet...");
                     normalWallet = new StudentWallet
                     {
                         StudentId = student.Id,
@@ -224,6 +298,7 @@ namespace DAL.Repositories.MealOrder
                 double oldFasBalance = fasWallet.Balance;
                 double oldNormalBalance = normalWallet.Balance;
 
+                _logger.LogInformation($"[PAYMENT] Wallet balances BEFORE deduction. FAS={oldFasBalance}, BASIC={oldNormalBalance}, Amount={originalAmount}");
 
                 if (remainingAmount <= fasWallet.Balance)
                 {
@@ -243,11 +318,17 @@ namespace DAL.Repositories.MealOrder
                     {
                         result.IsSuccess = false;
                         result.Message = "Insufficient balance.";
+
+                        _logger.LogWarning($"[PAYMENT] Wallet validation failed after split deduction: {result.Message}. NormalWallet={normalWallet.Balance} Remaining={remainingAmount}");
+
                         return result;
                     }
                 }
 
                 student.WalletBalance = fasWallet.Balance + normalWallet.Balance;
+
+                _logger.LogInformation($"[PAYMENT] FAS wallet not found. Creating new FAS wallet..." +
+                        $"FAS={fasWallet.Balance}, BASIC={normalWallet.Balance}, StudentWalletBalance={student.WalletBalance}, Remaining={remainingAmount}");
 
                 StudentWalletTransactionDetail fasDetail = new StudentWalletTransactionDetail
                 {
@@ -264,7 +345,7 @@ namespace DAL.Repositories.MealOrder
                 };
 
 
-                
+
 
                 var transaction = new StudentWalletTransaction
                 {
@@ -328,7 +409,7 @@ namespace DAL.Repositories.MealOrder
                         _appContext.SaveChanges();
                     }
 
-                    if(f?.TokenOrders?.Any() ?? false)
+                    if (f?.TokenOrders?.Any() ?? false)
                     {
                         foreach (var t in f.TokenOrders)
                         {
@@ -342,7 +423,7 @@ namespace DAL.Repositories.MealOrder
                         }
                     }
 
-                    if(f?.MealPlanOrders?.Any() ?? false)
+                    if (f?.MealPlanOrders?.Any() ?? false)
                     {
                         foreach (var t in f.MealPlanOrders)
                         {
@@ -380,18 +461,18 @@ namespace DAL.Repositories.MealOrder
             WalletPayment f = new WalletPayment();
 
             int resultSaveChange = 0;
-            
-                _appContext.AuditUserActivityType = new AuditUserActivityType
-                {
-                    GroupId = Common.GenerateUniqueStringId(),
-                    ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
-                    Remarks = "Payment was created."
-                };
 
-                _appContext.WalletPayments.Add(Payment);
-                f = Payment;
-                resultSaveChange = await _appContext.SaveChangesAsync();
-            
+            _appContext.AuditUserActivityType = new AuditUserActivityType
+            {
+                GroupId = Common.GenerateUniqueStringId(),
+                ActionName = UserActivityType.PAYMENT_CREATE.ToString(),
+                Remarks = "Payment was created."
+            };
+
+            _appContext.WalletPayments.Add(Payment);
+            f = Payment;
+            resultSaveChange = await _appContext.SaveChangesAsync();
+
 
             if (resultSaveChange > 0)
             {
@@ -429,7 +510,7 @@ namespace DAL.Repositories.MealOrder
                 if (Payment.Status == "SUCCESS")
                 {
                     var studentVoucher = _appContext.StudentVouchers.FirstOrDefault(a => a.IsActive && a.StudentId == Payment.StudentId && a.VoucherId == Payment.VoucherId);
-                    
+
                     if (studentVoucher != null)
                     {
                         studentVoucher.Status = "USED";
@@ -458,7 +539,7 @@ namespace DAL.Repositories.MealOrder
                             _appContext.MealPlanOrders.Update(tOrder);
                             _appContext.SaveChanges();
 
-                            if(t.StudentGroupId.HasValue && t.ProfileId.HasValue) await CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
+                            if (t.StudentGroupId.HasValue && t.ProfileId.HasValue) await CreateOrUpdateStudentGroupDetailAsync(t.StudentGroupId.Value, t.ProfileId.Value, true);
                         }
                     }
                 }
