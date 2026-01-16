@@ -126,7 +126,7 @@ export class OrderCollectionLogsManagementComponent implements OnInit, OnDestroy
       //{ prop: 'remarks', name: 'Remarks' },
       //{ prop: 'paymentTypeName', name: 'Payment Type' },
       //{ prop: 'paymentNumber', name: 'Order No.' },
-      //{ prop: 'fomoId', name: 'Fomo ID' },
+      //{ prop: 'fomoId', name: 'Stripe ID' },
       
       //{ prop: 'voucherCode', name: 'Voucher' },
       
