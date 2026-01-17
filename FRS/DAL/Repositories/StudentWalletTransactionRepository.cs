@@ -988,8 +988,8 @@ namespace DAL.Repositories
 
                     _logger.LogInformation($"Loop Class Level : {classLevel.Id}");
 
-                    var students = _appContext.Students
-                        .Where(s => s.IsActive && s.ClassLevelId == classLevel.Id);
+                    var students = _appContext.Students.Where(s => s.IsActive && s.ClassLevelId == classLevel.Id && s.IsFAS);
+
                     await foreach (var student in students.AsAsyncEnumerable().WithCancellation(ct))
                     {
                         _logger.LogInformation($"Loop Class Level : {classLevel.Id} for Student {student.Name}");

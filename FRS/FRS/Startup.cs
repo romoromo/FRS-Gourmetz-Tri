@@ -1011,7 +1011,10 @@ namespace FRS
             //            });
             //});
             GlobalJobFilters.Filters.Add(new JobExpirationAttribute(7));
-            app.UseHangfireDashboard("/dashboard-hangfire");
+            app.UseHangfireDashboard("/dashboard-hangfire", new DashboardOptions
+            {
+                Authorization = new [] { new HanfireAuthorizationFilter() }
+            });
 
             RecurringJob.AddOrUpdate<BackgroundService>("fas-recharge", m => m.FASRechargeable(CancellationToken.None), Cron.Minutely);
 
