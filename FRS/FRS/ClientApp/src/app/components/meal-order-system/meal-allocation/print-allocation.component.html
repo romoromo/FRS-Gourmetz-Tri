@@ -5,14 +5,14 @@
       <div class="row">
         <mat-form-field class="col-xs-6">
           <input required matInput [matDatepicker]="orderDatePicker" placeholder="Order Date" [value]="orderDate"
-            (dateChange)="onChangeDate('order', $event)" [disabled]="isSaving || filterLoading || isLoading">
+                 (dateChange)="onChangeDate('order', $event)" [disabled]="isSaving || filterLoading || isLoading">
           <mat-datepicker-toggle matSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
           <mat-datepicker #orderDatePicker></mat-datepicker>
         </mat-form-field>
         <mat-form-field class="col-xs-6">
           <mat-label>Period</mat-label>
           <mat-select required (selectionChange)="onChangePeriod($event)" id="periodName" name="periodName" [(ngModel)]="selectedPeriodId"
-            [disabled]="isSaving || filterLoading || isLoading" placeholder="{{ periodPlaceholder }}">
+                      [disabled]="isSaving || filterLoading || isLoading" placeholder="{{ periodPlaceholder }}">
             <mat-option *ngFor="let session of mealPeriods" [value]="session.mealPeriodId">
               {{session.mealPeriodName}}
             </mat-option>
@@ -25,6 +25,12 @@
               {{ session.name }}
             </mat-option>
           </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-xs-6">
+          <mat-label>Packing Time</mat-label>
+          <input matInput [disabled]="isSaving || filterLoading || isLoading" type="time" id="packingTime" datetime="packingTime"
+                 name="packingTime" [ngModel]="allocation.packingTime | date:  'HH:mm'"
+                 (ngModelChange)="allocation.packingTime = $event" />
         </mat-form-field>
 
       </div>

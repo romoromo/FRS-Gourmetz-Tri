@@ -25,6 +25,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -2798,6 +2799,8 @@ namespace BAL.Services.MealOrder
                                 float totalWidth = document.PageSize.Width - document.LeftMargin - document.RightMargin;
                                 float columnWidth = 50;
                                 float columnHeight = 23;
+                                float bottomHeight = 14;
+                                float rightWidth = 75;
 
                                 iTextSharp.text.Rectangle leftColumn = new iTextSharp.text.Rectangle(
                                     document.Left,        // x1
@@ -2811,7 +2814,7 @@ namespace BAL.Services.MealOrder
                                 columnLeft.SetSimpleColumn(leftColumn);
 
 
-                                iTextSharp.text.Rectangle bottomColumn = new iTextSharp.text.Rectangle(
+                              iTextSharp.text.Rectangle bottomColumn = new iTextSharp.text.Rectangle(
                                   document.Left,        // x1
                                   document.Bottom,      // y1
                                   document.Right, // x2
@@ -2823,11 +2826,23 @@ namespace BAL.Services.MealOrder
                                 columnBottom.SetSimpleColumn(bottomColumn);
 
 
+                                iTextSharp.text.Rectangle bottomRightColumn = new iTextSharp.text.Rectangle(
+                                  document.Left + rightWidth,        // x1
+                                  document.Bottom,      // y1
+                                  document.Right, // x2
+                                  document.Bottom + bottomHeight          // y2
+                              );
+
+                                // Create a ColumnText for the left column
+                                ColumnText columnBottomRight = new ColumnText(writer.DirectContent);
+                                columnBottomRight.SetSimpleColumn(bottomRightColumn);
+
+
                                 if (toIconFilePath != "")
                                 {
                                     iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(toIconFilePath);
-                                    png.ScaleToFit(13, 13);
-                                    png.SetAbsolutePosition(63f, 5f);
+                                    png.ScaleToFit(10, 10);
+                                    png.SetAbsolutePosition(63f, 20f);
                                     document.Add(png);
                                 }
 
@@ -2857,6 +2872,14 @@ namespace BAL.Services.MealOrder
 
                                         _logger.LogInformation("GenerateOrderLabel - timePacked: " + timePacked);
                                     }
+
+                                    if (mealAllocation.PackingTime.HasValue)
+                                    {
+                                        timePacked = mealAllocation.PackingTime.Value.ToString("hh:mm tt");
+                                        timeConsume = mealAllocation.PackingTime.Value.AddHours(4).ToString("hh:mm tt");
+
+                                        _logger.LogInformation("GenerateOrderLabel - timePacked: " + timePacked);
+                                    }
                                 }
 
 
@@ -2870,7 +2893,7 @@ namespace BAL.Services.MealOrder
 
                                 iTextSharp.text.Image qrCodeImage = barcodeQRCode.GetImage();
                                 qrCodeImage.ScaleToFit(36, 36);
-                                qrCodeImage.SetAbsolutePosition(51f, 25f);
+                                qrCodeImage.SetAbsolutePosition(51f, 30f);
                                 document.Add(qrCodeImage);
 
                                 BentoAssetDTO bentoAsset = new BentoAssetDTO();
@@ -2931,6 +2954,12 @@ namespace BAL.Services.MealOrder
                                 columnBottom.AddElement(para7);
 
                                 columnBottom.Go();
+
+                                Paragraph para8 = new Paragraph(ExtractTextBetweenParentheses(dto[i].dishes[j].dish_name), new iTextSharp.text.Font(allerfont, 8, iTextSharp.text.Font.BOLD));
+                                para8.Alignment = Element.ALIGN_CENTER;
+                                columnBottomRight.AddElement(para8);
+
+                                columnBottomRight.Go();
                             }
                         }
                     }
@@ -2947,6 +2976,28 @@ namespace BAL.Services.MealOrder
                 return null;
             }
 
+        }
+
+        public static string ExtractTextBetweenParentheses(string source)
+        {
+            int startIndex = source.IndexOf('(');
+            if (startIndex == -1) // Check for opening parenthesis
+            {
+                return string.Empty; // Or handle error as needed
+            }
+
+            int endIndex = source.IndexOf(')', startIndex + 1);
+            if (endIndex == -1) // Check for closing parenthesis
+            {
+                return string.Empty; // Or handle error as needed
+            }
+
+            // Calculate length: total length of substring minus the start index
+            int length = endIndex - (startIndex + 1);
+
+            // Extract the substring starting one character after '('
+            string result = source.Substring(startIndex + 1, length);
+            return result;
         }
 
 

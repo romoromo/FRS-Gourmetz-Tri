@@ -260,6 +260,7 @@ namespace BAL.DTO.MealOrder
     {
         public int Id { get; set; }
         public DateTime? deliveryDate { get; set; }
+        public DateTime? packingTime { get; set; }
         public int? periodId { get; set; }
         public int? mealSessionId { get; set; }
         public int? outletId { get; set; }

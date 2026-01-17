@@ -103,6 +103,7 @@ export class MealAllocation {
   public kitchenId: string;
   public timePacked: Date;
   public color: string;
+  public packingTime: Date;
   public tokens: TokenLabel[];
 }
 

@@ -360,7 +360,8 @@ export class PrintAllocationComponent implements OnInit {
   getDishName(id) {
     let dish = this.dishes.find((x) => x.id === id);
     if (dish) {
-      return dish.label + ' (' + dish.id + ')';
+      //return dish.label + ' (' + dish.id + ')';
+      return dish.label;
     } else {
       return "";
     }

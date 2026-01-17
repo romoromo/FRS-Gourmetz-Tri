@@ -12,6 +12,7 @@ namespace DAL.Models.MealOrder
         [Key]
         public int Id { get; set; }
         public DateTime? deliveryDate { get; set; }
+        public DateTime? PackingTime { get; set; }
         public int? periodId { get; set; }
         [ForeignKey("periodId")]
         public virtual MealPeriod Period { get; set; } 
