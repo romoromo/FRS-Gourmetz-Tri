@@ -2798,9 +2798,9 @@ namespace BAL.Services.MealOrder
                                 float margin = document.LeftMargin;
                                 float totalWidth = document.PageSize.Width - document.LeftMargin - document.RightMargin;
                                 float columnWidth = 50;
-                                float columnHeight = 23;
-                                float bottomHeight = 14;
-                                float rightWidth = 75;
+                                float columnHeight = 27;
+                                float bottomHeight = 12;
+                                float rightWidth = 0;
 
                                 iTextSharp.text.Rectangle leftColumn = new iTextSharp.text.Rectangle(
                                     document.Left,        // x1
@@ -2841,8 +2841,8 @@ namespace BAL.Services.MealOrder
                                 if (toIconFilePath != "")
                                 {
                                     iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(toIconFilePath);
-                                    png.ScaleToFit(10, 10);
-                                    png.SetAbsolutePosition(63f, 20f);
+                                    png.ScaleToFit(5, 5);
+                                    png.SetAbsolutePosition(63f, 25f);
                                     document.Add(png);
                                 }
 
@@ -2865,8 +2865,8 @@ namespace BAL.Services.MealOrder
                                     DateTime? pickupTime = mealAllocation?.MealSessionDetail?.Route?.Pickup;
                                     if (pickupTime.HasValue)
                                     {
-                                        timePacked = pickupTime.Value.ToString("hh:mm tt");
-                                        timeConsume = pickupTime.Value.AddHours(4).ToString("hh:mm tt");
+                                        //timePacked = pickupTime.Value.ToString("hh:mm tt");
+                                        //timeConsume = pickupTime.Value.AddHours(4).ToString("hh:mm tt");
 
                                         color = mealAllocation?.MealSessionDetail?.Route?.Color;
 
@@ -2937,7 +2937,7 @@ namespace BAL.Services.MealOrder
                                 para5.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para5);
 
-                                Paragraph para6 = new Paragraph("At: " + timeConsume, new iTextSharp.text.Font(allerfont, 4));
+                                Paragraph para6 = new Paragraph("At: " + timeConsume, new iTextSharp.text.Font(allerfont, 4, iTextSharp.text.Font.BOLD));
                                 para6.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para6);
 
@@ -2949,7 +2949,7 @@ namespace BAL.Services.MealOrder
 
 
                                 //Paragraph para7 = new Paragraph(phrase);
-                                Paragraph para7 = new Paragraph(dto[i].dishes[j].dish_name, new iTextSharp.text.Font(allerfont, 6, iTextSharp.text.Font.BOLD));
+                                Paragraph para7 = new Paragraph(RemoveAfterParentheses(dto[i].dishes[j].dish_name), new iTextSharp.text.Font(allerfont, 6, iTextSharp.text.Font.BOLD));
                                 para7.Alignment = Element.ALIGN_CENTER;
                                 columnBottom.AddElement(para7);
 
@@ -2997,6 +2997,19 @@ namespace BAL.Services.MealOrder
 
             // Extract the substring starting one character after '('
             string result = source.Substring(startIndex + 1, length);
+            return result;
+        }
+
+        public static string RemoveAfterParentheses(string source)
+        {
+            int startIndex = source.IndexOf('(');
+            if (startIndex == -1) // Check for opening parenthesis
+            {
+                return source; // Or handle error as needed
+            }
+
+            // Extract the substring starting one character after '('
+            string result = source.Substring(0, startIndex);
             return result;
         }
 
