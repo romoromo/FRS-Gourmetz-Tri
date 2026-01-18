@@ -320,9 +320,9 @@ namespace DAL.Repositories.MealOrder
             {
                 order.Status = status;
 
-                if(!string.IsNullOrEmpty(invoiceNumber) || !string.IsNullOrEmpty(fomoId))
+                if (!string.IsNullOrEmpty(invoiceNumber) || !string.IsNullOrEmpty(fomoId))
                 {
-                    if(order.Payment == null)
+                    if (order.Payment == null)
                     {
                         result.Message = "This order has no payment record.";
                         result.IsSuccess = false;
@@ -343,7 +343,7 @@ namespace DAL.Repositories.MealOrder
                 var tokenIds = order.Tokens.Select(x => x.Id);
 
                 var selectedDishes = _appContext.TokenOrderDishes.Where(e => tokenIds.Any(x => x == e.TokenOrderedId));
-                foreach(var selectedDish in selectedDishes)
+                foreach (var selectedDish in selectedDishes)
                 {
                     selectedDish.DishId = dishId;
                     _appContext.TokenOrderDishes.Update(selectedDish);
@@ -381,7 +381,7 @@ namespace DAL.Repositories.MealOrder
                             new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted },
                             TransactionScopeAsyncFlowOption.Enabled))
             {
-                if(order.Tokens == null || !order.Tokens.Any())
+                if (order.Tokens == null || !order.Tokens.Any())
                 {
                     result.Message = "Please select a dish.";
                     return result;
@@ -510,7 +510,7 @@ namespace DAL.Repositories.MealOrder
             return await GetAsync(id);
         }
 
-        public async Task<BaseOperationResponse> CreateAsync( TokenOrder order, List<TokenOrdered> tokenOrders)
+        public async Task<BaseOperationResponse> CreateAsync(TokenOrder order, List<TokenOrdered> tokenOrders)
         {
             var result = new BaseOperationResponse();
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required,
@@ -564,7 +564,7 @@ namespace DAL.Repositories.MealOrder
 
 
                 var tokenOrdersId = tokenOrders.Select(t => t.TokenId).ToList();
-                    
+
 
                 var tokensToDelete = this._appContext.TokenOrdereds.Where(x => x.OrderId == f.Id &&
                                     (tokenOrders == null || !tokenOrdersId.Contains(x.TokenId)));
@@ -609,7 +609,7 @@ namespace DAL.Repositories.MealOrder
 
                             e.SelectedDishes.ToList().ForEach(d =>
                             {
-                                if(d.DishId != null && d.DishId > 0)
+                                if (d.DishId != null && d.DishId > 0)
                                 {
                                     var sd = this._appContext.TokenOrderDishes.FirstOrDefault(x => x.Id == d.Id);
                                     if (sd != null)
@@ -780,19 +780,19 @@ namespace DAL.Repositories.MealOrder
         {
             var result = new BaseOperationResponse();
 
-            if(orders != null && orders.Any())
+            if (orders != null && orders.Any())
             {
-                foreach(var order in orders)
+                foreach (var order in orders)
                 {
                     var f = await GetSingleOrDefaultAsync(e => e.Id == order.OrderId);
-                    if(f != null)
+                    if (f != null)
                     {
                         f.CollectionTime = order.TimeCollected;
                         Update(f);
                     }
                 }
 
-                
+
             }
 
 
@@ -938,7 +938,7 @@ namespace DAL.Repositories.MealOrder
                         foreach (var student in fasStudents)
                         {
                             var existingOrders = _appContext.TokenOrders.Where(e =>
-                                                    e.ProfileId == student.Id && 
+                                                    e.ProfileId == student.Id &&
                                                     e.IsActive && e.Status != "cancelled" && e.Status != "deleted" &&
                                                     e.DeliveryDate.Date == deliveryDate &&
                                                     e.StoreId == storeId &&
@@ -1119,7 +1119,7 @@ namespace DAL.Repositories.MealOrder
 
                         deliveryDate = deliveryDate.Date.AddDays(1);
                     }
-                    
+
 
                     await _appContext.SaveChangesAsync();
 
@@ -1350,9 +1350,9 @@ namespace DAL.Repositories.MealOrder
         {
             var date = orderDate != null ? orderDate?.Date : DateTime.Today;
 
-            IQueryable<StudentGroupMealPlan> query = _appContext.StudentGroupMealPlans.Where(t => t.IsActive && t.StudentGroup.IsActive && 
+            IQueryable<StudentGroupMealPlan> query = _appContext.StudentGroupMealPlans.Where(t => t.IsActive && t.StudentGroup.IsActive &&
                                                     t.StudentGroup.Sgdetails.Any(x => x.StudentId == studentId) &&
-                                                    t.StudentGroup.Type == StudentMealType.MEAL_PLAN && 
+                                                    t.StudentGroup.Type == StudentMealType.MEAL_PLAN &&
                                                     t.StudentGroup.StartDate.HasValue && t.StudentGroup.StartDate.Value <= date &&
                                                     t.StudentGroup.EndDate.HasValue && date <= t.StudentGroup.EndDate.Value);
 
@@ -1440,7 +1440,7 @@ namespace DAL.Repositories.MealOrder
                         }
 
                         var allDetailMenus = _appContext.DishCycleScheduleDetailMenus.Where(e => e.IsActive).ToList();
-                        
+
                         foreach (var cycle in activeDishCycles)
                         {
                             var detailMenus = allDetailMenus.ToList();
@@ -1483,7 +1483,7 @@ namespace DAL.Repositories.MealOrder
                                             var subScheduleDetail = subSchedule.Details.FirstOrDefault(e => e.Sequence == cycleSet.CycleTypeSequence);
                                             if (subScheduleDetail != null)
                                             {
-                                                detailMenus = subScheduleDetail.Menus.Where(e=> e.Dish.DishTypeId == dishTypeId).ToList();
+                                                detailMenus = subScheduleDetail.Menus.Where(e => e.Dish.DishTypeId == dishTypeId).ToList();
                                                 _logger.LogInformation($"CreateMealPlanAsync INFO 2: {subScheduleDetail.Label} - {subScheduleDetail.DishCycleId} - {subScheduleDetail.DishCycleScheduleId} - Menu COUNT: {detailMenus.Count}");
                                                 _logger.LogInformation($"CreateMealPlanAsync INFO 2a: Menus: {string.Join(",", detailMenus.Select(e => e.Dish.Label))}");
                                             }
@@ -1526,7 +1526,7 @@ namespace DAL.Repositories.MealOrder
 
                     //save meal plans - update, create, delete
                     var currentMealPlans = _appContext.StudentGroupMealPlans.Where(e => e.IsActive && e.StudentGroupId == studentGroupId);
-                    foreach(var currentMealPlan in currentMealPlans)
+                    foreach (var currentMealPlan in currentMealPlans)
                     {
                         //disable first
                         //currentMealPlan.IsActive = false;
@@ -1585,7 +1585,7 @@ namespace DAL.Repositories.MealOrder
                                     string message = isManualOrder ?
                                                     "Cancelled by the system. Order already exists." :
                                                     "Cancelled by the system. Meal Plan order has been made.";
-                                    await CreateGeneratedCancelledOrder(existingOrder, student.Email, invoiceNumber, paymentType.Id, message, false, false, true , createdBy);
+                                    await CreateGeneratedCancelledOrder(existingOrder, student.Email, invoiceNumber, paymentType.Id, message, false, false, true, createdBy);
                                     continue;
                                 }
 
@@ -1739,7 +1739,7 @@ namespace DAL.Repositories.MealOrder
 
         #region Student Group Order
 
-        public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, string type, bool skip = true)
+        public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, string type, bool skip = true, int mealSessionDetailId = 0)
         {
             var result = new BaseOperationResponse();
             try
@@ -1789,6 +1789,13 @@ namespace DAL.Repositories.MealOrder
                     //}
                     bool isFas = type.ToLower() == "fas";
                     var sessionDetail = _appContext.MealSessionDetails.FirstOrDefault(e => e.IsActive && e.MealSessionId == mealSessionId);
+                    if (mealSessionDetailId != 0)
+                    {
+                        var mealSessionDetail = _appContext.MealSessionDetails.FirstOrDefault(m => m.IsActive && m.MealSessionId == mealSessionId && m.Id == mealSessionDetailId);
+                        if (mealSessionDetail != null)
+                            sessionDetail = mealSessionDetail;
+                    }
+
                     var hasExistingOrders = false;
                     // select dishes first
                     while (deliveryDate.Date <= deliveryDateTo.Date)
@@ -1839,26 +1846,26 @@ namespace DAL.Repositories.MealOrder
 
                                 //foreach (var existingOrder in existingOrders)
                                 //{
-                                    //if (existingOrder.IsStudentGroupOrder)
-                                    //{
-                                    //    //remove token orders made
-                                    //    existingOrder.Status = "deleted";
-                                    //    if (existingOrder.Payment != null)
-                                    //    {
-                                    //        existingOrder.Payment.IsActive = false;
-                                    //    }
+                                //if (existingOrder.IsStudentGroupOrder)
+                                //{
+                                //    //remove token orders made
+                                //    existingOrder.Status = "deleted";
+                                //    if (existingOrder.Payment != null)
+                                //    {
+                                //        existingOrder.Payment.IsActive = false;
+                                //    }
 
-                                    //    SoftDelete(existingOrder);
-                                    //    _skip = false;
-                                    //}
-                                    //else
-                                    //{
-                                    //    hasExistingOrders = true;
-                                    //    existingOrder.Status = "cancelled";
-                                    //    existingOrder.CancelledById = createdBy;
-                                    //    existingOrder.CancelledOn = DateTime.Now;
-                                    //    existingOrder.CancellationReason = "Cancelled by the system. Adhoc order has been made.";
-                                    //}
+                                //    SoftDelete(existingOrder);
+                                //    _skip = false;
+                                //}
+                                //else
+                                //{
+                                //    hasExistingOrders = true;
+                                //    existingOrder.Status = "cancelled";
+                                //    existingOrder.CancelledById = createdBy;
+                                //    existingOrder.CancelledOn = DateTime.Now;
+                                //    existingOrder.CancellationReason = "Cancelled by the system. Adhoc order has been made.";
+                                //}
 
                                 //}
 

@@ -319,9 +319,9 @@ namespace BAL.Services.MealOrder
         #endregion
 
         #region Student Group Order
-        public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, string type, bool skip = true)
+        public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, string type, bool skip = true, int mealSessionDetailId = 0)
         {
-            var result = await this._uow.TokenOrders.CreateStudentGroupOrderAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, type, skip);
+            var result = await this._uow.TokenOrders.CreateStudentGroupOrderAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, type, skip, mealSessionDetailId);
 
             return result;
         }

@@ -36,7 +36,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateMealPlanAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool skip = true);
         Task<MealPlanTokenOrderSummaryDTO> GetMealPlanOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails);
         Task<List<StudentGroupMealPlan>> GetStudentMealPlansAsync(int studentId, DateTime? orderDate);
-        Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, string type, bool skip = true);
+        Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, string type, bool skip = true, int mealSessionDetailId = 0);
         Task<StudentGroupTokenOrderSummaryDTO> GetStudentGroupOrderSummaryAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, List<MealSessionDetail> mealSessionDetails, string type);
         Task<PagedEntity<TokenOrder>> GetStudentOrdersAsync(StudentOrderFilter filter);
         Task<BaseOperationResponse> AmendOrder(int id, string status, string invoiceNumber, string fomoId, int? updatedById, string reason, int dishId);
