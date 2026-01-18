@@ -36,6 +36,7 @@ import { PaymentTypes } from "../../../models/enums";
 import { FormControl } from "@angular/forms";
 import { OrderService } from "src/app/services/meal-order/order.service";
 import { DeliveryService } from "src/app/services/meal-order/delivery.service";
+import { MatOption } from '@angular/material/core';
 
 @Component({
   selector: "order-logs-management",
@@ -98,6 +99,11 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
 
   private selected: any[] = [];
   @ViewChild("hdrTpl") hdrTpl: TemplateRef<any>;
+
+  @ViewChild('allSelected') private allSelected!: MatOption;
+
+
+  itemControl: FormControl = new FormControl([]);
 
   constructor(
     private alertService: AlertService,
@@ -252,7 +258,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.orderType = this.ordertype == "All" ? "" : this.ordertype;
     this.filter.keyword = this.keyword;
     if (this.isFAS) this.filter.isFas = true;
-    this.filter.outletId = this.outletId;
+    //this.filter.outletId = this.outletId;
 
     this.orderLogService.getOrderLogsByFilter(this.filter).subscribe(
       (results) => {
@@ -380,7 +386,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.status = this.status == "All" ? "" : this.status;
     this.filter.orderType = this.ordertype == "All" ? "" : this.ordertype;
     this.filter.keyword = this.keyword;
-    this.filter.outletId = this.outletId;
+    //this.filter.outletId = this.outletId;
     if (this.isFAS) this.filter.isFas = true;
     this.orderLogService.downloadOrderLogsReport(this.filter).subscribe(
       (data) => {
@@ -403,7 +409,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.filter.status = this.status == "All" ? "" : this.status;
     this.filter.orderType = this.ordertype == "All" ? "" : this.ordertype;
     this.filter.keyword = this.keyword;
-    this.filter.outletId = this.outletId;
+    //this.filter.outletId = this.outletId;
     if (this.isFAS) this.filter.isFas = true;
     this.orderLogService.downloadFlattenOrderLogsReport(this.filter).subscribe(
       (data) => {
@@ -500,6 +506,17 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
         );
       }
     );
+  }
+
+  toggleAllSelection(isSelected: boolean) {
+    if (isSelected) {
+      // Set the model to all IDs plus the 'all' value to keep it visually checked
+      const allIds = this.outlets.map(o => o.id);
+      this.filter.outletId = [...allIds, 'all'];
+    } else {
+      // Clear the model
+      this.filter.outletId = [];
+    }
   }
 
   get canManageAuthLogs() {

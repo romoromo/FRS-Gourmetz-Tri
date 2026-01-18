@@ -15,23 +15,34 @@ Example:
 
 DROP PROCEDURE IF EXISTS dbo.spSalesOrderReport;
 GO
-CREATE PROCEDURE spSalesOrderReport
+CREATE PROCEDURE [dbo].[spSalesOrderReport]
 	@ReportDateFrom		DATE = NULL,
 	@ReportDateTo		DATE = NULL,
 	@Status	VARCHAR(100) = NULL,
 	@IsFAS	BIT = NULL,
+	@IsActive	BIT = NULL,
 	@Page INT = 1,
 	@PageSize INT = 1000,
 	@Keywords VARCHAR(MAX) = NULL,
 	@SortBy	VARCHAR(MAX) = NULL,
 	@SortDirection	BIT = NULL,
-	@ReportType	VARCHAR(MAX) = 1
+	@ReportType	VARCHAR(MAX) = 1,
+	@StudentGroupIds	VARCHAR(MAX) = NULL,
+	@OrderType	VARCHAR(100) = NULL,
+	@CollectionStatuses	VARCHAR(MAX) = NULL,
+	@OutletId VARCHAR(MAX) = NULL
+
 AS 
 BEGIN
-	DECLARE @Total AS INT = 0
+	DECLARE @Total AS INT = 0;
+	DECLARE @IsCollected AS VARCHAR(100) = NULL;
+	DECLARE @IsNotCollected AS VARCHAR(100) = NULL
 
 	SET @Page = IIF(@Page < 0, 1, @Page)
 	SET @PageSize = IIF(@PageSize < 0, 1000, @PageSize)
+	SET @ReportType = IIF(ISNULL(@ReportType, 0) = 0, 1, @ReportType)
+	SELECT @IsCollected = SplitValue FROM SplitAndReturnTable(@CollectionStatuses) WHERE SplitValue = 'COLLECTED'
+	SELECT @IsNotCollected = SplitValue FROM SplitAndReturnTable(@CollectionStatuses) WHERE SplitValue = 'NOT COLLECTED'
 
 	SELECT 
 		DISTINCT
@@ -65,11 +76,19 @@ BEGIN
 		ISNULL(FORMAT (o.CollectionTime , 'dd-MMM-yyyy hh:mm tt'),'') AS CollectionTime,
 		ISNULL(o.BentoCode, '') as BentoCode,
 		ISNULL(FORMAT (o.ReturnTime , 'dd-MMM-yyyy hh:mm tt'),'') AS ReturnTime,
-		s.IsFAS,
+		--s.IsFAS,
+		(o.IsFAS | s.IsFAS) AS IsFAS,
 		ISNULL(o.CancellationReason, '') as CancellationReason,
 		ISNULL(FORMAT (o.CancelledOn , 'dd-MMM-yyyy hh:mm tt'),'') AS CancelledOn,
-		(SELECT COUNT(1) FROM Payments pay WITH (NOLOCK) WHERE p.InvoiceNumber = pay.InvoiceNumber) as OrderCount
+		CASE 
+		  WHEN @ReportType = 1 THEN 1 
+		  ELSE ((SELECT COUNT(1) FROM Payments pay WITH (NOLOCK) WHERE p.InvoiceNumber = pay.InvoiceNumber)) 
+	   END AS OrderCount,
 		--u.UserName as ProcessedBy
+		--sg.Name as StudentGroupName
+		(SELECT TOP 1 sgs.name FROM StudentGroups sgs WHERE sgs.Id = o.StudentGroupId) as StudentGroupName
+		--o.IsStudentGroupOrder,
+		--o.IsMealPlan
 	INTO #TempResults
 	FROM TokenOrders o WITH (NOLOCK)
 	LEFT JOIN TokenOrdereds t WITH (NOLOCK) ON t.OrderId = o.Id
@@ -84,18 +103,29 @@ BEGIN
 	LEFT JOIN DishTypes dt WITH (NOLOCK) on dt.Id = dish.DishTypeId
 	LEFT JOIN Vouchers v WITH (NOLOCK) ON v.Id = p.VoucherId
 	LEFT JOIN PaymentTypes pt WITH (NOLOCK) ON pt.Id = p.PaymentTypeId
+	LEFT JOIN StudentGroupDetails sgd WITH (NOLOCK) ON sgd.StudentId = s.Id
+	LEFT JOIN StudentGroups sg WITH (NOLOCK) ON sg.Id = sgd.StudentGroupId
 	--LEFT JOIN [User] u WITH (NOLOCK) ON u.Id = o.CreatedBy
 	WHERE 
-		((@ReportType = 1 AND (CONVERT(DATE, o.DeliveryDate) BETWEEN @ReportDateFrom AND @ReportDateTo)) OR
-		(@ReportType = 2 AND (CONVERT(DATE, o.CancelledOn) BETWEEN @ReportDateFrom AND @ReportDateTo)))
+		(((@ReportType = 1 OR @ReportType = 0 OR @ReportType = 3) AND (CONVERT(DATE, o.DeliveryDate) BETWEEN @ReportDateFrom AND @ReportDateTo)) OR
+		(@ReportType = 2 AND (CONVERT(DATE, o.CancelledOn) BETWEEN @ReportDateFrom AND @ReportDateTo)) --OR
+		--(@ReportType = 3 AND (CONVERT(DATE, o.CollectionTime) BETWEEN @ReportDateFrom AND @ReportDateTo))
+		)
 		AND (ISNULL(@Status, '') ='' OR o.Status IN (@Status))
+		AND (ISNULL(@OrderType, '') ='' OR ((@OrderType = 'Adhoc' AND @OrderType = pt.Name AND o.IsStudentGroupOrder = 1) OR (@OrderType = 'FAS' AND o.IsFAS = 1) OR (@OrderType = 'Meal Plan' AND @OrderType = pt.Name AND o.IsMealPlan = 1)))
 		AND (@IsFAS IS NULL OR s.IsFAS = @IsFAS)
+		AND (@IsActive IS NULL OR o.IsActive = @IsActive)
+		--AND (@ReportType <> 3 OR (@ReportType = 3 AND sg.Id = @StudentGroupId))
+		AND (LEN(ISNULL(@StudentGroupIds, '')) = 0 OR (o.StudentGroupId IN (SELECT SplitValue FROM SplitAndReturnTable(@StudentGroupIds))))
+		AND (LEN(ISNULL(@CollectionStatuses, ''))= 0 OR (LEN(ISNULL(@IsCollected, '')) <> 0 AND o.CollectionTime IS NOT NULL) OR (LEN(ISNULL(@IsNotCollected, '')) <> 0 AND o.CollectionTime IS NULL))
 		AND (ISNULL(@Keywords, '') = '' OR 
 			s.Name LIKE '%' + @Keywords + '%' OR
 			c.Name LIKE '%' + @Keywords + '%' OR 
 			p.InvoiceNumber LIKE '%' + @Keywords + '%' OR
-			v.Code LIKE '%' + @Keywords + '%')
-
+			v.Code LIKE '%' + @Keywords + '%' OR
+			dish.Label LIKE '%' + @Keywords + '%')
+		AND (LEN(ISNULL(@OutletId, '')) = 0 OR (ot.Id IN (SELECT SplitValue FROM SplitAndReturnTable(@OutletId))))
+	
 	SELECT @Total = COUNT(Id) FROM #TempResults 
 
 	SELECT @Total AS Total, * FROM #TempResults 

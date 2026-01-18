@@ -76,8 +76,12 @@
     </div>
     <div class="col-xs-6 col-sm-4 col-md-2">
       <mat-form-field style="width: 100%;">
-        <mat-select name="outletId" [(ngModel)]="outletId" placeholder="Outlet">
-          <mat-option value="">All</mat-option>
+        <mat-select multiple name="outletId" [(ngModel)]="filter.outletId" placeholder="Outlet">
+          <mat-option #allSelected
+                      value="all"
+                      (click)="toggleAllSelection(allSelected.selected)">
+            All
+          </mat-option>
           <mat-option *ngFor="let t of outlets" [value]="t.id">
             {{t.name}}
           </mat-option>

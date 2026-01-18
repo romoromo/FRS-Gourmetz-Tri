@@ -75,7 +75,10 @@ namespace DAL.Repositories.MealOrder
             orderType.Value = (object)filter.OrderType ?? DBNull.Value;
             studentGroupIds.Value = string.Join(",", filter.StudentGroupIds ?? new List<int>());
             collectionStatuses.Value = string.Join(",", filter.CollectionStatuses ?? new List<string>());
-            outletId.Value = !string.IsNullOrEmpty(filter.OutletId) ? filter.OutletId : DBNull.Value;
+            outletId.Value = string.Join(",", filter.OutletId ?? new List<int>());
+
+            //!string.IsNullOrEmpty(filter.OutletId) ? filter.OutletId : DBNull.Value;
+
 
             bool isDesc = filter.Sorts.Contains("-");
             sortByCol.Value = isDesc ? filter.Sorts.Substring(1) : filter.Sorts;
