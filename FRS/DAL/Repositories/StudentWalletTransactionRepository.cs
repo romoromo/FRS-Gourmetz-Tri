@@ -703,14 +703,37 @@ namespace DAL.Repositories
 
             try
             {
-                var studentData = await _appContext.Students
-                    .FirstOrDefaultAsync(e => e.IsActive && e.Id == studentId);
-
+                var studentData = await _appContext.Students.FirstOrDefaultAsync(e => e.IsActive && e.Id == studentId);
                 if (studentData == null)
                 {
                     result.IsSuccess = false;
                     result.Message = $"Student with Id={studentId} not found or is inactive.";
                     return result;
+                }
+
+                double basicWalletBalance = 0;
+                double fasWalletBalance = 0;
+
+                // Reset Student Wallets to zero for BASIC
+                var basicWallet = await _appContext.StudentWallets
+                    .FirstOrDefaultAsync(w => w.StudentId == studentId && w.IsActive && w.Type == WalletType.BASIC.ToString());
+                if (basicWallet != null)
+                {
+                    basicWalletBalance = basicWallet.Balance;
+
+                    basicWallet.Balance = 0;
+                    _appContext.StudentWallets.Update(basicWallet);
+                }
+
+                // Reset Student Wallets to zero for FAS
+                var fasWallet = await _appContext.StudentWallets
+                    .FirstOrDefaultAsync(w => w.StudentId == studentId && w.IsActive && w.Type == WalletType.FAS.ToString());
+                if (fasWallet != null)
+                {
+                    fasWalletBalance = fasWallet.Balance;
+
+                    fasWallet.Balance = 0;
+                    _appContext.StudentWallets.Update(fasWallet);
                 }
 
                 var oldWalletBalance = studentData.WalletBalance;
@@ -721,10 +744,10 @@ namespace DAL.Repositories
 
                 var walletTransaction = new StudentWalletTransaction
                 {
-                    Amount = -oldWalletBalance,
+                    Amount = oldWalletBalance,
                     TransactionType = WalletTransactionType.DEBIT.ToString(),
                     StudentId = studentData.Id,
-                    Description = $"Offboarding adjustment by userId={userId}. Previous balance: {oldWalletBalance}",
+                    Description = $"Offboarding adjustment by userId={userId}. Previous balance: {oldWalletBalance} (From FAS: {fasWalletBalance}, From BASIC: {basicWalletBalance})",
                     CreatedBy = userId,
                     UpdatedBy = userId
                 };
@@ -732,7 +755,7 @@ namespace DAL.Repositories
 
                 var pointTransaction = new StudentPointTransaction
                 {
-                    Amount = -oldPointBalance,
+                    Amount = oldPointBalance,
                     TransactionType = WalletTransactionType.DEBIT.ToString(),
                     StudentId = studentData.Id,
                     Description = $"Offboarding adjustment by userId={userId}. Previous points: {oldPointBalance}",
