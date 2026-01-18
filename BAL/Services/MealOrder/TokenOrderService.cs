@@ -2786,6 +2786,8 @@ namespace BAL.Services.MealOrder
 
                                 string cuisineLicense = dish.CuisineLicenseCode;
 
+                                string cuisineName = dish.CuisineName;
+
                                 string toIconFilePath = "";
 
                                 if (dish.CuisineIconFileName != null && dish.CuisineIconFileName != "")
@@ -2905,7 +2907,15 @@ namespace BAL.Services.MealOrder
 
                                 await this._deliveryService.CreateBentoAssetAsync(bentoAsset);
 
-                                Paragraph para1 = new Paragraph("Liang Yuan Pte Ltd", new iTextSharp.text.Font(allerfont, 5));
+                                string companyName = "Liang Yuan Pte Ltd";
+
+                                if (cuisineName.IndexOf("halal", StringComparison.OrdinalIgnoreCase) >= 0 && cuisineName.IndexOf("non", StringComparison.OrdinalIgnoreCase) < 0)
+                                {
+                                    companyName = "Gourmetz Pte Ltd";
+                                }
+
+
+                                Paragraph para1 = new Paragraph(companyName, new iTextSharp.text.Font(allerfont, 5));
                                 para1.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para1);
 
