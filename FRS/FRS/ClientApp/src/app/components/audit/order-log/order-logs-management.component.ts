@@ -37,6 +37,7 @@ import { FormControl } from "@angular/forms";
 import { OrderService } from "src/app/services/meal-order/order.service";
 import { DeliveryService } from "src/app/services/meal-order/delivery.service";
 import { MatOption } from '@angular/material/core';
+import { ClassService } from "src/app/services/meal-order/class.service";
 
 @Component({
   selector: "order-logs-management",
@@ -71,6 +72,9 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
   tend = new Date();
   studentGroupIds = new FormControl();
   outletId: string = "";
+
+  classLevels: any[] = [];
+  classLevelIds: string = "";
 
   public currentPageLimit: number = 10;
   public pageLimitOptions = [
@@ -112,7 +116,8 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     private orderLogService: AuditService,
     private studentService: StudentService,
     private orderService: OrderService,
-    private deliveryService: DeliveryService
+    private deliveryService: DeliveryService,
+    private classService: ClassService
   ) {}
 
   ngOnDestroy(): void {
@@ -219,6 +224,8 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.initializePagedResult();
     this.initializeTableDefinition();
     this.loadData();
+
+    this.getClassLevelByOrders();
   }
 
   loadData(ev?: any) {
@@ -517,6 +524,22 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
       // Clear the model
       this.filter.outletId = [];
     }
+  }
+
+  getClassLevelByOrders(){
+    let f = "(OutletId)==4,";
+    let filter = new Filter()
+    filter.filters =
+      f +
+      "(IsActive)==true" +
+      ",(InstitutionId)==" +
+      this.accountService.currentUser.institutionId;
+    
+    this.classService.getClassLevelsByFilter(filter).subscribe(
+      (results) =>{
+        this.classLevels = results.pagedData;
+      }
+    );
   }
 
   get canManageAuthLogs() {

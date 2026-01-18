@@ -88,6 +88,14 @@
         </mat-select>
       </mat-form-field>
     </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-form-field>
+        <mat-select name="classLevelIds" [formControl]="classLevelIds" multiple placeholder="Class Level"
+          [(ngModel)]="filter.classLevelIds">
+          <mat-option *ngFor="let t of classLevels | orderBy: 'name'" [value]="t.id">{{t.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
     <div class="col-xs-12 col-sm-12 col-md-6" style="padding-bottom:10px;">
       <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
       <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>
