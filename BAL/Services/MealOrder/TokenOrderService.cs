@@ -2775,6 +2775,7 @@ namespace BAL.Services.MealOrder
 
                     for (int i = 0; i < dto.Length; i++)
                     {
+                        dto[i].dishes.Sort((x,y) => String.Compare(x.dish_name, y.dish_name));
 
                         for (int j = 0; j < dto[i].dishes.ToArray().Length; j++)
                         {
@@ -2904,7 +2905,7 @@ namespace BAL.Services.MealOrder
 
                                 await this._deliveryService.CreateBentoAssetAsync(bentoAsset);
 
-                                Paragraph para1 = new Paragraph("Gourmetz Pte Ltd", new iTextSharp.text.Font(allerfont, 5));
+                                Paragraph para1 = new Paragraph("Liang Yuan Pte Ltd", new iTextSharp.text.Font(allerfont, 5));
                                 para1.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para1);
 

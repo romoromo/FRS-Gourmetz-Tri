@@ -28,9 +28,9 @@
         </mat-form-field>
         <mat-form-field class="col-xs-6">
           <mat-label>Packing Time</mat-label>
-          <input matInput (keydown)="$event.preventDefault()" [disabled]="isSaving || filterLoading || isLoading" type="time" id="packingTime" datetime="packingTime"
-                 name="packingTime" [ngModel]="allocation.packingTime | date:  'HH:mm'"
-                 (ngModelChange)="allocation.packingTime = $event" />
+           <input matInput (keydown)="$event.preventDefault()" [disabled]="isSaving || filterLoading || isLoading" type="time" id="packingTime" datetime="packingTime"
+          name="packingTime" [ngModel]="allocation.packingTime | date:  'HH:mm'"
+          (ngModelChange)="allocation.packingTime = $event" />
         </mat-form-field>
 
       </div>
