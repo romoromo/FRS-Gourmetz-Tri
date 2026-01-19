@@ -2907,11 +2907,11 @@ namespace BAL.Services.MealOrder
 
                                 await this._deliveryService.CreateBentoAssetAsync(bentoAsset);
 
-                                string companyName = "Liang Yuan Pte Ltd";
+                                string companyName = "Gourmetz Pte Ltd";
 
-                                if (cuisineName.IndexOf("halal", StringComparison.OrdinalIgnoreCase) >= 0 && cuisineName.IndexOf("non", StringComparison.OrdinalIgnoreCase) < 0)
+                                if (cuisineName.IndexOf("non-halal", StringComparison.OrdinalIgnoreCase) >= 0)
                                 {
-                                    companyName = "Gourmetz Pte Ltd";
+                                    companyName = "Liang Yuan Pte Ltd";
                                 }
 
 
@@ -2920,7 +2920,7 @@ namespace BAL.Services.MealOrder
                                 columnLeft.AddElement(para1);
 
 
-                                string licenseNo = "PL24E0162";
+                                string licenseNo = "PL24L0327";
 
                                 if (cuisineLicense != null && cuisineLicense != "")
                                 {
