@@ -23,8 +23,8 @@
     </mat-form-field>
     <mat-form-field class="col-md-3 col-sm-6 col-xs-12">
       <mat-label>Session</mat-label>
-      <mat-select id="mealSession" name="mealSession" [(ngModel)]="mealSessionId" #mealSession="ngModel" required [disabled]="isLoadingMealSessions">
-        <mat-option *ngFor="let mealSessionDetail of mealSessions" [value]="mealSessionDetail.mealSessionId">
+      <mat-select id="mealSession" name="mealSession" [(ngModel)]="selectedMealSession" #mealSession="ngModel" required [disabled]="isLoadingMealSessions" (selectionChange)="onMealSessionChange($event.value)">
+        <mat-option *ngFor="let mealSessionDetail of mealSessions" [value]="mealSessionDetail">
           {{mealSessionDetail.mealSessionName}}
         </mat-option>
       </mat-select>

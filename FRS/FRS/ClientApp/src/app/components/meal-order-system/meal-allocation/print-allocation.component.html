@@ -28,9 +28,9 @@
         </mat-form-field>
         <mat-form-field class="col-xs-6">
           <mat-label>Packing Time</mat-label>
-          <input matInput [disabled]="isSaving || filterLoading || isLoading" type="time" id="packingTime" datetime="packingTime"
-                 name="packingTime" [ngModel]="allocation.packingTime | date:  'HH:mm'"
-                 (ngModelChange)="allocation.packingTime = $event" />
+           <input matInput (keydown)="$event.preventDefault()" [disabled]="isSaving || filterLoading || isLoading" type="time" id="packingTime" datetime="packingTime"
+          name="packingTime" [ngModel]="allocation.packingTime | date:  'HH:mm'"
+          (ngModelChange)="allocation.packingTime = $event" />
         </mat-form-field>
 
       </div>
@@ -165,7 +165,7 @@
           class='fa fa-plus-circle'></i>Add Dish</button>
       <button type="button" mat-button (click)="cancel()" [disabled]="isSaving"><i class='fa fa-times'></i>
         {{'common.editor.Cancel' | translate}}</button>
-      <button type="submit" mat-button [disabled]="f.invalid || isSaving || isLoading || filterLoading">
+      <button type="submit" mat-button [disabled]="isSaving || isLoading || filterLoading">
         <i *ngIf="!isSaving" class='fa fa-save'></i><i *ngIf="isSaving" class='fa fa-circle-o-notch fa-spin'></i>
         {{isSaving ? ('common.editor.Saving' | translate) : ('common.editor.Save' | translate)}}
       </button>

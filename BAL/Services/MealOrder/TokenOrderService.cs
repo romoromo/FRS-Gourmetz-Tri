@@ -319,9 +319,9 @@ namespace BAL.Services.MealOrder
         #endregion
 
         #region Student Group Order
-        public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, string type, bool skip = true)
+        public async Task<BaseOperationResponse> CreateStudentGroupOrderAsync(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, string type, bool skip = true, int mealSessionDetailId = 0)
         {
-            var result = await this._uow.TokenOrders.CreateStudentGroupOrderAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, type, skip);
+            var result = await this._uow.TokenOrders.CreateStudentGroupOrderAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, type, skip, mealSessionDetailId);
 
             return result;
         }
@@ -2775,6 +2775,7 @@ namespace BAL.Services.MealOrder
 
                     for (int i = 0; i < dto.Length; i++)
                     {
+                        dto[i].dishes.Sort((x,y) => String.Compare(x.dish_name, y.dish_name));
 
                         for (int j = 0; j < dto[i].dishes.ToArray().Length; j++)
                         {
@@ -2784,6 +2785,8 @@ namespace BAL.Services.MealOrder
                                 DishDTO dish = await this._dishService.GetDishByIdAsync(dto[i].dishes[j].dish_id);
 
                                 string cuisineLicense = dish.CuisineLicenseCode;
+
+                                string cuisineName = dish.CuisineName;
 
                                 string toIconFilePath = "";
 
@@ -2904,12 +2907,20 @@ namespace BAL.Services.MealOrder
 
                                 await this._deliveryService.CreateBentoAssetAsync(bentoAsset);
 
-                                Paragraph para1 = new Paragraph("Gourmetz Pte Ltd", new iTextSharp.text.Font(allerfont, 5));
+                                string companyName = "Liang Yuan Pte Ltd";
+
+                                if (cuisineName.IndexOf("halal", StringComparison.OrdinalIgnoreCase) >= 0 && cuisineName.IndexOf("non", StringComparison.OrdinalIgnoreCase) < 0)
+                                {
+                                    companyName = "Gourmetz Pte Ltd";
+                                }
+
+
+                                Paragraph para1 = new Paragraph(companyName, new iTextSharp.text.Font(allerfont, 5));
                                 para1.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para1);
 
 
-                                string licenseNo = "PL24L0327";
+                                string licenseNo = "PL24E0162";
 
                                 if (cuisineLicense != null && cuisineLicense != "")
                                 {

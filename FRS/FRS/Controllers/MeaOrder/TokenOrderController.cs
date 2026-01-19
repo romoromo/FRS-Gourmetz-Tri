@@ -286,12 +286,12 @@ namespace FRS.Controllers
         [HttpGet("tokenorders/studentgroup/order")]
         [ProducesResponseType(201, Type = typeof(BaseOperationResponse))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateStudentGroupOrder(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear, string type)
+        public async Task<IActionResult> CreateStudentGroupOrder(int studentGroupId, int outletId, int storeId, DateTime deliveryDate, DateTime deliveryDateTo, int dishTypeId, int mealSessionId, int createdBy, bool clear, string type, int mealSessionDetailId)
         {
             if (outletId == 0)
                 return BadRequest("Outlet not found.");
 
-            var result = await this._service.CreateStudentGroupOrderAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, type, clear);
+            var result = await this._service.CreateStudentGroupOrderAsync(studentGroupId, outletId, storeId, deliveryDate, deliveryDateTo, dishTypeId, mealSessionId, createdBy, type, clear, mealSessionDetailId);
             if (!result.IsSuccess)
                 return BadRequest("The following errors occurred while processing: " + string.Join(", ", result.Message));
 
