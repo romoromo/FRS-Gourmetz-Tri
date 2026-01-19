@@ -48,6 +48,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
   delvdate: Date = new Date();
   delvdateTo: Date = new Date();
   dishTypeId: string;
+  selectedMealSession: any = null;
   mealSessionDetailId: string;
   mealSessionId: string;
   paymentType: string = PaymentTypes.Adhoc;
@@ -289,7 +290,7 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
     this.isSaving = true;
     this.isClear = clear;
     //this.alertService.startLoadingMessage("Processing orders...");
-    this.menuService.bulkStudentGroupOrder(this.group.id, this.outletId, this.storeId, this.delvdate.toDateString(), this.delvdateTo.toDateString(), this.dishTypeId, this.mealSessionId, this.accountService.currentUser.id, clear, this.paymentType)
+    this.menuService.bulkStudentGroupOrder(this.group.id, this.outletId, this.storeId, this.delvdate.toDateString(), this.delvdateTo.toDateString(), this.dishTypeId, this.mealSessionId, this.accountService.currentUser.id, clear, this.paymentType, this.mealSessionDetailId)
       .subscribe(response => {
         if (response.isSuccess) {
           this.alertService.showMessage("Success", `Dishes are assigned to the group.`, MessageSeverity.success);
@@ -316,6 +317,10 @@ export class StudentGroupOrderSummaryComponent implements OnInit, OnDestroy {
   get canManageStudentGroupOrders() {
     return this.accountService.userHasPermission(Permission.manageMOSOutletMgtStudentGroupsPermission)
   }
-
+  
+  onMealSessionChange(ms: any) {
+    this.mealSessionId = ms ? ms.mealSessionId : 0;
+    this.mealSessionDetailId = ms ? ms.id : 0;
+  }
 
 }
