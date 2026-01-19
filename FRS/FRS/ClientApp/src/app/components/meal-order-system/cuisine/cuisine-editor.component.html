@@ -13,6 +13,11 @@
           <input matInput autocomplete="off" [disabled]="!canManageCuisines" type="text" id="licenseCode" name="licenseCode" placeholder="License Code" [(ngModel)]="cuisineEdit.licenseCode" #licenseCode="ngModel" required minlength="2" maxlength="200" />
         </mat-form-field>
 
+        <mat-form-field class="col-md-12">
+          <input matInput autocomplete="off" [disabled]="!canManageCuisines" type="text" id="kitchenLabel" name="kitchenLabel" placeholder="Kitchen Label" 
+            [(ngModel)]="cuisineEdit.kitchenLabel" #kitchenLabel="ngModel"/>
+        </mat-form-field>
+
         <div class="col-md-12">
           <mat-label>
             <span class="upload-title">Icon</span>
