@@ -43,9 +43,10 @@ namespace BAL.Services.MealOrder
         private IStudentWalletService _studentWalletService;
         private readonly IMapper _mapper;
         readonly ILogger<TokenOrderService> _logger;
+        private IMealSessionResolver _sessionResolverService;
 
         public TokenOrderService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, ApplicationDbContext context,
-            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService, IStudentWalletService studentWalletService, ILogger<TokenOrderService> logger)
+            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService, IStudentWalletService studentWalletService, ILogger<TokenOrderService> logger, IMealSessionResolver sessionResolverService)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
@@ -57,6 +58,7 @@ namespace BAL.Services.MealOrder
             this._dishService = dishService;
             this._studentWalletService = studentWalletService;
             _logger = logger;
+            _sessionResolverService = sessionResolverService;
         }
 
         #region TokenOrder
@@ -639,7 +641,19 @@ namespace BAL.Services.MealOrder
 
                 foreach (var o in grpOrders)
                 {
-                    var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.OutletId, o.DeliveryDate, o.MealSessionId, o.ClassId);
+
+                    MealSessionByOutletInput classAndOutlet =  new MealSessionByOutletInput
+                    {
+                        ClassLevelId =o.ClassId,
+                        OrderDate = o.DeliveryDate,
+                        OrderDateTo = null,
+                        OutletId = o.OutletId.Value
+                    };
+
+                    var details = await this._sessionResolverService.GetMealSessionsByOutlet(classAndOutlet);
+
+                    var currentOrderMealSession = details.Find(s => s.MealSessionId == o.MealSessionId);
+                        
                     mealSessionDetails.Add(new MealSessionDetailByOrderAndClass
                     {
                         OutletId = o.OutletId,
@@ -2935,21 +2949,33 @@ namespace BAL.Services.MealOrder
                                 para3.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para3);
 
-                                Chunk c = new Chunk("Time Packed: " + timePacked, new iTextSharp.text.Font(allerfont, 4));
+                                Chunk c = new Chunk("Time Packed: ", new iTextSharp.text.Font(allerfont, 4));
+                                Chunk c2 = new Chunk(timePacked, new iTextSharp.text.Font(allerfont, 5));
                                 if (color != "")
                                 {
                                     c.SetBackground(new BaseColor(ColorTranslator.FromHtml(color)));
+                                    c2.SetBackground(new BaseColor(ColorTranslator.FromHtml(color)));
                                 }
-                                Paragraph para4 = new Paragraph(c);
+                                Paragraph para4 = new Paragraph();
                                 para4.Alignment = Element.ALIGN_CENTER;
+                                para4.SetLeading(6f, 0f);
+                                para4.Add(c);
+                                para4.Add(c2);
                                 columnLeft.AddElement(para4);
 
                                 Paragraph para5 = new Paragraph("Consume By: " + dto[i].deliveryDate, new iTextSharp.text.Font(allerfont, 4));
                                 para5.Alignment = Element.ALIGN_CENTER;
                                 columnLeft.AddElement(para5);
 
-                                Paragraph para6 = new Paragraph("At: " + timeConsume, new iTextSharp.text.Font(allerfont, 4, iTextSharp.text.Font.BOLD));
+
+                                Chunk ca = new Chunk("At: ", new iTextSharp.text.Font(allerfont, 4, iTextSharp.text.Font.BOLD));
+                                Chunk ca2 = new Chunk(timeConsume, new iTextSharp.text.Font(allerfont, 5, iTextSharp.text.Font.BOLD));
+
+                                Paragraph para6 = new Paragraph();
                                 para6.Alignment = Element.ALIGN_CENTER;
+                                para6.SetLeading(6f, 0f);
+                                para6.Add(ca);
+                                para6.Add(ca2);
                                 columnLeft.AddElement(para6);
 
                                 var phrase = new Phrase();
