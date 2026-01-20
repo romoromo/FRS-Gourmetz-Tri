@@ -5,6 +5,7 @@ using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
 using Microsoft.EntityFrameworkCore;
 using Sieve.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -186,13 +187,19 @@ namespace DAL.Repositories.MealOrder
                 .ToListAsync();
         }
 
-        public Task<List<MealSessionDetail>> GetMealSessionDetail(int id, int outletId)
+        public async Task<List<MealSessionDetail>> GetMealSessionDetail(int id, int outletId, DateTime? orderDate = null)
         {
-            var query = _appContext.ClassLevels
+            if (!orderDate.HasValue) return [];
+
+            var dayOfOrder = (int)orderDate.Value.DayOfWeek;
+
+            return await _appContext.ClassLevelSchedules
                 .AsNoTracking()
-                .Include(m => m.ClassLevelDetails).ThenInclude(msd => msd.MealSession)
-                .Where(m => m.Id == id && m.OutletId == outletId && m.IsActive);
-            return query.SelectMany(m => m.ClassLevelDetails.Select(msd => msd.MealSession)).ToListAsync();
+                .Where(x => x.ClassLevelId == id)
+                .SelectMany(x => x.Schedules)
+                .Where(s => (int)s.Day == dayOfOrder )
+                .Select(s => s.MealSession)
+                .ToListAsync();
         }
 
         public async Task<ClassLevelSchedule> GetClassLevelSchedules(int classLevelId)

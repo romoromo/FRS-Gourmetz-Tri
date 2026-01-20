@@ -134,7 +134,7 @@ namespace BAL.Services.Interfaces
 
         public async Task<List<MealSessionDetailDTO>> Resolve(MealSessionByOutletInput input)
         {
-            return await _classService.GetMealSessionsByClassLevel(input.ClassLevelId, input.OutletId);
+            return await _classService.GetMealSessionsByClassLevel(input.ClassLevelId, input.OutletId, input.OrderDate);
         }
     }
 
