@@ -243,7 +243,7 @@ export class ClassLevelsManagementComponent implements OnInit {
 
   openSchedule(row: ClassLevel) {
     const scheduleDialog = this.dialog.open(ClassLevelSchedule, {
-      width: "1100px",
+      width: "1400px",
       data: {
         classLevelId: row.id,
         classLevelName: row.name,

@@ -28,7 +28,7 @@ export class ClassLevelSchedule {
     public dialogRef: MatDialogRef<ClassLevelSchedule>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private mealService: MealService,
-    private classService: ClassService
+    private classService: ClassService,
   ) {
     const outletId = data ? data.outletId : null;
     this.classLevelName = data.classLevelName;
@@ -62,12 +62,19 @@ export class ClassLevelSchedule {
     this.classService
       .getClassLevelSchedule(this.classLevelId)
       .subscribe((existing) => {
+        this.scheduleRows.forEach((row) => {
+          this.days.forEach((day) => {
+            row.sessions[day.enum] = 0;
+          });
+        });
+
         if (!existing || !existing.schedules) return;
 
         existing.schedules.forEach((item) => {
-          const row = this.scheduleRows.find((r) => r.periodId === item.periodId);
+          const row = this.scheduleRows.find(
+            (r) => r.periodId === item.periodId,
+          );
           if (!row) return;
-
           row.sessions[item.day] = item.sessionId;
         });
       });
