@@ -107,10 +107,10 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        public async Task<List<MealSessionDetailDTO>> GetMealSessionsByClassLevel(int classLevelId, int outletId)
+        public async Task<List<MealSessionDetailDTO>> GetMealSessionsByClassLevel(int classLevelId, int outletId, DateTime? orderDate = null)
         {
             var result = new List<MealSessionDetail>();
-            var mealSessionDetails = await this._uow.ClassLevels.GetMealSessionDetail(classLevelId, outletId);
+            var mealSessionDetails = await this._uow.ClassLevels.GetMealSessionDetail(classLevelId, outletId, orderDate);
             return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetails.DistinctBy(m => m.Id));
         }
 

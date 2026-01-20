@@ -9,6 +9,7 @@ namespace BAL.Services.Interfaces
 {
     public interface IMealSessionResolver
     {
+        [Obsolete("DONT USE THIS FUNCTION, MealCollectionType Moved to Class. Please use GetMealSessionsByStudent or GetMealSessionsByStudentGroup")]
         Task<List<MealSessionDetailDTO>> GetMealSessionsByOutlet(MealSessionByOutletInput input);
         Task<List<MealSessionDetailDTO>> GetMealSessionsByStudentGroup(MealSessionByStudentGrouptInput input);
         Task<List<MealSessionDetailDTO>> GetMealSessionsByStudent(int studentId, DateTime orderDate);
@@ -54,6 +55,7 @@ namespace BAL.Services.Interfaces
             return null;
         }
 
+        [Obsolete("DONT USE THIS FUNCTION, MealCollectionType Moved to Class. Please use GetMealSessionsByStudent or GetMealSessionsByStudentGroup")]
         public async Task<List<MealSessionDetailDTO>> GetMealSessionsByOutlet(MealSessionByOutletInput input)
         {
             var outlet = await _deliveryService.GetOutletByIdAsync(input.OutletId);
@@ -134,7 +136,7 @@ namespace BAL.Services.Interfaces
 
         public async Task<List<MealSessionDetailDTO>> Resolve(MealSessionByOutletInput input)
         {
-            return await _classService.GetMealSessionsByClassLevel(input.ClassLevelId, input.OutletId);
+            return await _classService.GetMealSessionsByClassLevel(input.ClassLevelId, input.OutletId, input.OrderDate);
         }
     }
 

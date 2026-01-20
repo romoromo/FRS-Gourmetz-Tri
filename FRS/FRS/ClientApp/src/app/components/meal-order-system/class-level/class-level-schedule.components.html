@@ -19,10 +19,11 @@
                                     <td><strong>{{ row.periodName }}</strong></td>
 
                                     <td *ngFor="let d of days">
-                                        <mat-form-field appearance="outline" style="width:120px">
+                                        <mat-form-field appearance="outline" style="width:165px">
                                             <mat-select [(ngModel)]="row.sessions[d.enum]"
                                                 [name]="'session_' + i + '_' + d.enum">
-
+                                                
+                                                <mat-option [value]="0"> No {{row.periodName}} </mat-option>
                                                 <mat-option *ngFor="let s of mealPeriods[i].details" [value]="s.id">
                                                     {{ s.name }}
                                                 </mat-option>
