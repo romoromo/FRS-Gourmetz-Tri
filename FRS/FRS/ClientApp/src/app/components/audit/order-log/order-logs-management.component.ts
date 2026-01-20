@@ -36,7 +36,7 @@ import { PaymentTypes } from "../../../models/enums";
 import { FormControl } from "@angular/forms";
 import { OrderService } from "src/app/services/meal-order/order.service";
 import { DeliveryService } from "src/app/services/meal-order/delivery.service";
-import { MatOption } from '@angular/material/core';
+import { MatOption } from "@angular/material/core";
 import { ClassService } from "src/app/services/meal-order/class.service";
 
 @Component({
@@ -104,8 +104,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
   private selected: any[] = [];
   @ViewChild("hdrTpl") hdrTpl: TemplateRef<any>;
 
-  @ViewChild('allSelected') private allSelected!: MatOption;
-
+  @ViewChild("allSelected") private allSelected!: MatOption;
 
   itemControl: FormControl = new FormControl([]);
 
@@ -117,7 +116,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     private studentService: StudentService,
     private orderService: OrderService,
     private deliveryService: DeliveryService,
-    private classService: ClassService
+    private classService: ClassService,
   ) {}
 
   ngOnDestroy(): void {
@@ -205,7 +204,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       if (this.table.bodyComponent.temp.length <= 0) {
         this.table.offset = Math.floor(
-          (this.table.rowCount - 1) / this.table.limit
+          (this.table.rowCount - 1) / this.table.limit,
         );
       }
 
@@ -224,8 +223,6 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.initializePagedResult();
     this.initializeTableDefinition();
     this.loadData();
-
-    this.getClassLevelByOrders();
   }
 
   loadData(ev?: any) {
@@ -290,11 +287,11 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
         this.alertService.showStickyMessage(
           "Load Error",
           `Unable to retrieve order logs from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(
-            error
+            error,
           )}"`,
-          MessageSeverity.error
+          MessageSeverity.error,
         );
-      }
+      },
     );
   }
 
@@ -358,14 +355,14 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
           this.alertService.showStickyMessage(
             "Get Error",
             `An error occured while retrieving student groups.\r\n"`,
-            MessageSeverity.error
+            MessageSeverity.error,
           );
-        }
-      )
+        },
+      ),
     );
   }
 
-  getOutlet() {    
+  getOutlet() {
     let filter = new Filter();
     filter.filters = `(IsActive)==true,(Name)@=${this.keyword},(OutletByUserId)==${this.accountService.currentUser.id}`;
     this.subscription.add(
@@ -377,10 +374,10 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
           this.alertService.showStickyMessage(
             "Get Error",
             `An error occured while retrieving student outlets.\r\n"`,
-            MessageSeverity.error
+            MessageSeverity.error,
           );
-        }
-      )
+        },
+      ),
     );
   }
 
@@ -403,7 +400,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
       (err) => {
         alert("Problem while downloading the file.");
         console.error(err);
-      }
+      },
     );
   }
 
@@ -426,7 +423,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
       (err) => {
         alert("Problem while downloading the file.");
         console.error(err);
-      }
+      },
     );
   }
 
@@ -444,25 +441,25 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
       this.alertService.showMessage(
         "Cancel Order",
         "Please select at least 1 order to cancel.",
-        MessageSeverity.warn
+        MessageSeverity.warn,
       );
       return;
     }
 
     const notPaid = this.selected.filter(
-      (x) => x.status.toLowerCase() !== "paid"
+      (x) => x.status.toLowerCase() !== "paid",
     );
     if (notPaid.length) {
       this.alertService.showMessage(
         "Cancel Order",
         `Only orders with status "paid" can be cancelled. Please unselect the non-paid orders.`,
-        MessageSeverity.warn
+        MessageSeverity.warn,
       );
       return;
     }
 
     const ok = window.confirm(
-      `Are you sure you want to cancel selected order/s? (Total: ${this.selected.length})`
+      `Are you sure you want to cancel selected order/s? (Total: ${this.selected.length})`,
     );
     if (!ok) return;
 
@@ -493,7 +490,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
               this.alertService.showMessage(
                 "Success",
                 "Selected order/s successfully cancelled.",
-                MessageSeverity.success
+                MessageSeverity.success,
               );
 
               this.loadData();
@@ -504,41 +501,82 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
               this.alertService.showStickyMessage(
                 "Cancel Order",
                 `An error occured while cancelling the orderss\r\nError: "${Utilities.getHttpResponseMessage(
-                  error
+                  error,
                 )}"`,
-                MessageSeverity.error
+                MessageSeverity.error,
               );
-            }
-          )
+            },
+          ),
         );
-      }
+      },
     );
   }
 
   toggleAllSelection(isSelected: boolean) {
+    let outletFilter = 'OutletId==0,';
     if (isSelected) {
       // Set the model to all IDs plus the 'all' value to keep it visually checked
-      const allIds = this.outlets.map(o => o.id);
-      this.filter.outletId = [...allIds, 'all'];
+      const allIds = this.outlets.map((o) => o.id);
+      this.filter.outletId = [...allIds, "all"];
+
+      outletFilter = this.buildOutletFilterFromSelection();      
     } else {
       // Clear the model
       this.filter.outletId = [];
     }
+
+    this.getClassLevel(outletFilter);
   }
 
-  getClassLevelByOrders(){
-    let f = "(OutletId)==4,";
-    let filter = new Filter()
+  private buildOutletFilterFromSelection(): string {
+    const selected = this.filter.outletId || [];
+
+    if (selected.length === 0) {
+      return "";
+    }
+
+    const outletIds = selected.filter((x) => typeof x === "number") as number[];
+    if (outletIds.length === 0) {
+      return "";
+    }
+
+    return `OutletId==${outletIds.join('|')},`;
+  }
+
+  getGetSelectedOutlet(): void {
+    const outletSelected = this.filter.outletId || [];
+    if (outletSelected.length === 0) {
+      this.classLevels = [];
+      return;
+    }
+
+    const hasAll = outletSelected.some((x) => x.toString() === "all");
+    if (hasAll) {
+      this.classLevels = [];
+      return;
+    }
+
+    const outletFilter = this.buildOutletFilterFromSelection();
+    this.getClassLevel(outletFilter);
+  }
+
+  getClassLevel(outletFilter) {
+    const filter = new Filter();
     filter.filters =
-      f +
-      "(IsActive)==true" +
-      ",(InstitutionId)==" +
-      this.accountService.currentUser.institutionId;
-    
+      outletFilter +
+      `(IsActive)==true,(InstitutionId)==${this.accountService.currentUser.institutionId}`;
+
     this.classService.getClassLevelsByFilter(filter).subscribe(
-      (results) =>{
+      (results) => {
         this.classLevels = results.pagedData;
-      }
+      },
+      (error) => {
+        this.alertService.showStickyMessage(
+          "Get Error",
+          `An error occured while retrieving class levels.\r\n`,
+          MessageSeverity.error,
+        );
+      },
     );
   }
 
