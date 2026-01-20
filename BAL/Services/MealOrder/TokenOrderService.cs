@@ -642,17 +642,9 @@ namespace BAL.Services.MealOrder
                 foreach (var o in grpOrders)
                 {
 
-                    MealSessionByOutletInput classAndOutlet =  new MealSessionByOutletInput
-                    {
-                        ClassLevelId =o.ClassId,
-                        OrderDate = o.DeliveryDate,
-                        OrderDateTo = null,
-                        OutletId = o.OutletId.Value
-                    };
+                    var sessions = await this._sessionResolverService.GetMealSessionsByClass(o.ClassId, o.OutletId.Value, o.DeliveryDate);
 
-                    var details = await this._sessionResolverService.GetMealSessionsByOutlet(classAndOutlet);
-
-                    var currentOrderMealSession = details.Find(s => s.MealSessionId == o.MealSessionId);
+                    var currentOrderMealSession = sessions.Find(s => s.MealSessionId == o.MealSessionId);
                         
                     mealSessionDetails.Add(new MealSessionDetailByOrderAndClass
                     {

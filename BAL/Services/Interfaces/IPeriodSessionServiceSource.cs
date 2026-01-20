@@ -12,6 +12,7 @@ namespace BAL.Services.Interfaces
         Task<List<MealSessionDetailDTO>> GetMealSessionsByOutlet(MealSessionByOutletInput input);
         Task<List<MealSessionDetailDTO>> GetMealSessionsByStudentGroup(MealSessionByStudentGrouptInput input);
         Task<List<MealSessionDetailDTO>> GetMealSessionsByStudent(int studentId, DateTime orderDate);
+        Task<List<MealSessionDetailDTO>> GetMealSessionsByClass(int classId, int outletId, DateTime orderDate);
     }
 
     public class MealSessionResolver : IMealSessionResolver
@@ -106,6 +107,24 @@ namespace BAL.Services.Interfaces
         public async Task<List<MealSessionDetailDTO>> GetMealSessionsByStudent(int studentId, DateTime orderDate)
         {
             var (Class, outletId) = await _classService.GetClassByStudentId(studentId);
+            if (!Class.MealCollectionType.HasValue) return [];
+
+            var service = GetService(Class.MealCollectionType.Value);
+            if (service == null) return [];
+            var request = new MealSessionByOutletInput
+            {
+                ClassLevelId = Class?.ClassLevelId ?? 0,
+                OrderDate = orderDate,
+                OrderDateTo = null,
+                OutletId = outletId
+            };
+
+            return await service.Resolve(request);
+        }
+
+        public async Task<List<MealSessionDetailDTO>> GetMealSessionsByClass(int classId,int outletId, DateTime orderDate)
+        {
+            var Class = await _classService.GetClassByIdAsync(classId);
             if (!Class.MealCollectionType.HasValue) return [];
 
             var service = GetService(Class.MealCollectionType.Value);
