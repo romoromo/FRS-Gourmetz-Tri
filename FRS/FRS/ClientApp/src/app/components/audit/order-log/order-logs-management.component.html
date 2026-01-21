@@ -92,7 +92,14 @@
       <mat-form-field style="width: 100%;">
         <mat-select name="classLevelIds" multiple placeholder="Class Level"
           [(ngModel)]="filter.classLevelIds">
-          <mat-option *ngFor="let t of classLevels | orderBy: 'name'" [value]="t.id">{{t.name}}</mat-option>
+
+          <mat-optgroup *ngFor="let g of classLevelsGrouped" [label]="g.outletName">
+            <mat-option *ngFor="let t of g.items" [value]="t.id">
+              {{ t.name }}
+            </mat-option>
+          </mat-optgroup>
+
+          <!-- <mat-option *ngFor="let t of classLevels | orderBy: 'name'" [value]="t.id">{{t.name}}</mat-option> -->
         </mat-select>
       </mat-form-field>
     </div>

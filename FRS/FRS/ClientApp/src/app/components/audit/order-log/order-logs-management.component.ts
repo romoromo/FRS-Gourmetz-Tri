@@ -106,7 +106,11 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
 
   @ViewChild("allSelected") private allSelected!: MatOption;
 
-  itemControl: FormControl = new FormControl([]);
+  classLevelsGrouped: Array<{
+    outletId: number;
+    outletName: string;
+    items: any[];
+  }> = [];
 
   constructor(
     private alertService: AlertService,
@@ -560,6 +564,30 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     this.getClassLevel(outletFilter);
   }
 
+  private groupClassLevelsByOutlet(list: any[]) {
+    const map = new Map<number, { outletId: number; outletName: string; items: any[] }>();
+
+    (list || []).forEach(x => {
+      const outletId = x.outletId;
+      if (!map.has(outletId)) {
+        map.set(outletId, {
+          outletId,
+          outletName: x.outletName || `Outlet ${outletId}`,
+          items: []
+        });
+      }
+      map.get(outletId)!.items.push(x);
+    });
+
+    // optional: sort outletName dan item.name
+    this.classLevelsGrouped = Array.from(map.values())
+      .sort((a, b) => a.outletName.localeCompare(b.outletName))
+      .map(g => ({
+        ...g,
+        items: g.items.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+      }));
+  }
+
   getClassLevel(outletFilter) {
     const filter = new Filter();
     filter.filters =
@@ -568,7 +596,11 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
 
     this.classService.getClassLevelsByFilter(filter).subscribe(
       (results) => {
+
+        const data = results.pagedData || [];
+
         this.classLevels = results.pagedData;
+        this.groupClassLevelsByOutlet(data);
       },
       (error) => {
         this.alertService.showStickyMessage(
