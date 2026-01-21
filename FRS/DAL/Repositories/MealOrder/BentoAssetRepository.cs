@@ -65,7 +65,6 @@ namespace DAL.Repositories.MealOrder
             if (await Exists(e => e.Code == data.Code && e.IsActive))
             {
                 var f = await GetSingleOrDefaultAsync(e => e.Code == data.Code && e.IsActive);
-                f.CopyFrom(data);
 
                 f.LastUpdateTime = DateTime.Now;
                 Update(f);
