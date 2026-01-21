@@ -1300,7 +1300,11 @@ namespace BAL.Services.MealOrder
 
                 foreach (var o in grpOrders)
                 {
-                    var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.OutletId, o.DeliveryDate, o.MealSessionId, o.ClassId);
+
+                    var sessions = await this._sessionResolverService.GetMealSessionsByClass(o.ClassId, o.OutletId.Value, o.DeliveryDate);
+
+                    var currentOrderMealSession = sessions.Find(s => s.MealSessionId == o.MealSessionId);
+
                     mealSessionDetails.Add(new MealSessionDetailByOrderAndClass
                     {
                         OutletId = o.OutletId,
@@ -1554,7 +1558,11 @@ namespace BAL.Services.MealOrder
 
                 foreach (var o in grpOrders)
                 {
-                    var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.OutletId, o.DeliveryDate, o.MealSessionId, o.ClassId);
+
+                    var sessions = await this._sessionResolverService.GetMealSessionsByClass(o.ClassId, o.OutletId.Value, o.DeliveryDate);
+
+                    var currentOrderMealSession = sessions.Find(s => s.MealSessionId == o.MealSessionId);
+
                     mealSessionDetails.Add(new MealSessionDetailByOrderAndClass
                     {
                         OutletId = o.OutletId,
@@ -2582,7 +2590,11 @@ namespace BAL.Services.MealOrder
 
                 foreach (var o in grpOrders)
                 {
-                    var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.OutletId, o.DeliveryDate, o.MealSessionId, o.ClassId);
+
+                    var sessions = await this._sessionResolverService.GetMealSessionsByClass(o.ClassId, o.OutletId.Value, o.DeliveryDate);
+
+                    var currentOrderMealSession = sessions.Find(s => s.MealSessionId == o.MealSessionId);
+
                     mealSessionDetails.Add(new MealSessionDetailByOrderAndClass
                     {
                         OutletId = o.OutletId,
@@ -2705,7 +2717,11 @@ namespace BAL.Services.MealOrder
 
                 foreach (var o in grpOrders)
                 {
-                    var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.OutletId, o.DeliveryDate, o.MealSessionId, o.ClassId);
+
+                    var sessions = await this._sessionResolverService.GetMealSessionsByClass(o.ClassId, o.OutletId.Value, o.DeliveryDate);
+
+                    var currentOrderMealSession = sessions.Find(s => s.MealSessionId == o.MealSessionId);
+
                     mealSessionDetails.Add(new MealSessionDetailByOrderAndClass
                     {
                         OutletId = o.OutletId,
