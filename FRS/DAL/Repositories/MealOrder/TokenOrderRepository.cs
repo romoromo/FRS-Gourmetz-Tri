@@ -62,6 +62,7 @@ namespace DAL.Repositories.MealOrder
             var orderType = new SqlParameter("@OrderType", System.Data.SqlDbType.VarChar);
             var collectionStatuses = new SqlParameter("@CollectionStatuses", System.Data.SqlDbType.VarChar);
             var outletId = new SqlParameter("@OutletId", System.Data.SqlDbType.VarChar);
+            var classLevelIds = new SqlParameter("@ClassLevelIds", System.Data.SqlDbType.VarChar);
 
             from.Value = filter.ReportDateFrom;
             to.Value = filter.ReportDateTo;
@@ -76,6 +77,7 @@ namespace DAL.Repositories.MealOrder
             studentGroupIds.Value = string.Join(",", filter.StudentGroupIds ?? new List<int>());
             collectionStatuses.Value = string.Join(",", filter.CollectionStatuses ?? new List<string>());
             outletId.Value = string.Join(",", filter.OutletId ?? new List<int>());
+            classLevelIds.Value = string.Join(",", filter.ClassLevelIds ?? new List<int>());
 
             //!string.IsNullOrEmpty(filter.OutletId) ? filter.OutletId : DBNull.Value;
 
@@ -85,8 +87,8 @@ namespace DAL.Repositories.MealOrder
             sortBy.Value = isDesc;
 
             var orders = await _appContext.spSalesOrderReport
-                            .FromSqlRaw($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @IsActive, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupIds, @OrderType, @CollectionStatuses, @OutletId",
-                                    from, to, status, isFas, isActive, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupIds, orderType, collectionStatuses, outletId).ToListAsync();
+                            .FromSqlRaw($"exec spSalesOrderReport @ReportDateFrom, @ReportDateTo, @Status, @IsFAS, @IsActive, @Page, @PageSize, @Keywords, @SortBy, @SortDirection, @ReportType, @StudentGroupIds, @OrderType, @CollectionStatuses, @OutletId, @ClassLevelIds",
+                                    from, to, status, isFas, isActive, page, pageSize, keywords, sortByCol, sortBy, reportType, studentGroupIds, orderType, collectionStatuses, outletId, classLevelIds).ToListAsync();
 
             return orders;
         }

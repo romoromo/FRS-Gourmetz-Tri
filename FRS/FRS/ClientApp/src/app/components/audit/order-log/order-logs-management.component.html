@@ -76,7 +76,7 @@
     </div>
     <div class="col-xs-6 col-sm-4 col-md-2">
       <mat-form-field style="width: 100%;">
-        <mat-select multiple name="outletId" [(ngModel)]="filter.outletId" placeholder="Outlet">
+        <mat-select multiple name="outletId" [(ngModel)]="filter.outletId" placeholder="Outlet" (selectionChange)="getGetSelectedOutlet()">
           <mat-option #allSelected
                       value="all"
                       (click)="toggleAllSelection(allSelected.selected)">
@@ -85,6 +85,21 @@
           <mat-option *ngFor="let t of outlets" [value]="t.id">
             {{t.name}}
           </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-form-field style="width: 100%;">
+        <mat-select name="classLevelIds" multiple placeholder="Class Level"
+          [(ngModel)]="filter.classLevelIds">
+
+          <mat-optgroup *ngFor="let g of classLevelsGrouped" [label]="g.outletName">
+            <mat-option *ngFor="let t of g.items" [value]="t.id">
+              {{ t.name }}
+            </mat-option>
+          </mat-optgroup>
+
+          <!-- <mat-option *ngFor="let t of classLevels | orderBy: 'name'" [value]="t.id">{{t.name}}</mat-option> -->
         </mat-select>
       </mat-form-field>
     </div>

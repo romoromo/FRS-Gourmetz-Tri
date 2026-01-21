@@ -15,4 +15,6 @@ export class Cuisine {
   public fileId: string;
   public fileName: string;
   public filePath: string;
+
+  public kitchenLabel: string;
 }

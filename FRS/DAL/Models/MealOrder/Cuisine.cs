@@ -27,5 +27,7 @@ namespace DAL.Models.MealOrder
 
         [ForeignKey("InstitutionId")]
         public virtual Institution Institution { get; set; }
+        public string KitchenLabel { get; set; }
+
     }
 }
