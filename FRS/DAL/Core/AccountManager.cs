@@ -923,10 +923,10 @@ namespace DAL.Core
 
         public async Task<Tuple<bool, string[]>> UpdatePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
         {
-            if (await _userManager.IsUsedPassword(user.Id, newPassword))
-            {
-                return Tuple.Create(false, new string[] { "Password was previously used. "});
-            }
+            //if (await _userManager.IsUsedPassword(user.Id, newPassword))
+            //{
+            //    return Tuple.Create(false, new string[] { "Password was previously used. "});
+            //}
 
             var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
             if (!result.Succeeded)

@@ -64,6 +64,22 @@ namespace DAL.Repositories.MealOrder
             var result = new BaseOperationResponse();
             if (await Exists(e => e.Code == data.Code && e.IsActive))
             {
+                var f = await GetSingleOrDefaultAsync(e => e.Code == data.Code && e.IsActive);
+                f.CopyFrom(data);
+
+                f.LastUpdateTime = DateTime.Now;
+                Update(f);
+                if (await _appContext.SaveChangesAsync() > 0)
+                {
+                    result.Message = "Code already exists updating last update!";
+                    result.IsSuccess = false;
+                }
+                else
+                {
+                    result.Message = "Code already exists! failed updating last update!";
+                    result.IsSuccess = false;
+                }
+
                 result.Message = "Code already exists!";
                 result.IsSuccess = false;
             }
