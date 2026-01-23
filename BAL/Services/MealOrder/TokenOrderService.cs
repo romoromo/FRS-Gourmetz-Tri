@@ -2337,10 +2337,10 @@ namespace BAL.Services.MealOrder
                     cell = row.CreateCell(0);
                     cell.SetCellValue("DISH CATEGORY");
                     cell.CellStyle = borderedHeaderStyle;
-                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount + 1, 0, 0));
+                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowCount, rowCount + 2, 0, 0));
 
                     cell = row.CreateCell(1);
-                    cell.SetCellValue("Pick-Up Time");
+                    cell.SetCellValue("");
                     cell.CellStyle = borderedHeaderStyle;
 
                     var i = 2;
@@ -2361,11 +2361,74 @@ namespace BAL.Services.MealOrder
                     });
 
                     var grandTotalStyle = wb.CreateCellStyle();
-                    var craGrandTotal = new CellRangeAddress(rowCount, rowCount + 1, i, i);
+                    var craGrandTotal = new CellRangeAddress(rowCount, rowCount + 2, i, i);
                     cell = row.CreateCell(i);
                     cell.SetCellValue("Grand Total");
                     cell.CellStyle = borderedHeaderStyle;
                     GenerateBorderMergeCell(wb, sheet, craGrandTotal);
+
+                    //packing time
+
+                    row = sheet.CreateRow(++rowCount);
+
+                    cell = row.CreateCell(1);
+                    cell.SetCellValue("Packing Time");
+                    cell.CellStyle = borderedHeaderStyle;
+
+                    i = 2;
+                    List<int> notAllowedAutoSize = new List<int>();
+                    AllRoutes.ForEach(ar =>
+                    {
+                        ar.sessions = ar.sessions.OrderBy(o => o.startTime).ToList();
+                        ar.sessions.ForEach(ars =>
+                        {
+                            var allocation = allocations.Find(a => (a.mealSessionId == ars.mealSessionDetailId));
+
+                            var timingString = "";
+
+                            if (allocation.PackingTime.HasValue)
+                            {
+                                timingString = allocation.PackingTime.Value.ToString("HH:mm") + " to " + allocation.PackingTime.Value.AddHours(4).ToString("HH:mm");
+                            }
+
+                            cell = row.CreateCell(i);
+                            cell.SetCellValue(timingString);
+                            if (ars.isFas)
+                            {
+                                notAllowedAutoSize.Add(i);
+                                sheet.SetColumnWidth(i, 25 * 256);
+                                cell.SetCellValue($"{ars.name}\n(FAS)");
+                            }
+                            cell.CellStyle = ars.isFas ? borderedHeaderStyleWrapText : borderedHeaderStyle;
+
+                            i += 1;
+
+                            //cell = row.CreateCell(i);
+                            //cell.SetCellValue(ars.name + " FAS");
+                            //cell.CellStyle = borderedHeaderStyle;
+                            //i += 1;
+                        });
+
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue("");
+                        cell.CellStyle = borderedHeaderStyle;
+                        i += 1;
+
+                        if (ar.isFas)
+                        {
+                            cell = row.CreateCell(i);
+                            cell.SetCellValue("");
+                            cell.CellStyle = borderedHeaderStyle;
+                            i += 1;
+                        }
+
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue("");
+                        cell.CellStyle = borderedHeaderStyle;
+                        row.Height = -1;
+                        i += 1;
+
+                    });
 
                     row = sheet.CreateRow(++rowCount);
 
@@ -2374,7 +2437,8 @@ namespace BAL.Services.MealOrder
                     cell.CellStyle = borderedHeaderStyle;
 
                     i = 2;
-                    List<int> notAllowedAutoSize = new List<int>();
+
+                    //List<int> notAllowedAutoSize = new List<int>();
                     AllRoutes.ForEach(ar =>
                     {
                         ar.sessions = ar.sessions.OrderBy(o => o.startTime).ToList();
