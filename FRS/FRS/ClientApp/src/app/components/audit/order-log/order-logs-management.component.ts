@@ -551,12 +551,14 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     const outletSelected = this.filter.outletId || [];
     if (outletSelected.length === 0) {
       this.classLevels = [];
+      this.classLevelsGrouped = [];
       return;
     }
 
     const hasAll = outletSelected.some((x) => x.toString() === "all");
     if (hasAll) {
       this.classLevels = [];
+      this.classLevelsGrouped = [];
       return;
     }
 
