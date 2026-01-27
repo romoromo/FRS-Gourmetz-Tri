@@ -187,7 +187,7 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
       //{ prop: 'remarks', name: 'Remarks' },
       { prop: "paymentMethod", name: "Payment Type" },
       { prop: "paymentNumber", name: "Order No." },
-      { prop: "fomoId", name: "Fomo ID" },
+      { prop: "fomoId", name: "Stripe ID" },
       { prop: "invoiceNumber", name: "Invoice No." },
       { prop: "voucherCode", name: "Voucher" },
       { prop: "cancellationReason", name: "Cancellation Reason" },
@@ -551,12 +551,14 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
     const outletSelected = this.filter.outletId || [];
     if (outletSelected.length === 0) {
       this.classLevels = [];
+      this.classLevelsGrouped = [];
       return;
     }
 
     const hasAll = outletSelected.some((x) => x.toString() === "all");
     if (hasAll) {
       this.classLevels = [];
+      this.classLevelsGrouped = [];
       return;
     }
 
