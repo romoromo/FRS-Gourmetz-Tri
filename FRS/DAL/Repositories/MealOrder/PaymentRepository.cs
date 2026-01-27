@@ -5,6 +5,7 @@ using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sieve.Services;
@@ -181,7 +182,7 @@ namespace DAL.Repositories.MealOrder
             }
             else if (useWallet)
             {
-                _logger.LogInformation("[PAYMENT] Wallet flow started. StudentId={StudentId}", Payment.StudentId);
+                _logger.LogInformation("[PAYMENT] Wallet flow started. StudentId={StudentId}. UserId={UseriD}. Payment Amount={total}", Payment.StudentId, Payment.UserId, Payment.total);
 
                 var student = await this._appContext.Students
                 .FirstOrDefaultAsync(e => e.IsActive && e.Id == Payment.StudentId);
@@ -195,15 +196,8 @@ namespace DAL.Repositories.MealOrder
 
                     return result;
                 }
-                if (student.WalletBalance - Decimal.ToDouble(Payment.total) < 0)
-                {
-                    result.IsSuccess = false;
-                    result.Message = "Insufficient balance.";
 
-                    _logger.LogWarning("[PAYMENT] {Message} {WalletBalance} {total}", result.Message, student.WalletBalance, Payment.total);
 
-                    return result;
-                }
                 if (student.IsWalletFreeze)
                 {
                     result.IsSuccess = false;
@@ -215,6 +209,56 @@ namespace DAL.Repositories.MealOrder
                 }
 
 
+
+                _logger.LogInformation($"[PAYMENT] Loading wallets...");
+
+                var wallets = await _appContext.StudentWallets.Where(w => w.StudentId == student.Id).ToListAsync();
+                var fasWallet = wallets.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());
+                var normalWallet = wallets.FirstOrDefault(x => x.Type == WalletType.BASIC.ToString());
+
+                if (fasWallet == null)
+                {
+                    _logger.LogInformation($"[PAYMENT] FAS wallet not found. Creating new FAS wallet...");
+                    fasWallet = new StudentWallet
+                    {
+                        StudentId = student.Id,
+                        Type = WalletType.FAS.ToString(),
+                        Balance = 0,
+                        CreatedBy = Payment.UserId,
+                        UpdatedBy = Payment.UserId
+                    };
+                    await _appContext.StudentWallets.AddAsync(fasWallet);
+                }
+
+                if (normalWallet == null)
+                {
+                    _logger.LogWarning($"[PAYMENT] Basic wallet not found. Creating new Basic wallet...");
+                    normalWallet = new StudentWallet
+                    {
+                        StudentId = student.Id,
+                        Type = WalletType.BASIC.ToString(),
+                        Balance = 0,
+                        CreatedBy = Payment.UserId,
+                        UpdatedBy = Payment.UserId
+                    };
+                    await _appContext.StudentWallets.AddAsync(normalWallet);
+                }
+
+
+                var totalWallet = fasWallet.Balance + normalWallet.Balance;
+                var fasBalance = fasWallet.Balance;
+                var basicBalance = normalWallet.Balance;
+
+                if (totalWallet - Decimal.ToDouble(Payment.total) < 0)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Insufficient balance.";
+
+                    _logger.LogWarning("[PAYMENT] {Message} Student Wallet Balance: {WalletBalance}, Basic Balance: {basicBalance}, Fas Balance: {fasBalance}, Payment: {total}", result.Message, student.WalletBalance, basicBalance, fasBalance, Payment.total);
+
+                    return result;
+                }
+
                 if (student.WalletDailyLimit > 0)
                 {
                     _logger.LogInformation($"[PAYMENT] Daily limit enabled. Limit={student.WalletDailyLimit}");
@@ -225,7 +269,7 @@ namespace DAL.Repositories.MealOrder
                         result.IsSuccess = false;
                         result.Message = "The payment exceed the wallet daily limit";
 
-                        _logger.LogWarning("[PAYMENT] {Message} {total} {wallet}", result.Message, Payment.total, student.WalletDailyLimit);
+                        _logger.LogWarning("[PAYMENT] {Message} {total} {WalletDailyLimit}", result.Message, Payment.total, student.WalletDailyLimit);
 
                         return result;
                     }
@@ -258,39 +302,6 @@ namespace DAL.Repositories.MealOrder
                         }
 
                     }
-                }
-
-                _logger.LogInformation($"[PAYMENT] Loading wallets...");
-
-                var wallets = await _appContext.StudentWallets.Where(w => w.StudentId == student.Id).ToListAsync();
-                var fasWallet = wallets.FirstOrDefault(x => x.Type == WalletType.FAS.ToString());
-                var normalWallet = wallets.FirstOrDefault(x => x.Type == WalletType.BASIC.ToString());
-                if (fasWallet == null)
-                {
-                    _logger.LogInformation($"[PAYMENT] FAS wallet not found. Creating new FAS wallet...");
-                    fasWallet = new StudentWallet
-                    {
-                        StudentId = student.Id,
-                        Type = WalletType.FAS.ToString(),
-                        Balance = 0,
-                        CreatedBy = Payment.UserId,
-                        UpdatedBy = Payment.UserId
-                    };
-                    await _appContext.StudentWallets.AddAsync(fasWallet);
-                }
-
-                if (normalWallet == null)
-                {
-                    _logger.LogWarning($"[PAYMENT] FAS wallet not found. Creating new FAS wallet...");
-                    normalWallet = new StudentWallet
-                    {
-                        StudentId = student.Id,
-                        Type = WalletType.BASIC.ToString(),
-                        Balance = 0,
-                        CreatedBy = Payment.UserId,
-                        UpdatedBy = Payment.UserId
-                    };
-                    await _appContext.StudentWallets.AddAsync(normalWallet);
                 }
 
                 double originalAmount = decimal.ToDouble(Payment.total);
@@ -327,7 +338,7 @@ namespace DAL.Repositories.MealOrder
 
                 student.WalletBalance = fasWallet.Balance + normalWallet.Balance;
 
-                _logger.LogInformation($"[PAYMENT] FAS wallet not found. Creating new FAS wallet..." +
+                _logger.LogInformation($"[PAYMENT] Payment succeded" +
                         $"FAS={fasWallet.Balance}, BASIC={normalWallet.Balance}, StudentWalletBalance={student.WalletBalance}, Remaining={remainingAmount}");
 
                 StudentWalletTransactionDetail fasDetail = new StudentWalletTransactionDetail

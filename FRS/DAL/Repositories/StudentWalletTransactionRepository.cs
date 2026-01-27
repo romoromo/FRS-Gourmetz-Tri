@@ -238,10 +238,14 @@ namespace DAL.Repositories
         {
             var result = new BaseOperationResponse();
 
+            _logger.LogInformation("Top up by student group. GroupId: {studentGroupId}. Amount: {amount}. UserId: {userId}. WalletType: {walletTypeData}", studentGroupId, amount, userId, walletTypeData);
+
             if (amount <= 0)
             {
                 result.IsSuccess = false;
                 result.Message = $"Invalid top-up amount: {amount}. Amount must be greater than zero.";
+                _logger.LogInformation(result.Message);
+
                 return result;
             }
 
@@ -250,6 +254,7 @@ namespace DAL.Repositories
             {
                 result.IsSuccess = false;
                 result.Message = "Wallet type must be provided.";
+                _logger.LogInformation(result.Message);
                 return result;
             }
 
@@ -270,6 +275,7 @@ namespace DAL.Repositories
             {
                 result.IsSuccess = false;
                 result.Message = $"Student Group with Id={studentGroupId} not found or inactive.";
+                _logger.LogInformation(result.Message);
                 return result;
             }
 
@@ -278,6 +284,7 @@ namespace DAL.Repositories
             {
                 result.IsSuccess = false;
                 result.Message = $"No active students found in Student Group Id={studentGroupData.Id} ({studentGroupData.Name}).";
+                _logger.LogInformation(result.Message);
                 return result;
             }
 
@@ -289,6 +296,7 @@ namespace DAL.Repositories
             {
                 result.IsSuccess = false;
                 result.Message = $"No active students matched in Students table for Student Group Id={studentGroupData.Id}.";
+                _logger.LogInformation(result.Message);
                 return result;
             }
 
@@ -343,6 +351,7 @@ namespace DAL.Repositories
 
             result.IsSuccess = true;
             result.Message = $"Successfully topped up {amount:C} to {studentDatas.Count} students in group '{studentGroupData.Name}'";
+            _logger.LogInformation(result.Message);
             return result;
         }
 
@@ -354,10 +363,14 @@ namespace DAL.Repositories
         {
             var result = new BaseOperationResponse();
 
+            _logger.LogInformation("Top up by student Id. StudentId: {studentId}. Amount: {amount}. UserId: {userId}. WalletType: {walletTypeData}", studentId, amount, userId, walletTypeData);
+
+
             if (amount <= 0)
             {
                 result.IsSuccess = false;
                 result.Message = $"Invalid top-up amount: {amount}. Amount must be greater than zero.";
+                _logger.LogInformation(result.Message);
                 return result;
             }
 
@@ -366,6 +379,7 @@ namespace DAL.Repositories
             {
                 result.IsSuccess = false;
                 result.Message = "Wallet type must be provided.";
+                _logger.LogInformation(result.Message);
                 return result;
             }
 
@@ -378,6 +392,7 @@ namespace DAL.Repositories
                 {
                     result.IsSuccess = false;
                     result.Message = $"Student with Id={studentId} not found or inactive.";
+                    _logger.LogInformation(result.Message);
                     return result;
                 }
 
@@ -427,11 +442,13 @@ namespace DAL.Repositories
                 result.IsSuccess = true;
                 result.Message = $"Successfully topped up {amount:C} to '{walletType}' wallet for student '{studentData.Name}'. " +
                                  $"New balance: {wallet.Balance:C}";
+                _logger.LogInformation(result.Message);
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
                 result.Message = $"Error while topping up '{walletType}' wallet for StudentId={studentId}. Details: {ex.Message}";
+                _logger.LogInformation(result.Message);
             }
 
             return result;
@@ -447,12 +464,16 @@ namespace DAL.Repositories
         {
             var result = new BaseOperationResponse();
 
+            _logger.LogInformation("Refund to Wallet Balance. StudentId: {studentId}. Amount: {amount}. UserId: {userId}. WalletType: {walletTypeData}. OrderId: {tokenOrderId}", studentId, amount, userId, walletTypeData, tokenOrderId);
+
+
             amount = Math.Round(amount, 2);
 
             if (amount <= 0)
             {
                 result.IsSuccess = false;
                 result.Message = $"Invalid Refund amount: {amount}. Amount must be greater than zero.";
+                _logger.LogInformation(result.Message);
                 return result;
             }
 
@@ -467,6 +488,7 @@ namespace DAL.Repositories
                 {
                     result.IsSuccess = false;
                     result.Message = $"Student with Id={studentId} not found or inactive.";
+                    _logger.LogInformation(result.Message);
                     return result;
                 }
 
@@ -486,6 +508,7 @@ namespace DAL.Repositories
                     {
                         result.IsSuccess = false;
                         result.Message = "Wallet type must be provided.";
+                        _logger.LogInformation(result.Message);
                         return result;
                     }
 
@@ -538,11 +561,13 @@ namespace DAL.Repositories
                         result.IsSuccess = true;
                         result.Message = $"Successfully refund to {amount:C} to '{walletType}' wallet for student '{studentData.Name}'. " +
                                          $"New balance: {wallet.Balance:C}";
+                        _logger.LogInformation(result.Message);
                     }
                     catch (Exception ex)
                     {
                         result.IsSuccess = false;
                         result.Message = $"Error while Refund '{walletType}' wallet for StudentId={studentId}. Details: {ex.Message}";
+                        _logger.LogInformation(result.Message);
                     }
 
                     return result;
@@ -581,6 +606,7 @@ namespace DAL.Repositories
                         {
                             result.IsSuccess = false;
                             result.Message = "Insufficient payment to refund.";
+                            _logger.LogInformation(result.Message + "Fas Trans balance: {fasBalance}. Basic trans balance: {normalBalance}. amount refund: {amount}", fasBalance, normalBalance, amount);
                             return result;
                         }
                     }
@@ -602,7 +628,7 @@ namespace DAL.Repositories
                     {
                         fasWallet = new StudentWallet
                         {
-                            StudentId = studentId,
+                            StudentId = studentId, 
                             Balance = amount,
                             Type = WalletType.FAS.ToString(),
                             CreatedBy = userId,
@@ -646,6 +672,8 @@ namespace DAL.Repositories
 
                     description += $"Old Basic Balance: {oldNormalBalance:C}, New Balance: {normalWallet.Balance:C}. ";
                 }
+
+                _logger.LogInformation(description);
 
                 var transaction = new StudentWalletTransaction
                 {
@@ -692,6 +720,7 @@ namespace DAL.Repositories
             {
                 result.IsSuccess = false;
                 result.Message = $"Error while Refund wallet for StudentId={studentId}. Details: {ex.Message}";
+                _logger.LogInformation(result.Message);
             }
 
             return result;
@@ -708,6 +737,7 @@ namespace DAL.Repositories
                 {
                     result.IsSuccess = false;
                     result.Message = $"Student with Id={studentId} not found or is inactive.";
+                    _logger.LogInformation(result.Message);
                     return result;
                 }
 
