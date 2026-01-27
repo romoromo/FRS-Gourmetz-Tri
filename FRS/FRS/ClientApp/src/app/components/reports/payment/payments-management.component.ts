@@ -117,7 +117,7 @@ export class PaymentsReportManagementComponent implements OnInit, OnDestroy {
       { prop: 'paymentFixedTransactionFee', name: 'Fix Transaction Fee' },
       { prop: 'totalAmount', name: 'Total Amount' },
       { prop: 'paymentMethod', name: 'Payment Type' },
-      { prop: 'fomoId', name: 'Fomo ID' },
+      { prop: 'fomoId', name: 'Stripe ID' },
       { prop: 'paymentStatus', name: 'Payment Status' },
       { prop: 'status', name: 'Order Status' },
     ];

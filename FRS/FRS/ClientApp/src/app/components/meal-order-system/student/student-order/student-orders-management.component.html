@@ -156,7 +156,7 @@
           <input *ngIf="editing[row.id]" [(ngModel)]="row.invoiceNumber" class="form-control" />
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="FOMO ID" width="300">
+      <ngx-datatable-column name="Stripe ID" width="300">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <span *ngIf="!editing[row.id]">{{ row.fomoId }}</span>
           <input *ngIf="editing[row.id]" [(ngModel)]="row.fomoId" class="form-control" />
