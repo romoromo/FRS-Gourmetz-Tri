@@ -47,6 +47,13 @@ namespace DAL.Repositories.MealOrder
             return studentCard;
         }
 
+        public async Task<StudentCard> GetByIdIncludeNonActiveAsync(int id, string cardId)
+        {
+            var studentCard = id > 0 ? await GetAsync(id) :
+                            await _appContext.StudentCards.FirstOrDefaultAsync(e => e.CardId.ToLower() == cardId.ToLower());
+            return studentCard;
+        }
+
         public async Task<Student> GetStudentByCardIdAsync(string cardId)
         {
             var card = await _appContext.StudentCards.FirstOrDefaultAsync(e => e.IsActive && e.CardId.ToLower() == cardId.ToLower() && e.Status == StudentCardStatus.ACTIVE.ToString() && e.Student.IsActive);
@@ -156,8 +163,6 @@ namespace DAL.Repositories.MealOrder
                 //result.IsSuccess = false;
 
                 cardExists.ToList().ForEach(e => { e.Status = StudentCardStatus.INACTIVE.ToString(); e.IsActive = false; _appContext.StudentCards.Update(e); });
-
-
             }
 
             f.CopyFrom(studentCard);

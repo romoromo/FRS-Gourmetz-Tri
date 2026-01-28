@@ -676,7 +676,7 @@ namespace FRS.Controllers
                 if (dto == null)
                     return BadRequest($"{nameof(dto)} cannot be null");
 
-                var card = await this._service.GetStudentCardByIdAsync(0, dto.CardId);
+                var card = await this._service.GetStudentCardByIdIncludeNonActiveAsync(0, dto.CardId);
                 if (card != null)
                 {
                     dto.Id = card.Id;

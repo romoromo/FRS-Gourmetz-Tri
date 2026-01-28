@@ -560,6 +560,11 @@ namespace BAL.Services.MealOrder
             return _mapper.Map<StudentCardDTO>(await this._uow.StudentCards.GetByIdAsync(id, cardId));
         }
 
+        public async Task<StudentCardDTO> GetStudentCardByIdIncludeNonActiveAsync(int id, string cardId = null)
+        {
+            return _mapper.Map<StudentCardDTO>(await this._uow.StudentCards.GetByIdIncludeNonActiveAsync(id, cardId));
+        }
+
         public async Task<StudentDTO> GetStudentByCardIdAsync(string cardId)
         {
             return _mapper.Map<StudentDTO>(await this._uow.StudentCards.GetStudentByCardIdAsync(cardId));

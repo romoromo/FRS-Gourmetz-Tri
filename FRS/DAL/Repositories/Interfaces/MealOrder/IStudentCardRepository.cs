@@ -13,6 +13,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<BaseOperationResponse> Delete(StudentCard studentCard);
         Task<BaseOperationResponse> DeleteAsync(int studentCardId);
         Task<StudentCard> GetByIdAsync(int id, string cardId);
+        Task<StudentCard> GetByIdIncludeNonActiveAsync(int id, string cardId);
         Task<Student> GetStudentByCardIdAsync(string cardId);
         Task<BaseOperationResponse> ActivateStudentCardByIdAsync(string cardId);
         Task<PagedEntity<StudentCard>> GetStudentCardsAsync(BaseFilter filter);

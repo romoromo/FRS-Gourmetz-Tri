@@ -31,6 +31,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> CreateStudentCardAsync(StudentCardDTO dto);
         Task<BaseOperationResponse> DeleteStudentCardAsync(int id);
         Task<StudentCardDTO> GetStudentCardByIdAsync(int id, string cardId = null);
+        Task<StudentCardDTO> GetStudentCardByIdIncludeNonActiveAsync(int id, string cardId = null);
         Task<PagedEntity<StudentCardDTO>> GetStudentCardsAsync(BaseFilter filter);
         Task<BaseOperationResponse> UpdateStudentCardAsync(StudentCardDTO dto);
         Task<BaseOperationResponse> ImportStudentCardAsync(List<StudentCardImportDTO> dto);
