@@ -14,7 +14,7 @@ namespace DAL.Repositories.Interfaces
         Task<BaseOperationResponse> UpdateAsync(StudentWalletTransaction walletTransaction);
         Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsAsync(BaseFilter filter);
         Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId, WalletType walletTypeData);
-        Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userId, WalletType walletType);
+        Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userId, WalletType walletType, int? walletPaymentId);
         Task<BaseOperationResponse> RefundToWalletBalanceAsync(int studentId, double amount, int userId, WalletType walletType, int? tokenOrderId);
         Task<BaseOperationResponse> OffBoardingStudent(int studentId, int userId);
         Task<BaseOperationResponse> WalletTransfer(int studentIdFrom, int studentIdTo, double amount, int userId);

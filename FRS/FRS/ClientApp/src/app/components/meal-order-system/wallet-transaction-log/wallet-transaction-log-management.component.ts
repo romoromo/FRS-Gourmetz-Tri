@@ -137,6 +137,7 @@ export class WalletTransactionLogManagementComponent
       //{ prop: 'mealDescription', name: 'Meal Description', cellTemplate: this.mealDescriptionTemplate, sortable: false, draggable: false },
       { prop: "transactionType", name: "Type" },
       { prop: "description", name: "Description" },
+      { prop: "stripeId", name: "Stripe Id" },
       { prop: "remarks", name: "Remarks" },
       { prop: "userName", name: "Processed By" },
       {

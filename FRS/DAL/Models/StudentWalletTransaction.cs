@@ -36,6 +36,11 @@ namespace DAL.Models
         [ForeignKey("PaymentId")]
         public virtual Payment Payment { get; set; }
 
+        public int? WalletPaymentId { get; set; }
+
+        [ForeignKey("WalletPaymentId")]
+        public virtual WalletPayment WalletPayment { get; set; }
+
 
         public int? TokenOrderId { get; set; }
         [ForeignKey("TokenOrderId")]

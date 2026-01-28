@@ -359,7 +359,8 @@ namespace DAL.Repositories
             int studentId,
             double amount,
             int userId,
-            WalletType walletTypeData)
+            WalletType walletTypeData,
+            int? walletPaymentId)
         {
             var result = new BaseOperationResponse();
 
@@ -427,7 +428,8 @@ namespace DAL.Repositories
                     Description = $"Top-up {walletType} wallet by {amount:C} for student '{studentData.Name}' (ID={studentId}). " +
                                   $"Old Balance: {oldBalance:C}, New Balance: {wallet.Balance:C}.",
                     CreatedBy = userId,
-                    UpdatedBy = userId
+                    UpdatedBy = userId,
+                    WalletPaymentId = walletPaymentId
                 };
 
                 var totalWalletBalance = await _appContext.StudentWallets

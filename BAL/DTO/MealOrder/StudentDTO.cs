@@ -201,6 +201,10 @@ namespace BAL.DTO.MealOrder
         public int? PaymentId { get; set; }
         public PaymentDTO Payment { get; set; }
 
+        public int? WalletPaymentId { get; set; }
+        public WalletPaymentDTO WalletPayment { get; set; }
+        public string StripeId { get; set; }
+
         public int? TokenOrderId { get; set; }
         public TokenOrderDTO TokenOrder { get; set; }
         public List<StudentWalletTransactionDetailDTO> Details { get; set; }

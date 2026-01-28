@@ -111,6 +111,9 @@ export class StudentWalletTransaction {
   public userName: string;
   public studentName: string;
 
+  public walletPaymentId: string;
+  public stripeId: string;
+
   public fileId: string = '';
   public fileName: string = '';
   public filePath: string = '';

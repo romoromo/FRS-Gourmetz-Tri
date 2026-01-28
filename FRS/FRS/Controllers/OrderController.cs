@@ -2512,7 +2512,7 @@ namespace MealOrderPayments.Controllers
 
                                     if (!p.invoiceSent && p.Status == "SUCCESS")
                                     {
-                                        await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value, WalletType.BASIC);
+                                        await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value, WalletType.BASIC, p.Id);
                                         await SendWalletInvoice(p);
                                         emailSent = true;
                                         p.invoiceSent = true;
@@ -2601,7 +2601,7 @@ namespace MealOrderPayments.Controllers
                                 if (!p.invoiceSent && p.Status == "SUCCESS")
                                 {
                                     _logger.LogInformation(eid, $"  about to topupWallet to {p.StudentId.Value}");
-                                    await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value,WalletType.BASIC);
+                                    await this._walletService.TopupWalletBalanceByStudentIdAsync(p.StudentId.Value, Decimal.ToDouble(p.amount), p.UserId.Value,WalletType.BASIC, p.Id);
                                     _logger.LogInformation(eid, $"  about to sendWalletInvoice to {p.StudentId.Value}");
                                     await SendWalletInvoice(p);
                                     emailSent = true;
