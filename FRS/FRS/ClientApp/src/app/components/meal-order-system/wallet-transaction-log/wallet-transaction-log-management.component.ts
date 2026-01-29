@@ -37,9 +37,11 @@ import {
 //import { StudentEditorComponent } from './student-editor.component';
 import { StudentService } from "src/app/services/meal-order/student.service";
 import { WalletTransactionLogEditorComponent } from "./wallet-transaction-log-editor.component";
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: "wallet-transaction-log-management",
+  providers: [DecimalPipe],
   templateUrl: "./wallet-transaction-log-management.component.html",
   styleUrls: ["./wallet-transaction-log-management.component.css"],
 })
@@ -95,7 +97,8 @@ export class WalletTransactionLogManagementComponent
     private translationService: AppTranslationService,
     private accountService: AccountService,
     private studentService: StudentService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private decimalPipe: DecimalPipe
   ) {}
 
   ngOnDestroy(): void {
@@ -127,17 +130,23 @@ export class WalletTransactionLogManagementComponent
         headerCheckboxable: true,
         headerTemplate: this.hdrTpl,
       },
-      { prop: "studentName", name: "Student" },
       {
         prop: "transactionDateTime",
         name: "Date",
         pipe: new DateTimeOnlyPipe("en-SG"),
       },
-      { prop: "amount", name: "Amount" },
+      {
+        prop: "amount", name: "Amount",
+        pipe: {
+          transform: (val: number) => this.decimalPipe.transform(val, '1.2-2')
+        }
+      },
       //{ prop: 'mealDescription', name: 'Meal Description', cellTemplate: this.mealDescriptionTemplate, sortable: false, draggable: false },
       { prop: "transactionType", name: "Type" },
       { prop: "description", name: "Description" },
       { prop: "stripeId", name: "Stripe Id" },
+      { prop: "studentId", name: "Student Id" },
+      { prop: "studentName", name: "Student Name" },
       { prop: "remarks", name: "Remarks" },
       { prop: "userName", name: "Processed By" },
       {
