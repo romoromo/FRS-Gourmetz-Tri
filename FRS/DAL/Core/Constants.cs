@@ -13,5 +13,7 @@ namespace DAL.Core
             public static string MEAL_PLAN = "Meal Plan";
             public static string OTHERS = "Others";
         }
+
+        public static string Student_Wallet_Transactions = "Student_Wallet_Transactions";
     }
 }

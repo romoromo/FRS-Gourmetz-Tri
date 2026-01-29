@@ -81,5 +81,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<EmailConfirm> GetEmailConfirm(int id);
         Task<BaseOperationResponse> UpdateWalletFreze(int studentId, bool isFreeze);
         Task<BaseOperationResponse> UpdateDailyLimit(int studentId, int dailyLimit);
+
+        Task<byte[]> GenerateWalletTransaction(string studentId);
     }
 }

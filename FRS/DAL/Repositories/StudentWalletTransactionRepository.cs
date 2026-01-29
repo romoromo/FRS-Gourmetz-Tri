@@ -1143,6 +1143,45 @@ namespace DAL.Repositories
             _logger.LogInformation("FAS Rechargeable job finished");
         }
 
+        private bool IsValidBasicTopUp(string description)
+        {
+            if (string.IsNullOrWhiteSpace(description))
+                return false;
+
+            if (description.Contains("Top-up", StringComparison.OrdinalIgnoreCase))
+            {
+                return description.Contains("BASIC", StringComparison.OrdinalIgnoreCase);
+            }
+
+            return false;
+        }
+
+        public Tuple<double, double, double> GetWalletTransactions(int studentId, WalletTransactionType walletTransaction)
+        {
+            var txType = walletTransaction.ToString();
+
+            var basicToupTotal = _appContext.StudentWalletTransactions
+                .AsNoTracking()
+                .Where(e => e.IsActive
+                    && e.StudentId == studentId
+                    && e.TransactionType == txType
+                    && e.Description != null
+                    && e.Description.Contains("Top-up")
+                    && e.Description.Contains("BASIC"))
+                .Sum(e => (double?)e.Amount) ?? 0d;
+
+            var balance = _appContext.StudentWallets
+                .AsNoTracking()
+                .Where(e => e.IsActive
+                    && e.StudentId == studentId
+                    && e.Type == WalletType.BASIC.ToString())
+                .Select(e => (double?)e.Balance)
+                .FirstOrDefault() ?? 0d;
+
+            return Tuple.Create(basicToupTotal, balance, basicToupTotal - balance);
+        }
+
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }
