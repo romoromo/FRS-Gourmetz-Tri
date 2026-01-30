@@ -430,6 +430,16 @@
           "childMenus": []
         },
         {
+          "label": "Wallet Transaction",
+          "active": true,
+          "link": "/wallettransaction",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.reportmgt.wallettransaction.view" ],
+          "childMenus": []
+        },
+        {
           "label": "User Account",
           "active": true,
           "link": "/useraccountreport",
@@ -458,7 +468,7 @@
           "logoClass": "",
           "permissions": [ "mosmgt.outletmgt.reports.voucherutilisation.view" ],
           "childMenus": []
-        }
+        }        
       ]
     }
   ]

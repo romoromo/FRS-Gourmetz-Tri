@@ -83,5 +83,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<BaseOperationResponse> UpdateDailyLimit(int studentId, int dailyLimit);
 
         Task<byte[]> GenerateWalletTransaction(string studentId);
+        Task<byte[]> GenerateWalletTransactions(WalletTransactionFilter filter);
     }
 }

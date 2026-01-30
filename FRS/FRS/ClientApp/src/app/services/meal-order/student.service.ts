@@ -7,7 +7,7 @@ import { AccountEndpoint } from '../account-endpoint.service';
 import { AuthService } from '../auth.service';
 import { CommonEndpoint } from '../common-endpoint.service';
 import { ConfigurationService } from '../configuration.service';
-import { Filter, PagedResult } from 'src/app/models/sieve-filter.model';
+import { Filter, PagedResult, WalletTransactionFilter } from 'src/app/models/sieve-filter.model';
 import { Student, StudentWalletTransaction } from 'src/app/models/meal-order/student.model';
 import { StudentGroup, StudentGroupDetail } from 'src/app/models/meal-order/student-group.model';
 import { InterestGroup } from 'src/app/models/meal-order/interest-group.model';
@@ -92,6 +92,10 @@ export class StudentService {
 
  generateWalletTransaction(studentId: string){
    return this.commonEndpoint.getFile<any>(this.studentUrl + `/generate-wallet-transaction?studentId=${studentId}`);
+  }
+
+  generateWalletTransactions(filter: WalletTransactionFilter){
+   return this.commonEndpoint.getFile<any>(this.studentUrl + '/generate-wallet-transactions', filter);
   }
 
   createAccount(ids: string[]) {

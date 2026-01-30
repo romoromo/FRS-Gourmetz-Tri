@@ -138,3 +138,11 @@ export class CancelOrderRequestFilter extends Filter{
   }
   public catererInfoId: string;
 }
+
+export class WalletTransactionFilter extends Filter{
+  public outletId?: number[];
+  public classLevelIds: number[];
+  
+  public startDate: string;
+  public endDate: string;
+}
