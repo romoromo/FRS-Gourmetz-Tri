@@ -154,7 +154,10 @@ namespace BAL.DTO.MealOrder
         public string Status { get; set; }
         public string Remarks { get; set; }
         public DateTime? IssueDate { get; set; }
-        
+        public DateTime? UpdatedDate { get; set; }
+        public int UpdatedBy { get; set; }
+        public string UpdatingUserName { get; set; }
+
     }
 
     public class StudentCardDTO : CardDTO

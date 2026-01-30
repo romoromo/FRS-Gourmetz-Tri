@@ -236,7 +236,8 @@ namespace BAL.Mapping
 
             CreateMap<UserCardIdDTO, UserCardId>();
             CreateMap<StudentCardDTO, StudentCard>();
-            CreateMap<StudentCard, StudentCardDTO>();
+            CreateMap<StudentCard, StudentCardDTO>()
+                .ForMember(d => d.UpdatingUserName, map => map.MapFrom(s => s.UpdatedByUser != null ? s.UpdatedByUser.UserName : string.Empty));
 
             CreateMap<StudentRestriction, StudentRestrictionDTO>()
                 .ForMember(d => d.RestrictionCode, map => map.MapFrom(s => s.Restriction != null ? s.Restriction.Code : string.Empty))

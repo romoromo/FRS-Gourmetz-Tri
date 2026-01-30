@@ -62,6 +62,9 @@ export class StudentCard {
   public studentId: string;
   public userName: string;
   public isApprove: boolean;
+  public updatedDate: Date;
+  public updatedBy: string;
+  public updatingUserName: string;
 }
 
 export class StudentRestriction {

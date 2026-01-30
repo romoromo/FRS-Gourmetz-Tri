@@ -504,7 +504,7 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
             console.log("student card owner: ", this.studentCardOwner)
 
             if (this.studentCardOwner) {
-              var promptMessage = 'This Card ( ' + result.cardId + ' ) is being used by ' + this.studentCardOwner.id + '.' + this.studentCardOwner.name + ' ( ' + this.studentCardOwner.outletName + ':' + this.studentCardOwner.className + '). Do you still want to use this card?';
+              var promptMessage = 'This Card ( ' + result.cardId + ' ) is being used by ' + this.studentCardOwner.id + '.' + this.studentCardOwner.name + ' ( ' + this.studentCardOwner.outletName + ':' + this.studentCardOwner.className + '). Do you want to proceed with transferring the card number?';
 
               this.alertService.showDialog(promptMessage, DialogType.confirm, () => {
 
@@ -567,7 +567,7 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
             console.log("student card owner: ", this.studentCardOwner)
 
             if (this.studentCardOwner) {
-              var promptMessage = 'This Card ( ' + result.cardId +' ) is being used by ' + this.studentCardOwner.id + '.' + this.studentCardOwner.name + ' ( ' + this.studentCardOwner.outletName + ':' + this.studentCardOwner.className + '). Do you still want to use this card?';
+              var promptMessage = 'This Card ( ' + result.cardId + ' ) is being used by ' + this.studentCardOwner.id + '.' + this.studentCardOwner.name + ' ( ' + this.studentCardOwner.outletName + ':' + this.studentCardOwner.className + '). Do you want to proceed with transferring the card number?';
 
               this.alertService.showDialog(promptMessage, DialogType.confirm, () => {
 
