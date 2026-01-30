@@ -14,7 +14,7 @@
         <div class="col-xs-6 col-sm-4 col-md-2">
             <mat-form-field>
                 <input matInput [matDatepicker]="endpicker" placeholder="Delivery End Date" [value]="end"
-                    (dateChange)="onChangeDate('end',$event)"  [min]="start">
+                    (dateChange)="onChangeDate('end',$event)" [min]="start">
                 <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
                 <mat-datepicker #endpicker></mat-datepicker>
             </mat-form-field>
@@ -50,8 +50,17 @@
             </mat-form-field>
         </div>
     </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-4 col-md-2">
+            <mat-checkbox [(ngModel)]="filter.isFAS">
+                <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">FAS
+                    Only</label>
+            </mat-checkbox>
+        </div>
+    </div>
     <div class="col-xs-12 col-sm-12 col-md-6" style="padding-bottom:10px;">
         <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
-        <button type="button" class="btn btn-sm btn-info" style="margin-left:5px;" [disabled]="isLoading" (click)="downloadWalletTransaction();">Download</button>
+        <button type="button" class="btn btn-sm btn-info" style="margin-left:5px;" [disabled]="isLoading"
+            (click)="downloadWalletTransaction();">Download</button>
     </div>
 </div>

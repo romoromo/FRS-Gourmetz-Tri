@@ -937,7 +937,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GenerateWalletTransactions(WalletTransactionFilter filter)
         {
-            var datas = await _uow.StudentWalletTransactions.GetWalletTransactionForReport(filter.startDate, filter.endDate, filter.OutletId, filter.ClassLevelIds);
+            var datas = await _uow.StudentWalletTransactions.GetWalletTransactionForReport(filter.startDate, filter.endDate, filter.OutletId, filter.ClassLevelIds, filter.isFAS);
             using (var stream = new System.IO.MemoryStream())
             {
                 var wb = new XSSFWorkbook();
@@ -954,7 +954,7 @@ namespace BAL.Services.MealOrder
                 var headerFont = wb.CreateFont();
                 headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
                 headerStyle.SetFont(headerFont);
-                headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                
 
                 var borderedHeaderStyle = wb.CreateCellStyle();
                 borderedHeaderStyle.SetFont(headerFont);
@@ -962,6 +962,7 @@ namespace BAL.Services.MealOrder
                 borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
                 borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
                 borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
 
                 var contentStyle = wb.CreateCellStyle();
                 contentStyle.BorderTop = BorderStyle.Thin;
@@ -991,7 +992,7 @@ namespace BAL.Services.MealOrder
 
                         var row = sheet.CreateRow(rowIndex++);
                         row.CreateCell(0).SetCellValue($"School : {outlet}");
-                        row.GetCell(0).CellStyle = borderedHeaderStyle;
+                        row.GetCell(0).CellStyle = headerStyle;
                     }
 
                     if (currentClassLevel != classLevel)
@@ -1003,7 +1004,7 @@ namespace BAL.Services.MealOrder
 
                         var row = sheet.CreateRow(rowIndex++);
                         row.CreateCell(0).SetCellValue($"Class Level : {classLevel}");
-                        row.GetCell(0).CellStyle = borderedHeaderStyle;
+                        row.GetCell(0).CellStyle = headerStyle;
 
                         var header = sheet.CreateRow(rowIndex++);
 

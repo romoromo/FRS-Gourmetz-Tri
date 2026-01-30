@@ -27,6 +27,6 @@ namespace DAL.Repositories.Interfaces
         Task FASRechargeable(CancellationToken ct = default);
 
         Tuple<double, double, double> GetWalletTransactions(int studentId, WalletTransactionType walletTransaction);
-        Task<DataTable> GetWalletTransactionForReport(DateTime startDate, DateTime endDate, List<int> outletIds, List<int> classLevelIds);
+        Task<DataTable> GetWalletTransactionForReport(DateTime startDate, DateTime endDate, List<int> outletIds, List<int> classLevelIds, bool isFAS);
     }
 }

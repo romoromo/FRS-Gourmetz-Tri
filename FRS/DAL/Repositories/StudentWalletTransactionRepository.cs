@@ -1182,7 +1182,7 @@ namespace DAL.Repositories
             return Tuple.Create(basicToupTotal, balance, basicToupTotal - balance);
         }
 
-        public async Task<DataTable> GetWalletTransactionForReport( DateTime startDate, DateTime endDate, List<int> outletIds, List<int> classLevelIds)
+        public async Task<DataTable> GetWalletTransactionForReport( DateTime startDate, DateTime endDate, List<int> outletIds, List<int> classLevelIds, bool isFAS)
         {
             var fromDate = startDate.Date;
             var toExclusive = endDate.Date.AddDays(1);
@@ -1192,7 +1192,7 @@ namespace DAL.Repositories
 
             var studentsQ = _appContext.Students
                 .AsNoTracking()
-                .Where(s => s.IsActive);
+                .Where(s => s.IsActive && s.IsFAS == isFAS);
 
             if (outletFilter.Length > 0)
                 studentsQ = studentsQ.Where(s => s.OutletId.HasValue && outletFilter.Contains(s.OutletId.Value));

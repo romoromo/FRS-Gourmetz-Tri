@@ -143,5 +143,6 @@ namespace DAL.Filters
         public DateTime endDate { get; set; }
         public List<int> OutletId { get; set; }
         public List<int> ClassLevelIds { get; set; }
+        public bool isFAS { get; set; }
     }
 }
