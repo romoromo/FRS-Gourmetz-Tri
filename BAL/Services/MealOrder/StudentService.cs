@@ -834,5 +834,102 @@ namespace BAL.Services.MealOrder
         {
             return await this._uow.EmailConfirms.GetByIdAsync(id);
         }
+
+        public async Task<byte[]> GenerateWalletTransaction(string studentId)
+        {
+            if (string.IsNullOrEmpty(studentId)) return null;
+            int studentIdInt = int.TryParse(studentId, out var id) ? id : 0;
+            var student = await _uow.Students.GetByIdAsync(studentIdInt);
+            if (student == null) return null;
+
+            var creditTransactions = _uow.StudentWalletTransactions.GetWalletTransactions(studentIdInt, WalletTransactionType.CREDIT);
+
+            using (var stream = new System.IO.MemoryStream())
+            {
+                var wb = new XSSFWorkbook();
+                var rowCount = 0;
+                var sheet = (XSSFSheet)wb.CreateSheet(Constants.Student_Wallet_Transactions);
+                var headers = new string[] { "Student ID", "Name", "Schoole", "Class/Departement", "Total Top Up Normal Account",
+                                             "Total Redemption", "Normal Wallet Balance"};
+
+                #region Headers
+
+                var headerStyle = wb.CreateCellStyle();
+                var headerFont = wb.CreateFont();
+                headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                headerStyle.SetFont(headerFont);
+                headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                var row = sheet.CreateRow(rowCount); var borderedHeaderStyle = wb.CreateCellStyle();
+                borderedHeaderStyle.SetFont(headerFont);
+                borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                ICell cell;
+                for (var index = 0; index < headers.Length; index++)
+                {
+                    cell = row.CreateCell(index);
+                    cell.SetCellValue(headers[index]);
+                    cell.CellStyle = borderedHeaderStyle;
+                }
+                sheet.AutoSizeColumn(0);
+
+                #endregion
+
+                #region Content
+                var contentStyle = wb.CreateCellStyle();
+                contentStyle.BorderTop = BorderStyle.Thin;
+                contentStyle.BorderBottom = BorderStyle.Thin;
+                contentStyle.BorderLeft = BorderStyle.Thin;
+                contentStyle.BorderRight = BorderStyle.Thin;
+                contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                contentStyle.Alignment = HorizontalAlignment.Left;
+                contentStyle.WrapText = true;
+                var dataFormatCustom = wb.CreateDataFormat();
+
+                int i = 0;
+                row = sheet.CreateRow(++rowCount);
+
+                cell = row.CreateCell(i++);
+                cell.SetCellValue(student.Id);
+                cell.CellStyle = contentStyle;
+
+                cell = row.CreateCell(i++);
+                cell.SetCellValue(student.Name);
+                cell.CellStyle = contentStyle;
+
+                cell = row.CreateCell(i++);
+                cell.SetCellValue(student.Outlet?.Name);
+                cell.CellStyle = contentStyle;
+
+                cell = row.CreateCell(i++);
+                cell.SetCellValue(student.Class?.Name);
+                cell.CellStyle = contentStyle;
+
+                cell = row.CreateCell(i++);
+                cell.SetCellValue(creditTransactions.Item1);
+                cell.CellStyle = contentStyle;
+
+                cell = row.CreateCell(i++);
+                cell.SetCellValue(creditTransactions.Item3);
+                cell.CellStyle = contentStyle;
+
+                cell = row.CreateCell(i++);
+                cell.SetCellValue(creditTransactions.Item2);
+                cell.CellStyle = contentStyle;
+                #endregion
+
+                for (var index = 0; index < headers.Length; index++)
+                {
+                    sheet.AutoSizeColumn(index, true);
+                }
+
+                wb.Write(stream);
+
+                return stream.ToArray();
+            }
+
+        }
     }
 }

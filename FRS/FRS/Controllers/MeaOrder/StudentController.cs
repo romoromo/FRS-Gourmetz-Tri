@@ -1920,5 +1920,24 @@ namespace FRS.Controllers
             }
         }
         #endregion
+
+        [HttpPost("students/generate-wallet-transaction")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateWalletTransaction(string studentId)
+        {
+            var xls = await _service.GenerateWalletTransaction(studentId);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + Constants.Student_Wallet_Transactions + ".xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
     }
 }

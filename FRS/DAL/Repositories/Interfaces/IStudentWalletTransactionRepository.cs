@@ -1,6 +1,7 @@
 ﻿using DAL.Core;
 using DAL.Filters;
 using DAL.Models;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,5 +22,7 @@ namespace DAL.Repositories.Interfaces
         Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransaction walletTransaction);
 
         Task FASRechargeable(CancellationToken ct = default);
+
+        Tuple<double, double, double> GetWalletTransactions(int studentId, WalletTransactionType walletTransaction);
     }
 }

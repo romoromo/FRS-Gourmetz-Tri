@@ -93,6 +93,10 @@ export class StudentService {
     return this.commonEndpoint.getFile<any>(this.studentUrl + '/cards/import/template-with-details', filter);
   }
 
+ generateWalletTransaction(studentId: string){
+   return this.commonEndpoint.getFile<any>(this.studentUrl + `/generate-wallet-transaction?studentId=${studentId}`);
+  }
+
   createAccount(ids: string[]) {
     return this.commonEndpoint.get(this.studentUrl + '/createaccount', true, ids);
   }

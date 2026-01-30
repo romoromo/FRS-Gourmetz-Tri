@@ -196,6 +196,8 @@
         class="fa fa-money" aria-hidden="true"></i> Wallet topup</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="walletTransfer(row?.id)"><i
         class="fa fa-money" aria-hidden="true"></i> Wallet  transfer</a>
+    <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="downloadWalletTransaction(row?.id)"><i
+        class="fa fa-download" aria-hidden="true"></i> Wallet  transaction</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="addPointTopup(row?.id)"><i
         class="fa fa-credit-card" aria-hidden="true"></i> Point topup</a>
     <a *ngIf="canManageStudents" class="btn btn-link btn-xs" href="javascript:;" (click)="offBoarding(row?.id)"><i
