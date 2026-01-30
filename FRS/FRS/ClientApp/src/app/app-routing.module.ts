@@ -167,6 +167,7 @@ import { CatererAssetsManagementComponent } from './components/meal-order-system
 import { AssetCmpManagementComponent } from './components/meal-order-system/asset-component/asset-cmp-management.component';
 import { SortingAreaManagementComponent } from './components/meal-order-system/sorting-area/sorting-area-management.component';
 import { title } from 'process';
+import { WalletTransactionManagementComponent } from './components/meal-order-system/wallet-transaction/wallet-transaction-management.component';
 
 
 const routes: Routes = [
@@ -341,7 +342,8 @@ const routes: Routes = [
       { path: "catererasssettypes", component: CatererAsssetTypeManagementComponent, canActivate: [AuthGuard], data: { title: "Asset Types" } },
       { path: "catererasset", component: CatererAssetsManagementComponent, canActivate: [AuthGuard], data: { title: "Assets" } },
       { path: "assetcomponent", component: AssetCmpManagementComponent, canActivate: [AuthGuard], data: {title: "Asset Components"}},
-      { path: "sortingarea", component: SortingAreaManagementComponent, canActivate: [AuthGuard], data: {title: "Sorting Area"}}
+      { path: "sortingarea", component: SortingAreaManagementComponent, canActivate: [AuthGuard], data: {title: "Sorting Area"}},
+      { path: "wallettransaction", component: WalletTransactionManagementComponent, canActivate: [AuthGuard], data: {title: "Wallet Transaction"}}
       //{ path: "orderportalcontents", component: OrderPortalContentComponent, canActivate: [AuthGuard], data: { title: "Order Portal Content" } },
 
       //{ path: "display/:mac", redirectTo: "/display/:mac" },

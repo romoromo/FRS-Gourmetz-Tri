@@ -10,14 +10,18 @@ using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
 using Microsoft.AspNetCore.Identity;
+using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using NPOI.XWPF.UserModel;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using ICell = NPOI.SS.UserModel.ICell;
 
 namespace BAL.Services.MealOrder
 {
@@ -929,7 +933,128 @@ namespace BAL.Services.MealOrder
 
                 return stream.ToArray();
             }
+        }
 
+        public async Task<byte[]> GenerateWalletTransactions(WalletTransactionFilter filter)
+        {
+            var datas = await _uow.StudentWalletTransactions.GetWalletTransactionForReport(filter.startDate, filter.endDate, filter.OutletId, filter.ClassLevelIds, filter.isFAS);
+            using (var stream = new System.IO.MemoryStream())
+            {
+                var wb = new XSSFWorkbook();
+                var rowCount = 0;
+                var sheet = (XSSFSheet)wb.CreateSheet(Constants.Student_Wallet_Transactions);
+                var headers = new string[] { "Student ID", "Name", "School", "Class/Department", "Total Top Up Normal Account",
+                                             "Total Redemption", "Normal Wallet Balance"};
+
+                string currentOutlet = null;
+                string currentClassLevel = null;
+                int rowIndex = 0;
+
+                var headerStyle = wb.CreateCellStyle();
+                var headerFont = wb.CreateFont();
+                headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                headerStyle.SetFont(headerFont);
+                
+
+                var borderedHeaderStyle = wb.CreateCellStyle();
+                borderedHeaderStyle.SetFont(headerFont);
+                borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+
+                var contentStyle = wb.CreateCellStyle();
+                contentStyle.BorderTop = BorderStyle.Thin;
+                contentStyle.BorderBottom = BorderStyle.Thin;
+                contentStyle.BorderLeft = BorderStyle.Thin;
+                contentStyle.BorderRight = BorderStyle.Thin;
+                contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                contentStyle.Alignment = HorizontalAlignment.Left;
+                contentStyle.WrapText = true;
+
+                foreach (var r in datas.AsEnumerable()
+                    .OrderBy(x => x.Field<string>("OutletName"))
+                    .ThenBy(x => x.Field<string>("ClassLevelName"))
+                    .ThenBy(x => x.Field<string>("ClassName"))
+                    .ThenBy(x => x.Field<int>("StudentId")))
+                {
+                    var outlet = r.Field<string>("OutletName");
+                    var classLevel = r.Field<string>("ClassLevelName");
+
+                    if (currentOutlet != outlet)
+                    {
+                        if (!string.IsNullOrEmpty(currentOutlet))
+                            rowIndex++;
+
+                        currentOutlet = outlet;
+                        currentClassLevel = null;
+
+                        var row = sheet.CreateRow(rowIndex++);
+                        row.CreateCell(0).SetCellValue($"School : {outlet}");
+                        row.GetCell(0).CellStyle = headerStyle;
+                    }
+
+                    if (currentClassLevel != classLevel)
+                    {
+                        if (!string.IsNullOrEmpty(currentClassLevel))
+                            rowIndex++;
+
+                        currentClassLevel = classLevel;
+
+                        var row = sheet.CreateRow(rowIndex++);
+                        row.CreateCell(0).SetCellValue($"Class Level : {classLevel}");
+                        row.GetCell(0).CellStyle = headerStyle;
+
+                        var header = sheet.CreateRow(rowIndex++);
+
+                        for (int i = 0; i < headers.Length; i++)
+                        {
+                            header.CreateCell(i).SetCellValue(headers[i]);
+                            header.GetCell(i).CellStyle = borderedHeaderStyle;
+                        }
+                    }
+
+                    var dataRow = sheet.CreateRow(rowIndex++);
+
+                    var cell = dataRow.CreateCell(0);
+                    cell.SetCellValue(r.Field<int>("StudentId"));
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(1);
+                    cell.SetCellValue(r.Field<string>("StudentName"));
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(2);
+                    cell.SetCellValue(r.Field<string>("OutletName"));
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(3);
+                    cell.SetCellValue(r.Field<string>("ClassName"));
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(4);
+                    cell.SetCellValue(r.Field<double>("TotalTopUpNormalAccount"));
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(5);
+                    cell.SetCellValue(r.Field<double>("TotalRedemption"));
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(6);
+                    cell.SetCellValue(r.Field<double>("NormalWalletBalance"));
+                    cell.CellStyle = contentStyle;
+                }
+
+                for (var index = 0; index < headers.Length; index++)
+                {
+                    sheet.AutoSizeColumn(index, true);
+                }
+
+
+                wb.Write(stream);
+                return stream.ToArray();
+            }
         }
     }
 }

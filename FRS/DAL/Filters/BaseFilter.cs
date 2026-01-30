@@ -136,4 +136,13 @@ namespace DAL.Filters
     {
         public int catererInfoId { get; set; }
     }
+
+    public class WalletTransactionFilter
+    {
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
+        public List<int> OutletId { get; set; }
+        public List<int> ClassLevelIds { get; set; }
+        public bool isFAS { get; set; }
+    }
 }

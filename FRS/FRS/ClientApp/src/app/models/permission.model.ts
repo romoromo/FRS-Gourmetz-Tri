@@ -160,7 +160,8 @@ export type PermissionValues =
   "mosmgt.settingmgt.faq.subject.view" |
   "mosmgt.settingmgt.faq.subject.manage" |
   "mosmgt.settingmgt.faq.detail.view" |
-  "mosmgt.settingmgt.faq.detail.manage" 
+  "mosmgt.settingmgt.faq.detail.manage" |
+  "mosmgt.reportmgt.wallettransaction.view"
 ;
 
 export class Permission {
@@ -442,6 +443,8 @@ export class Permission {
 
   public static readonly viewMOSOrderMgtFaqDetailsPermission: PermissionValues = "mosmgt.settingmgt.faq.detail.view";
   public static readonly manageMOSOrderMgtFaqDetailsPermission: PermissionValues = "mosmgt.settingmgt.faq.detail.manage";
+
+  public static readonly viewWalletTransactionPermission: PermissionValues = "mosmgt.reportmgt.wallettransaction.view";
 
   constructor(name?: PermissionNames, value?: PermissionValues, groupName?: string, description?: string) {
     this.name = name;

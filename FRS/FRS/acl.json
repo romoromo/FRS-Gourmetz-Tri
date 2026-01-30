@@ -1265,6 +1265,12 @@
               ]
             },
             {
+              "name": "Wallet Transaction",
+              "value": "mosmgt.reportmgt.wallettransaction.view",
+              "description": "Permission to view Wallet Transaction",
+              "children": []
+            },
+            {
               "name": "Order Cancellation Report",
               "value": "mosmgt.reportmgt.ordercancellation",
               "description": "",

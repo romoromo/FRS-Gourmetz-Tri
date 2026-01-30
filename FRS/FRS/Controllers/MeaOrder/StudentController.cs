@@ -1939,5 +1939,24 @@ namespace FRS.Controllers
                 fileDownloadName: reportName
             );
         }
+
+        [HttpPost("students/generate-wallet-transactions")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateWalletTransactions(WalletTransactionFilter filter)
+        {
+            var xls = await _service.GenerateWalletTransactions(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + Constants.Student_Wallet_Transactions + ".xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
     }
 }

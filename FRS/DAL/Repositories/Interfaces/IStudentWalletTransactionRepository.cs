@@ -1,7 +1,10 @@
 ﻿using DAL.Core;
 using DAL.Filters;
 using DAL.Models;
+using iTextSharp.text;
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,5 +27,6 @@ namespace DAL.Repositories.Interfaces
         Task FASRechargeable(CancellationToken ct = default);
 
         Tuple<double, double, double> GetWalletTransactions(int studentId, WalletTransactionType walletTransaction);
+        Task<DataTable> GetWalletTransactionForReport(DateTime startDate, DateTime endDate, List<int> outletIds, List<int> classLevelIds, bool isFAS);
     }
 }

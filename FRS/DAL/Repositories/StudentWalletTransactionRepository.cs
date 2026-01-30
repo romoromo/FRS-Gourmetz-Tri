@@ -12,6 +12,7 @@ using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -630,7 +631,7 @@ namespace DAL.Repositories
                     {
                         fasWallet = new StudentWallet
                         {
-                            StudentId = studentId, 
+                            StudentId = studentId,
                             Balance = amount,
                             Type = WalletType.FAS.ToString(),
                             CreatedBy = userId,
@@ -1179,6 +1180,111 @@ namespace DAL.Repositories
                 .FirstOrDefault() ?? 0d;
 
             return Tuple.Create(basicToupTotal, balance, basicToupTotal - balance);
+        }
+
+        public async Task<DataTable> GetWalletTransactionForReport( DateTime startDate, DateTime endDate, List<int> outletIds, List<int> classLevelIds, bool isFAS)
+        {
+            var fromDate = startDate.Date;
+            var toExclusive = endDate.Date.AddDays(1);
+
+            var outletFilter = outletIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
+            var classLevelFilter = classLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
+
+            var studentsQ = _appContext.Students
+                .AsNoTracking()
+                .Where(s => s.IsActive && s.IsFAS == isFAS);
+
+            if (outletFilter.Length > 0)
+                studentsQ = studentsQ.Where(s => s.OutletId.HasValue && outletFilter.Contains(s.OutletId.Value));
+
+            if (classLevelFilter.Length > 0)
+                studentsQ = studentsQ.Where(s => s.ClassLevelId.HasValue && classLevelFilter.Contains(s.ClassLevelId.Value));
+
+            var queryStudentWalletTransactions =
+                from tx in _appContext.StudentWalletTransactions.AsNoTracking()
+                join s in studentsQ on tx.StudentId equals s.Id
+                where tx.IsActive
+                      && tx.CreatedDate >= fromDate
+                      && tx.CreatedDate < toExclusive
+                group tx by new
+                {
+                    StudentId = s.Id,
+                    s.Name,
+                    OutletId = s.OutletId ?? 0,
+                    OutletName = s.Outlet != null ? s.Outlet.Name : "",
+                    ClassLevelId = s.ClassLevelId ?? 0,
+                    ClassLevelName = s.ClassLevel != null ? s.ClassLevel.Name : "",
+                    ClassId = s.ClassId,
+                    ClassName = s.Class != null ? s.Class.Name : ""
+                }
+                into g
+                select new
+                {
+                    g.Key.StudentId,
+                    StudentName = g.Key.Name,
+                    g.Key.OutletId,
+                    g.Key.OutletName,
+                    g.Key.ClassLevelId,
+                    g.Key.ClassLevelName,
+                    g.Key.ClassId,
+                    g.Key.ClassName,
+
+                    TotalTopUpNormalAccount =
+                        g.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
+                                     && x.Description != null
+                                     && x.Description.Contains("Top-up")
+                                     && x.Description.Contains("BASIC"))
+                         .Sum(x => (double?)x.Amount) ?? 0d,
+
+                    TotalRedemption =
+                        g.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString())
+                         .Sum(x => (double?)x.Amount) ?? 0d
+                };
+
+            var txAgg = await queryStudentWalletTransactions.ToListAsync();
+
+            var balanceQ =
+                from w in _appContext.StudentWallets.AsNoTracking()
+                join s in studentsQ on w.StudentId equals s.Id
+                where w.IsActive && w.Type == WalletType.BASIC.ToString()
+                select new { w.StudentId, Balance = (double?)w.Balance ?? 0d };
+
+            var balances = await balanceQ.ToListAsync();
+            var balanceMap = balances
+                .GroupBy(x => x.StudentId)
+                .ToDictionary(g => g.Key, g => g.First().Balance);
+
+            var dt = new DataTable("WalletTransactionReport");
+            dt.Columns.Add("OutletName", typeof(string));
+            dt.Columns.Add("ClassLevelName", typeof(string));
+            dt.Columns.Add("StudentId", typeof(int));
+            dt.Columns.Add("StudentName", typeof(string));
+            dt.Columns.Add("ClassName", typeof(string));
+            dt.Columns.Add("TotalTopUpNormalAccount", typeof(double));
+            dt.Columns.Add("TotalRedemption", typeof(double));
+            dt.Columns.Add("NormalWalletBalance", typeof(double));
+
+            foreach (var x in txAgg
+                .OrderBy(r => r.OutletName)
+                .ThenBy(r => r.ClassLevelName)
+                .ThenBy(r => r.ClassName)
+                .ThenBy(r => r.StudentName))
+            {
+                var balance = balanceMap.TryGetValue(x.StudentId, out var bal) ? bal : 0d;
+
+                dt.Rows.Add(
+                    x.OutletName ?? "",
+                    x.ClassLevelName ?? "",
+                    x.StudentId,
+                    x.StudentName ?? "",
+                    x.ClassName ?? "",
+                    x.TotalTopUpNormalAccount,
+                    x.TotalRedemption,
+                    balance
+                );
+            }
+
+            return dt;
         }
 
 
