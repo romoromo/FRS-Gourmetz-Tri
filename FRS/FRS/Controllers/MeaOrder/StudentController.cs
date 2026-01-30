@@ -653,6 +653,17 @@ namespace FRS.Controllers
             return Ok(student);
         }
 
+        [HttpGet("studentcards/get/studentweb")]
+        //[Authorize(Authorization.Policies.ViewAllUsersPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(StudentDTO))]
+        public async Task<IActionResult> GetStudentByCardIdWebAsync(string cardId)
+        {
+            var student = await _service.GetStudentByCardIdAsync(cardId);
+
+            return Ok(student);
+        }
+
         [HttpGet("studentcards/activate")]
         //[Authorize(Authorization.Policies.ViewAllUsersPolicy)]
         //[AllowAnonymous]

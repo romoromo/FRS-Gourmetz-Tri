@@ -692,7 +692,18 @@ namespace DAL.Repositories.MealOrder
                             }
                             else
                             {
-                                this._appContext.StudentCards.Add(e);
+                                var scd = this._appContext.StudentCards.FirstOrDefault(x => x.CardId == e.CardId);
+                                if(scd != null)
+                                {
+                                    scd.StudentId = e.StudentId;
+                                    scd.Remarks = e.Remarks;
+                                    scd.Status = e.Status;
+                                    scd.IsActive = true;
+                                    this._appContext.StudentCards.Update(scd);
+                                } else
+                                {
+                                    this._appContext.StudentCards.Add(e);
+                                }
                             }
                         });
                     }

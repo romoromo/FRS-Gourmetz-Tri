@@ -59,6 +59,9 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
   public changesCancelledCallback: () => void;
 
 
+  private studentCardOwner: Student;
+
+
   @ViewChild('f')
   private form;
 
@@ -493,14 +496,45 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
           existingCards = this.studentEdit.studentCards.filter(e => e.cardId == result.cardId);
         }
 
-        if (existingCards && existingCards.length > 0) {
-          alert('Card exists.');
-        } else {
-          result.studentId = this.studentEdit.id;
-          this.studentEdit.studentCards.push(result);
-          let c = this.studentEdit.studentCards.length - 1;
-          this.activateCardId(this.studentEdit.studentCards[c], c);
-        }
+        this.studentService.getStudentByCardId(result.cardId)
+          .subscribe(results => {
+            console.log("results: ", results)
+            this.studentCardOwner = results
+
+            console.log("student card owner: ", this.studentCardOwner)
+
+            if (this.studentCardOwner) {
+              var promptMessage = 'This Card ( ' + result.cardId + ' ) is being used by ' + this.studentCardOwner.id + '.' + this.studentCardOwner.name + ' ( ' + this.studentCardOwner.outletName + ':' + this.studentCardOwner.className + '). Do you still want to use this card?';
+
+              this.alertService.showDialog(promptMessage, DialogType.confirm, () => {
+
+                if (existingCards && existingCards.length > 0) {
+                  alert('Card exists.');
+                } else {
+                  result.studentId = this.studentEdit.id;
+                  this.studentEdit.studentCards.push(result);
+                  let c = this.studentEdit.studentCards.length - 1;
+                  this.activateCardId(this.studentEdit.studentCards[c], c);
+                }
+
+              }, null, 'Yes', 'No', 'No')
+            } else {
+              if (existingCards && existingCards.length > 0) {
+                alert('Card exists.');
+              } else {
+                result.studentId = this.studentEdit.id;
+                this.studentEdit.studentCards.push(result);
+                let c = this.studentEdit.studentCards.length - 1;
+                this.activateCardId(this.studentEdit.studentCards[c], c);
+              }
+            }
+
+          },
+            error => {
+              //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+              this.alertService.showStickyMessage("Get Error", `An error occured while retrieving previous card owner.\r\n"`,
+                MessageSeverity.error);
+            })
       }
     });
   }
@@ -525,8 +559,34 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
           this.studentEdit.studentCards = [];
         }
 
-        result.studentId = this.studentEdit.id;
-        this.studentEdit.studentCards[i] = result;
+        this.studentService.getStudentByCardId(result.cardId)
+          .subscribe(results => {
+            console.log("results: ", results)
+            this.studentCardOwner = results
+
+            console.log("student card owner: ", this.studentCardOwner)
+
+            if (this.studentCardOwner) {
+              var promptMessage = 'This Card ( ' + result.cardId +' ) is being used by ' + this.studentCardOwner.id + '.' + this.studentCardOwner.name + ' ( ' + this.studentCardOwner.outletName + ':' + this.studentCardOwner.className + '). Do you still want to use this card?';
+
+              this.alertService.showDialog(promptMessage, DialogType.confirm, () => {
+
+                result.studentId = this.studentEdit.id;
+                this.studentEdit.studentCards[i] = result;
+
+              }, null, 'Yes', 'No', 'No')
+            } else {
+              result.studentId = this.studentEdit.id;
+              this.studentEdit.studentCards[i] = result;
+            }
+
+
+          },
+            error => {
+              //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+              this.alertService.showStickyMessage("Get Error", `An error occured while retrieving previous card owner.\r\n"`,
+                MessageSeverity.error);
+            })
       }
     });
   }

@@ -162,7 +162,7 @@ namespace DAL.Repositories.MealOrder
                 //result.Message = "Failed to save! Duplicate card found.";
                 //result.IsSuccess = false;
 
-                //cardExists.ToList().ForEach(e => { e.Status = StudentCardStatus.INACTIVE.ToString(); e.IsActive = false; _appContext.StudentCards.Update(e); });
+                cardExists.ToList().ForEach(e => { e.Status = StudentCardStatus.INACTIVE.ToString(); e.IsActive = false; _appContext.StudentCards.Update(e); });
             }
 
             f.CopyFrom(studentCard);

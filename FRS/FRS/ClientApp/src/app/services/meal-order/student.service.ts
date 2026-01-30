@@ -32,6 +32,9 @@ export class StudentService {
   get walletUrl() { return this.configurations.baseUrl + this._walletUrl; }
 
   private readonly _pointUrl: string = "/api/student/point";
+
+  private readonly _studentCardUrl: string = "/api/student/studentcards";
+
   get pointUrl() { return this.configurations.baseUrl + this._pointUrl; }
 
   constructor(private router: Router, private http: HttpClient, private authService: AuthService,
@@ -268,5 +271,9 @@ export class StudentService {
       userId: userId
     }
     return this.commonEndpoint.getNewEndpoint<any>(this.walletUrl + `/student-off-boarding`, param);
+  }
+
+  getStudentByCardId(cardId : string) {
+    return this.commonEndpoint.get<any>(`${this._studentCardUrl}/get/studentweb?cardId=${cardId}`);
   }
 }
