@@ -984,9 +984,6 @@ namespace BAL.Services.MealOrder
 
                     if (currentOutlet != outlet)
                     {
-                        if (!string.IsNullOrEmpty(currentOutlet))
-                            rowIndex++;
-
                         currentOutlet = outlet;
                         currentClassLevel = null;
 
@@ -997,9 +994,6 @@ namespace BAL.Services.MealOrder
 
                     if (currentClassLevel != classLevel)
                     {
-                        if (!string.IsNullOrEmpty(currentClassLevel))
-                            rowIndex++;
-
                         currentClassLevel = classLevel;
 
                         var row = sheet.CreateRow(rowIndex++);

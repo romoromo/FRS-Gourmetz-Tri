@@ -1236,9 +1236,9 @@ namespace DAL.Repositories
                                      && x.Description.Contains("BASIC"))
                          .Sum(x => (double?)x.Amount) ?? 0d,
 
-                    TotalRedemption =
-                        g.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString())
-                         .Sum(x => (double?)x.Amount) ?? 0d
+                    //TotalRedemption =
+                    //    g.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString())
+                    //     .Sum(x => (double?)x.Amount) ?? 0d
                 };
 
             var txAgg = await queryStudentWalletTransactions.ToListAsync();
@@ -1279,7 +1279,8 @@ namespace DAL.Repositories
                     x.StudentName ?? "",
                     x.ClassName ?? "",
                     x.TotalTopUpNormalAccount,
-                    x.TotalRedemption,
+                    //x.TotalRedemption,
+                    x.TotalTopUpNormalAccount - balance,
                     balance
                 );
             }
