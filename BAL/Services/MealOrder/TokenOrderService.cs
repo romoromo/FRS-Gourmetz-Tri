@@ -1048,7 +1048,7 @@ namespace BAL.Services.MealOrder
                                                    e.ClassId == o.Student.ClassId)?.MealSessionDetail;
                                         //var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.Session?.MealSession?.OutletId, o.DeliveryDate, o.Session.MealSessionId, o.Student.ClassId);
                                         cell = row.CreateCell(c++);
-                                        cell.SetCellValue(currentOrderMealSession != null ? currentOrderMealSession.Name : "No Current Session for this Class");
+                                        cell.SetCellValue(o.Student.Class.MealCollectionType == MealCollectionType.STUDENT_SELECTS ? o.Session.Name : currentOrderMealSession != null ? currentOrderMealSession.Name : "No Current Session for this Class");
                                         cell.CellStyle = contentStyle;
 
                                         cell = row.CreateCell(c++);
@@ -1184,7 +1184,7 @@ namespace BAL.Services.MealOrder
                                                    e.ClassId == o.Student.ClassId)?.MealSessionDetail;
                                     //var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.Session?.MealSession?.OutletId, o.DeliveryDate, o.Session.MealSessionId, o.Student.ClassId);
                                     cell = row.CreateCell(c++);
-                                    cell.SetCellValue(currentOrderMealSession != null ? currentOrderMealSession.Name : "No Current Session for this Class");
+                                    cell.SetCellValue(o.Student.Class.MealCollectionType == MealCollectionType.STUDENT_SELECTS ? o.Session.Name : currentOrderMealSession != null ? currentOrderMealSession.Name : "No Current Session for this Class");
                                     cell.CellStyle = contentStyle;
 
                                     cell = row.CreateCell(c++);
@@ -1324,7 +1324,8 @@ namespace BAL.Services.MealOrder
                                                     e.MealSessionId == o.Session.MealSessionId &&
                                                     e.ClassId == o.Student.ClassId)?.MealSessionDetail;
                         //var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.Session?.MealSession?.OutletId, o.DeliveryDate, o.Session.MealSessionId, o.Student.ClassId);
-                        if (currentOrderMealSession != null)
+                       
+                        if (currentOrderMealSession != null && o.Student.Class.MealCollectionType != MealCollectionType.STUDENT_SELECTS)
                         {
                             o.Session = _mapper.Map<MealSessionDetail>(currentOrderMealSession);
                         }
@@ -1582,7 +1583,7 @@ namespace BAL.Services.MealOrder
                                                     e.MealSessionId == o.Session.MealSessionId &&
                                                     e.ClassId == o.Student.ClassId)?.MealSessionDetail;
                         //var currentOrderMealSession = await this._classService.GetCurrentOrderMealSessionAsync(o.Session?.MealSession?.OutletId, o.DeliveryDate, o.Session.MealSessionId, o.Student.ClassId);
-                        if (currentOrderMealSession != null)
+                        if (currentOrderMealSession != null && o.Student.Class.MealCollectionType != MealCollectionType.STUDENT_SELECTS)
                         {
                             o.Session = _mapper.Map<MealSessionDetail>(currentOrderMealSession);
                         }
@@ -1590,7 +1591,7 @@ namespace BAL.Services.MealOrder
                         {
                             var alr = AllRoutes.Find(r => r.routeId == o.Session.RouteId.Value);
                             //var als = AllSessions.Find(r => r.mealSessionDetailId == o.Session.Id);
-                            if (currentOrderMealSession != null)
+                            if (currentOrderMealSession != null && o.Student.Class.MealCollectionType != MealCollectionType.STUDENT_SELECTS)
                             {
                                 alr = AllRoutes.Find(r => r.routeId == currentOrderMealSession.RouteId.Value);
                             }
@@ -1599,7 +1600,7 @@ namespace BAL.Services.MealOrder
                             if (alr == null)
                             {
                                 var rot = new DOReportRouteDTO();
-                                if (currentOrderMealSession != null)
+                                if (currentOrderMealSession != null && o.Student.Class.MealCollectionType != MealCollectionType.STUDENT_SELECTS)
                                 {
                                     rot.routeId = currentOrderMealSession.RouteId.Value;
                                     rot.routeLabel = currentOrderMealSession.RouteName;
@@ -1669,7 +1670,7 @@ namespace BAL.Services.MealOrder
                                         //route
                                         var routeIn = new DOReportRouteDTO();
                                         routeIn.isFas = o.IsFAS;
-                                        if (currentOrderMealSession != null)
+                                        if (currentOrderMealSession != null && o.Student.Class.MealCollectionType != MealCollectionType.STUDENT_SELECTS)
                                         {
                                             routeIn.routeId = currentOrderMealSession.RouteId.Value;
                                             routeIn.routeLabel = currentOrderMealSession.RouteName;
@@ -1703,7 +1704,7 @@ namespace BAL.Services.MealOrder
                                         //route
                                         rep.totalQty += tod.Qty ?? 0;
                                         var route = rep.routes.Find(r => (r.routeId == o.Session.RouteId) && (r.isFas == o.IsFAS));
-                                        if (currentOrderMealSession != null)
+                                        if (currentOrderMealSession != null && o.Student.Class.MealCollectionType != MealCollectionType.STUDENT_SELECTS)
                                         {
                                             route = rep.routes.Find(r => (r.routeId == currentOrderMealSession.RouteId) && (r.isFas == o.IsFAS));
                                         }
@@ -1711,7 +1712,7 @@ namespace BAL.Services.MealOrder
                                         {
                                             var routeIn = new DOReportRouteDTO();
                                             routeIn.isFas = o.IsFAS;
-                                            if (currentOrderMealSession != null)
+                                            if (currentOrderMealSession != null && o.Student.Class.MealCollectionType != MealCollectionType.STUDENT_SELECTS)
                                             {
                                                 routeIn.routeId = currentOrderMealSession.RouteId.Value;
                                                 routeIn.routeLabel = currentOrderMealSession.RouteName;
@@ -2710,7 +2711,7 @@ namespace BAL.Services.MealOrder
                                         dto.studentId = o.Student.Id;
                                         dto.studentName = o.Student.Name;
                                         dto.studentClass = o.Student.Class.Name;
-                                        if (currentOrderMealSession != null)
+                                        if (currentOrderMealSession != null && o.Student.Class.MealCollectionType != MealCollectionType.STUDENT_SELECTS)
                                         {
                                             dto.collectionStart = currentOrderMealSession.StartDate;
                                             if (currentOrderMealSession.StartDate != null)
@@ -2804,11 +2805,11 @@ namespace BAL.Services.MealOrder
                                                     e.DeliveryDate == o.DeliveryDate &&
                                                     e.MealSessionId == o.Session.MealSessionId &&
                                                     e.ClassId == o.Student.ClassId)?.MealSessionDetail;
-                    if (currentOrderMealSession != null)
+                    if (currentOrderMealSession != null && o.Student.Class.MealCollectionType != MealCollectionType.STUDENT_SELECTS)
                     {
                         if (o.Tokens != null && o.Status == "paid" && currentOrderMealSession.Id == sessionDetailId)
                         {
-
+                             
                             dtos.Add(o);
                         }
                     }
