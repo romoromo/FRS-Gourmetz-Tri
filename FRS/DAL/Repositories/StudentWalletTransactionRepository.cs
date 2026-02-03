@@ -1352,7 +1352,7 @@ namespace DAL.Repositories
             var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
             var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
 
-            // 1️⃣ Base students
+            // 1. Base Query untuk Students
             var studentsQ = _appContext.Students.AsNoTracking()
                 .Where(s => s.IsActive &&
                             s.Class.IsActive &&
@@ -1377,191 +1377,87 @@ namespace DAL.Repositories
             var pageSize = filter.PageSize ?? int.MaxValue;
             var skip = (page - 1) * pageSize;
 
-            studentsQ = studentsQ.Skip(skip).Take(pageSize);
+            // Ambil data student untuk halaman ini saja ke memori
+            var pagedStudents = await studentsQ
+                .Include(s => s.Outlet)
+                .Include(s => s.Class)
+                .Include(s => s.ClassLevel)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
 
-            var balanceQ =
-                from w in _appContext.StudentWallets.AsNoTracking()
-                join s in studentsQ on w.StudentId equals s.Id
-                where w.IsActive //&& w.Type == WalletType.BASIC.ToString()
-                select new { w.StudentId, w.Type, Balance = (double?)w.Balance ?? 0d };
+            var studentIds = pagedStudents.Select(s => s.Id).ToList();
 
-            var balances = await balanceQ.ToListAsync();
+            // 2. Ambil Balances ke Dictionary (Memory Map)
+            var balances = await _appContext.StudentWallets.AsNoTracking()
+                .Where(w => w.IsActive && studentIds.Contains(w.StudentId))
+                .ToListAsync();
+
             var balanceMap = balances
                 .GroupBy(x => x.StudentId)
-                .ToDictionary(g => g.Key, g => g.ToDictionary(x => x.Type, x => x.Balance));
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.ToDictionary(x => x.Type, x => (decimal)x.Balance)
+                );
 
-            var rawTx = await (
-                        from s in studentsQ
-                        join tx in _appContext.StudentWalletTransactions.AsNoTracking()
-                            on s.Id equals tx.StudentId into transactionGroup
-                        from subTx in transactionGroup.DefaultIfEmpty()
+            // 3. Ambil Transactions ke memori (Hanya untuk student di page ini)
+            var transactions = await _appContext.StudentWalletTransactions.AsNoTracking()
+                .Where(tx => tx.IsActive &&
+                             studentIds.Contains(tx.StudentId) &&
+                             tx.CreatedDate >= fromDate &&
+                             tx.CreatedDate < toExclusive)
+                .ToListAsync();
 
-                            //from tx in _appContext.StudentWalletTransactions.AsNoTracking()
-                            //join s in studentsQ on tx.StudentId equals s.Id
-                        where subTx == null || (subTx.IsActive
-                              && subTx.CreatedDate >= fromDate
-                              && subTx.CreatedDate < toExclusive
-                              && subTx.Description != null)
-                        select new
-                        {
-                            StudentId = s.Id,
-                            Amount = subTx != null ? subTx.Amount : 0,
-                            TransactionType = subTx != null ? subTx.TransactionType : "",
-                            Description = subTx != null ? subTx.Description : "",
+            // 4. Transformasi Data di Memori (Aman dari Expression Tree Error)
+            var hasil = pagedStudents.Select(s =>
+            {
+                // Filter transaksi milik student ini
+                var stTx = transactions.Where(t => t.StudentId == s.Id).ToList();
 
-                            StudentName = s.Name,
-                            OutletName = s.Outlet != null ? s.Outlet.Name : "",
-                            ClassLevelName = s.ClassLevel != null ? s.ClassLevel.Name : "",
-                            ClassName = s.Class != null ? s.Class.Name : "",
-                            s.IsFAS
-                        }
-                    ).ToListAsync();
+                // Ambil saldo dari dictionary
+                balanceMap.TryGetValue(s.Id, out var myBalances);
+                decimal GetBal(string type) => (myBalances != null && myBalances.TryGetValue(type, out var b)) ? b : 0m;
 
-            var hasil = rawTx
-                .GroupBy(x => new
+                return new WalletTransactionReportRow
                 {
-                    x.StudentId,
-                    x.StudentName,
-                    x.OutletName,
-                    x.ClassLevelName,
-                    x.ClassName,
-                    x.IsFAS
-                })
-                .Select(m => new WalletTransactionReportRow
-                {
-                    StudentId = m.Key.StudentId,
-                    StudentName = m.Key.StudentName,
-                    OutletName = m.Key.OutletName,
-                    ClassLevelName = m.Key.ClassLevelName,
-                    ClassName = m.Key.ClassName,
-                    IsFAS = m.Key.IsFAS,
+                    StudentId = s.Id,
+                    StudentName = s.Name,
+                    OutletName = s.Outlet?.Name ?? "",
+                    ClassLevelName = s.ClassLevel?.Name ?? "",
+                    ClassName = s.Class?.Name ?? "",
+                    IsFAS = s.IsFAS,
 
-                    TotalTopUpBasic = m.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
-                                                && WalletDescriptionHelper.IsTopUpBasic(x.Description))
-                                     .Sum(x => (double?)x.Amount) ?? 0d,
+                    // Agregasi di memori menggunakan decimal untuk presisi, lalu cast ke double jika property model-nya double
+                    TotalTopUpBasic = (double)stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
+                                                           && WalletDescriptionHelper.IsTopUpBasic(x.Description)).Sum(x => x.Amount),
 
-                    TotalRefundBasic = m.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
-                                                && WalletDescriptionHelper.IsRefundBasic(x.Description))
-                                     .Sum(x => (double?)x.Amount) ?? 0d,
+                    TotalRefundBasic = (double)stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
+                                                            && WalletDescriptionHelper.IsRefundBasic(x.Description)).Sum(x => x.Amount),
 
-                    BasicWalletBalance = balanceQ.Where(x => x.StudentId == m.Key.StudentId && x.Type == WalletType.BASIC.ToString())
-                                     .Sum(x => (double?)x.Balance) ?? 0d,
+                    BasicWalletBalance = (double)GetBal(WalletType.BASIC.ToString()),
 
+                    TotalTopUpFAS = (double)stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
+                                                         && WalletDescriptionHelper.IsTopUpFAS(x.Description)).Sum(x => x.Amount),
 
-                    TotalTopUpFAS = m.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
-                                    && WalletDescriptionHelper.IsTopUpFAS(x.Description))
-                                        .Sum(x => (double?)x.Amount) ?? 0d,
+                    TotalRefundFAS = (double)stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
+                                                          && WalletDescriptionHelper.IsRefundFAS(x.Description)).Sum(x => x.Amount),
 
-                    TotalRefundFAS = m.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
-                                    && WalletDescriptionHelper.IsRefundFAS(x.Description))
-                                    .Sum(x => (double?)x.Amount) ?? 0d,
+                    TotalFASRedemption = (double)stTx.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString()
+                                                              && WalletDescriptionHelper.IsFASPayment(x.Description)).Sum(x => x.Amount),
 
-                    TotalFASRedemption = m.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString()
-                                    && WalletDescriptionHelper.IsFASPayment(x.Description))
-                                    .Sum(x => (double?)x.Amount) ?? 0d,
-
-                    FASWalletBalance = balanceQ.Where(x => x.StudentId == m.Key.StudentId && x.Type == WalletType.FAS.ToString())
-                                     .Sum(x => (double?)x.Balance) ?? 0d,
-                }).ToList();
+                    FASWalletBalance = (double)GetBal(WalletType.FAS.ToString())
+                };
+            }).ToList();
 
             return new PagedEntity<WalletTransactionReportRow>
             {
                 TotalCount = totalStudents,
                 PagedData = hasil,
                 Filter = filter,
-                PageSize = filter.PageSize ?? 10,
-                CurrentPage = filter.Page ?? 1,
-                PageCount = totalStudents / (filter.PageSize ?? 10)
+                PageSize = pageSize,
+                CurrentPage = page,
+                PageCount = (int)Math.Ceiling((double)totalStudents / pageSize)
             };
-
-            //var queryStudentWalletTransactions =
-            //    from tx in _appContext.StudentWalletTransactions.AsNoTracking()
-            //    join s in studentsQ on tx.StudentId equals s.Id
-            //    where tx.IsActive
-            //          && tx.CreatedDate >= fromDate
-            //          && tx.CreatedDate < toExclusive
-            //    group tx by new
-            //    {
-            //        StudentId = s.Id,
-            //        s.Name,
-            //        OutletId = s.OutletId ?? 0,
-            //        OutletName = s.Outlet != null ? s.Outlet.Name : "",
-            //        ClassLevelId = s.ClassLevelId ?? 0,
-            //        ClassLevelName = s.ClassLevel != null ? s.ClassLevel.Name : "",
-            //        ClassId = s.ClassId,
-            //        ClassName = s.Class != null ? s.Class.Name : "",
-            //        FAS = s.IsFAS
-            //    }
-            //    into g
-            //    select new
-            //    {
-            //        g.Key.StudentId,
-            //        StudentName = g.Key.Name,
-            //        g.Key.OutletId,
-            //        g.Key.OutletName,
-            //        g.Key.ClassLevelId,
-            //        g.Key.ClassLevelName,
-            //        g.Key.ClassId,
-            //        g.Key.ClassName,
-            //        g.Key.FAS,
-
-            //        TotalTopUpNormalAccount =
-            //            g.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
-            //                         && x.Description != null
-            //                         && x.Description.Contains("Top-up BASIC wallet"))
-            //             .Sum(x => (double?)x.Amount) ?? 0d,
-
-            //        TotalRefundBasic =
-            //            g.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
-            //                        && x.Description != null
-            //                        && x.Description.Contains("Refund to wallet")
-            //                        && x.Description.Contains("Old Basic Balance"))
-            //            .Sum(x => (double?)x.Amount) ?? 0d,
-
-
-            //        //FAS
-            //        TotalToupupFASAccount =
-            //            g.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
-            //                         && x.Description != null
-            //                         && (x.Description.Contains("Top-up FAS") || x.Description.Contains("Auto Credit FAS"))
-            //                         && !x.Description.Contains("at 2026-01-17 17:00"))
-            //             .Sum(x => (double?)x.Amount) ?? 0d,
-            //        TotalRefundFAS =
-            //            g.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
-            //                        && x.Description != null
-            //                        && x.Description.Contains("Refund to Wallet")
-            //                        && x.Description.Contains("Old Fas Balance"))
-            //            .Sum(x => (double?)x.Amount) ?? 0d,
-            //        TotalFASRedemption =
-            //            g.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString()
-            //                        && x.Description != null
-            //                        && x.Description.Contains("Payment for Order"))
-            //            .Sum(x => (double?)x.Amount) ?? 0d,
-            //    };
-
-            //var txAgg = await queryStudentWalletTransactions.ToListAsync();
-
-            //var result = txAgg.Select(m => new WalletTransactionReportRow
-            //{
-            //    StudentId = m.StudentId,
-            //    StudentName = m.StudentName,
-            //    OutletName = m.OutletName,
-            //    ClassLevelName = m.ClassLevelName,
-            //    ClassName = m.ClassName,
-
-            //    TotalTopUpBasic = m.TotalTopUpNormalAccount,
-            //    TotalRefundBasic = m.TotalRefundBasic,
-            //    TotalBasicRedemption = 0,
-            //    BasicWalletBalance = 0,
-
-            //    IsFAS = m.FAS,
-            //    TotalTopUpFAS = m.TotalToupupFASAccount,
-            //    TotalRefundFAS = m.TotalRefundFAS,
-            //    TotalFASRedemption = m.TotalFASRedemption,
-            //    FASWalletBalance = 0
-            //}).ToList();
-
-            //return hasil;
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
