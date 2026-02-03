@@ -33,5 +33,11 @@ namespace DAL.Core.Helpers
                 return BaseColor.WHITE;
             }
         }
+
+        public static string Round(double value)
+        {
+            if (value == 0) return "0";
+            return value.ToString("N2");
+        }
     }
 }

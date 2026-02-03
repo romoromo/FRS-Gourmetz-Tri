@@ -390,7 +390,7 @@ export class WalletTransactionManagementComponent implements OnInit {
   downloadWalletTransaction() {
     this.filter.startDate = this.start.toDateString();
     this.filter.endDate = this.end.toDateString();
-
+    this.filter.page = 1;
     this.isLoading = true;
     this.alertService.startLoadingMessage("Downloading...");
     const fileName =

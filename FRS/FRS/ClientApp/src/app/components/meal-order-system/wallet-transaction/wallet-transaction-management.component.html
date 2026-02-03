@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-xs-6 col-sm-4 col-md-2">
             <mat-form-field>
-                <input matInput [matDatepicker]="startpicker" placeholder="Delivery Start Date" [value]="start"
+                <input matInput [matDatepicker]="startpicker" placeholder="Transaction Start Date" [value]="start"
                     (dateChange)="onChangeDate('start', $event)" [max]="end">
                 <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
                 <mat-datepicker #startpicker></mat-datepicker>
@@ -13,7 +13,7 @@
         </div>
         <div class="col-xs-6 col-sm-4 col-md-2">
             <mat-form-field>
-                <input matInput [matDatepicker]="endpicker" placeholder="Delivery End Date" [value]="end"
+                <input matInput [matDatepicker]="endpicker" placeholder="Transaction End Date" [value]="end"
                     (dateChange)="onChangeDate('end',$event)" [min]="start">
                 <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
                 <mat-datepicker #endpicker></mat-datepicker>

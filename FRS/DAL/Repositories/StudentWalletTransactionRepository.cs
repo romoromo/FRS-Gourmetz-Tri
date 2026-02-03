@@ -1346,6 +1346,8 @@ namespace DAL.Repositories
         {
             var fromDate = filter.startDate.Date;
             var toExclusive = filter.endDate.Date.AddDays(1);
+            if (filter.endDate == DateTime.MinValue)
+                toExclusive = DateTime.MaxValue;
 
             var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
             var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
@@ -1366,7 +1368,7 @@ namespace DAL.Repositories
             if (filter.StudentId != 0)
                 studentsQ = studentsQ.Where(s => s.Id == filter.StudentId);
 
-            if(filter.isFAS.HasValue)
+            if (filter.isFAS.HasValue)
                 studentsQ = studentsQ.Where(s => s.IsFAS == filter.isFAS.Value);
 
             var totalStudents = await studentsQ.CountAsync();

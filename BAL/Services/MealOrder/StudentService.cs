@@ -5,6 +5,7 @@ using BAL.Services.Interfaces.MealOrder;
 using DAL;
 using DAL.Core;
 using DAL.Core.DTO;
+using DAL.Core.Helpers;
 using DAL.Core.Interfaces;
 using DAL.Filters;
 using DAL.Models;
@@ -936,19 +937,19 @@ namespace BAL.Services.MealOrder
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
-                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalTopUpBasic * 100) / 100);
+                    cell.SetCellValue(Common.Round(creditTransactions.TotalTopUpBasic));
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
-                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalRefundBasic * 100) / 100);
+                    cell.SetCellValue(Common.Round(creditTransactions.TotalRefundBasic));
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
-                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalBasicRedemption * 100) / 100);
+                    cell.SetCellValue(Common.Round(creditTransactions.TotalBasicRedemption));
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
-                    cell.SetCellValue(Math.Ceiling(creditTransactions.BasicWalletBalance * 100) / 100);
+                    cell.SetCellValue(Common.Round(creditTransactions.BasicWalletBalance));
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
@@ -956,19 +957,19 @@ namespace BAL.Services.MealOrder
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
-                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalTopUpFAS * 100) / 100);
+                    cell.SetCellValue(Common.Round(creditTransactions.TotalTopUpFAS));
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
-                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalRefundFAS * 100) / 100);
+                    cell.SetCellValue(Common.Round(creditTransactions.TotalRefundFAS));
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
-                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalFASRedemption * 100) / 100);
+                    cell.SetCellValue(Common.Round(creditTransactions.TotalFASRedemption));
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
-                    cell.SetCellValue(Math.Ceiling(creditTransactions.FASWalletBalance * 100) / 100);
+                    cell.SetCellValue(Common.Round(creditTransactions.FASWalletBalance));
                     cell.CellStyle = contentStyle;
 
                     #endregion
@@ -986,6 +987,7 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GenerateWalletTransactions(WalletTransactionFilter filter)
         {
+            filter.PageSize = null;
             var result = await _uow.StudentWalletTransactions.GetWalletTransactions(filter);
             using (var stream = new System.IO.MemoryStream())
             {
@@ -1016,14 +1018,14 @@ namespace BAL.Services.MealOrder
                 headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
                 headerStyle.SetFont(headerFont);
 
-
+                var row = sheet.CreateRow(rowCount);
                 var borderedHeaderStyle = wb.CreateCellStyle();
                 borderedHeaderStyle.SetFont(headerFont);
                 borderedHeaderStyle.BorderTop = BorderStyle.Thin;
                 borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
                 borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
                 borderedHeaderStyle.BorderRight = BorderStyle.Thin;
-                borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                ICell cell;
 
                 var contentStyle = wb.CreateCellStyle();
                 contentStyle.BorderTop = BorderStyle.Thin;
@@ -1049,6 +1051,15 @@ namespace BAL.Services.MealOrder
                 donloadTime.GetCell(0).CellStyle = headerStyle;
                 rowIndex++;
 
+                row = sheet.CreateRow(rowIndex++);
+                for (var index = 0; index < headers.Length; index++)
+                {
+                    cell = row.CreateCell(index);
+                    cell.SetCellValue(headers[index]);
+                    cell.CellStyle = borderedHeaderStyle;
+                }
+                sheet.AutoSizeColumn(0);
+
                 foreach (var item in result.PagedData
                     .OrderBy(m => m.StudentId)
                     .ThenBy(m => m.OutletName)
@@ -1057,7 +1068,7 @@ namespace BAL.Services.MealOrder
                 {
                     var dataRow = sheet.CreateRow(rowIndex++);
 
-                    var cell = dataRow.CreateCell(0);
+                    cell = dataRow.CreateCell(0);
                     cell.SetCellValue(item.StudentId);
                     cell.CellStyle = contentStyle;
 
@@ -1078,19 +1089,19 @@ namespace BAL.Services.MealOrder
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(5);
-                    cell.SetCellValue(Math.Ceiling(item.TotalTopUpBasic * 100) / 100);
+                    cell.SetCellValue(Common.Round(item.TotalTopUpBasic));
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(6);
-                    cell.SetCellValue(Math.Ceiling(item.TotalRefundBasic * 100) / 100);
+                    cell.SetCellValue(Common.Round(item.TotalRefundBasic));
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(7);
-                    cell.SetCellValue(Math.Ceiling(item.TotalBasicRedemption * 100) / 100);
+                    cell.SetCellValue(Common.Round(item.TotalBasicRedemption));
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(8);
-                    cell.SetCellValue(Math.Ceiling(item.BasicWalletBalance * 100) / 100);
+                    cell.SetCellValue(Common.Round(item.BasicWalletBalance));
                     cell.CellStyle = contentStyle;
 
                     //FAS
@@ -1099,19 +1110,19 @@ namespace BAL.Services.MealOrder
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(10);
-                    cell.SetCellValue(Math.Ceiling(item.TotalTopUpFAS * 100) / 100);
+                    cell.SetCellValue(Common.Round(item.TotalTopUpFAS));
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(11);
-                    cell.SetCellValue(Math.Ceiling(item.TotalRefundFAS * 100) / 100);
+                    cell.SetCellValue(Common.Round(item.TotalRefundFAS));
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(12);
-                    cell.SetCellValue(Math.Ceiling(item.TotalFASRedemption * 100) / 100);
+                    cell.SetCellValue(Common.Round(item.TotalFASRedemption));
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(13);
-                    cell.SetCellValue(Math.Ceiling(item.FASWalletBalance * 100) / 100);
+                    cell.SetCellValue(Common.Round(item.FASWalletBalance));
                     cell.CellStyle = contentStyle;
                 }
 

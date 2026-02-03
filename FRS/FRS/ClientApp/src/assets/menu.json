@@ -430,7 +430,7 @@
           "childMenus": []
         },
         {
-          "label": "Wallet Transaction",
+          "label": "eWallet Summary Report",
           "active": true,
           "link": "/wallettransaction",
           "showLabel": true,
