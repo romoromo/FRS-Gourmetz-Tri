@@ -1,6 +1,6 @@
 <div>
     <header class="pageHeader" *ngIf="!isHideHeader">
-        <h3>Wallet Transaction Report</h3>
+        <h3>eWallet Summary Report</h3>
     </header>
     <div class="row">
         <div class="col-xs-6 col-sm-4 col-md-2">
@@ -58,9 +58,20 @@
             </mat-checkbox>
         </div>
     </div>
-    <div class="col-xs-12 col-sm-12 col-md-6" style="padding-bottom:10px;">
-        <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
-        <button type="button" class="btn btn-sm btn-info" style="margin-left:5px;" [disabled]="isLoading"
-            (click)="downloadWalletTransaction();">Download</button>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6" style="padding-bottom:10px;">
+            <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>
+            <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
+            <button type="button" class="btn btn-sm btn-info" style="margin-left:5px;" [disabled]="isLoading"
+                (click)="downloadWalletTransaction();">Download</button>
+        </div>
+    </div>
+    <div class="row" style=" padding-left: 15px; padding-right: 15px;">
+        <ngx-datatable class="material colored-header" #walletTransactionTable
+            [loadingIndicator]="loadingIndicator" [rows]="rows" [rowHeight]="'auto'" [headerHeight]="'auto'"
+            [footerHeight]="35" [columns]="columns" [columnMode]="'force'" [externalPaging]="true"
+            [externalSorting]="true" [count]="pagedResult.totalCount" [limit]="pagedResult.filter.pageSize"
+            (page)="loadData($event)" (sort)="loadData($event)">
+        </ngx-datatable>
     </div>
 </div>

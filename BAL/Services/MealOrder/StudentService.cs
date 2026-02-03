@@ -21,6 +21,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using static iTextSharp.text.pdf.AcroFields;
 using ICell = NPOI.SS.UserModel.ICell;
 
 namespace BAL.Services.MealOrder
@@ -846,15 +847,33 @@ namespace BAL.Services.MealOrder
             var student = await _uow.Students.GetByIdAsync(studentIdInt);
             if (student == null) return null;
 
-            var creditTransactions = _uow.StudentWalletTransactions.GetWalletTransactions(studentIdInt, WalletTransactionType.CREDIT);
+            var result = await _uow.StudentWalletTransactions.GetWalletTransactions(new WalletTransactionFilter
+            {
+                StudentId = studentIdInt,
+                isFAS = null
+            });
 
             using (var stream = new System.IO.MemoryStream())
             {
                 var wb = new XSSFWorkbook();
                 var rowCount = 0;
                 var sheet = (XSSFSheet)wb.CreateSheet(Constants.Student_Wallet_Transactions);
-                var headers = new string[] { "Student ID", "Name", "Schoole", "Class/Departement", "Total Top Up Normal Account",
-                                             "Total Redemption", "Normal Wallet Balance"};
+                var headers = new string[] { "Student ID",
+                                             "Name",
+                                             "School",
+                                             "Class Level",
+                                             "Class",
+                                             "Total Basic Account Top Up",
+                                             "Total Refund Basic Account",
+                                             "Total Basic Redemption",
+                                             "Basic Wallet Balance",
+
+                                             "FAS Student",
+                                             "Total FAS Top Up Amount",
+                                             "Total FAS Refund Amount",
+                                             "Total FAS Redemption Amount",
+                                             "FAS Wallet Balance"
+                };
 
                 #region Headers
 
@@ -889,41 +908,71 @@ namespace BAL.Services.MealOrder
                 contentStyle.BorderRight = BorderStyle.Thin;
                 contentStyle.VerticalAlignment = VerticalAlignment.Top;
                 contentStyle.Alignment = HorizontalAlignment.Left;
-                contentStyle.WrapText = true;
                 var dataFormatCustom = wb.CreateDataFormat();
 
                 int i = 0;
-                row = sheet.CreateRow(++rowCount);
+                foreach (var creditTransactions in result.PagedData)
+                {
+                    row = sheet.CreateRow(++rowCount);
 
-                cell = row.CreateCell(i++);
-                cell.SetCellValue(student.Id);
-                cell.CellStyle = contentStyle;
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(creditTransactions.StudentId);
+                    cell.CellStyle = contentStyle;
 
-                cell = row.CreateCell(i++);
-                cell.SetCellValue(student.Name);
-                cell.CellStyle = contentStyle;
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(creditTransactions.StudentName);
+                    cell.CellStyle = contentStyle;
 
-                cell = row.CreateCell(i++);
-                cell.SetCellValue(student.Outlet?.Name);
-                cell.CellStyle = contentStyle;
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(creditTransactions.OutletName);
+                    cell.CellStyle = contentStyle;
 
-                cell = row.CreateCell(i++);
-                cell.SetCellValue(student.Class?.Name);
-                cell.CellStyle = contentStyle;
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(creditTransactions.ClassLevelName);
+                    cell.CellStyle = contentStyle;
 
-                cell = row.CreateCell(i++);
-                cell.SetCellValue(creditTransactions.Item1);
-                cell.CellStyle = contentStyle;
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(creditTransactions.ClassName);
+                    cell.CellStyle = contentStyle;
 
-                cell = row.CreateCell(i++);
-                cell.SetCellValue(creditTransactions.Item3);
-                cell.CellStyle = contentStyle;
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalTopUpBasic * 100) / 100);
+                    cell.CellStyle = contentStyle;
 
-                cell = row.CreateCell(i++);
-                cell.SetCellValue(creditTransactions.Item2);
-                cell.CellStyle = contentStyle;
-                #endregion
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalRefundBasic * 100) / 100);
+                    cell.CellStyle = contentStyle;
 
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalBasicRedemption * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(Math.Ceiling(creditTransactions.BasicWalletBalance * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(creditTransactions.IsFAS ? "Y" : "N");
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalTopUpFAS * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalRefundFAS * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(Math.Ceiling(creditTransactions.TotalFASRedemption * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(Math.Ceiling(creditTransactions.FASWalletBalance * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    #endregion
+                }
                 for (var index = 0; index < headers.Length; index++)
                 {
                     sheet.AutoSizeColumn(index, true);
@@ -937,24 +986,36 @@ namespace BAL.Services.MealOrder
 
         public async Task<byte[]> GenerateWalletTransactions(WalletTransactionFilter filter)
         {
-            var datas = await _uow.StudentWalletTransactions.GetWalletTransactionForReport(filter.startDate, filter.endDate, filter.OutletId, filter.ClassLevelIds, filter.isFAS);
+            var result = await _uow.StudentWalletTransactions.GetWalletTransactions(filter);
             using (var stream = new System.IO.MemoryStream())
             {
                 var wb = new XSSFWorkbook();
                 var rowCount = 0;
                 var sheet = (XSSFSheet)wb.CreateSheet(Constants.Student_Wallet_Transactions);
-                var headers = new string[] { "Student ID", "Name", "School", "Class/Department", "Total Top Up Normal Account",
-                                             "Total Redemption", "Normal Wallet Balance"};
+                var headers = new string[] { "Student ID",
+                                             "Name",
+                                             "School",
+                                             "Class Level",
+                                             "Class",
+                                             "Total Basic Account Top Up",
+                                             "Total Refund Basic Account",
+                                             "Total Basic Redemption",
+                                             "Basic Wallet Balance",
 
-                string currentOutlet = null;
-                string currentClassLevel = null;
+                                             "FAS Student",
+                                             "Total FAS Top Up Amount",
+                                             "Total FAS Refund Amount",
+                                             "Total FAS Redemption Amount",
+                                             "FAS Wallet Balance"
+                };
+
                 int rowIndex = 0;
 
                 var headerStyle = wb.CreateCellStyle();
                 var headerFont = wb.CreateFont();
                 headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
                 headerStyle.SetFont(headerFont);
-                
+
 
                 var borderedHeaderStyle = wb.CreateCellStyle();
                 borderedHeaderStyle.SetFont(headerFont);
@@ -971,72 +1032,86 @@ namespace BAL.Services.MealOrder
                 contentStyle.BorderRight = BorderStyle.Thin;
                 contentStyle.VerticalAlignment = VerticalAlignment.Top;
                 contentStyle.Alignment = HorizontalAlignment.Left;
-                contentStyle.WrapText = true;
 
-                foreach (var r in datas.AsEnumerable()
-                    .OrderBy(x => x.Field<string>("OutletName"))
-                    .ThenBy(x => x.Field<string>("ClassLevelName"))
-                    .ThenBy(x => x.Field<string>("ClassName"))
-                    .ThenBy(x => x.Field<int>("StudentId")))
+                var donloadTime = sheet.CreateRow(rowIndex++);
+                donloadTime.CreateCell(0).SetCellValue($"Downloaded Data as of {DateTime.Now:dd/MM/yyyy hh:mmtt}");
+                donloadTime.GetCell(0).CellStyle = headerStyle;
+
+                var startDate = "-";
+                var endDate = "-";
+                if (filter.startDate != DateTime.MinValue)
+                    startDate = filter.startDate.ToString("dd/MM/yyyy");
+                if (filter.endDate != DateTime.MinValue)
+                    endDate = filter.endDate.ToString("dd/MM/yyyy");
+
+                donloadTime = sheet.CreateRow(rowIndex++);
+                donloadTime.CreateCell(0).SetCellValue($"Date Range {startDate} to {endDate}");
+                donloadTime.GetCell(0).CellStyle = headerStyle;
+                rowIndex++;
+
+                foreach (var item in result.PagedData
+                    .OrderBy(m => m.StudentId)
+                    .ThenBy(m => m.OutletName)
+                    .ThenBy(m => m.ClassLevelName)
+                    .ThenBy(m => m.ClassName))
                 {
-                    var outlet = r.Field<string>("OutletName");
-                    var classLevel = r.Field<string>("ClassLevelName");
-
-                    if (currentOutlet != outlet)
-                    {
-                        currentOutlet = outlet;
-                        currentClassLevel = null;
-
-                        var row = sheet.CreateRow(rowIndex++);
-                        row.CreateCell(0).SetCellValue($"School : {outlet}");
-                        row.GetCell(0).CellStyle = headerStyle;
-                    }
-
-                    if (currentClassLevel != classLevel)
-                    {
-                        currentClassLevel = classLevel;
-
-                        var row = sheet.CreateRow(rowIndex++);
-                        row.CreateCell(0).SetCellValue($"Class Level : {classLevel}");
-                        row.GetCell(0).CellStyle = headerStyle;
-
-                        var header = sheet.CreateRow(rowIndex++);
-
-                        for (int i = 0; i < headers.Length; i++)
-                        {
-                            header.CreateCell(i).SetCellValue(headers[i]);
-                            header.GetCell(i).CellStyle = borderedHeaderStyle;
-                        }
-                    }
-
                     var dataRow = sheet.CreateRow(rowIndex++);
 
                     var cell = dataRow.CreateCell(0);
-                    cell.SetCellValue(r.Field<int>("StudentId"));
+                    cell.SetCellValue(item.StudentId);
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(1);
-                    cell.SetCellValue(r.Field<string>("StudentName"));
+                    cell.SetCellValue(item.StudentName);
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(2);
-                    cell.SetCellValue(r.Field<string>("OutletName"));
+                    cell.SetCellValue(item.OutletName);
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(3);
-                    cell.SetCellValue(r.Field<string>("ClassName"));
+                    cell.SetCellValue(item.ClassLevelName);
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(4);
-                    cell.SetCellValue(r.Field<double>("TotalTopUpNormalAccount"));
+                    cell.SetCellValue(item.ClassName);
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(5);
-                    cell.SetCellValue(r.Field<double>("TotalRedemption"));
+                    cell.SetCellValue(Math.Ceiling(item.TotalTopUpBasic * 100) / 100);
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(6);
-                    cell.SetCellValue(r.Field<double>("NormalWalletBalance"));
+                    cell.SetCellValue(Math.Ceiling(item.TotalRefundBasic * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(7);
+                    cell.SetCellValue(Math.Ceiling(item.TotalBasicRedemption * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(8);
+                    cell.SetCellValue(Math.Ceiling(item.BasicWalletBalance * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    //FAS
+                    cell = dataRow.CreateCell(9);
+                    cell.SetCellValue(item.IsFAS ? "Y" : "N");
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(10);
+                    cell.SetCellValue(Math.Ceiling(item.TotalTopUpFAS * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(11);
+                    cell.SetCellValue(Math.Ceiling(item.TotalRefundFAS * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(12);
+                    cell.SetCellValue(Math.Ceiling(item.TotalFASRedemption * 100) / 100);
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(13);
+                    cell.SetCellValue(Math.Ceiling(item.FASWalletBalance * 100) / 100);
                     cell.CellStyle = contentStyle;
                 }
 
@@ -1049,6 +1124,11 @@ namespace BAL.Services.MealOrder
                 wb.Write(stream);
                 return stream.ToArray();
             }
+        }
+
+        public async Task<PagedEntity<WalletTransactionReportRow>> GetWalletTransactions(WalletTransactionFilter filter)
+        {
+            return await _uow.StudentWalletTransactions.GetWalletTransactions(filter);
         }
     }
 }
