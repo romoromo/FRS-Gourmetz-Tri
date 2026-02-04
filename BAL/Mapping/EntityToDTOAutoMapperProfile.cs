@@ -239,7 +239,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.UpdatedBy, map => map.Ignore())
                 .ForMember(e => e.UpdatedDate, map => map.Ignore());
             CreateMap<StudentCard, StudentCardDTO>()
-                .ForMember(d => d.UpdatingUserName, map => map.MapFrom(s => s.UpdatedByUser != null ? s.UpdatedByUser.UserName : string.Empty));
+                .ForMember(d => d.UpdatingUserName, map => map.MapFrom(s => s.UserUpdate != null ? s.UserUpdate.UserName : string.Empty));
 
             CreateMap<StudentRestriction, StudentRestrictionDTO>()
                 .ForMember(d => d.RestrictionCode, map => map.MapFrom(s => s.Restriction != null ? s.Restriction.Code : string.Empty))

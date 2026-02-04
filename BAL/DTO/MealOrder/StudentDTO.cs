@@ -1,5 +1,6 @@
 ﻿using DAL.Core.Audit.Attributes;
 using DAL.Core.DTO;
+using DAL.Models;
 using DAL.Models.MealOrder;
 using Sieve.Attributes;
 using System;
@@ -153,6 +154,8 @@ namespace BAL.DTO.MealOrder
         public string CardId { get; set; }
         public string Status { get; set; }
         public string Remarks { get; set; }
+        public DateTime? LastUpdateDate { get; set; }
+        public int? UserUpdateId { get; set; }
         public DateTime? IssueDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public int UpdatedBy { get; set; }
