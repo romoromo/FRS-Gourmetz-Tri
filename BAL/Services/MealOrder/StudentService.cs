@@ -872,6 +872,7 @@ namespace BAL.Services.MealOrder
                                              "FAS Student",
                                              "Total FAS Top Up Amount",
                                              "Total FAS Refund Amount",
+                                             "Total Auto Debit FAS",
                                              "Total FAS Redemption Amount",
                                              "FAS Wallet Balance"
                 };
@@ -965,6 +966,10 @@ namespace BAL.Services.MealOrder
                     cell.CellStyle = contentStyle;
 
                     cell = row.CreateCell(i++);
+                    cell.SetCellValue(Common.Round(creditTransactions.TotalAutoDebitFAS));
+                    cell.CellStyle = contentStyle;
+
+                    cell = row.CreateCell(i++);
                     cell.SetCellValue(Common.Round(creditTransactions.TotalFASRedemption));
                     cell.CellStyle = contentStyle;
 
@@ -1007,6 +1012,7 @@ namespace BAL.Services.MealOrder
                                              "FAS Student",
                                              "Total FAS Top Up Amount",
                                              "Total FAS Refund Amount",
+                                             "Total Auto Debit FAS",
                                              "Total FAS Redemption Amount",
                                              "FAS Wallet Balance"
                 };
@@ -1118,10 +1124,14 @@ namespace BAL.Services.MealOrder
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(12);
-                    cell.SetCellValue(Common.Round(item.TotalFASRedemption));
+                    cell.SetCellValue(Common.Round(item.TotalAutoDebitFAS));
                     cell.CellStyle = contentStyle;
 
                     cell = dataRow.CreateCell(13);
+                    cell.SetCellValue(Common.Round(item.TotalFASRedemption));
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(14);
                     cell.SetCellValue(Common.Round(item.FASWalletBalance));
                     cell.CellStyle = contentStyle;
                 }

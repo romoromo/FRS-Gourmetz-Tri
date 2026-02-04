@@ -16,10 +16,11 @@
         public double TotalRefundBasic { get; set; }
         public double TotalBasicRedemption
         {
-            get
-            {
-                return (TotalTopUpBasic + TotalRefundBasic) - BasicWalletBalance;
-            }
+            get; set;
+            //get
+            //{
+            //    return (TotalTopUpBasic + TotalRefundBasic) - BasicWalletBalance;
+            //}
         }
         public double BasicWalletBalance { get; set; }
 
@@ -28,5 +29,6 @@
         public double TotalRefundFAS { get; set; }
         public double TotalFASRedemption { get; set; }
         public double FASWalletBalance { get; set; }
+        public double TotalAutoDebitFAS { get; set; }
     }
 }

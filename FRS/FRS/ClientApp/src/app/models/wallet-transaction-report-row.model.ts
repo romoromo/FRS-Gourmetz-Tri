@@ -14,4 +14,5 @@ export class WallterTransactionReportRow {
   public TotalRefundFAS: number;
   public TotalFASRedemption: number;
   public FASWalletBalance: number;
+  public totalAutoDebitFAS: number;
 }
