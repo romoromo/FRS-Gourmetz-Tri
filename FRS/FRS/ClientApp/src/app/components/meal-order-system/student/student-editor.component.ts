@@ -567,7 +567,7 @@ export class StudentEditorComponent implements OnInit, OnDestroy{
             console.log("student card owner: ", this.studentCardOwner)
 
             if (this.studentCardOwner) {
-              var promptMessage = 'This Card ( ' + result.cardId + ' ) is being used by ' + this.studentCardOwner.id + '.' + this.studentCardOwner.name + ' ( ' + this.studentCardOwner.outletName + ':' + this.studentCardOwner.className + '). Can not edit to already used card Id.';
+              var promptMessage = 'This Card ( ' + result.cardId + ' ) is being used by ' + this.studentCardOwner.id + '.' + this.studentCardOwner.name + ' ( ' + this.studentCardOwner.outletName + ':' + this.studentCardOwner.className + '). Unable to save, duplicate card found';
 
               this.alertService.showDialog(promptMessage, DialogType.alert)
             } else {
