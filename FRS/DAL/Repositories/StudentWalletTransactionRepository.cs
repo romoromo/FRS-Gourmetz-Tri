@@ -1367,7 +1367,7 @@ namespace DAL.Repositories
             if (filter.StudentId != 0)
                 studentsQ = studentsQ.Where(s => s.Id == filter.StudentId);
 #if DEBUG
-            studentsQ = studentsQ.Where(m => m.Id == 5594);
+            //studentsQ = studentsQ.Where(m => m.Id == 5594);
 #endif
             if (filter.isFAS.HasValue)
                 studentsQ = studentsQ.Where(s => s.IsFAS == filter.isFAS.Value);
@@ -1421,6 +1421,12 @@ namespace DAL.Repositories
 
                 foreach (var tx in stTx)
                 {
+                    if (tx.Description.Contains("Auto Debit FAS from", StringComparison.OrdinalIgnoreCase) && 
+                        tx.Description.Contains("to 0", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     lastFas ??= WalletDescriptionHelper.GetAfterBalance(tx.Description, "FAS");
                     lastBasic ??= WalletDescriptionHelper.GetAfterBalance(tx.Description, "Basic");
                     if (lastFas != null && lastBasic != null) break;
