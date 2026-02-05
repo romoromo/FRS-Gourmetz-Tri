@@ -1366,7 +1366,9 @@ namespace DAL.Repositories
 
             if (filter.StudentId != 0)
                 studentsQ = studentsQ.Where(s => s.Id == filter.StudentId);
-
+#if DEBUG
+            studentsQ = studentsQ.Where(m => m.Id == 5594);
+#endif
             if (filter.isFAS.HasValue)
                 studentsQ = studentsQ.Where(s => s.IsFAS == filter.isFAS.Value);
 
@@ -1385,17 +1387,6 @@ namespace DAL.Repositories
                 .ToListAsync();
 
             var studentIds = pagedStudents.Select(s => s.Id).ToList();
-
-            var balances = await _appContext.StudentWallets.AsNoTracking()
-                .Where(w => w.IsActive && studentIds.Contains(w.StudentId))
-                .ToListAsync();
-
-            var balanceMap = balances
-                .GroupBy(x => x.StudentId)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.ToDictionary(x => x.Type, x => (decimal)x.Balance)
-                );
 
             var transactions = await _appContext.StudentWalletTransactions.AsNoTracking()
                 .Where(tx => tx.IsActive &&
@@ -1416,13 +1407,15 @@ namespace DAL.Repositories
                 .Where(tx => lastTransactionIds.Contains(tx.Id))
                 .ToListAsync();
 
-
+            var blacklistDate = new DateTime(2026, 1, 17);
             var hasil = pagedStudents.Select(s =>
             {
                 var stTx = transactions.Where(t => t.StudentId == s.Id)
-                       .OrderByDescending(x => x.CreatedDate.Date).ThenBy(m => m.TransactionType)
+                       //.OrderByDescending(x => x.CreatedDate.Date).ThenBy(m => m.TransactionType)
+                       .OrderByDescending(x => x.CreatedDate)
                        .ThenByDescending(x => x.Id).ToList();
 
+                
                 decimal? lastFas = null;
                 decimal? lastBasic = null;
 
@@ -1443,11 +1436,12 @@ namespace DAL.Repositories
                     }
                 }
 
-                balanceMap.TryGetValue(s.Id, out var myBalances);
-                decimal GetBal(string type) => (myBalances != null && myBalances.TryGetValue(type, out var b)) ? b : 0m;
-
                 var paymentTx = stTx.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString()
                              && WalletDescriptionHelper.IsPaymentForOrder(x.Description)).ToList();
+
+                var paymentTxFAS = paymentTx.ToList();
+                if (!s.IsFAS)
+                    paymentTxFAS.RemoveAll(m => m.CreatedDate.Date == blacklistDate);
 
                 var refundTx = stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
                             && (WalletDescriptionHelper.IsRefundBasic(x.Description)
@@ -1477,7 +1471,7 @@ namespace DAL.Repositories
 
                     TotalRefundFAS = (double)refundTx.Sum(x => WalletDescriptionHelper.GetRefundAmount(x.Description, "FAS")),
 
-                    TotalFASRedemption = (double)paymentTx.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS")),
+                    TotalFASRedemption = (double)paymentTxFAS.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS")),
 
                     //FASWalletBalance = (double)GetBal(WalletType.FAS.ToString()),
 

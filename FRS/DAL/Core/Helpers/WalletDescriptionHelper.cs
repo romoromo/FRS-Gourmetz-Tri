@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DAL.Core.Helpers
@@ -24,8 +25,27 @@ namespace DAL.Core.Helpers
             => desc?.Contains("Top-up BASIC wallet", StringComparison.OrdinalIgnoreCase) == true;
 
         public static bool IsTopUpFAS(string desc)
-            => (desc?.Contains("Top-up FAS wallet", StringComparison.OrdinalIgnoreCase) == true
-               || desc?.Contains("Auto Credit FAS", StringComparison.OrdinalIgnoreCase) == true && (!desc?.Contains("at 2026-01-17 17:00") == true));
+        {
+            if (string.IsNullOrEmpty(desc)) return false;
+
+            var excludedTimes = new[] {
+                "2026-01-17 08:30",
+                "2026-01-17 08:35",
+                "2026-01-17 08:40",
+                "2026-01-17 08:50"
+            };
+
+            bool isAutoCreditFas = desc.Contains("Auto Credit FAS", StringComparison.OrdinalIgnoreCase);
+            bool isTopUpFas = desc.Contains("Top-up FAS wallet", StringComparison.OrdinalIgnoreCase);
+
+            if (isAutoCreditFas)
+            {
+                bool isExcluded = excludedTimes.Any(time => desc.Contains(time));
+                return !isExcluded;
+            }
+
+            return isTopUpFas;
+        }
 
         public static bool IsRefundBasic(string desc)
             => (desc?.Contains("Refund to BASIC", StringComparison.OrdinalIgnoreCase) == true
@@ -39,7 +59,7 @@ namespace DAL.Core.Helpers
 
         public static bool IsPaymentForOrder(string desc)
             => desc?.Contains("Payment for Order", StringComparison.OrdinalIgnoreCase) == true;
-        
+
         private static readonly Regex PatternDirect = new Regex(@"(?:Auto\s+Credit\s+)(?<label>FAS|Normal|Basic)\s+(?<after>[0-9]+(?:\.[0-9]+)?)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public static bool IsFASPayment(string desc)
@@ -85,7 +105,7 @@ namespace DAL.Core.Helpers
                 {
                     var before = decimal.Parse(m.Groups["before"].Value, CultureInfo.InvariantCulture);
                     var after = decimal.Parse(m.Groups["after"].Value, CultureInfo.InvariantCulture);
-                    return before - after; 
+                    return before - after;
                 }
             }
             return 0;
@@ -110,7 +130,7 @@ namespace DAL.Core.Helpers
                 {
                     var before = decimal.Parse(m.Groups["before"].Value, CultureInfo.InvariantCulture);
                     var after = decimal.Parse(m.Groups["after"].Value, CultureInfo.InvariantCulture);
-                    return after - before; 
+                    return after - before;
                 }
             }
             return 0;
@@ -131,15 +151,20 @@ namespace DAL.Core.Helpers
             var matches = regex.Matches(desc);
             foreach (Match m in matches)
             {
-                var label = m.Groups["label"].Value;
+                var label = m.Groups["label"].Value;                
                 bool isMatch = false;
 
                 if (walletLabel.Equals("FAS", StringComparison.OrdinalIgnoreCase))
                     isMatch = label.Contains("FAS", StringComparison.OrdinalIgnoreCase);
-                else // BASIC / Normal
-                    isMatch = label.Contains("Normal", StringComparison.OrdinalIgnoreCase) ||
-                              label.Contains("Basic", StringComparison.OrdinalIgnoreCase) ||
-                              string.IsNullOrEmpty(label);
+                else
+                {
+                    if (!desc.Contains("Top-up FAS", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isMatch = label.Contains("Normal", StringComparison.OrdinalIgnoreCase) ||
+                                  label.Contains("Basic", StringComparison.OrdinalIgnoreCase) ||
+                                  string.IsNullOrEmpty(label);
+                    }
+                }
 
                 if (isMatch)
                     return decimal.Parse(m.Groups["after"].Value, CultureInfo.InvariantCulture);
