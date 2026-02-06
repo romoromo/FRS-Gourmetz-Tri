@@ -101,6 +101,10 @@ export class StudentService {
    return this.commonEndpoint.getFile<any>(this.studentUrl + '/generate-wallet-transactions', filter);
   }
 
+  getWalletTransactions(filter: WalletTransactionFilter){
+   return this.commonEndpoint.getSieve<PagedResult>(this.studentUrl + '/get-wallet-transactions', filter);
+  }
+
   createAccount(ids: string[]) {
     return this.commonEndpoint.get(this.studentUrl + '/createaccount', true, ids);
   }

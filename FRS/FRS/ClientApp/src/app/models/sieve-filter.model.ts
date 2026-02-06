@@ -145,5 +145,5 @@ export class WalletTransactionFilter extends Filter{
 
   public startDate: string;
   public endDate: string;
-  public fasOnly: boolean;
+  public isFAS: boolean;
 }

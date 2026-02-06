@@ -1958,5 +1958,14 @@ namespace FRS.Controllers
                 fileDownloadName: reportName
             );
         }
+
+        [HttpGet("students/get-wallet-transactions")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<WalletTransactionReportRow>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetWalletTransactions(WalletTransactionFilter filter)
+        {
+            var datas = await _service.GetWalletTransactions(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<WalletTransactionReportRow>>(datas));
+        }
     }
 }
