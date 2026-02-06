@@ -147,4 +147,9 @@ namespace DAL.Filters
 
         public int StudentId { get; set; } = 0;
     }
+
+    public class DetailWalletTansactionFilter : BaseFilter
+    {
+        public int StudentId { get; set; } = 0;
+    }
 }

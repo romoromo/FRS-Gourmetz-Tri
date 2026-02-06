@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BAL.DTO;
 using BAL.DTO.MealOrder;
 using BAL.Services;
 using BAL.Services.Interfaces;
@@ -1966,6 +1967,33 @@ namespace FRS.Controllers
         {
             var datas = await _service.GetWalletTransactions(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<WalletTransactionReportRow>>(datas));
+        }
+
+        [HttpGet("students/get-detail-wallet-transactions")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<WalletTransactionDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetDetailWalletTransactions(DetailWalletTansactionFilter filter)
+        {
+            var results = new List<WalletTransactionDTO>();
+            for (int i = 1; i <= 100; i++)
+            {
+                var amount = new Random().NextDouble() * (10 - 1) + 1;
+                results.Add(new WalletTransactionDTO
+                {
+                    Id = i,
+                    Amount = new Random().NextDouble() * (10 - 1) + 1,
+                    Description = $"Wallet Transaction {amount}",
+                    TransactionDateTime = DateTime.Now,
+                    TransactionType = i % 2 == 0 ? WalletTransactionType.DEBIT.ToString() : WalletTransactionType.CREDIT.ToString()
+                });
+            }
+
+            return Ok(new PagedEntityViewModel<WalletTransactionDTO>
+            {
+                Filter = filter,
+                PagedData = results,
+                TotalCount = 100
+            });
         }
     }
 }
