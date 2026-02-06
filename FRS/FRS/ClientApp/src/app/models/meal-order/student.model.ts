@@ -64,6 +64,8 @@ export class StudentCard {
   public isApprove: boolean;
   public updatedDate: Date;
   public updatedBy: string;
+  public lastUpdateDate: Date;
+  public userUpdateId: string;
   public updatingUserName: string;
 }
 

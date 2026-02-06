@@ -25,7 +25,7 @@ namespace DAL.Repositories.MealOrder
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
-            this._currentUserId = currentInstitutionId;
+            this._currentUserId = currentUserId;
             _userActivityRepository = userActivityRepository;
         }
 
@@ -95,6 +95,8 @@ namespace DAL.Repositories.MealOrder
                 {
                     existingCard.Status = StudentCardStatus.ACTIVE.ToString();
                     existingCard.IsActive = true;
+                    existingCard.UserUpdateId = _currentUserId;
+                    existingCard.LastUpdateDate = DateTime.Now;
                     _appContext.StudentCards.Update(existingCard);
                 }
                 else
@@ -102,6 +104,8 @@ namespace DAL.Repositories.MealOrder
                     studentCard.Status = StudentCardStatus.ACTIVE.ToString();
                     studentCard.IsActive = true;
                     studentCard.StudentId = studentCard.StudentId;
+                    studentCard.UserUpdateId = _currentUserId;
+                    studentCard.LastUpdateDate = DateTime.Now;
                     var f = await AddAsync(studentCard);
                 }
 
@@ -126,12 +130,16 @@ namespace DAL.Repositories.MealOrder
                     {
                         e.Status = StudentCardStatus.INACTIVE.ToString();
                         e.IsActive = false;
+                        e.UserUpdateId = _currentUserId;
+                        e.LastUpdateDate = DateTime.Now;
                         _appContext.StudentCards.Update(e);
                     });
                 }
 
                 studentCard.Status = StudentCardStatus.ACTIVE.ToString();
                 studentCard.IsActive = true;
+                studentCard.UserUpdateId = _currentUserId;
+                studentCard.LastUpdateDate = DateTime.Now;
 
                 var f = await AddAsync(studentCard);
                 if (await _appContext.SaveChangesAsync() > 0)
@@ -168,6 +176,9 @@ namespace DAL.Repositories.MealOrder
             f.CopyFrom(studentCard);
             f.IsActive = true;
 
+            f.UserUpdateId = _currentUserId;
+            f.LastUpdateDate = DateTime.Now;
+
             Update(f);
             if (await _appContext.SaveChangesAsync() > 0)
             {
@@ -200,6 +211,8 @@ namespace DAL.Repositories.MealOrder
                 }
 
                 card.Status = StudentCardStatus.ACTIVE.ToString();
+                card.UserUpdateId = _currentUserId;
+                card.LastUpdateDate = DateTime.Now;
                 Update(card);
 
                 if (await _appContext.SaveChangesAsync() > 0)
@@ -237,6 +250,9 @@ namespace DAL.Repositories.MealOrder
         public async Task<BaseOperationResponse> Delete(StudentCard studentCard)
         {
             var result = new BaseOperationResponse();
+            studentCard.UserUpdateId = _currentUserId;
+            studentCard.LastUpdateDate = DateTime.Now;
+            Update(studentCard);
             SoftDelete(studentCard);
             if (await _appContext.SaveChangesAsync() > 0)
             {

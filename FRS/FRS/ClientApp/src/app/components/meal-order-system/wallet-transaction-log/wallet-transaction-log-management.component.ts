@@ -107,7 +107,7 @@ export class WalletTransactionLogManagementComponent
 
   initializeFilter() {
     this.filter = new TransactionFilter(1, 10);
-    this.filter.sorts = "-createdDate";
+    this.filter.sorts = "-id";
     this.filter.filters = "";
     this.filter.page = 1;
   }
