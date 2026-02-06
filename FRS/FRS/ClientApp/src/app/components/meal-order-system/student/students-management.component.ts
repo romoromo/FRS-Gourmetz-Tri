@@ -718,7 +718,7 @@ export class StudentsManagementComponent implements OnInit, OnDestroy {
   detailWalletTransactions(studentId: string) {
     const dialogRef = this.dialog.open(DetailStudentWalletTransactionComponent, {
       data: { studentId: studentId},
-      width: "500px",
+      width: "1500px",
       disableClose: true,
     });
 

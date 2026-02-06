@@ -1227,6 +1227,18 @@ namespace FRS.Controllers
             var results = await this._walletService.GetWalletTransactionsAsync(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<StudentWalletTransactionDTO>>(results));
         }
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpGet("wallet/simple-transactions/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllStudentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<StudentWalletTransactionSimpleDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetWalletTransactionsSimpleAsync(BaseFilter filter)
+        {
+            var results = await this._walletService.GetWalletTransactionsSimpleAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<StudentWalletTransactionSimpleDTO>>(results));
+        }        
         #endregion
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -1994,6 +2006,25 @@ namespace FRS.Controllers
                 PagedData = results,
                 TotalCount = 100
             });
+        }
+
+        [HttpPost("wallet/exportwallettransactionbystudent")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateWalletTransactionByStudent(BaseFilter filter)
+        {
+            var xls = await this._walletService.GenerateXls(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_AuthLogsByStudent.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
         }
     }
 }

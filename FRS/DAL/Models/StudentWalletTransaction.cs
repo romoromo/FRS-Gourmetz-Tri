@@ -14,6 +14,7 @@ namespace DAL.Models
         [Key]
         public int Id { get; set; }
 
+        [Sieve(CanFilter = true, CanSort = true)]
         public int StudentId { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]

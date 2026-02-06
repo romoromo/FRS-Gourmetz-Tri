@@ -39,6 +39,12 @@ namespace BAL.Services
             return result;
         }
 
+        public async Task<PagedEntity<StudentWalletTransactionSimpleDTO>> GetWalletTransactionsSimpleAsync(BaseFilter filter)
+        {
+            var result = _mapper.Map<PagedEntity<StudentWalletTransactionSimpleDTO>>(await this._uow.StudentWalletTransactions.GetWalletTransactionsSimpleAsync(filter));
+            return result;
+        }
+
         public async Task<List<StudentWalletTransactionDTO>> GetWalletTransactionByIdAsync(int id)
         {
             return _mapper.Map<List<StudentWalletTransactionDTO>>((await this._uow.StudentWalletTransactions.FindAsync(e => e.StudentId == id)).ToList());

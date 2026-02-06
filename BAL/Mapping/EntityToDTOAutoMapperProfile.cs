@@ -110,6 +110,11 @@ namespace BAL.Mapping
             CreateMap<StudentWalletTransactionDTO, StudentWalletTransaction>()
                 .ForMember(d => d.File, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() })); ;
 
+            CreateMap<StudentWalletTransaction, StudentWalletTransactionSimpleDTO>()
+                .ForMember(e => e.TransactionDateTime, map => map.MapFrom(e => e.CreatedDate))
+                .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
+                .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
+                .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid)); 
 
             CreateMap<StudentWalletTransactionDetail, StudentWalletTransactionDetailDTO>();
             CreateMap<StudentWalletTransactionDetailDTO, StudentWalletTransactionDetail>();

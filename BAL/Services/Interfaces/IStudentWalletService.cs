@@ -13,6 +13,7 @@ namespace BAL.Services.Interfaces
     public interface IStudentWalletService
     {
         Task<PagedEntity<StudentWalletTransactionDTO>> GetWalletTransactionsAsync(BaseFilter filter);
+        Task<PagedEntity<StudentWalletTransactionSimpleDTO>> GetWalletTransactionsSimpleAsync(BaseFilter filter);
         Task<BaseOperationResponse> StudentWalletTransactionAsync(StudentWalletTransactionDTO dto);
         Task<List<StudentWalletTransactionDTO>> GetWalletTransactionByIdAsync(int id);
         Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId, WalletType walletTypeData);

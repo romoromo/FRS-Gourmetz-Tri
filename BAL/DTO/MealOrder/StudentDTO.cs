@@ -217,6 +217,30 @@ namespace BAL.DTO.MealOrder
         public string FilePath { get; set; }
     }
 
+    public class StudentWalletTransactionSimpleDTO
+    {
+        public int Id { get; set; }
+
+        public DateTime? TransactionDateTime { get; set; }
+
+        public int StudentId { get; set; }
+
+        public double Amount { get; set; }
+
+        public string TransactionType { get; set; }
+
+        public string Description { get; set; }
+
+        public string Remarks { get; set; }
+
+        public int UserId { get; set; }
+
+        public string UserName { get; set; }
+
+        public string StudentName { get; set; }
+        public string StripeId { get; set; }
+    }
+
     public class StudentWalletTransactionDetailDTO
     {
         public int TransactionId { get; set; }

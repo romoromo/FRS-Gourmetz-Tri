@@ -48,6 +48,38 @@ namespace DAL.Repositories
             return result;
         }
 
+        public async Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsSimpleAsync(BaseFilter filter)
+        {
+            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
+                .Where(m => m.student.IsActive)
+                .Select(m => new StudentWalletTransaction
+                {
+                    Id = m.Id,
+                    CreatedDate = m.CreatedDate,
+                    StudentId = m.StudentId,
+                    Amount = m.Amount,
+                    TransactionType = m.TransactionType,
+                    Description = m.Description,
+                    Remarks  = m.Remarks,
+                    student = new Student
+                    {
+                        Name = m.student.Name
+                    },
+                    WalletPayment = new WalletPayment
+                    {
+                        fomoid = m.WalletPayment.fomoid
+                    },
+                    CreatedByUser = new ApplicationUser
+                    {
+                        UserName = m.CreatedByUser.UserName
+                    }
+                });
+
+            var result = await this._sieveProcessor.GetPagedAsync(query, filter);
+
+            return result;
+        }
+
         #endregion
         public async Task<StudentWalletTransaction> GetByIdAsync(int id)
         {
@@ -1415,13 +1447,13 @@ namespace DAL.Repositories
                        .OrderByDescending(x => x.CreatedDate)
                        .ThenByDescending(x => x.Id).ToList();
 
-                
+
                 decimal? lastFas = null;
                 decimal? lastBasic = null;
 
                 foreach (var tx in stTx)
                 {
-                    if (tx.Description.Contains("Auto Debit FAS from", StringComparison.OrdinalIgnoreCase) && 
+                    if (tx.Description.Contains("Auto Debit FAS from", StringComparison.OrdinalIgnoreCase) &&
                         tx.Description.Contains("to 0", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
