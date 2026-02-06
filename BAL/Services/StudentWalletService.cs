@@ -4,6 +4,7 @@ using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces;
 using DAL;
 using DAL.Core;
+using DAL.Core.Helpers;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.MealOrder;
@@ -219,6 +220,141 @@ namespace BAL.Services
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(6);
+                        cell.SetCellValue(dt.UserName);
+                        cell.CellStyle = contentStyle;
+
+                    });
+
+                    #endregion
+
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        sheet.AutoSizeColumn(i, true);
+                    }
+
+                    wb.Write(stream);
+
+                    return stream.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<byte[]> GenerateWalletTransactionByStudent(BaseFilter filter)
+        {
+            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
+                .Where(m => m.student.IsActive)
+                .Select(m => new StudentWalletTransaction
+                {
+                    Id = m.Id,
+                    CreatedDate = m.CreatedDate,
+                    StudentId = m.StudentId,
+                    Amount = m.Amount,
+                    TransactionType = m.TransactionType,
+                    Description = m.Description,
+                    Remarks = m.Remarks,
+                    student = new Student
+                    {
+                        Name = m.student.Name
+                    },
+                    WalletPayment = new WalletPayment
+                    {
+                        fomoid = m.WalletPayment.fomoid
+                    },
+                    CreatedByUser = new ApplicationUser
+                    {
+                        UserName = m.CreatedByUser.UserName
+                    }
+                });
+
+            query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
+            var logs = _mapper.Map<List<StudentWalletTransactionDTO>>(await query.ToListAsync());
+
+            if (logs != null)
+            {
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    var wb = new XSSFWorkbook();
+                    var rowCount = 0;
+                    var sheet = (XSSFSheet)wb.CreateSheet("Wallet Transactions By Student");
+                    var headers = new string[] { "Date", "Amount", "Type", "Description", "Remarks", "Processed By" };
+
+                    #region Headers
+
+                    var headerStyle = wb.CreateCellStyle();
+                    var headerFont = wb.CreateFont();
+                    headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                    headerStyle.SetFont(headerFont);
+                    headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+
+                    var borderedTitleStyle = wb.CreateCellStyle();
+                    borderedTitleStyle.SetFont(headerFont);
+
+                    var borderedHeaderStyle = wb.CreateCellStyle();
+                    borderedHeaderStyle.SetFont(headerFont);
+                    borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                    var row = sheet.CreateRow(rowCount);
+                    ICell cell;
+
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue($"Wallet Transaction For {logs.FirstOrDefault()?.StudentName}");
+                    cell.CellStyle = borderedTitleStyle;
+                    rowCount++;
+                    rowCount++;
+
+                    row = sheet.CreateRow(rowCount);
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue(headers[i]);
+                        cell.CellStyle = borderedHeaderStyle;
+                    }
+                    sheet.AutoSizeColumn(0);
+
+                    #endregion
+
+                    #region Content
+                    var contentStyle = wb.CreateCellStyle();
+                    contentStyle.BorderTop = BorderStyle.Thin;
+                    contentStyle.BorderBottom = BorderStyle.Thin;
+                    contentStyle.BorderLeft = BorderStyle.Thin;
+                    contentStyle.BorderRight = BorderStyle.Thin;
+                    contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentStyle.Alignment = HorizontalAlignment.Left;
+                    contentStyle.WrapText = true;
+                    var dataFormatCustom = wb.CreateDataFormat();
+                    logs.ForEach(dt =>
+                    {
+                        row = sheet.CreateRow(++rowCount);
+
+                        cell = row.CreateCell(0);
+                        cell.SetCellValue(dt.TransactionDateTime?.ToString("dd/MM/yyyy hh:mm:ss tt"));
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(1);
+                        cell.SetCellValue(Common.Round(dt.Amount));
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(2);
+                        cell.SetCellValue(dt.TransactionType);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(3);
+                        cell.SetCellValue(dt.Description);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(4);
+                        cell.SetCellValue(dt.Remarks);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(5);
                         cell.SetCellValue(dt.UserName);
                         cell.CellStyle = contentStyle;
 

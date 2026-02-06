@@ -1447,14 +1447,13 @@ namespace DAL.Repositories
                        .OrderByDescending(x => x.CreatedDate)
                        .ThenByDescending(x => x.Id).ToList();
 
-
                 decimal? lastFas = null;
                 decimal? lastBasic = null;
 
                 foreach (var tx in stTx)
                 {
                     if (tx.Description.Contains("Auto Debit FAS from", StringComparison.OrdinalIgnoreCase) &&
-                        tx.Description.Contains("to 0", StringComparison.OrdinalIgnoreCase))
+                        tx.Description.Contains("to 0", StringComparison.OrdinalIgnoreCase) || tx.Description.Contains("VOID", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }

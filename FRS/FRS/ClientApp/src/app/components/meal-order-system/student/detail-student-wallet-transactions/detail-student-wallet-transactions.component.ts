@@ -6,6 +6,7 @@ import {
   MatDatepickerInputEvent,
   MatDialogRef,
 } from "@angular/material";
+import * as moment from "moment";
 import { StudentWalletTransaction } from "src/app/models/meal-order/student.model";
 import {
   Filter,
@@ -22,7 +23,7 @@ import {
 import { AppTranslationService } from "src/app/services/app-translation.service";
 import { StudentService } from "src/app/services/meal-order/student.service";
 import { Utilities } from "src/app/services/utilities";
-
+import { saveAs } from "file-saver";
 @Component({
   selector: "app-student-wallet-transfer",
   templateUrl: "./detail-student-wallet-transactions.component.html",
@@ -86,7 +87,7 @@ export class DetailStudentWalletTransactionComponent
         prop: "transactionDateTime",
         name: "Date",
         pipe: new DateTimeOnlyPipe("en-SG"),
-        sortable: false
+        sortable: false,
       },
       {
         prop: "amount",
@@ -94,7 +95,7 @@ export class DetailStudentWalletTransactionComponent
         pipe: {
           transform: (val: number) => this.decimalPipe.transform(val, "1.2-2"),
         },
-        sortable: false
+        sortable: false,
       },
       { prop: "transactionType", name: "Type", sortable: false },
       { prop: "description", name: "Description", sortable: false },
@@ -236,42 +237,22 @@ export class DetailStudentWalletTransactionComponent
   }
 
   save() {
-    //const studentIdFrom = this.studentId;
-    //const val = this.data.amount as any;
-    //const studentIdTo = this.data.studentIdTo;
-    //
-    //const normalized = val;
-    //const amount = parseFloat(normalized);
-    //console.log("Parsed amount:", this.data);
-    //if (isNaN(amount) || amount <= 0) {
-    //    this.alertService.showStickyMessage("Invalid Input", "Please enter a valid positive amount (numbers only, decimals allowed).", MessageSeverity.error);
-    //    return;
-    //}
-    //
-    //this.alertService.showDialog('Are you sure you want to transfer the amount \"' + amount + '\"?', DialogType.confirm, () => {
-    //
-    //    this.isSaving = true;
-    //    this.alertService.startLoadingMessage("Processing Wallet Transfer...");
-    //    this.studentService.walletTransfer(studentIdFrom, studentIdTo, amount, this.accountService.currentUser.id)
-    //      .subscribe({
-    //        next: (response) => {
-    //          this.alertService.stopLoadingMessage();
-    //          this.isSaving = false;
-    //          this.alertService.showMessage(response.message);
-    //
-    //          if (response.data && response.data.length > 0) {
-    //            const messageData = response.data.join("<br/><br/>");
-    //            this.alertService.showStickyMessage("Wallet Transfer Info", messageData, MessageSeverity.info);
-    //          }
-    //          this.dialogRef.close(this.data);
-    //        },
-    //        error: () => {
-    //          this.alertService.stopLoadingMessage();
-    //          this.isSaving = false;
-    //          this.alertService.showStickyMessage("Wallet Transfer Error", "Unable to transfer amount.", MessageSeverity.error );
-    //        },
-    //      });
-    //});
+    this.loadingIndicator = true;
+    const fileName =
+      moment().format("DDMMYYYY_hhmmss") + "_WalletTransactionsByStudent.xlsx";
+    console.log(this.filter);
+    this.studentService.downloadWalletTransactionsByStudent(this.filter).subscribe(
+      (data) => {
+        console.log(data);
+        saveAs(data, fileName);
+        this.loadingIndicator = false;
+      },
+      (err) => {
+        alert("Problem while downloading the file.");
+        console.error(err);
+        this.loadingIndicator = false;
+      },
+    );
   }
 
   close() {

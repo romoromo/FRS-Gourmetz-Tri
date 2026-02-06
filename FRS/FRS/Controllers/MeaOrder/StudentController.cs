@@ -2012,7 +2012,7 @@ namespace FRS.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> GenerateWalletTransactionByStudent(BaseFilter filter)
         {
-            var xls = await this._walletService.GenerateXls(filter);
+            var xls = await this._walletService.GenerateWalletTransactionByStudent(filter);
             var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_AuthLogsByStudent.xlsx";
 
             if (xls == null || xls.Length == 0)
