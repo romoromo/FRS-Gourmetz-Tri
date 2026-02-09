@@ -60,7 +60,7 @@ namespace DAL.Repositories
                     Amount = m.Amount,
                     TransactionType = m.TransactionType,
                     Description = m.Description,
-                    Remarks  = m.Remarks,
+                    Remarks = m.Remarks,
                     student = new Student
                     {
                         Name = m.student.Name
@@ -1399,7 +1399,16 @@ namespace DAL.Repositories
             if (filter.StudentId != 0)
                 studentsQ = studentsQ.Where(s => s.Id == filter.StudentId);
 #if DEBUG
-            //studentsQ = studentsQ.Where(m => m.Id == 5594);
+            //studentsQ = studentsQ.Where(m => m.Id == 6289);
+//|| m.Id == 5578
+//|| m.Id ==5587
+//|| m.Id ==5594
+//|| m.Id ==5602
+//|| m.Id ==5662
+//|| m.Id ==5666
+//|| m.Id ==5704
+//|| m.Id ==5713
+            //);
 #endif
             if (filter.isFAS.HasValue)
                 studentsQ = studentsQ.Where(s => s.IsFAS == filter.isFAS.Value);
@@ -1449,6 +1458,11 @@ namespace DAL.Repositories
 
                 decimal? lastFas = null;
                 decimal? lastBasic = null;
+                double utilizedWrongFasAmount = 0;
+
+                var auditDate = new DateTime(2026, 1, 17);
+                var startTime = auditDate.AddHours(8);  // 08:00:00
+                var endTime = auditDate.AddHours(17);   // 17:00:00
 
                 foreach (var tx in stTx)
                 {
@@ -1484,6 +1498,24 @@ namespace DAL.Repositories
                             && (WalletDescriptionHelper.IsRefundBasic(x.Description)
                                 || WalletDescriptionHelper.IsRefundFAS(x.Description))).ToList();
 
+                if (s.IsFAS)
+                {
+                    var auditWindowTx = stTx.Where(x => x.CreatedDate >= startTime && x.CreatedDate <= endTime).ToList();
+
+                    var totalWrongCredit = (double)auditWindowTx
+                        .Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
+                               && WalletDescriptionHelper.IsTopUpFAS(x.Description))
+                        .Sum(x => x.Amount);
+
+                    var totalUsedDebit = (double)auditWindowTx
+                        .Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString()
+                               && WalletDescriptionHelper.IsFASPayment(x.Description))
+                        .Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS"));
+
+                    //utilizedWrongFasAmount = Math.Min(totalWrongCredit, totalUsedDebit);
+                    utilizedWrongFasAmount = totalUsedDebit;
+                }
+
                 return new WalletTransactionReportRow
                 {
                     StudentId = s.Id,
@@ -1508,7 +1540,7 @@ namespace DAL.Repositories
 
                     TotalRefundFAS = (double)refundTx.Sum(x => WalletDescriptionHelper.GetRefundAmount(x.Description, "FAS")),
 
-                    TotalFASRedemption = (double)paymentTxFAS.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS")),
+                    TotalFASRedemption = (double)paymentTxFAS.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS")) - utilizedWrongFasAmount,
 
                     //FASWalletBalance = (double)GetBal(WalletType.FAS.ToString()),
 
