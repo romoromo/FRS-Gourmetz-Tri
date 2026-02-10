@@ -55,5 +55,7 @@ namespace BAL.DTO.MealOrder
 
         public string version { get; set; }
         public string paymentTypeName { get; set; }
+
+        public string PosInvoiceId { get; set; }
     }
 }
