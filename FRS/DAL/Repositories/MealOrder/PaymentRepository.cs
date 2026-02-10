@@ -267,7 +267,12 @@ namespace DAL.Repositories.MealOrder
                     if (Decimal.ToDouble(Payment.total) > student.WalletDailyLimit)
                     {
                         result.IsSuccess = false;
-                        result.Message = "The payment exceed the wallet daily limit";
+                        result.Message = "The payment exceed the wallet daily limit. Payment = " + Payment.total + ". Daily Limit = " + student.WalletDailyLimit + ".";
+                        result.Data = new
+                        {
+                            PaymentAmount = Payment.total,
+                            WalletDailyLimit = student.WalletDailyLimit
+                        };
 
                         _logger.LogWarning("[PAYMENT] {Message} {total} {WalletDailyLimit}", result.Message, Payment.total, student.WalletDailyLimit);
 
@@ -294,7 +299,13 @@ namespace DAL.Repositories.MealOrder
                         if ((totalTrans + Decimal.ToDouble(Payment.total)) > student.WalletDailyLimit)
                         {
                             result.IsSuccess = false;
-                            result.Message = "The payment exceed the wallet daily limit";
+                            result.Message = "The payment exceed the wallet daily limit. Payment = " + Payment.total + ". Wallet Usage Today " + totalTrans +". Daily Limit = " + student.WalletDailyLimit + ".";
+                            result.Data = new
+                            {
+                                PaymentAmount = Payment.total,
+                                WalletUsage = totalTrans,
+                                WalletDailyLimit = student.WalletDailyLimit
+                            };
 
                             _logger.LogInformation($"[PAYMENT][END] Returning failure (daily limit exceeded cumulative) {totalTrans} - {Payment.total} - {student.WalletDailyLimit}");
 
