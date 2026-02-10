@@ -15,4 +15,5 @@ export class WallterTransactionReportRow {
   public TotalFASRedemption: number;
   public FASWalletBalance: number;
   public totalAutoDebitFAS: number;
+  public wrongTopupFASCredit: number;
 }

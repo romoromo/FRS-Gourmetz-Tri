@@ -1399,15 +1399,15 @@ namespace DAL.Repositories
             if (filter.StudentId != 0)
                 studentsQ = studentsQ.Where(s => s.Id == filter.StudentId);
 #if DEBUG
-            //studentsQ = studentsQ.Where(m => m.Id == 6289);
-//|| m.Id == 5578
-//|| m.Id ==5587
-//|| m.Id ==5594
-//|| m.Id ==5602
-//|| m.Id ==5662
-//|| m.Id ==5666
-//|| m.Id ==5704
-//|| m.Id ==5713
+            //studentsQ = studentsQ.Where(m => m.Id == 5602);
+            //|| m.Id == 5578
+            //|| m.Id ==5587
+            //|| m.Id ==5594
+            //|| m.Id ==5602
+            //|| m.Id ==5662
+            //|| m.Id ==5666
+            //|| m.Id ==5704
+            //|| m.Id ==5713
             //);
 #endif
             if (filter.isFAS.HasValue)
@@ -1515,6 +1515,10 @@ namespace DAL.Repositories
                     //utilizedWrongFasAmount = Math.Min(totalWrongCredit, totalUsedDebit);
                     utilizedWrongFasAmount = totalUsedDebit;
                 }
+                else
+                {
+                    refundTx = [.. refundTx.Where(x => x.CreatedDate <= startTime && x.CreatedDate >= endTime)];
+                }
 
                 return new WalletTransactionReportRow
                 {
@@ -1540,7 +1544,7 @@ namespace DAL.Repositories
 
                     TotalRefundFAS = (double)refundTx.Sum(x => WalletDescriptionHelper.GetRefundAmount(x.Description, "FAS")),
 
-                    TotalFASRedemption = (double)paymentTxFAS.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS")) - utilizedWrongFasAmount,
+                    TotalFASRedemption = (double)paymentTxFAS.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS")),
 
                     //FASWalletBalance = (double)GetBal(WalletType.FAS.ToString()),
 
@@ -1548,7 +1552,8 @@ namespace DAL.Repositories
                                             && WalletDescriptionHelper.IsAutoDebitFAS(x.Description)).Sum(x => x.Amount),
 
                     FASWalletBalance = (double)(lastFas ?? 0m),
-                    BasicWalletBalance = (double)(lastBasic ?? 0m)
+                    BasicWalletBalance = (double)(lastBasic ?? 0m),
+                    WrongTopupFASCredit = utilizedWrongFasAmount
                 };
             }).ToList();
 

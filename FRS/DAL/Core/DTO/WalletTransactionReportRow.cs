@@ -30,5 +30,7 @@
         public double TotalFASRedemption { get; set; }
         public double FASWalletBalance { get; set; }
         public double TotalAutoDebitFAS { get; set; }
+
+        public double WrongTopupFASCredit { get; set; }
     }
 }

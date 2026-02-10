@@ -874,7 +874,8 @@ namespace BAL.Services.MealOrder
                                              "Total FAS Refund Amount",
                                              "Total Auto Debit FAS",
                                              "Total FAS Redemption Amount",
-                                             "FAS Wallet Balance"
+                                             "FAS Wallet Balance",
+                                             "Wrong Topup FAS Credit"
                 };
 
                 #region Headers
@@ -977,6 +978,10 @@ namespace BAL.Services.MealOrder
                     cell.SetCellValue(Common.Round(creditTransactions.FASWalletBalance));
                     cell.CellStyle = contentStyle;
 
+                    cell = row.CreateCell(i++);
+                    cell.SetCellValue(Common.Round(creditTransactions.WrongTopupFASCredit));
+                    cell.CellStyle = contentStyle;
+
                     #endregion
                 }
                 for (var index = 0; index < headers.Length; index++)
@@ -1014,7 +1019,8 @@ namespace BAL.Services.MealOrder
                                              "Total FAS Refund Amount",
                                              "Total Auto Debit FAS",
                                              "Total FAS Redemption Amount",
-                                             "FAS Wallet Balance"
+                                             "FAS Wallet Balance",
+                                             "Wrong Topup FAS Credit"
                 };
 
                 int rowIndex = 0;
@@ -1133,6 +1139,10 @@ namespace BAL.Services.MealOrder
 
                     cell = dataRow.CreateCell(14);
                     cell.SetCellValue(Common.Round(item.FASWalletBalance));
+                    cell.CellStyle = contentStyle;
+
+                    cell = dataRow.CreateCell(15);
+                    cell.SetCellValue(Common.Round(item.WrongTopupFASCredit));
                     cell.CellStyle = contentStyle;
                 }
 

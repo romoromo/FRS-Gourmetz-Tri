@@ -224,6 +224,19 @@ export class WalletTransactionManagementComponent implements OnInit {
         },
         sortable: false,
       },
+      {
+        prop: "wrongTopupFASCredit",
+        name: "Wrong Topup FAS Credit",
+        pipe: {
+          transform: (val: number) => {
+            if (val === 0 || val === null || val === undefined) {
+              return "-";
+            }
+            return this.decimalPipe.transform(val, "1.2-2");
+          },
+        },
+        sortable: false,
+      },
     ];
   }
 
