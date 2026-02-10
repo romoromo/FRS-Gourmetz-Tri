@@ -1497,6 +1497,7 @@ namespace DAL.Repositories
                 var refundTx = stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
                             && (WalletDescriptionHelper.IsRefundBasic(x.Description)
                                 || WalletDescriptionHelper.IsRefundFAS(x.Description))).ToList();
+                var reundFas = refundTx.ToList();
 
                 if (s.IsFAS)
                 {
@@ -1517,7 +1518,7 @@ namespace DAL.Repositories
                 }
                 else
                 {
-                    refundTx = [.. refundTx.Where(x => x.CreatedDate <= startTime && x.CreatedDate >= endTime)];
+                    reundFas = [.. refundTx.Where(x => x.CreatedDate <= startTime && x.CreatedDate >= endTime)];
                 }
 
                 return new WalletTransactionReportRow
@@ -1542,7 +1543,7 @@ namespace DAL.Repositories
                     TotalTopUpFAS = (double)stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
                                                          && WalletDescriptionHelper.IsTopUpFAS(x.Description)).Sum(x => x.Amount),
 
-                    TotalRefundFAS = (double)refundTx.Sum(x => WalletDescriptionHelper.GetRefundAmount(x.Description, "FAS")),
+                    TotalRefundFAS = (double)reundFas.Sum(x => WalletDescriptionHelper.GetRefundAmount(x.Description, "FAS")),
 
                     TotalFASRedemption = (double)paymentTxFAS.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS")),
 
