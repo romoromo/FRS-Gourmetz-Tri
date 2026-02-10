@@ -106,7 +106,8 @@ namespace BAL.Mapping
                 .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
                 .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
-                .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path));
+                .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path))
+                .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => s.Payment.PosInvoiceId));
             CreateMap<StudentWalletTransactionDTO, StudentWalletTransaction>()
                 .ForMember(d => d.File, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() })); ;
 
@@ -114,7 +115,8 @@ namespace BAL.Mapping
                 .ForMember(e => e.TransactionDateTime, map => map.MapFrom(e => e.CreatedDate))
                 .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
                 .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
-                .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid)); 
+                .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
+                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId)); 
 
             CreateMap<StudentWalletTransactionDetail, StudentWalletTransactionDetailDTO>();
             CreateMap<StudentWalletTransactionDetailDTO, StudentWalletTransactionDetail>();

@@ -218,6 +218,8 @@ namespace BAL.DTO.MealOrder
         public int? FileId { get; set; }
         public string FileName { get; set; }
         public string FilePath { get; set; }
+
+        public string PosInvoiceId { get; set; }
     }
 
     public class StudentWalletTransactionSimpleDTO
@@ -242,6 +244,8 @@ namespace BAL.DTO.MealOrder
 
         public string StudentName { get; set; }
         public string StripeId { get; set; }
+
+        public string PosInvoiceId { get; set; }
     }
 
     public class StudentWalletTransactionDetailDTO

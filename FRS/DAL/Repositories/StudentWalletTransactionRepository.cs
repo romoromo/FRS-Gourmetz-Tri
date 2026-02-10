@@ -72,6 +72,11 @@ namespace DAL.Repositories
                     CreatedByUser = new ApplicationUser
                     {
                         UserName = m.CreatedByUser.UserName
+                    },
+
+                    Payment = new Payment
+                    {
+                        PosInvoiceId = m.Payment == null ? string.Empty : m.Payment.PosInvoiceId
                     }
                 });
 

@@ -100,6 +100,7 @@ export class DetailStudentWalletTransactionComponent
       { prop: "transactionType", name: "Type", sortable: false },
       { prop: "description", name: "Description", sortable: false },
       { prop: "stripeId", name: "REF_ID", sortable: false },
+      { prop: "posInvoiceId", name: "POS Invoice Id", sortable: false },
       { prop: "remarks", name: "Remarks", sortable: false },
       { prop: "userName", name: "Processed By", sortable: false },
     ];
