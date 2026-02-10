@@ -60,7 +60,7 @@ namespace DAL.Repositories
                     Amount = m.Amount,
                     TransactionType = m.TransactionType,
                     Description = m.Description,
-                    Remarks  = m.Remarks,
+                    Remarks = m.Remarks,
                     student = new Student
                     {
                         Name = m.student.Name
@@ -72,6 +72,11 @@ namespace DAL.Repositories
                     CreatedByUser = new ApplicationUser
                     {
                         UserName = m.CreatedByUser.UserName
+                    },
+
+                    Payment = new Payment
+                    {
+                        PosInvoiceId = m.Payment == null ? string.Empty : m.Payment.PosInvoiceId
                     }
                 });
 

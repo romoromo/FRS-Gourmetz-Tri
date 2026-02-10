@@ -122,6 +122,7 @@ export class StudentWalletTransaction {
   public fileId: string = '';
   public fileName: string = '';
   public filePath: string = '';
+  public posInvoiceId: string = '';
 
 }
 
