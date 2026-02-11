@@ -49,3 +49,7 @@
   <button type="button" mat-button (click)="close()" [disabled]="loadingIndicator"><i class='fa fa-times'></i>
     Close</button>
 </mat-dialog-actions>
+
+  <ng-template #invoiceIdTemplate let-row="row" let-value="value" let-i="index">
+    <a class="ng-star-inserted" href="javascript:;" (click)="showPosDetail(row)">{{value}}</a>
+  </ng-template>
