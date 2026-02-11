@@ -875,7 +875,7 @@ namespace BAL.Services.MealOrder
                                              "Total Auto Debit FAS",
                                              "Total FAS Redemption Amount",
                                              "FAS Wallet Balance",
-                                             "Wrong Topup FAS Credit"
+                                             "UItilised amount of the \"wrongly top up FAS credit\""
                 };
 
                 #region Headers
@@ -1020,7 +1020,7 @@ namespace BAL.Services.MealOrder
                                              "Total Auto Debit FAS",
                                              "Total FAS Redemption Amount",
                                              "FAS Wallet Balance",
-                                             "Wrong Topup FAS Credit"
+                                             "UItilised amount of the \"wrongly top up FAS credit\""
                 };
 
                 int rowIndex = 0;

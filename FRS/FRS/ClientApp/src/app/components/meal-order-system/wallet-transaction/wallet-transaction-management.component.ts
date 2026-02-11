@@ -226,7 +226,7 @@ export class WalletTransactionManagementComponent implements OnInit {
       },
       {
         prop: "wrongTopupFASCredit",
-        name: "Wrong Topup FAS Credit",
+        name: "UItilised amount of the \"wrongly top up FAS credit\"",
         pipe: {
           transform: (val: number) => {
             if (val === 0 || val === null || val === undefined) {

@@ -1403,18 +1403,7 @@ namespace DAL.Repositories
 
             if (filter.StudentId != 0)
                 studentsQ = studentsQ.Where(s => s.Id == filter.StudentId);
-#if DEBUG
-            //studentsQ = studentsQ.Where(m => m.Id == 5602);
-            //|| m.Id == 5578
-            //|| m.Id ==5587
-            //|| m.Id ==5594
-            //|| m.Id ==5602
-            //|| m.Id ==5662
-            //|| m.Id ==5666
-            //|| m.Id ==5704
-            //|| m.Id ==5713
-            //);
-#endif
+
             if (filter.isFAS.HasValue)
                 studentsQ = studentsQ.Where(s => s.IsFAS == filter.isFAS.Value);
 
@@ -1436,21 +1425,21 @@ namespace DAL.Repositories
 
             var transactions = await _appContext.StudentWalletTransactions.AsNoTracking()
                 .Where(tx => tx.IsActive &&
-                             studentIds.Contains(tx.StudentId) &&
+                             studentIds.Contains(tx.StudentId) && !tx.Description.Contains("VOID") &&
                              tx.CreatedDate >= fromDate &&
                              tx.CreatedDate < toExclusive)
                 .ToListAsync();
 
             var lastTransactionIds = await _appContext.StudentWalletTransactions.AsNoTracking()
                 .Where(tx => tx.IsActive &&
-                             studentIds.Contains(tx.StudentId) &&
+                             studentIds.Contains(tx.StudentId) && tx.Description.Contains("VOID") &&
                              tx.CreatedDate < toExclusive)
                 .GroupBy(tx => tx.StudentId)
                 .Select(g => g.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.Id).Select(x => x.Id).FirstOrDefault())
                 .ToListAsync();
 
             var snapshots = await _appContext.StudentWalletTransactions.AsNoTracking()
-                .Where(tx => lastTransactionIds.Contains(tx.Id))
+                .Where(tx => lastTransactionIds.Contains(tx.Id) && tx.Description.Contains("VOID"))
                 .ToListAsync();
 
             var blacklistDate = new DateTime(2026, 1, 17);
@@ -1496,9 +1485,6 @@ namespace DAL.Repositories
                              && WalletDescriptionHelper.IsPaymentForOrder(x.Description)).ToList();
 
                 var paymentTxFAS = paymentTx.ToList();
-                if (!s.IsFAS)
-                    paymentTxFAS.RemoveAll(m => m.CreatedDate.Date == blacklistDate);
-
                 var refundTx = stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
                             && (WalletDescriptionHelper.IsRefundBasic(x.Description)
                                 || WalletDescriptionHelper.IsRefundFAS(x.Description))).ToList();
@@ -1523,7 +1509,8 @@ namespace DAL.Repositories
                 }
                 else
                 {
-                    reundFas = [.. refundTx.Where(x => x.CreatedDate <= startTime && x.CreatedDate >= endTime)];
+                    reundFas = refundTx.Where(x => !(x.CreatedDate >= startTime && x.CreatedDate <= endTime)).ToList();
+                    paymentTxFAS = [.. paymentTxFAS.Where(x => x.CreatedDate <= startTime && x.CreatedDate >= endTime)];
                 }
 
                 return new WalletTransactionReportRow
