@@ -6,7 +6,7 @@
 
     <mat-form-field class="col-xs-12 col-sm-9">
       <input matInput autocomplete="off" type="text" id="keyword" name="keyword" placeholder="Student Name"
-             [(ngModel)]="filter.keyword" #keyword="ngModel" />
+        [(ngModel)]="filter.keyword" #keyword="ngModel" />
     </mat-form-field>
 
     <mat-form-field class="col-sm-4">
@@ -37,14 +37,14 @@
     <div class="clearfix"></div>
     <mat-form-field class="col-xs-12 col-sm-3">
       <input matInput [matDatepicker]="startpicker" placeholder="Transaction Start Date" [value]="start"
-             (dateChange)="onChangeDate('start', $event)">
+        (dateChange)="onChangeDate('start', $event)">
       <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
       <mat-datepicker #startpicker></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field class="col-xs-12 col-sm-3">
       <input matInput [matDatepicker]="endpicker" placeholder="Transaction End Date" [value]="end"
-             (dateChange)="onChangeDate('end',$event)">
+        (dateChange)="onChangeDate('end',$event)">
       <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
       <mat-datepicker #endpicker></mat-datepicker>
     </mat-form-field>
@@ -60,54 +60,37 @@
     <div class="col-xs-12 col-sm-12 col-md-3" style="padding-bottom:10px;">
       <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
       <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>
-      <button *ngIf="canManageWalletTransaction" type="button" class="btn btn-sm btn-warning" (click)="cancelOrder();" style="margin-left:10px">Cancel Order</button>
-      <button type="button" class="btn btn-sm btn-info" (click)="downloadResults();" style="margin-left:5px;">Download Results</button>
+      <button *ngIf="canManageWalletTransaction" type="button" class="btn btn-sm btn-warning" (click)="cancelOrder();"
+        style="margin-left:10px">Cancel Order</button>
+      <button type="button" class="btn btn-sm btn-info" (click)="downloadResults();" style="margin-left:5px;">Download
+        Results</button>
     </div>
   </div>
 
   <div class="table-responsive">
-    <ngx-datatable class="material colored-header" #orderTable
-                   [loadingIndicator]="loadingIndicator"
-                   [rows]="rows"
-                   [rowHeight]="'auto'"
-                   [headerHeight]="'auto'"
-                   [footerHeight]="35"
-                   [columns]="columns"
-                   [columnMode]="'force'"
-                   [externalPaging]="true"
-                   [externalSorting]="true"
-                   [count]="pagedResult.totalCount"
-                   [limit]="pagedResult.filter.pageSize"
-                   (page)="loadData($event)"
-                   [selected]="selected"
-                   [selectionType]="'checkbox'"
-                   [selectAllRowsOnPage]="true"
-                   (select)="onSelect($event)"
-                   (sort)="loadData($event)">
+    <ngx-datatable class="material colored-header" #orderTable [loadingIndicator]="loadingIndicator" [rows]="rows"
+      [rowHeight]="'auto'" [headerHeight]="'auto'" [footerHeight]="35" [columns]="columns" [columnMode]="'force'"
+      [externalPaging]="true" [externalSorting]="true" [count]="pagedResult.totalCount"
+      [limit]="pagedResult.filter.pageSize" (page)="loadData($event)" [selected]="selected" [selectionType]="'checkbox'"
+      [selectAllRowsOnPage]="true" (select)="onSelect($event)" (sort)="loadData($event)">
     </ngx-datatable>
   </div>
-  <ng-template #hdrTpl let-column="column"
-               let-selectFn="selectFn"
-               let-allRowsSelected="allRowsSelected"
-               let-value="value">
+  <ng-template #hdrTpl let-column="column" let-selectFn="selectFn" let-allRowsSelected="allRowsSelected"
+    let-value="value">
     <input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" />
   </ng-template>
 
-   <ng-template #indexTemplate
-               let-value="value"
-               let-isSelected="isSelected"
-               let-onCheckboxChangeFn="onCheckboxChangeFn"
-               let-rowCount="rowCount"
-               let-pageSize="pageSize"
-               let-curPage="curPage"
-               let-offset="offset">
-    <input type="checkbox"
-           [checked]="isSelected"
-           (change)="onCheckboxChangeFn($event)" />
+  <ng-template #indexTemplate let-value="value" let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn"
+    let-rowCount="rowCount" let-pageSize="pageSize" let-curPage="curPage" let-offset="offset">
+    <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
   </ng-template>
 
   <ng-template #actionTemplate let-row="row" let-value="value" let-i="index">
-     <a class="btn btn-link btn-xs" href="javascript:;" (click)="uploadTransaction(row)"><i
-        class="fa fa-upload" aria-hidden="true"></i> Upload Transaction</a>
+    <a class="btn btn-link btn-xs" href="javascript:;" (click)="uploadTransaction(row)"><i class="fa fa-upload"
+        aria-hidden="true"></i> Upload Transaction</a>
+  </ng-template>
+
+  <ng-template #invoiceIdTemplate let-row="row" let-value="value" let-i="index">
+    <a class="ng-star-inserted" href="javascript:;" (click)="showPosDetail(row)">{{value}}</a>
   </ng-template>
 </div>

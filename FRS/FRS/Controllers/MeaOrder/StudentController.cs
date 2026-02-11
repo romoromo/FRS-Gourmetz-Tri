@@ -32,7 +32,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FRS.Controllers
@@ -1998,6 +2000,34 @@ namespace FRS.Controllers
                 contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 fileDownloadName: reportName
             );
+        }
+
+        [HttpGet("wallet/pos-details")]
+        public async Task<IActionResult> GetPosDetails(string invoiceId)
+        {
+            try
+            {
+                var httpClient = new HttpClient();
+                string encodedId = System.Web.HttpUtility.UrlEncode(invoiceId);
+
+                var posUrl = _configuration["AppSettings:POS_URL"] ?? "http://byod.southeastasia.cloudapp.azure.com:8082";
+
+                string url = $"{posUrl}/POS/Laporan_penjualan_perinvoice/ajaxGetSalesByInvoiceId?invoice_id={encodedId}";
+
+                var response = await httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    return Ok(content);
+                }
+
+                return BadRequest("Failed to fetch data from POS system");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

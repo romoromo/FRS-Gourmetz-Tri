@@ -84,6 +84,9 @@ export class WalletTransactionLogManagementComponent
   @ViewChild("actionTemplate")
   actionsTemplate: TemplateRef<any>;
 
+  @ViewChild("invoiceIdTemplate")
+  invoiceIdTemplate: TemplateRef<any>;
+
   @ViewChild("editorModal")
   editorModal: ModalDirective;
 
@@ -145,7 +148,7 @@ export class WalletTransactionLogManagementComponent
       { prop: "transactionType", name: "Type" },
       { prop: "description", name: "Description" },
       { prop: "stripeId", name: "REF_ID" },
-      { prop: "posInvoiceId", name: "POS Invoice Id", sortable: false },
+      { prop: "posInvoiceId", name: "POS Invoice Id", sortable: false, cellTemplate: this.invoiceIdTemplate },
       { prop: "studentId", name: "Student Id" },
       { prop: "studentName", name: "Student Name" },
       { prop: "remarks", name: "Remarks" },
@@ -338,5 +341,10 @@ export class WalletTransactionLogManagementComponent
   uploadTransaction(row: StudentWalletTransaction) {
     this.selectedRow = row;
     this.openDialog(this.selectedRow);
+  }
+
+  showPosDetail(row: StudentWalletTransaction){
+    this.selectedRow = row;
+    console.log(this.selectedRow);
   }
 }
