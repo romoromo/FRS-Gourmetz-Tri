@@ -37,7 +37,8 @@ import {
 //import { StudentEditorComponent } from './student-editor.component';
 import { StudentService } from "src/app/services/meal-order/student.service";
 import { WalletTransactionLogEditorComponent } from "./wallet-transaction-log-editor.component";
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe } from "@angular/common";
+import { PosDetailComponent } from "./pos-detail.component";
 
 @Component({
   selector: "wallet-transaction-log-management",
@@ -101,7 +102,7 @@ export class WalletTransactionLogManagementComponent
     private accountService: AccountService,
     private studentService: StudentService,
     public dialog: MatDialog,
-    private decimalPipe: DecimalPipe
+    private decimalPipe: DecimalPipe,
   ) {}
 
   ngOnDestroy(): void {
@@ -139,16 +140,22 @@ export class WalletTransactionLogManagementComponent
         pipe: new DateTimeOnlyPipe("en-SG"),
       },
       {
-        prop: "amount", name: "Amount",
+        prop: "amount",
+        name: "Amount",
         pipe: {
-          transform: (val: number) => this.decimalPipe.transform(val, '1.2-2')
-        }
+          transform: (val: number) => this.decimalPipe.transform(val, "1.2-2"),
+        },
       },
       //{ prop: 'mealDescription', name: 'Meal Description', cellTemplate: this.mealDescriptionTemplate, sortable: false, draggable: false },
       { prop: "transactionType", name: "Type" },
       { prop: "description", name: "Description" },
       { prop: "stripeId", name: "REF_ID" },
-      { prop: "posInvoiceId", name: "POS Invoice Id", sortable: false, cellTemplate: this.invoiceIdTemplate },
+      {
+        prop: "posInvoiceId",
+        name: "POS Invoice Id",
+        sortable: false,
+        cellTemplate: this.invoiceIdTemplate,
+      },
       { prop: "studentId", name: "Student Id" },
       { prop: "studentName", name: "Student Name" },
       { prop: "remarks", name: "Remarks" },
@@ -240,11 +247,11 @@ export class WalletTransactionLogManagementComponent
           this.alertService.showStickyMessage(
             "Load Error",
             `Unable to retrieve order cancellations from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(
-              error
+              error,
             )}"`,
-            MessageSeverity.error
+            MessageSeverity.error,
           );
-        }
+        },
       );
   }
 
@@ -317,20 +324,20 @@ export class WalletTransactionLogManagementComponent
       (err) => {
         alert("Problem while downloading the file.");
         console.error(err);
-      }
+      },
     );
   }
 
   get canManageWalletTransaction() {
     return this.accountService.userHasPermission(
-      Permission.manageMOSOrderMgtWalletTransactionsPermission
+      Permission.manageMOSOrderMgtWalletTransactionsPermission,
     );
   }
 
   openDialog(StudentWalletTransaction: StudentWalletTransaction): void {
     const dialogRef = this.dialog.open(WalletTransactionLogEditorComponent, {
       data: { StudentWalletTransaction: StudentWalletTransaction },
-      width: "400px"
+      width: "400px",
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -343,8 +350,46 @@ export class WalletTransactionLogManagementComponent
     this.openDialog(this.selectedRow);
   }
 
-  showPosDetail(row: StudentWalletTransaction){
+  showPosDetail(row: StudentWalletTransaction) {
+    this.alertService.startLoadingMessage();
+    this.loadingIndicator = true;
+
     this.selectedRow = row;
-    console.log(this.selectedRow);
+    this.studentService
+      .getPOSInvoiceDetail(this.selectedRow.posInvoiceId)
+      .subscribe(
+        (results) => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+
+          console.log(results);
+
+          if (results.error) {
+            this.alertService.showStickyMessage(
+              "Load Error",
+              `"${Utilities.getHttpResponseMessage(results.message)}"`,
+              MessageSeverity.error,
+            );
+          } else {
+            this.dialog.open(PosDetailComponent, {
+              data: { data: results },
+              width: "1000px",
+              disableClose: true,
+            });
+          }
+        },
+        (error) => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+
+          this.alertService.showStickyMessage(
+            "Load Error",
+            `Unable to retrieve order cancellations from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(
+              error,
+            )}"`,
+            MessageSeverity.error,
+          );
+        },
+      );
   }
 }

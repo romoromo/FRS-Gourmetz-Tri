@@ -1,9 +1,10 @@
 import { DecimalPipe } from "@angular/common";
-import { Component, Inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { FormControl } from "@angular/forms";
 import {
   MAT_DIALOG_DATA,
   MatDatepickerInputEvent,
+  MatDialog,
   MatDialogRef,
 } from "@angular/material";
 import * as moment from "moment";
@@ -24,6 +25,7 @@ import { AppTranslationService } from "src/app/services/app-translation.service"
 import { StudentService } from "src/app/services/meal-order/student.service";
 import { Utilities } from "src/app/services/utilities";
 import { saveAs } from "file-saver";
+import { PosDetailComponent } from "../../wallet-transaction-log/pos-detail.component";
 @Component({
   selector: "app-student-wallet-transfer",
   templateUrl: "./detail-student-wallet-transactions.component.html",
@@ -48,7 +50,10 @@ export class DetailStudentWalletTransactionComponent
   studentId: number;
   @ViewChild("transactionTable") table: any;
   isClearResults = true;
-
+  selectedRow: StudentWalletTransaction;
+  @ViewChild("invoiceIdTemplate")
+  invoiceIdTemplate: TemplateRef<any>;
+  
   constructor(
     private translationService: AppTranslationService,
     public dialogRef: MatDialogRef<DetailStudentWalletTransactionComponent>,
@@ -56,6 +61,7 @@ export class DetailStudentWalletTransactionComponent
     private decimalPipe: DecimalPipe,
     private alertService: AlertService,
     @Inject(MAT_DIALOG_DATA) public dataStudent: any,
+    public dialog: MatDialog,
   ) {
     if (dataStudent) {
       if (dataStudent.studentId) {
@@ -100,7 +106,12 @@ export class DetailStudentWalletTransactionComponent
       { prop: "transactionType", name: "Type", sortable: false },
       { prop: "description", name: "Description", sortable: false },
       { prop: "stripeId", name: "REF_ID", sortable: false },
-      { prop: "posInvoiceId", name: "POS Invoice Id", sortable: false },
+      {
+        prop: "posInvoiceId",
+        name: "POS Invoice Id",
+        sortable: false,
+        cellTemplate: this.invoiceIdTemplate,
+      },
       { prop: "remarks", name: "Remarks", sortable: false },
       { prop: "userName", name: "Processed By", sortable: false },
     ];
@@ -242,21 +253,66 @@ export class DetailStudentWalletTransactionComponent
     const fileName =
       moment().format("DDMMYYYY_hhmmss") + "_WalletTransactionsByStudent.xlsx";
     console.log(this.filter);
-    this.studentService.downloadWalletTransactionsByStudent(this.filter).subscribe(
-      (data) => {
-        console.log(data);
-        saveAs(data, fileName);
-        this.loadingIndicator = false;
-      },
-      (err) => {
-        alert("Problem while downloading the file.");
-        console.error(err);
-        this.loadingIndicator = false;
-      },
-    );
+    this.studentService
+      .downloadWalletTransactionsByStudent(this.filter)
+      .subscribe(
+        (data) => {
+          console.log(data);
+          saveAs(data, fileName);
+          this.loadingIndicator = false;
+        },
+        (err) => {
+          alert("Problem while downloading the file.");
+          console.error(err);
+          this.loadingIndicator = false;
+        },
+      );
   }
 
   close() {
     this.dialogRef.close();
   }
+
+  showPosDetail(row: StudentWalletTransaction) {
+      this.alertService.startLoadingMessage();
+      this.loadingIndicator = true;
+  
+      this.selectedRow = row;
+      this.studentService
+        .getPOSInvoiceDetail(this.selectedRow.posInvoiceId)
+        .subscribe(
+          (results) => {
+            this.alertService.stopLoadingMessage();
+            this.loadingIndicator = false;
+  
+            console.log(results);
+  
+            if (results.error) {
+              this.alertService.showStickyMessage(
+                "Load Error",
+                `"${Utilities.getHttpResponseMessage(results.message)}"`,
+                MessageSeverity.error,
+              );
+            } else {
+              this.dialog.open(PosDetailComponent, {
+                data: { data: results },
+                width: "1000px",
+                disableClose: true,
+              });
+            }
+          },
+          (error) => {
+            this.alertService.stopLoadingMessage();
+            this.loadingIndicator = false;
+  
+            this.alertService.showStickyMessage(
+              "Load Error",
+              `Unable to retrieve order cancellations from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(
+                error,
+              )}"`,
+              MessageSeverity.error,
+            );
+          },
+        );
+    }
 }

@@ -1240,7 +1240,7 @@ namespace FRS.Controllers
         {
             var results = await this._walletService.GetWalletTransactionsSimpleAsync(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<StudentWalletTransactionSimpleDTO>>(results));
-        }        
+        }
         #endregion
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -2010,9 +2010,11 @@ namespace FRS.Controllers
                 var httpClient = new HttpClient();
                 string encodedId = System.Web.HttpUtility.UrlEncode(invoiceId);
 
-                var posUrl = _configuration["AppSettings:POS_URL"] ?? "http://byod.southeastasia.cloudapp.azure.com:8082";
+                var posUrl = _configuration["AppSettings:POS_URL"];
+                if (string.IsNullOrEmpty(posUrl))
+                    posUrl = "http://byod.southeastasia.cloudapp.azure.com:8082";
 
-                string url = $"{posUrl}/POS/Laporan_penjualan_perinvoice/ajaxGetSalesByInvoiceId?invoice_id={encodedId}";
+                string url = $"{posUrl}/POS/anon_api/ajaxGetSalesByInvoiceId?invoice_id={encodedId?.Trim()}";
 
                 var response = await httpClient.GetAsync(url);
 

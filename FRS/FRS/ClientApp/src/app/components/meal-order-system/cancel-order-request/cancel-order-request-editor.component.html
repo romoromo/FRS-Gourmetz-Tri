@@ -33,7 +33,8 @@
           </mat-radio-group>
         </mat-form-field>
         <mat-form-field class="col-md-6">
-          <textarea rows="5" matInput autocomplete="off" type="text" id="response" name="response" placeholder="Response" [(ngModel)]="cancelOrderRequestEdit.response" [disabled]="cancelOrderRequestEdit.status == 'Approved' || cancelOrderRequestEdit.status == 'Rejected'"></textarea>
+          <textarea rows="5" matInput autocomplete="off" type="text" id="response" name="response" placeholder="Response" [(ngModel)]="cancelOrderRequestEdit.response" 
+            [disabled]="cancelOrderRequestEdit.status == 'Approved' || cancelOrderRequestEdit.status == 'Rejected'" [required]="cancelOrderRequestEdit.status == 'Submitted'"></textarea>
         </mat-form-field>
 
       </div>
