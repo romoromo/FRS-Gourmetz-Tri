@@ -1425,21 +1425,21 @@ namespace DAL.Repositories
 
             var transactions = await _appContext.StudentWalletTransactions.AsNoTracking()
                 .Where(tx => tx.IsActive &&
-                             studentIds.Contains(tx.StudentId) && !tx.Description.Contains("VOID") &&
+                             studentIds.Contains(tx.StudentId) && !tx.Remarks.Contains("VOID") &&
                              tx.CreatedDate >= fromDate &&
                              tx.CreatedDate < toExclusive)
                 .ToListAsync();
 
             var lastTransactionIds = await _appContext.StudentWalletTransactions.AsNoTracking()
                 .Where(tx => tx.IsActive &&
-                             studentIds.Contains(tx.StudentId) && tx.Description.Contains("VOID") &&
+                             studentIds.Contains(tx.StudentId) && !tx.Remarks.Contains("VOID") &&
                              tx.CreatedDate < toExclusive)
                 .GroupBy(tx => tx.StudentId)
                 .Select(g => g.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.Id).Select(x => x.Id).FirstOrDefault())
                 .ToListAsync();
 
             var snapshots = await _appContext.StudentWalletTransactions.AsNoTracking()
-                .Where(tx => lastTransactionIds.Contains(tx.Id) && tx.Description.Contains("VOID"))
+                .Where(tx => lastTransactionIds.Contains(tx.Id) && !tx.Remarks.Contains("VOID"))
                 .ToListAsync();
 
             var blacklistDate = new DateTime(2026, 1, 17);
@@ -1527,26 +1527,22 @@ namespace DAL.Repositories
 
                     TotalRefundBasic = (double)refundTx.Sum(x => WalletDescriptionHelper.GetRefundAmount(x.Description, "Basic")),
 
-                    //BasicWalletBalance = (double)GetBal(WalletType.BASIC.ToString()),
-
                     TotalBasicRedemption = (double)paymentTx.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "Normal")),
+                    BasicWalletBalance = (double)(lastBasic ?? 0m),
 
 
-                    TotalTopUpFAS = (double)stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
+                    TotalTopUpFAS = !s.IsFAS ? 0 : (double)stTx.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
                                                          && WalletDescriptionHelper.IsTopUpFAS(x.Description)).Sum(x => x.Amount),
 
-                    TotalRefundFAS = (double)reundFas.Sum(x => WalletDescriptionHelper.GetRefundAmount(x.Description, "FAS")),
+                    TotalRefundFAS = !s.IsFAS ? 0 : (double)reundFas.Sum(x => WalletDescriptionHelper.GetRefundAmount(x.Description, "FAS")),
 
-                    TotalFASRedemption = (double)paymentTxFAS.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS")),
+                    TotalFASRedemption = !s.IsFAS ? 0 : (double)paymentTxFAS.Sum(x => WalletDescriptionHelper.GetDeductedAmount(x.Description, "FAS")),
 
-                    //FASWalletBalance = (double)GetBal(WalletType.FAS.ToString()),
-
-                    TotalAutoDebitFAS = (double)stTx.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString()
+                    TotalAutoDebitFAS = !s.IsFAS ? 0 : (double)stTx.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString()
                                             && WalletDescriptionHelper.IsAutoDebitFAS(x.Description)).Sum(x => x.Amount),
 
-                    FASWalletBalance = (double)(lastFas ?? 0m),
-                    BasicWalletBalance = (double)(lastBasic ?? 0m),
-                    WrongTopupFASCredit = utilizedWrongFasAmount
+                    FASWalletBalance = !s.IsFAS ? 0 : (double)(lastFas ?? 0m),                    
+                    WrongTopupFASCredit = !s.IsFAS ? 0 : utilizedWrongFasAmount
                 };
             }).ToList();
 
