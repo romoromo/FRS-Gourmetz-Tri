@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NPOI.HPSF;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using OpenIddict.Validation.AspNetCore;
@@ -225,7 +226,7 @@ namespace FRS.Controllers
         {
             if (!string.IsNullOrEmpty(model.ImgUrl))
             {
-                var folderName = Path.Combine("Resources", "StudentPictures", model.UserId + "_" + model.Name);
+                var folderName = Path.Combine("Resources", "StudentPictures", model.UserId + "_" + (string.IsNullOrWhiteSpace(model.Name) ? string.Concat(model.Name.Split(Path.GetInvalidFileNameChars())) : "_"));
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
                 if (!Directory.Exists(pathToSave))
