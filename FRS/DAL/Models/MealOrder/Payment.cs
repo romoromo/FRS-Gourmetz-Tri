@@ -63,5 +63,8 @@ namespace DAL.Models.MealOrder
         public bool invoiceSent { get; set; }
 
         public string version { get; set; }
+
+        public string PosInvoiceId { get; set; }
+
     }
 }

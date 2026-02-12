@@ -23,5 +23,12 @@ namespace DAL.Models.MealOrder
 
         [ForeignKey("StudentId")]
         public virtual Student Student { get; set; }
+
+        public int? UserUpdateId { get; set; }
+
+        [ForeignKey("UserUpdateId")]
+        public virtual ApplicationUser UserUpdate { get; set; }
+
+        public DateTime LastUpdateDate { get; set; }
     }
 }

@@ -101,6 +101,10 @@ export class StudentService {
    return this.commonEndpoint.getFile<any>(this.studentUrl + '/generate-wallet-transactions', filter);
   }
 
+  getWalletTransactions(filter: WalletTransactionFilter){
+   return this.commonEndpoint.getSieve<PagedResult>(this.studentUrl + '/get-wallet-transactions', filter);
+  }
+
   createAccount(ids: string[]) {
     return this.commonEndpoint.get(this.studentUrl + '/createaccount', true, ids);
   }
@@ -205,6 +209,14 @@ export class StudentService {
     return this.commonEndpoint.getSieve<PagedResult>(this.walletUrl + '/transactions/sieve/list', filter);
   }
 
+  getPOSInvoiceDetail(invoiceId: string) {
+    return this.commonEndpoint.get<any>(this.walletUrl + `/pos-details?invoiceId=${invoiceId}`);
+  }
+
+  getStudentWalletTransactionsSimpleByFilter(filter: Filter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.walletUrl + '/simple-transactions/sieve/list', filter);
+  }
+
   updateWalletTransactionLog(studentWalletTransaction: StudentWalletTransaction){
     if(studentWalletTransaction.id)
     {
@@ -214,6 +226,10 @@ export class StudentService {
 
   downloadWalletTransactions(filter: Filter){
     return this.commonEndpoint.getFile<any>(this.walletUrl + '/exportwallettransaction' , filter);
+  }
+
+  downloadWalletTransactionsByStudent(filter: Filter){
+    return this.commonEndpoint.getFile<any>(this.walletUrl + '/exportwallettransactionbystudent' , filter);
   }
 
   walletTopupForStudentGroup(studentGroupId: string, amount: number, userId: string,type:string) {

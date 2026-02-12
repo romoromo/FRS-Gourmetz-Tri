@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BAL.DTO;
 using BAL.DTO.MealOrder;
 using BAL.Services;
 using BAL.Services.Interfaces;
@@ -31,7 +32,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FRS.Controllers
@@ -1226,6 +1229,18 @@ namespace FRS.Controllers
             var results = await this._walletService.GetWalletTransactionsAsync(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<StudentWalletTransactionDTO>>(results));
         }
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiKeyAuthorize]
+        [HttpGet("wallet/simple-transactions/sieve/list")]
+        //[Authorize(Authorization.Policies.ViewAllStudentsPolicy)]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<StudentWalletTransactionSimpleDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetWalletTransactionsSimpleAsync(BaseFilter filter)
+        {
+            var results = await this._walletService.GetWalletTransactionsSimpleAsync(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<StudentWalletTransactionSimpleDTO>>(results));
+        }
         #endregion
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -1957,6 +1972,64 @@ namespace FRS.Controllers
                 contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 fileDownloadName: reportName
             );
+        }
+
+        [HttpGet("students/get-wallet-transactions")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<WalletTransactionReportRow>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetWalletTransactions(WalletTransactionFilter filter)
+        {
+            var datas = await _service.GetWalletTransactions(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<WalletTransactionReportRow>>(datas));
+        }
+
+        [HttpPost("wallet/exportwallettransactionbystudent")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateWalletTransactionByStudent(BaseFilter filter)
+        {
+            var xls = await this._walletService.GenerateWalletTransactionByStudent(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_AuthLogsByStudent.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
+
+        [HttpGet("wallet/pos-details")]
+        public async Task<IActionResult> GetPosDetails(string invoiceId)
+        {
+            try
+            {
+                var httpClient = new HttpClient();
+                string encodedId = System.Web.HttpUtility.UrlEncode(invoiceId);
+
+                var posUrl = _configuration["AppSettings:POS_URL"];
+                if (string.IsNullOrEmpty(posUrl))
+                    posUrl = "http://byod.southeastasia.cloudapp.azure.com:8082";
+
+                string url = $"{posUrl}/POS/anon_api/ajaxGetSalesByInvoiceId?invoice_id={encodedId?.Trim()}";
+
+                var response = await httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    return Ok(content);
+                }
+
+                return BadRequest("Failed to fetch data from POS system");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

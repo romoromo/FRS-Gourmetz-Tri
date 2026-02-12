@@ -137,12 +137,19 @@ namespace DAL.Filters
         public int catererInfoId { get; set; }
     }
 
-    public class WalletTransactionFilter
+    public class WalletTransactionFilter : BaseFilter
     {
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
         public List<int> OutletId { get; set; }
         public List<int> ClassLevelIds { get; set; }
-        public bool isFAS { get; set; }
+        public bool? isFAS { get; set; }
+
+        public int StudentId { get; set; } = 0;
+    }
+
+    public class DetailWalletTansactionFilter : BaseFilter
+    {
+        public int StudentId { get; set; } = 0;
     }
 }

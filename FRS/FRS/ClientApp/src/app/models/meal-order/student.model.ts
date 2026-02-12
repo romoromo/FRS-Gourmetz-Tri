@@ -64,6 +64,8 @@ export class StudentCard {
   public isApprove: boolean;
   public updatedDate: Date;
   public updatedBy: string;
+  public lastUpdateDate: Date;
+  public userUpdateId: string;
   public updatingUserName: string;
 }
 
@@ -120,6 +122,7 @@ export class StudentWalletTransaction {
   public fileId: string = '';
   public fileName: string = '';
   public filePath: string = '';
+  public posInvoiceId: string = '';
 
 }
 

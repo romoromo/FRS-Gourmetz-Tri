@@ -1,5 +1,6 @@
 ﻿using DAL.Core.Audit.Attributes;
 using DAL.Core.DTO;
+using DAL.Models;
 using DAL.Models.MealOrder;
 using Sieve.Attributes;
 using System;
@@ -153,6 +154,8 @@ namespace BAL.DTO.MealOrder
         public string CardId { get; set; }
         public string Status { get; set; }
         public string Remarks { get; set; }
+        public DateTime? LastUpdateDate { get; set; }
+        public int? UserUpdateId { get; set; }
         public DateTime? IssueDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public int UpdatedBy { get; set; }
@@ -215,6 +218,34 @@ namespace BAL.DTO.MealOrder
         public int? FileId { get; set; }
         public string FileName { get; set; }
         public string FilePath { get; set; }
+
+        public string PosInvoiceId { get; set; }
+    }
+
+    public class StudentWalletTransactionSimpleDTO
+    {
+        public int Id { get; set; }
+
+        public DateTime? TransactionDateTime { get; set; }
+
+        public int StudentId { get; set; }
+
+        public double Amount { get; set; }
+
+        public string TransactionType { get; set; }
+
+        public string Description { get; set; }
+
+        public string Remarks { get; set; }
+
+        public int UserId { get; set; }
+
+        public string UserName { get; set; }
+
+        public string StudentName { get; set; }
+        public string StripeId { get; set; }
+
+        public string PosInvoiceId { get; set; }
     }
 
     public class StudentWalletTransactionDetailDTO

@@ -106,10 +106,17 @@ namespace BAL.Mapping
                 .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
                 .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
-                .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path));
+                .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path))
+                .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => s.Payment.PosInvoiceId));
             CreateMap<StudentWalletTransactionDTO, StudentWalletTransaction>()
                 .ForMember(d => d.File, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() })); ;
 
+            CreateMap<StudentWalletTransaction, StudentWalletTransactionSimpleDTO>()
+                .ForMember(e => e.TransactionDateTime, map => map.MapFrom(e => e.CreatedDate))
+                .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
+                .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
+                .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
+                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId)); 
 
             CreateMap<StudentWalletTransactionDetail, StudentWalletTransactionDetailDTO>();
             CreateMap<StudentWalletTransactionDetailDTO, StudentWalletTransactionDetail>();
@@ -239,7 +246,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.UpdatedBy, map => map.Ignore())
                 .ForMember(e => e.UpdatedDate, map => map.Ignore());
             CreateMap<StudentCard, StudentCardDTO>()
-                .ForMember(d => d.UpdatingUserName, map => map.MapFrom(s => s.UpdatedByUser != null ? s.UpdatedByUser.UserName : string.Empty));
+                .ForMember(d => d.UpdatingUserName, map => map.MapFrom(s => s.UserUpdate != null ? s.UserUpdate.UserName : string.Empty));
 
             CreateMap<StudentRestriction, StudentRestrictionDTO>()
                 .ForMember(d => d.RestrictionCode, map => map.MapFrom(s => s.Restriction != null ? s.Restriction.Code : string.Empty))

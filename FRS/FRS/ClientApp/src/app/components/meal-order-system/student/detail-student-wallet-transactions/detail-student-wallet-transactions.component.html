@@ -1,0 +1,55 @@
+<h2 mat-dialog-title>Detail Student Wallet Transactions</h2>
+
+<mat-dialog-content>
+  <div class="row control-box">
+    <mat-form-field class="col-sm-4">
+      <mat-label>Type</mat-label>
+      <mat-select id="type" name="type" [(ngModel)]="filter.transactionType" #type="ngModel">
+        <mat-option value="CREDIT">
+          CREDIT
+        </mat-option>
+        <mat-option value="DEBIT">
+          DEBIT
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="clearfix"></div>
+    <mat-form-field class="col-xs-12 col-sm-3">
+      <input matInput [matDatepicker]="startpicker" placeholder="Transaction Start Date" [value]="start"
+        (dateChange)="onChangeDate('start', $event)">
+      <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+      <mat-datepicker #startpicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field class="col-xs-12 col-sm-3">
+      <input matInput [matDatepicker]="endpicker" placeholder="Transaction End Date" [value]="end"
+        (dateChange)="onChangeDate('end',$event)">
+      <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+      <mat-datepicker #endpicker></mat-datepicker>
+    </mat-form-field>
+
+
+    <div class="col-xs-12 col-sm-12 col-md-3" style="padding-bottom:10px;">
+      <button type="button" class="btn btn-sm" [disabled]="loadingIndicator" (click)="clearFilters();">Clear</button>
+      <button type="button" class="btn btn-sm btn-info" [disabled]="loadingIndicator" (click)="onSearch();">Filter</button>
+      <button type="button" [disabled]="loadingIndicator" class="btn btn-sm btn-info" (click)="save();" style="margin-left:5px;">Download
+        Results</button>
+    </div>
+  </div>
+
+  <ngx-datatable class="material colored-header" #transactionTable [loadingIndicator]="loadingIndicator" [rows]="rows"
+    [rowHeight]="'auto'" [headerHeight]="'auto'" [footerHeight]="35" [columns]="columns" [columnMode]="'force'"
+    [externalPaging]="true" [externalSorting]="true" [count]="pagedResult.totalCount"
+    [limit]="pagedResult.filter.pageSize" (page)="loadData($event)" (sort)="loadData($event)">
+  </ngx-datatable>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" style="padding-right: 10px;">
+  <button type="button" mat-button (click)="close()" [disabled]="loadingIndicator"><i class='fa fa-times'></i>
+    Close</button>
+</mat-dialog-actions>
+
+  <ng-template #invoiceIdTemplate let-row="row" let-value="value" let-i="index">
+    <a class="ng-star-inserted" href="javascript:;" (click)="showPosDetail(row)">{{value}}</a>
+  </ng-template>

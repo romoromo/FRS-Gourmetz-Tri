@@ -570,6 +570,8 @@ import { SortingAreaEditorComponent } from "./components/meal-order-system/sorti
 import { ClassLevelSchedule } from "./components/meal-order-system/class-level/class-level-schedule.components";
 import { WalletTransactionLogEditorComponent } from "./components/meal-order-system/wallet-transaction-log/wallet-transaction-log-editor.component";
 import { WalletTransactionManagementComponent } from "./components/meal-order-system/wallet-transaction/wallet-transaction-management.component";
+import { DetailStudentWalletTransactionComponent } from "./components/meal-order-system/student/detail-student-wallet-transactions/detail-student-wallet-transactions.component";
+import { PosDetailComponent } from "./components/meal-order-system/wallet-transaction-log/pos-detail.component";
 
 export const configFactory = (configService: ConfigurationService) => {
   return () => {
@@ -1044,7 +1046,9 @@ export const configFactory = (configService: ConfigurationService) => {
     SortingAreaEditorComponent,
     ClassLevelSchedule,
     WalletTransactionLogEditorComponent,
-    WalletTransactionManagementComponent
+    WalletTransactionManagementComponent,
+    DetailStudentWalletTransactionComponent,
+    PosDetailComponent
   ],
   providers: [
     { provide: "BASE_URL", useFactory: getBaseUrl },
@@ -1418,7 +1422,9 @@ export const configFactory = (configService: ConfigurationService) => {
     SortingAreaEditorComponent,
     ClassLevelSchedule,
     WalletTransactionLogEditorComponent,
-    WalletTransactionManagementComponent
+    WalletTransactionManagementComponent,
+    DetailStudentWalletTransactionComponent,
+    PosDetailComponent
   ],
 })
 export class AppModule {}

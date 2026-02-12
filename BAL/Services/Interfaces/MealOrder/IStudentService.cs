@@ -84,5 +84,6 @@ namespace BAL.Services.Interfaces.MealOrder
 
         Task<byte[]> GenerateWalletTransaction(string studentId);
         Task<byte[]> GenerateWalletTransactions(WalletTransactionFilter filter);
+        Task<PagedEntity<WalletTransactionReportRow>> GetWalletTransactions(WalletTransactionFilter filter);
     }
 }

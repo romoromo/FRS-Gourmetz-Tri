@@ -1,4 +1,5 @@
 ﻿using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 using iTextSharp.text;
@@ -17,6 +18,7 @@ namespace DAL.Repositories.Interfaces
         Task<StudentWalletTransaction> GetByIdAsync(int id);
         Task<BaseOperationResponse> UpdateAsync(StudentWalletTransaction walletTransaction);
         Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsAsync(BaseFilter filter);
+        Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsSimpleAsync(BaseFilter filter);
         Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId, WalletType walletTypeData);
         Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userId, WalletType walletType, int? walletPaymentId);
         Task<BaseOperationResponse> RefundToWalletBalanceAsync(int studentId, double amount, int userId, WalletType walletType, int? tokenOrderId);
@@ -26,7 +28,8 @@ namespace DAL.Repositories.Interfaces
 
         Task FASRechargeable(CancellationToken ct = default);
 
-        Tuple<double, double, double> GetWalletTransactions(int studentId, WalletTransactionType walletTransaction);
+        Task<(double TopUp, double Refund, double Balance, double Redemption)> GetWalletTransactions(int studentId, WalletTransactionType walletTransaction);
         Task<DataTable> GetWalletTransactionForReport(DateTime startDate, DateTime endDate, List<int> outletIds, List<int> classLevelIds, bool isFAS);
+        Task<PagedEntity<WalletTransactionReportRow>> GetWalletTransactions(WalletTransactionFilter filter);
     }
 }

@@ -684,6 +684,11 @@ namespace DAL.Repositories.MealOrder
                             var sc = this._appContext.StudentCards.FirstOrDefault(x => x.Id == e.Id);
                             if (sc != null)
                             {
+                                if(sc.CardId != e.CardId)
+                                {
+                                    sc.UserUpdateId = _currentUserId;
+                                    sc.LastUpdateDate = DateTime.Now;
+                                }
                                 sc.CardId = e.CardId;
                                 sc.Remarks = e.Remarks;
                                 sc.Status = e.Status;
@@ -699,9 +704,13 @@ namespace DAL.Repositories.MealOrder
                                     scd.Remarks = e.Remarks;
                                     scd.Status = e.Status;
                                     scd.IsActive = true;
+                                    scd.UserUpdateId = _currentUserId;
+                                    scd.LastUpdateDate = DateTime.Now;
                                     this._appContext.StudentCards.Update(scd);
                                 } else
                                 {
+                                    e.UserUpdateId = _currentUserId;
+                                    e.LastUpdateDate = DateTime.Now;
                                     this._appContext.StudentCards.Add(e);
                                 }
                             }

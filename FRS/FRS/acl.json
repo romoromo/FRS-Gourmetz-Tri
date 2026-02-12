@@ -1265,9 +1265,9 @@
               ]
             },
             {
-              "name": "Wallet Transaction",
+              "name": "eWallet Summary Report",
               "value": "mosmgt.reportmgt.wallettransaction.view",
-              "description": "Permission to view Wallet Transaction",
+              "description": "Permission to view eWallet Summary Report",
               "children": []
             },
             {
