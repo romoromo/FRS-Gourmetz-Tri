@@ -222,7 +222,7 @@ namespace FRS.Controllers
         {
             if (!string.IsNullOrEmpty(model.ImgUrl))
             {
-                var folderName = Path.Combine("Resources", "StudentPictures", model.Id.ToString());
+                var folderName = Path.Combine("Resources", "StudentPictures", model.UserId + "_" + model.Name);
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
                 if (!Directory.Exists(pathToSave))
