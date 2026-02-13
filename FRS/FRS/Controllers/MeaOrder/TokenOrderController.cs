@@ -191,7 +191,7 @@ namespace FRS.Controllers
                 if (dto == null)
                     return NotFound(id);
 
-                if(dto.TotalAmount > model.TotalAmount) {
+                if(dto.Status == "paid" && dto.TotalAmount > model.TotalAmount) {
                     var toRefund = dto.TotalAmount - model.TotalAmount;
                     await this._studentWalletService.RefundToWalletBalanceAsync(model.ProfileId.Value, toRefund, dto.CreatedBy.Value, WalletType.BASIC,model.Id);
                 }
