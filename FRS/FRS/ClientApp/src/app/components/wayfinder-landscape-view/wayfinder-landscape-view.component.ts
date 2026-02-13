@@ -2,7 +2,7 @@ import { Component, ViewChild, Inject, ElementRef, OnDestroy, OnInit, ChangeDete
 import { fadeInOut } from '../../services/animations';
 
 import "ol/ol.css";
-import Text from "ol/Style/Text";
+import Text from "ol/style/Text";
 import ImageLayer from "ol/layer/Image";
 import Map from "ol/Map";
 import Projection from "ol/proj/Projection";

@@ -245,11 +245,13 @@ namespace DAL.Repositories.MealOrder
                 }
 
 
-                var totalWallet = fasWallet.Balance + normalWallet.Balance;
-                var fasBalance = fasWallet.Balance;
-                var basicBalance = normalWallet.Balance;
+                var fasBalance = (decimal)Math.Round(fasWallet.Balance, 2);
+                var basicBalance = (decimal)Math.Round(normalWallet.Balance, 2);
 
-                if (totalWallet - Decimal.ToDouble(Payment.total) < 0)
+                var totalWallet = fasBalance + basicBalance;
+
+
+                if (totalWallet - Payment.total < 0)
                 {
                     result.IsSuccess = false;
                     result.Message = "Insufficient balance.";
@@ -264,7 +266,7 @@ namespace DAL.Repositories.MealOrder
                     _logger.LogInformation($"[PAYMENT] Daily limit enabled. Limit={student.WalletDailyLimit}");
 
 
-                    if (Decimal.ToDouble(Payment.total) > student.WalletDailyLimit)
+                    if (Payment.total > (decimal)student.WalletDailyLimit)
                     {
                         result.IsSuccess = false;
                         result.Message = "The payment exceed the wallet daily limit. Payment = " + Payment.total + ". Daily Limit = " + student.WalletDailyLimit + ".";
@@ -287,16 +289,16 @@ namespace DAL.Repositories.MealOrder
 
                         var todayTrans = await _appContext.StudentWalletTransactions.Where(t => t.StudentId == student.Id && t.TransactionType == WalletTransactionType.DEBIT.ToString() && t.CreatedDate.Date == today).ToListAsync();
 
-                        var totalTrans = 0.0;
+                        var totalTrans = 0.0m;
                         foreach (var trans in todayTrans)
                         {
-                            totalTrans += trans.Amount;
+                            totalTrans += (decimal)Math.Round(trans.Amount, 2);
                         }
 
                         _logger.LogInformation($"[PAYMENT] Daily spend so far={totalTrans}, " +
                                 $"After this payment={totalTrans}, Limit={student.WalletDailyLimit}");
 
-                        if ((totalTrans + Decimal.ToDouble(Payment.total)) > student.WalletDailyLimit)
+                        if ((totalTrans + Payment.total) > (decimal)student.WalletDailyLimit)
                         {
                             result.IsSuccess = false;
                             result.Message = "The payment exceed the wallet daily limit. Payment = " + Payment.total + ". Wallet Usage Today " + totalTrans +". Daily Limit = " + student.WalletDailyLimit + ".";
@@ -311,29 +313,28 @@ namespace DAL.Repositories.MealOrder
 
                             return result;
                         }
-
                     }
                 }
 
-                double originalAmount = decimal.ToDouble(Payment.total);
-                double remainingAmount = originalAmount;
-                double oldFasBalance = fasWallet.Balance;
-                double oldNormalBalance = normalWallet.Balance;
+                decimal originalAmount = Payment.total;
+                decimal remainingAmount = originalAmount;
+                decimal oldFasBalance = fasBalance;
+                decimal oldNormalBalance = basicBalance;
 
                 _logger.LogInformation($"[PAYMENT] Wallet balances BEFORE deduction. FAS={oldFasBalance}, BASIC={oldNormalBalance}, Amount={originalAmount}");
 
-                if (remainingAmount <= fasWallet.Balance)
+                if (remainingAmount <= fasBalance)
                 {
-                    fasWallet.Balance -= remainingAmount;
+                    fasWallet.Balance = Math.Round(fasWallet.Balance, 2) - (double)remainingAmount;
                     remainingAmount = 0;
                 }
                 else
                 {
-                    remainingAmount -= fasWallet.Balance;
+                    remainingAmount -= fasBalance;
                     fasWallet.Balance = 0;
-                    if (normalWallet.Balance >= remainingAmount)
+                    if (basicBalance >= remainingAmount)
                     {
-                        normalWallet.Balance -= remainingAmount;
+                        normalWallet.Balance = Math.Round(normalWallet.Balance, 2) - (double)remainingAmount;
                         remainingAmount = 0;
                     }
                     else
@@ -354,14 +355,14 @@ namespace DAL.Repositories.MealOrder
 
                 StudentWalletTransactionDetail fasDetail = new StudentWalletTransactionDetail
                 {
-                    Amount = oldFasBalance - fasWallet.Balance,
+                    Amount = (double)oldFasBalance - fasWallet.Balance,
                     AmountRefunded = 0,
                     Type = WalletType.FAS.ToString()
                 };
 
                 StudentWalletTransactionDetail basicDetail = new StudentWalletTransactionDetail
                 {
-                    Amount = oldNormalBalance - normalWallet.Balance,
+                    Amount = (double)oldNormalBalance - normalWallet.Balance,
                     AmountRefunded = 0,
                     Type = WalletType.BASIC.ToString()
                 };
@@ -371,7 +372,7 @@ namespace DAL.Repositories.MealOrder
 
                 var transaction = new StudentWalletTransaction
                 {
-                    Amount = originalAmount,
+                    Amount = (double)originalAmount,
                     TransactionType = WalletTransactionType.DEBIT.ToString(),
                     StudentId = Payment.StudentId.Value,
                     Description =

@@ -123,7 +123,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ApplicationSettings");
+                    b.ToTable("ApplicationSettings", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ApplicationUser", b =>
@@ -384,7 +384,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Assets");
+                    b.ToTable("Assets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.AssetModel", b =>
@@ -440,7 +440,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("AssetModels");
+                    b.ToTable("AssetModels", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.AssetType", b =>
@@ -485,7 +485,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("AssetTypes");
+                    b.ToTable("AssetTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.AuditLog", b =>
@@ -535,7 +535,7 @@ namespace FRS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.AuditLogDetail", b =>
@@ -564,7 +564,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("AuditLogId");
 
-                    b.ToTable("AuditLogDetails");
+                    b.ToTable("AuditLogDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.AuthenticationLog", b =>
@@ -589,7 +589,7 @@ namespace FRS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuthenticationLogs");
+                    b.ToTable("AuthenticationLogs", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Building", b =>
@@ -627,7 +627,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Building");
+                    b.ToTable("Building", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.BuildingFloor", b =>
@@ -672,7 +672,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("BuildingFloor");
+                    b.ToTable("BuildingFloor", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ChannelInfo", b =>
@@ -721,7 +721,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ChannelInfos");
+                    b.ToTable("ChannelInfos", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Connection", b =>
@@ -762,7 +762,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Connections");
+                    b.ToTable("Connections", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ContactGroup", b =>
@@ -805,7 +805,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ContactGroups");
+                    b.ToTable("ContactGroups", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ContactGroupDepartment", b =>
@@ -839,7 +839,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ContactGroupDepartments");
+                    b.ToTable("ContactGroupDepartments", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ContactGroupMember", b =>
@@ -910,7 +910,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ContactGroupMembers");
+                    b.ToTable("ContactGroupMembers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Department", b =>
@@ -956,7 +956,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Device", b =>
@@ -1129,7 +1129,7 @@ namespace FRS.Migrations
                     b.HasIndex("IsActive", "Code", "device_label", "MacAddress", "SerialNumber")
                         .HasDatabaseName("IX_Device_ActiveDeviceWithSearchKeys");
 
-                    b.ToTable("Devices");
+                    b.ToTable("Devices", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.DeviceType", b =>
@@ -1169,7 +1169,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DeviceTypes");
+                    b.ToTable("DeviceTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.DirectoryListing", b =>
@@ -1262,7 +1262,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DirectoryListing");
+                    b.ToTable("DirectoryListing", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.DirectoryListingCategory", b =>
@@ -1303,7 +1303,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DirectoryListingCategory");
+                    b.ToTable("DirectoryListingCategory", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmailQueue", b =>
@@ -1376,7 +1376,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmailQueues");
+                    b.ToTable("EmailQueues", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmailTemplate", b =>
@@ -1430,7 +1430,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmailTemplates");
+                    b.ToTable("EmailTemplates", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmployeeData", b =>
@@ -1479,7 +1479,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmployeeData");
+                    b.ToTable("EmployeeData", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmployeeDesignation", b =>
@@ -1517,7 +1517,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmployeeDesignation");
+                    b.ToTable("EmployeeDesignation", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmployeeSchedule", b =>
@@ -1561,7 +1561,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmployeeSchedule");
+                    b.ToTable("EmployeeSchedule", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmployeeScheduleInfo", b =>
@@ -1620,7 +1620,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmployeeScheduleInfo");
+                    b.ToTable("EmployeeScheduleInfo", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmployeeScheduleLocation", b =>
@@ -1662,7 +1662,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmployeeScheduleLocation");
+                    b.ToTable("EmployeeScheduleLocation", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmployeeScheduleShift", b =>
@@ -1729,7 +1729,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmployeeScheduleShift");
+                    b.ToTable("EmployeeScheduleShift", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmployeeScheduleSlot", b =>
@@ -1792,7 +1792,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmployeeScheduleSlot");
+                    b.ToTable("EmployeeScheduleSlot", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Ems", b =>
@@ -1835,7 +1835,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Emses");
+                    b.ToTable("Emses", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmsProfile", b =>
@@ -1897,7 +1897,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmsProfiles");
+                    b.ToTable("EmsProfiles", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EmsSchedule", b =>
@@ -1983,7 +1983,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmsSchedules");
+                    b.ToTable("EmsSchedules", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EpaperDevice", b =>
@@ -2045,7 +2045,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EpaperDevices");
+                    b.ToTable("EpaperDevices", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EpaperTemplate", b =>
@@ -2107,7 +2107,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EpaperTemplates");
+                    b.ToTable("EpaperTemplates", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.EpaperTemplateLocation", b =>
@@ -2141,7 +2141,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EpaperTemplateLocations");
+                    b.ToTable("EpaperTemplateLocations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Facility", b =>
@@ -2192,7 +2192,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Facilities");
+                    b.ToTable("Facilities", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.FacilityType", b =>
@@ -2235,7 +2235,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("FacilityTypes");
+                    b.ToTable("FacilityTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.FasRunLog", b =>
@@ -2263,7 +2263,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("ClassLevelId", "CreatedAt");
 
-                    b.ToTable("FasRunLog");
+                    b.ToTable("FasRunLog", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.File", b =>
@@ -2304,7 +2304,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Files");
+                    b.ToTable("Files", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Floor", b =>
@@ -2342,7 +2342,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Floor");
+                    b.ToTable("Floor", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ImageFile", b =>
@@ -2399,7 +2399,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ImageFiles");
+                    b.ToTable("ImageFiles", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ImageReferenceColor", b =>
@@ -2442,7 +2442,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ImageReferenceColors");
+                    b.ToTable("ImageReferenceColors", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ImageReferenceType", b =>
@@ -2485,7 +2485,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ImageReferenceTypes");
+                    b.ToTable("ImageReferenceTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Institution", b =>
@@ -2538,7 +2538,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Institutions");
+                    b.ToTable("Institutions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.KioskSettings", b =>
@@ -2709,7 +2709,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("top_bannerId");
 
-                    b.ToTable("KioskSettings");
+                    b.ToTable("KioskSettings", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Line", b =>
@@ -2771,7 +2771,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Line");
+                    b.ToTable("Line", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Location", b =>
@@ -2890,7 +2890,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Locations");
+                    b.ToTable("Locations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.LocationAsset", b =>
@@ -2932,7 +2932,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("LocationAssets");
+                    b.ToTable("LocationAssets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.LocationFacility", b =>
@@ -2966,7 +2966,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("LocationFacilities");
+                    b.ToTable("LocationFacilities", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.LocationFacilityType", b =>
@@ -3000,7 +3000,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("LocationFacilityTypes");
+                    b.ToTable("LocationFacilityTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.LocationImageReference", b =>
@@ -3061,7 +3061,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("LocationImageReferences");
+                    b.ToTable("LocationImageReferences", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.LocationInstitution", b =>
@@ -3098,7 +3098,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("LocationInstitutions");
+                    b.ToTable("LocationInstitutions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.LocationType", b =>
@@ -3136,7 +3136,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("LocationTypes");
+                    b.ToTable("LocationTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Map", b =>
@@ -3182,7 +3182,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Map");
+                    b.ToTable("Map", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.AssetComponent", b =>
@@ -3235,7 +3235,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("Remarks", "Description", "CatererAssetId");
 
-                    b.ToTable("AssetComponents");
+                    b.ToTable("AssetComponents", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.BentoAsset", b =>
@@ -3324,7 +3324,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("BentoAssets");
+                    b.ToTable("BentoAssets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.BentoBoxType", b =>
@@ -3387,7 +3387,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("BentoBoxTypes");
+                    b.ToTable("BentoBoxTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CancelOrderRequest", b =>
@@ -3452,7 +3452,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CancelOrderRequests");
+                    b.ToTable("CancelOrderRequests", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CartonAsset", b =>
@@ -3524,7 +3524,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("CartonAssets");
+                    b.ToTable("CartonAssets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CartonDisposableBox", b =>
@@ -3596,7 +3596,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("CartonDisposableBoxes");
+                    b.ToTable("CartonDisposableBoxes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CartonType", b =>
@@ -3653,7 +3653,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("CartonTypes");
+                    b.ToTable("CartonTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CatererAsset", b =>
@@ -3703,7 +3703,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("assetQRCode", "Description", "CatererAssetTypeId");
 
-                    b.ToTable("CatererAssets");
+                    b.ToTable("CatererAssets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CatererAssetType", b =>
@@ -3753,7 +3753,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("Code", "Description", "CatererInfoId");
 
-                    b.ToTable("CatererAssetTypes");
+                    b.ToTable("CatererAssetTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CatererInfo", b =>
@@ -3799,7 +3799,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("CatererInfos");
+                    b.ToTable("CatererInfos", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.CatererOutlet", b =>
@@ -3852,7 +3852,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("CatererOutlets");
+                    b.ToTable("CatererOutlets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Class", b =>
@@ -3895,7 +3895,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Classes");
+                    b.ToTable("Classes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ClassBatch", b =>
@@ -3943,7 +3943,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ClassBatches");
+                    b.ToTable("ClassBatches", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ClassLevel", b =>
@@ -4013,7 +4013,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ClassLevels");
+                    b.ToTable("ClassLevels", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ClassLevelDetail", b =>
@@ -4041,7 +4041,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("SessionId", "PeriodId");
 
-                    b.ToTable("ClassLevelDetails");
+                    b.ToTable("ClassLevelDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ClassLevelSchedule", b =>
@@ -4059,7 +4059,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("ClassLevelId");
 
-                    b.ToTable("ClassLevelSchedules");
+                    b.ToTable("ClassLevelSchedules", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ClassLevelScheduleItem", b =>
@@ -4090,7 +4090,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("SessionId", "PeriodId", "Day");
 
-                    b.ToTable("ClassLevelScheduleItems");
+                    b.ToTable("ClassLevelScheduleItems", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ContactUsDetail", b =>
@@ -4135,7 +4135,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ContactUsDetails");
+                    b.ToTable("ContactUsDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ContactUsSubject", b =>
@@ -4178,7 +4178,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ContactUsSubjects");
+                    b.ToTable("ContactUsSubjects", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Cuisine", b =>
@@ -4229,7 +4229,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Cuisines");
+                    b.ToTable("Cuisines", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DeliveryBento", b =>
@@ -4279,7 +4279,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DeliveryBentos");
+                    b.ToTable("DeliveryBentos", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DeliveryBentoNew", b =>
@@ -4350,7 +4350,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DeliveryBentoNews");
+                    b.ToTable("DeliveryBentoNews", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DeliveryDetail", b =>
@@ -4397,7 +4397,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DeliveryDetails");
+                    b.ToTable("DeliveryDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DeliveryDetailNew", b =>
@@ -4456,7 +4456,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DeliveryDetailNews");
+                    b.ToTable("DeliveryDetailNews", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DeliveryOrder", b =>
@@ -4528,7 +4528,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DeliveryOrders");
+                    b.ToTable("DeliveryOrders", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DeliveryOrderNew", b =>
@@ -4619,7 +4619,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DeliveryOrderNews");
+                    b.ToTable("DeliveryOrderNews", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Dish", b =>
@@ -4734,7 +4734,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Dishes");
+                    b.ToTable("Dishes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishAllocation", b =>
@@ -4782,7 +4782,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishAllocations");
+                    b.ToTable("DishAllocations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishComponent", b =>
@@ -4834,7 +4834,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishComponents");
+                    b.ToTable("DishComponents", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishCycle", b =>
@@ -4910,7 +4910,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishCycles");
+                    b.ToTable("DishCycles", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishCycleBlockedDate", b =>
@@ -4953,7 +4953,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishCycleBlockedDates");
+                    b.ToTable("DishCycleBlockedDates", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishCycleCalendar", b =>
@@ -4993,7 +4993,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishCycleCalendars");
+                    b.ToTable("DishCycleCalendars", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishCycleCalendarBlockedDate", b =>
@@ -5036,7 +5036,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishCycleCalendarBlockedDates");
+                    b.ToTable("DishCycleCalendarBlockedDates", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishCyclePeriod", b =>
@@ -5078,7 +5078,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishCyclePeriods");
+                    b.ToTable("DishCyclePeriods", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishCycleSchedule", b =>
@@ -5120,7 +5120,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishCycleSchedules");
+                    b.ToTable("DishCycleSchedules", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishCycleScheduleDetail", b =>
@@ -5170,7 +5170,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishCycleScheduleDetails");
+                    b.ToTable("DishCycleScheduleDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishCycleScheduleDetailMenu", b =>
@@ -5217,7 +5217,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishCycleScheduleDetailMenus");
+                    b.ToTable("DishCycleScheduleDetailMenus", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishCycleScheduleSet", b =>
@@ -5281,7 +5281,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishCycleScheduleSets");
+                    b.ToTable("DishCycleScheduleSets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishDetail", b =>
@@ -5326,7 +5326,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishDetails");
+                    b.ToTable("DishDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishPeriod", b =>
@@ -5341,7 +5341,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("PeriodId");
 
-                    b.ToTable("DishPeriods");
+                    b.ToTable("DishPeriods", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishRestriction", b =>
@@ -5383,7 +5383,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishRestrictions");
+                    b.ToTable("DishRestrictions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishType", b =>
@@ -5436,7 +5436,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DishTypes");
+                    b.ToTable("DishTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DishTypePeriod", b =>
@@ -5451,7 +5451,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("PeriodId");
 
-                    b.ToTable("DishTypePeriods");
+                    b.ToTable("DishTypePeriods", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.DispenserOutlet", b =>
@@ -5520,7 +5520,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("DispenserOutlets");
+                    b.ToTable("DispenserOutlets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Driver", b =>
@@ -5563,7 +5563,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Drivers");
+                    b.ToTable("Drivers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.EmailConfirm", b =>
@@ -5604,7 +5604,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("EmailConfirms");
+                    b.ToTable("EmailConfirms", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.ExternalAppLoginLog", b =>
@@ -5635,7 +5635,7 @@ namespace FRS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExternalAppLoginLogs");
+                    b.ToTable("ExternalAppLoginLogs", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.FaqDetail", b =>
@@ -5686,7 +5686,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("FaqDetails");
+                    b.ToTable("FaqDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.FaqSubject", b =>
@@ -5732,7 +5732,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("FaqSubjects");
+                    b.ToTable("FaqSubjects", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.InterestGroup", b =>
@@ -5772,7 +5772,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("InterestGroups");
+                    b.ToTable("InterestGroups", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MealAllocation", b =>
@@ -5825,7 +5825,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("periodId");
 
-                    b.ToTable("MealAllocations");
+                    b.ToTable("MealAllocations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MealPeriod", b =>
@@ -5879,7 +5879,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MealPeriods");
+                    b.ToTable("MealPeriods", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MealPlanOrder", b =>
@@ -5940,7 +5940,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MealPlanOrders");
+                    b.ToTable("MealPlanOrders", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MealSession", b =>
@@ -6004,7 +6004,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MealSessions");
+                    b.ToTable("MealSessions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MealSessionDetail", b =>
@@ -6079,7 +6079,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MealSessionDetails");
+                    b.ToTable("MealSessionDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MealType", b =>
@@ -6138,7 +6138,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MealTypes");
+                    b.ToTable("MealTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MealTypeDish", b =>
@@ -6153,7 +6153,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("MealTypeId");
 
-                    b.ToTable("MealTypeDishes");
+                    b.ToTable("MealTypeDishes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Menu", b =>
@@ -6212,7 +6212,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Menus");
+                    b.ToTable("Menus", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuCycle", b =>
@@ -6268,7 +6268,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuCycles");
+                    b.ToTable("MenuCycles", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuCycleBlockedDate", b =>
@@ -6311,7 +6311,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuCycleBlockedDates");
+                    b.ToTable("MenuCycleBlockedDates", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuCycleCalendar", b =>
@@ -6351,7 +6351,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuCycleCalendars");
+                    b.ToTable("MenuCycleCalendars", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuCycleCalendarBlockedDate", b =>
@@ -6399,7 +6399,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuCycleCalendarBlockedDates");
+                    b.ToTable("MenuCycleCalendarBlockedDates", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuCycleSchedule", b =>
@@ -6439,7 +6439,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuCycleSchedules");
+                    b.ToTable("MenuCycleSchedules", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuCycleSchedulePeriod", b =>
@@ -6481,7 +6481,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuCycleSchedulePeriods");
+                    b.ToTable("MenuCycleSchedulePeriods", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuCycleSchedulePeriodMenu", b =>
@@ -6515,7 +6515,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuCycleSchedulePeriodMenus");
+                    b.ToTable("MenuCycleSchedulePeriodMenus", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuDish", b =>
@@ -6535,7 +6535,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("MenuDishes");
+                    b.ToTable("MenuDishes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuGroup", b =>
@@ -6584,7 +6584,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuGroups");
+                    b.ToTable("MenuGroups", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuGroupClass", b =>
@@ -6626,7 +6626,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuGroupClasses");
+                    b.ToTable("MenuGroupClasses", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.MenuGroupDishCycle", b =>
@@ -6668,7 +6668,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MenuGroupDishCycles");
+                    b.ToTable("MenuGroupDishCycles", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OrderPortalBanner", b =>
@@ -6737,7 +6737,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OrderPortalBanners");
+                    b.ToTable("OrderPortalBanners", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OrderPortalContent", b =>
@@ -6786,7 +6786,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OrderPortalContents");
+                    b.ToTable("OrderPortalContents", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Outlet", b =>
@@ -6840,7 +6840,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Outlets");
+                    b.ToTable("Outlets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletBlockedDate", b =>
@@ -6888,7 +6888,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletBlockedDates");
+                    b.ToTable("OutletBlockedDates", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletClassRoster", b =>
@@ -6939,7 +6939,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletClassRosters");
+                    b.ToTable("OutletClassRosters", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletClassRosterSchedule", b =>
@@ -6979,7 +6979,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletClassRosterSchedules");
+                    b.ToTable("OutletClassRosterSchedules", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletClassRosterSchedulePeriod", b =>
@@ -7021,7 +7021,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletClassRosterSchedulePeriods");
+                    b.ToTable("OutletClassRosterSchedulePeriods", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletClassRosterSchedulePeriodClass", b =>
@@ -7055,7 +7055,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletClassRosterSchedulePeriodClasses");
+                    b.ToTable("OutletClassRosterSchedulePeriodClasses", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletDishBlockedDate", b =>
@@ -7103,7 +7103,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletDishBlockedDates");
+                    b.ToTable("OutletDishBlockedDates", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletDishCyclePeriodMenu", b =>
@@ -7147,7 +7147,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletDishCyclePeriodMenus");
+                    b.ToTable("OutletDishCyclePeriodMenus", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletMenuCycleSchedulePeriodMenu", b =>
@@ -7186,7 +7186,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletMenuCycleSchedulePeriodMenus");
+                    b.ToTable("OutletMenuCycleSchedulePeriodMenus", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletMenuDish", b =>
@@ -7216,7 +7216,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("OutletId");
 
-                    b.ToTable("OutletMenuDishes");
+                    b.ToTable("OutletMenuDishes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletProfile", b =>
@@ -7256,7 +7256,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletProfiles");
+                    b.ToTable("OutletProfiles", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.OutletTerm", b =>
@@ -7296,7 +7296,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OutletTerms");
+                    b.ToTable("OutletTerms", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.PLCModel", b =>
@@ -7349,7 +7349,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("IPAddress", "Framework", "TotalNumber", "OutletId", "InstitutionId");
 
-                    b.ToTable("PLCs");
+                    b.ToTable("PLCs", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.PackingAllocation", b =>
@@ -7394,7 +7394,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("PackingAllocations");
+                    b.ToTable("PackingAllocations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Payment", b =>
@@ -7496,7 +7496,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("VoucherId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.PaymentType", b =>
@@ -7542,7 +7542,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("PaymentTypes");
+                    b.ToTable("PaymentTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Restriction", b =>
@@ -7600,7 +7600,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Restrictions");
+                    b.ToTable("Restrictions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.RestrictionType", b =>
@@ -7664,7 +7664,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("RestrictionTypes");
+                    b.ToTable("RestrictionTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Route", b =>
@@ -7713,7 +7713,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Routes");
+                    b.ToTable("Routes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.RouteNode", b =>
@@ -7761,7 +7761,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("RouteNodes");
+                    b.ToTable("RouteNodes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.SortingArea", b =>
@@ -7811,7 +7811,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("Code", "Description", "CatererInfoId", "RouteId");
 
-                    b.ToTable("SortingAreas");
+                    b.ToTable("SortingAreas", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Staff", b =>
@@ -7859,7 +7859,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Staffs");
+                    b.ToTable("Staffs", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StaffAccount", b =>
@@ -7878,7 +7878,7 @@ namespace FRS.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("StaffAccounts");
+                    b.ToTable("StaffAccounts", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StaffType", b =>
@@ -7918,7 +7918,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StaffTypes");
+                    b.ToTable("StaffTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StoreInfo", b =>
@@ -7983,7 +7983,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StoreInfos");
+                    b.ToTable("StoreInfos", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StoreInventory", b =>
@@ -8039,7 +8039,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StoreInventories");
+                    b.ToTable("StoreInventories", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StoreInventoryDetail", b =>
@@ -8103,7 +8103,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StoreInventoryDetails");
+                    b.ToTable("StoreInventoryDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Student", b =>
@@ -8229,7 +8229,7 @@ namespace FRS.Migrations
                     b.HasIndex("ClassLevelId", "Id")
                         .HasDatabaseName("IX_Students_ClassLevelId_Id");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentAccount", b =>
@@ -8248,7 +8248,7 @@ namespace FRS.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("StudentAccounts");
+                    b.ToTable("StudentAccounts", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentAccountLinkRequest", b =>
@@ -8294,7 +8294,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StudentAccountLinkRequests");
+                    b.ToTable("StudentAccountLinkRequests", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentCard", b =>
@@ -8351,7 +8351,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserUpdateId");
 
-                    b.ToTable("StudentCards");
+                    b.ToTable("StudentCards", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentGroup", b =>
@@ -8435,7 +8435,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StudentGroups");
+                    b.ToTable("StudentGroups", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentGroupDetail", b =>
@@ -8477,7 +8477,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StudentGroupDetails");
+                    b.ToTable("StudentGroupDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentGroupMealPlan", b =>
@@ -8544,7 +8544,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StudentGroupMealPlans");
+                    b.ToTable("StudentGroupMealPlans", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentGroupSession", b =>
@@ -8586,7 +8586,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StudentGroupSessions");
+                    b.ToTable("StudentGroupSessions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentInterestGroup", b =>
@@ -8628,7 +8628,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StudentInterestGroups");
+                    b.ToTable("StudentInterestGroups", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentManageAccount", b =>
@@ -8670,7 +8670,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("StudentManageAccounts");
+                    b.ToTable("StudentManageAccounts", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentPoint", b =>
@@ -8714,7 +8714,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("StudentId", "Type");
 
-                    b.ToTable("StudentPoints");
+                    b.ToTable("StudentPoints", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentRestriction", b =>
@@ -8756,7 +8756,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StudentRestrictions");
+                    b.ToTable("StudentRestrictions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentVoucher", b =>
@@ -8806,7 +8806,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("StudentId", "VoucherId");
 
-                    b.ToTable("StudentVouchers");
+                    b.ToTable("StudentVouchers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.StudentWallet", b =>
@@ -8850,7 +8850,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("StudentId", "Type");
 
-                    b.ToTable("StudentWallets");
+                    b.ToTable("StudentWallets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TokenAltDish", b =>
@@ -8892,7 +8892,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TokenAltDishes");
+                    b.ToTable("TokenAltDishes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TokenDishLabel", b =>
@@ -8960,7 +8960,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("token_label_id");
 
-                    b.ToTable("TokenDishLabels");
+                    b.ToTable("TokenDishLabels", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TokenLabel", b =>
@@ -9028,7 +9028,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("token_id");
 
-                    b.ToTable("TokenLabels");
+                    b.ToTable("TokenLabels", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TokenOrder", b =>
@@ -9150,7 +9150,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TokenOrders");
+                    b.ToTable("TokenOrders", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TokenOrderCombinedDish", b =>
@@ -9199,7 +9199,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TokenOrderCombinedDish");
+                    b.ToTable("TokenOrderCombinedDish", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TokenOrderDish", b =>
@@ -9244,7 +9244,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TokenOrderDishes");
+                    b.ToTable("TokenOrderDishes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TokenOrdered", b =>
@@ -9295,7 +9295,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TokenOrdereds");
+                    b.ToTable("TokenOrdereds", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TokensOrderHistory", b =>
@@ -9400,7 +9400,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TokensOrderHistorys");
+                    b.ToTable("TokensOrderHistorys", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TrackingStatus", b =>
@@ -9440,7 +9440,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TrackingStatuss");
+                    b.ToTable("TrackingStatuss", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TransactionFee", b =>
@@ -9486,7 +9486,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TransactionFees");
+                    b.ToTable("TransactionFees", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TransactionFeeDetail", b =>
@@ -9529,7 +9529,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TransactionFeeDetails");
+                    b.ToTable("TransactionFeeDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.TrayModel", b =>
@@ -9580,7 +9580,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Trays");
+                    b.ToTable("Trays", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.UserCaterer", b =>
@@ -9622,7 +9622,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserCaterers");
+                    b.ToTable("UserCaterers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.UserOrderAlert", b =>
@@ -9671,7 +9671,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserOrderAlerts");
+                    b.ToTable("UserOrderAlerts", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.UserOutlet", b =>
@@ -9713,7 +9713,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserOutlets");
+                    b.ToTable("UserOutlets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Voucher", b =>
@@ -9812,7 +9812,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("StartDateTime", "EndDateTime");
 
-                    b.ToTable("Vouchers");
+                    b.ToTable("Vouchers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.VoucherDish", b =>
@@ -9856,7 +9856,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("VoucherId", "DishId");
 
-                    b.ToTable("VoucherDishes");
+                    b.ToTable("VoucherDishes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.VoucherMealPeriod", b =>
@@ -9898,7 +9898,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("VoucherId");
 
-                    b.ToTable("VoucherMealPeriods");
+                    b.ToTable("VoucherMealPeriods", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.VoucherType", b =>
@@ -9938,7 +9938,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("VoucherTypes");
+                    b.ToTable("VoucherTypes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.Waiver", b =>
@@ -9989,7 +9989,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Waivers");
+                    b.ToTable("Waivers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MealOrder.WalletPayment", b =>
@@ -10074,7 +10074,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("WalletPayments");
+                    b.ToTable("WalletPayments", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Media", b =>
@@ -10117,7 +10117,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Medias");
+                    b.ToTable("Medias", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MediaExtension", b =>
@@ -10161,7 +10161,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MediaExtension");
+                    b.ToTable("MediaExtension", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MediaRole", b =>
@@ -10203,7 +10203,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("MediaRole");
+                    b.ToTable("MediaRole", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.MediaUserGroup", b =>
@@ -10245,7 +10245,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserGroupId");
 
-                    b.ToTable("MediaUserGroup");
+                    b.ToTable("MediaUserGroup", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Module", b =>
@@ -10286,7 +10286,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Modules");
+                    b.ToTable("Modules", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ModuleParameter", b =>
@@ -10329,7 +10329,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ModuleParameters");
+                    b.ToTable("ModuleParameters", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Notification", b =>
@@ -10384,7 +10384,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.NotificationEvent", b =>
@@ -10425,7 +10425,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("NotificationEvents");
+                    b.ToTable("NotificationEvents", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.NotificationSetting", b =>
@@ -10486,7 +10486,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("NotificationSettings");
+                    b.ToTable("NotificationSettings", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.OccupancyLog", b =>
@@ -10530,7 +10530,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("OccupancyLog");
+                    b.ToTable("OccupancyLog", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.PIBDevice", b =>
@@ -10592,7 +10592,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("PIBDevices");
+                    b.ToTable("PIBDevices", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.PIBTemplate", b =>
@@ -10651,7 +10651,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("PIBTemplates");
+                    b.ToTable("PIBTemplates", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.PIBTemplateLocation", b =>
@@ -10718,7 +10718,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("PIBTemplateLocations");
+                    b.ToTable("PIBTemplateLocations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Playlist", b =>
@@ -10761,7 +10761,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Playlists");
+                    b.ToTable("Playlists", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.PlaylistImage", b =>
@@ -10804,7 +10804,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("PlaylistImages");
+                    b.ToTable("PlaylistImages", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Point", b =>
@@ -10862,7 +10862,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Point");
+                    b.ToTable("Point", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.PointDirectoryListing", b =>
@@ -10904,7 +10904,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("PointDirectoryListing");
+                    b.ToTable("PointDirectoryListing", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.QueueLog", b =>
@@ -10975,7 +10975,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("QueueLog");
+                    b.ToTable("QueueLog", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.QueueTableMap", b =>
@@ -11030,7 +11030,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("QueueTableMap");
+                    b.ToTable("QueueTableMap", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Reservation", b =>
@@ -11178,7 +11178,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("Reservations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ReservationContactGroup", b =>
@@ -11223,7 +11223,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ReservationContactGroups");
+                    b.ToTable("ReservationContactGroups", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ReservationFeedback", b =>
@@ -11271,7 +11271,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ReservationFeedbacks");
+                    b.ToTable("ReservationFeedbacks", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ReservationInvitee", b =>
@@ -11363,7 +11363,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ReservationInvitees");
+                    b.ToTable("ReservationInvitees", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ReservationPicture", b =>
@@ -11403,7 +11403,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ReservationPictures");
+                    b.ToTable("ReservationPictures", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ReservationTime", b =>
@@ -11437,7 +11437,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ReservationTimes");
+                    b.ToTable("ReservationTimes", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Reward", b =>
@@ -11485,7 +11485,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Rewards");
+                    b.ToTable("Rewards", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.RewardTransaction", b =>
@@ -11531,7 +11531,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("RewardTransactions");
+                    b.ToTable("RewardTransactions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ServiceContract", b =>
@@ -11584,7 +11584,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ServiceContracts");
+                    b.ToTable("ServiceContracts", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ServiceContractAsset", b =>
@@ -11626,7 +11626,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("ServiceContractAssets");
+                    b.ToTable("ServiceContractAssets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SignageCompilation", b =>
@@ -11676,7 +11676,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("SignageCompilations");
+                    b.ToTable("SignageCompilations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SignageCompilationComponent", b =>
@@ -11733,7 +11733,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("SignageCompilationComponents");
+                    b.ToTable("SignageCompilationComponents", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SignageComponent", b =>
@@ -11798,7 +11798,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("SignageComponents");
+                    b.ToTable("SignageComponents", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SignagePublication", b =>
@@ -11861,7 +11861,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("SignagePublications");
+                    b.ToTable("SignagePublications", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SignagePublicationHistory", b =>
@@ -11923,7 +11923,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("SignagePublicationHistorys");
+                    b.ToTable("SignagePublicationHistorys", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SignageSchedule", b =>
@@ -11993,7 +11993,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("SignageSchedules");
+                    b.ToTable("SignageSchedules", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SignageScheduleCompilation", b =>
@@ -12038,7 +12038,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("SignageScheduleCompilations");
+                    b.ToTable("SignageScheduleCompilations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SmartRoomResource", b =>
@@ -12102,7 +12102,7 @@ namespace FRS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SmartRoomResources");
+                    b.ToTable("SmartRoomResources", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SmartRoomSchedule", b =>
@@ -12184,7 +12184,7 @@ namespace FRS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SmartRoomSchedules");
+                    b.ToTable("SmartRoomSchedules", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.SmartRoomSchedulerLog", b =>
@@ -12209,7 +12209,7 @@ namespace FRS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SmartRoomSchedulerLogs");
+                    b.ToTable("SmartRoomSchedulerLogs", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.StoredProcedures.spGetFasTokenOrderSummary", b =>
@@ -12475,7 +12475,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StudentPointTransactions");
+                    b.ToTable("StudentPointTransactions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.StudentWalletTransaction", b =>
@@ -12544,7 +12544,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("WalletPaymentId");
 
-                    b.ToTable("StudentWalletTransactions");
+                    b.ToTable("StudentWalletTransactions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.StudentWalletTransactionDetail", b =>
@@ -12590,7 +12590,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("StudentWalletTransactionDetails");
+                    b.ToTable("StudentWalletTransactionDetails", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.TimeInterval", b =>
@@ -12639,7 +12639,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TimeIntervals");
+                    b.ToTable("TimeIntervals", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.TokenPaymentRequest", b =>
@@ -12716,7 +12716,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TokenPaymentRequest");
+                    b.ToTable("TokenPaymentRequest", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.TokenPaymentResponse", b =>
@@ -12799,7 +12799,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("TokenPaymentResponse");
+                    b.ToTable("TokenPaymentResponse", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UpDownTimeLog", b =>
@@ -12821,7 +12821,7 @@ namespace FRS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UpDownTimeLogs");
+                    b.ToTable("UpDownTimeLogs", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UsedPassword", b =>
@@ -12845,7 +12845,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsedPasswords");
+                    b.ToTable("UsedPasswords", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UserActivity", b =>
@@ -12871,7 +12871,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("CreatedDate");
 
-                    b.ToTable("UserActivities");
+                    b.ToTable("UserActivities", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UserCardId", b =>
@@ -12917,7 +12917,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserCardIds");
+                    b.ToTable("UserCardIds", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UserClaim", b =>
@@ -12990,7 +12990,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserConnections");
+                    b.ToTable("UserConnections", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UserGroup", b =>
@@ -13036,7 +13036,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("UserGroups");
+                    b.ToTable("UserGroups", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UserGroupLocation", b =>
@@ -13078,7 +13078,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserGroupId");
 
-                    b.ToTable("UserGroupLocations");
+                    b.ToTable("UserGroupLocations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UserGroupMember", b =>
@@ -13093,7 +13093,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserGroupMembers");
+                    b.ToTable("UserGroupMembers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UserPhonebook", b =>
@@ -13153,7 +13153,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPhonebooks");
+                    b.ToTable("UserPhonebooks", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.UserRoleClaim", b =>
@@ -13229,7 +13229,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserVehicles");
+                    b.ToTable("UserVehicles", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.VehicleEntry", b =>
@@ -13293,7 +13293,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("VehicleEntries");
+                    b.ToTable("VehicleEntries", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Wallet", b =>
@@ -13341,7 +13341,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Wallets");
+                    b.ToTable("Wallets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.WalletTransaction", b =>
@@ -13387,7 +13387,7 @@ namespace FRS.Migrations
 
                     b.HasIndex("WalletId");
 
-                    b.ToTable("WalletTransactions");
+                    b.ToTable("WalletTransactions", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
@@ -13406,7 +13406,7 @@ namespace FRS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys");
+                    b.ToTable("DataProtectionKeys", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>

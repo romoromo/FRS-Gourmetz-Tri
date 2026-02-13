@@ -7,7 +7,7 @@ import Map from "ol/Map";
 import Projection from "ol/proj/Projection";
 import Static from "ol/source/ImageStatic";
 import Path from "ol-ext/featureAnimation/Path";
-import Text from "ol/Style/Text";
+import Text from "ol/style/Text";
 import View from "ol/View";
 import RegularShape from 'ol/style/RegularShape';
 import { getCenter } from "ol/extent";

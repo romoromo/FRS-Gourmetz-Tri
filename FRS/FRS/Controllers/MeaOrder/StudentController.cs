@@ -1942,7 +1942,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GenerateWalletTransaction(string studentId)
         {
             var xls = await _service.GenerateWalletTransaction(studentId);
-            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + Constants.Student_Wallet_Transactions + ".xlsx";
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + DAL.Core.Constants.Student_Wallet_Transactions + ".xlsx";
 
             if (xls == null || xls.Length == 0)
             {
@@ -1961,7 +1961,7 @@ namespace FRS.Controllers
         public async Task<IActionResult> GenerateWalletTransactions(WalletTransactionFilter filter)
         {
             var xls = await _service.GenerateWalletTransactions(filter);
-            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + Constants.Student_Wallet_Transactions + ".xlsx";
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + DAL.Core.Constants.Student_Wallet_Transactions + ".xlsx";
 
             if (xls == null || xls.Length == 0)
             {
