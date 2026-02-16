@@ -141,15 +141,26 @@ namespace BAL.Services
 
         public async Task<byte[]> GenerateXls(EWalletTransactionFilter filter)
         {
-            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions;
+            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions.Where(m => m.student.IsActive);
 
             if (!string.IsNullOrEmpty(filter.PosInvoiceId))
             {
                 query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));
             }
+
             if (!string.IsNullOrEmpty(filter.Source) && filter.Source == "POS")
             {
                 query = query.Where(m => m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any());
+            }
+
+            if (filter.OutletId != null && filter.OutletId.Count != 0)
+            {
+                query = query.Where(m => filter.OutletId.Contains(m.student.OutletId.Value));
+            }
+
+            if (filter.IsFAS != null)
+            {
+                query = query.Where(m => m.student.IsFAS == filter.IsFAS);
             }
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);

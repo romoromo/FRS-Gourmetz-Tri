@@ -21,6 +21,7 @@ import {
   Filter,
   TransactionFilter,
   PagedResult,
+  EWalletTransactionFilter,
 } from "../../../models/sieve-filter.model";
 import { Permission } from "../../../models/permission.model";
 import { MatDatepickerInputEvent, MatDialog } from "@angular/material";
@@ -39,6 +40,7 @@ import { StudentService } from "src/app/services/meal-order/student.service";
 import { WalletTransactionLogEditorComponent } from "./wallet-transaction-log-editor.component";
 import { DecimalPipe } from "@angular/common";
 import { PosDetailComponent } from "./pos-detail.component";
+import { DeliveryService } from "src/app/services/meal-order/delivery.service";
 
 @Component({
   selector: "wallet-transaction-log-management",
@@ -56,7 +58,7 @@ export class WalletTransactionLogManagementComponent
   rowsCache: StudentWalletTransaction[] = [];
   editingAuthLogName: { name: string };
   loadingIndicator: boolean;
-  filter: TransactionFilter;
+  filter: EWalletTransactionFilter;
   pagedResult: PagedResult;
   keyword: string = "";
   posInvoiceId: string = "";
@@ -97,6 +99,8 @@ export class WalletTransactionLogManagementComponent
 
   @ViewChild("orderTable") table: any;
 
+  outlets: any[] = [];
+
   constructor(
     private alertService: AlertService,
     private translationService: AppTranslationService,
@@ -104,6 +108,7 @@ export class WalletTransactionLogManagementComponent
     private studentService: StudentService,
     public dialog: MatDialog,
     private decimalPipe: DecimalPipe,
+    private deliveryService: DeliveryService
   ) {}
 
   ngOnDestroy(): void {
@@ -111,7 +116,7 @@ export class WalletTransactionLogManagementComponent
   }
 
   initializeFilter() {
-    this.filter = new TransactionFilter(1, 10);
+    this.filter = new EWalletTransactionFilter(1, 10);
     this.filter.sorts = "-id";
     this.filter.filters = "";
     this.filter.page = 1;
@@ -184,6 +189,26 @@ export class WalletTransactionLogManagementComponent
     this.initializePagedResult();
     this.initializeTableDefinition();
     //this.loadData();
+    this.getOutlet();
+  }
+
+  getOutlet() {
+    let filter = new Filter();
+    filter.filters = `(IsActive)==true`;
+    this.subscription.add(
+      this.deliveryService.getOutletsSimpleByFilter(filter).subscribe(
+        (results) => {
+          this.outlets = results.pagedData;
+        },
+        (error) => {
+          this.alertService.showStickyMessage(
+            "Get Error",
+            `An error occured while retrieving student outlets.\r\n"`,
+            MessageSeverity.error,
+          );
+        },
+      ),
+    );
   }
 
   loadData(ev?: any) {
@@ -392,5 +417,34 @@ export class WalletTransactionLogManagementComponent
           );
         },
       );
+  }
+
+  private buildOutletFilterFromSelection(): string {
+    const selected = this.filter.outletId || [];
+
+    if (selected.length === 0) {
+      return "";
+    }
+
+    const outletIds = selected.filter((x) => typeof x === "number") as number[];
+    if (outletIds.length === 0) {
+      return "";
+    }
+
+    return `OutletId==${outletIds.join("|")},`;
+  }
+
+  toggleAllSelection(isSelected: boolean) {
+    let outletFilter = "OutletId==0,";
+    if (isSelected) {
+      // Set the model to all IDs plus the 'all' value to keep it visually checked
+      const allIds = this.outlets.map((o) => o.id);
+      this.filter.outletId = [...allIds, "all"];
+
+      outletFilter = this.buildOutletFilterFromSelection();
+    } else {
+      // Clear the model
+      this.filter.outletId = [];
+    }
   }
 }

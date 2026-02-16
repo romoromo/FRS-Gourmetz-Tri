@@ -157,5 +157,7 @@ namespace DAL.Filters
     {
         public string PosInvoiceId { get; set; }
         public string Source { get; set; }
+        public List<int> OutletId { get; set; }
+        public bool? IsFAS { get; set; }
     }
 }

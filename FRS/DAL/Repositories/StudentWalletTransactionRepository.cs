@@ -50,6 +50,15 @@ namespace DAL.Repositories
             {
                 query = query.Where(m => m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any());
             }
+            if (filter.OutletId != null && filter.OutletId.Count != 0)
+            {
+                query = query.Where(m => filter.OutletId.Contains(m.student.OutletId.Value));
+            }
+
+            if (filter.IsFAS != null)
+            {
+                query = query.Where(m => m.student.IsFAS == filter.IsFAS);
+            }
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
 
             return result;
