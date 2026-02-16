@@ -40,10 +40,17 @@ namespace DAL.Repositories
         }
 
         #region Sieved
-        public async Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsAsync(BaseFilter filter)
+        public async Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsAsync(EWalletTransactionFilter filter)
         {
             IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions.Where(m => m.student.IsActive);
-
+            if (!string.IsNullOrEmpty(filter.PosInvoiceId))
+            {
+                query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));
+            }
+            if (!string.IsNullOrEmpty(filter.Source) && filter.Source == "POS")
+            {
+                query = query.Where(m => m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any());
+            }
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
 
             return result;

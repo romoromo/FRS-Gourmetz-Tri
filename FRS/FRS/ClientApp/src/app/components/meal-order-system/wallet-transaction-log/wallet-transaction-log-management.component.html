@@ -4,11 +4,16 @@
   </header>
   <div class="row control-box">
 
-    <mat-form-field class="col-xs-12 col-sm-9">
+    <mat-form-field class="col-xs-6 col-sm-4">
       <input matInput autocomplete="off" type="text" id="keyword" name="keyword" placeholder="Student Name"
         [(ngModel)]="filter.keyword" #keyword="ngModel" />
     </mat-form-field>
 
+    <mat-form-field class="col-xs-6 col-sm-4">
+      <input matInput autocomplete="off" type="text" id="keyword" name="keyword" placeholder="POS Invoice ID"
+        [(ngModel)]="filter.posinvoiceid" #keyword="ngModel" />
+    </mat-form-field>
+    <div class="clearfix"></div>
     <mat-form-field class="col-sm-4">
       <mat-label>Type</mat-label>
       <mat-select id="type" name="type" [(ngModel)]="filter.transactionType" #type="ngModel">
@@ -19,21 +24,18 @@
           DEBIT
         </mat-option>
       </mat-select>
+    </mat-form-field>  
+    <mat-form-field class="col-sm-4">
+      <mat-label>Source</mat-label>
+      <mat-select id="source" name="source" [(ngModel)]="filter.source" #type="ngModel">
+        <mat-option value="">
+          ALL
+        </mat-option>
+        <mat-option value="POS">
+          Live Stalls
+        </mat-option>
+      </mat-select>
     </mat-form-field>
-
-    <!--<mat-form-field class="col-xs-12 col-sm-3">
-    <input matInput autocomplete="off" type="text" id="invNo" name="invNo" placeholder="Invoice No."
-           [(ngModel)]="filter.invoiceNumber" #invNo="ngModel" />
-  </mat-form-field>
-
-  <mat-form-field class="col-xs-12 col-sm-3">
-    <input matInput autocomplete="off" type="text" id="orderNo" name="orderNo" placeholder="Order No."
-           [(ngModel)]="filter.orderNumber" #orderNo="ngModel" />
-  </mat-form-field>
-
-  <mat-checkbox [(ngModel)]="isFAS" class="col-xs-12 col-sm-3">
-    <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">FAS Only</label>
-  </mat-checkbox>-->
     <div class="clearfix"></div>
     <mat-form-field class="col-xs-12 col-sm-3">
       <input matInput [matDatepicker]="startpicker" placeholder="Transaction Start Date" [value]="start"
