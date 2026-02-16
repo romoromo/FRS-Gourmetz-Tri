@@ -1225,7 +1225,7 @@ namespace FRS.Controllers
         //[AllowAnonymous]
         [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<StudentWalletTransactionDTO>))]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> GetAllWalletTransactions(BaseFilter filter)
+        public async Task<IActionResult> GetAllWalletTransactions(EWalletTransactionFilter filter)
         {
             var results = await this._walletService.GetWalletTransactionsAsync(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<StudentWalletTransactionDTO>>(results));
@@ -1547,7 +1547,7 @@ namespace FRS.Controllers
         //[AllowAnonymous]
         //[Authorize(Authorization.Policies.ManageAllDirectoryListingsPolicy)]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> GenerateWalletTransactionXls(BaseFilter filter)
+        public async Task<IActionResult> GenerateWalletTransactionXls(EWalletTransactionFilter filter)
         {
             var xls = await this._walletService.GenerateXls(filter);
             var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_AuthLogs.xlsx";

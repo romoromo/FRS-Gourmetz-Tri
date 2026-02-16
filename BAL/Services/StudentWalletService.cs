@@ -34,7 +34,7 @@ namespace BAL.Services
             _appContext = appContext;
         }
 
-        public async Task<PagedEntity<StudentWalletTransactionDTO>> GetWalletTransactionsAsync(BaseFilter filter)
+        public async Task<PagedEntity<StudentWalletTransactionDTO>> GetWalletTransactionsAsync(EWalletTransactionFilter filter)
         {
             var result = _mapper.Map<PagedEntity<StudentWalletTransactionDTO>>(await this._uow.StudentWalletTransactions.GetWalletTransactionsAsync(filter));
             return result;
@@ -64,56 +64,56 @@ namespace BAL.Services
             //}
             //else
             //{
-                if (string.IsNullOrEmpty(dto.TransactionType) ||
-                    (!dto.TransactionType.Equals(RewardTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                    !dto.TransactionType.Equals(RewardTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (string.IsNullOrEmpty(dto.TransactionType) ||
+                (!dto.TransactionType.Equals(RewardTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                !dto.TransactionType.Equals(RewardTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase)))
+            {
+                result.IsSuccess = false;
+                result.Message = "Transaction type is missing or invalid.";
+                return result;
+            }
+
+            if (dto.TransactionType.Equals(WalletTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                student.WalletBalance += dto.Amount;
+            }
+            else if (dto.TransactionType.Equals(WalletTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                if (student.WalletBalance - dto.Amount < 0)
                 {
                     result.IsSuccess = false;
-                    result.Message = "Transaction type is missing or invalid.";
+                    result.Message = "Insufficient balance.";
                     return result;
                 }
-
-                if (dto.TransactionType.Equals(WalletTransactionType.CREDIT.ToString(), StringComparison.OrdinalIgnoreCase))
+                else if (student.IsWalletFreeze)
                 {
-                    student.WalletBalance += dto.Amount;
+                    result.IsSuccess = false;
+                    result.Message = "Wallet is Freezed";
+                    return result;
                 }
-                else if (dto.TransactionType.Equals(WalletTransactionType.DEBIT.ToString(), StringComparison.OrdinalIgnoreCase))
+                else
                 {
-                    if (student.WalletBalance - dto.Amount < 0)
-                    {
-                        result.IsSuccess = false;
-                        result.Message = "Insufficient balance.";
-                        return result;
-                    } 
-                    else if (student.IsWalletFreeze)
-                    {
-                        result.IsSuccess = false;
-                        result.Message = "Wallet is Freezed";
-                        return result;
-                    }
-                    else
-                    {
                     student.WalletBalance -= dto.Amount;
-                    }
                 }
+            }
 
-                result = await this._uow.Students.UpdateAsync(student);
+            result = await this._uow.Students.UpdateAsync(student);
 
-                if (result.IsSuccess)
+            if (result.IsSuccess)
+            {
+                var transaction = new StudentWalletTransaction
                 {
-                    var transaction = new StudentWalletTransaction
-                    {
-                        Amount = dto.Amount,
-                        TransactionType = dto.TransactionType,
-                        StudentId = dto.StudentId,
-                        Description = dto.Description
-                    };
+                    Amount = dto.Amount,
+                    TransactionType = dto.TransactionType,
+                    StudentId = dto.StudentId,
+                    Description = dto.Description
+                };
 
-                    await this._uow.StudentWalletTransactions.CreateAsync(transaction);
-                }
+                await this._uow.StudentWalletTransactions.CreateAsync(transaction);
+            }
 
-                var d = _mapper.Map<StudentDTO>(result.Data);
-                result.Data = d;
+            var d = _mapper.Map<StudentDTO>(result.Data);
+            result.Data = d;
             //}
 
             return result;
@@ -121,12 +121,12 @@ namespace BAL.Services
 
         public async Task<BaseOperationResponse> TopupWalletBalanceByStudentGroupIdAsync(int studentGroupId, double amount, int userId, WalletType walletTypeData)
         {
-            return await this._uow.StudentWalletTransactions.TopupWalletBalanceByStudentGroupIdAsync(studentGroupId, amount, userId,walletTypeData);
+            return await this._uow.StudentWalletTransactions.TopupWalletBalanceByStudentGroupIdAsync(studentGroupId, amount, userId, walletTypeData);
         }
 
-        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userId, WalletType walletType,int? paymentId)
+        public async Task<BaseOperationResponse> TopupWalletBalanceByStudentIdAsync(int studentId, double amount, int userId, WalletType walletType, int? paymentId)
         {
-            return await this._uow.StudentWalletTransactions.TopupWalletBalanceByStudentIdAsync(studentId, amount, userId,walletType,paymentId);
+            return await this._uow.StudentWalletTransactions.TopupWalletBalanceByStudentIdAsync(studentId, amount, userId, walletType, paymentId);
         }
 
         public async Task<BaseOperationResponse> RefundToWalletBalanceAsync(int studentId, double amount, int userId, WalletType walletType, int? tokenOrderId)
@@ -139,9 +139,18 @@ namespace BAL.Services
             return await this._uow.StudentWalletTransactions.OffBoardingStudent(studentId, userId);
         }
 
-        public async Task<byte[]> GenerateXls(BaseFilter filter)
+        public async Task<byte[]> GenerateXls(EWalletTransactionFilter filter)
         {
             IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions;
+
+            if (!string.IsNullOrEmpty(filter.PosInvoiceId))
+            {
+                query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));
+            }
+            if (!string.IsNullOrEmpty(filter.Source) && filter.Source == "POS")
+            {
+                query = query.Where(m => m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any());
+            }
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
             var logs = _mapper.Map<List<StudentWalletTransactionDTO>>(await query.ToListAsync());
@@ -153,7 +162,7 @@ namespace BAL.Services
                     var wb = new XSSFWorkbook();
                     var rowCount = 0;
                     var sheet = (XSSFSheet)wb.CreateSheet("Wallet Transactions");
-                    var headers = new string[] { "Student","Date", "Amount", "Type", "Description", "Remarks", "Processed By" };
+                    var headers = new string[] { "Student", "Date", "Amount", "Type", "Description", "Remarks", "Processed By" };
 
                     #region Headers
 

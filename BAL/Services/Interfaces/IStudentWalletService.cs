@@ -12,7 +12,7 @@ namespace BAL.Services.Interfaces
 {
     public interface IStudentWalletService
     {
-        Task<PagedEntity<StudentWalletTransactionDTO>> GetWalletTransactionsAsync(BaseFilter filter);
+        Task<PagedEntity<StudentWalletTransactionDTO>> GetWalletTransactionsAsync(EWalletTransactionFilter filter);
         Task<PagedEntity<StudentWalletTransactionSimpleDTO>> GetWalletTransactionsSimpleAsync(BaseFilter filter);
         Task<BaseOperationResponse> StudentWalletTransactionAsync(StudentWalletTransactionDTO dto);
         Task<List<StudentWalletTransactionDTO>> GetWalletTransactionByIdAsync(int id);
@@ -21,7 +21,7 @@ namespace BAL.Services.Interfaces
         Task<BaseOperationResponse> RefundToWalletBalanceAsync(int studentId, double amount, int userid, WalletType walletType, int? tokenOrderId);
         Task<BaseOperationResponse> OffBoardingStudent(int studentId, int userId);
 
-        Task<byte[]> GenerateXls(BaseFilter filter);
+        Task<byte[]> GenerateXls(EWalletTransactionFilter filter);
         Task<byte[]> GenerateWalletTransactionByStudent(BaseFilter filter);
         Task<BaseOperationResponse> WalletTransfer(int studentIdFrom, int studentIdTo, double amount, int userId);
 

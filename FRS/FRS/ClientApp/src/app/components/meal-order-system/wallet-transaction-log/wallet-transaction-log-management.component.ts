@@ -59,6 +59,7 @@ export class WalletTransactionLogManagementComponent
   filter: TransactionFilter;
   pagedResult: PagedResult;
   keyword: string = "";
+  posInvoiceId: string = "";
   status: string = "paid";
   start?: Date = null;
   end?: Date = null;
