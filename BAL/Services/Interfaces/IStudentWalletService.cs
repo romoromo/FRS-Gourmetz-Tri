@@ -1,6 +1,7 @@
 ﻿using BAL.DTO;
 using BAL.DTO.MealOrder;
 using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 using System;
@@ -26,5 +27,7 @@ namespace BAL.Services.Interfaces
         Task<BaseOperationResponse> WalletTransfer(int studentIdFrom, int studentIdTo, double amount, int userId);
 
         Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransactionDTO dto);
+
+        Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
     }
 }

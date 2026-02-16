@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using BAL.DTO;
 using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces;
 using BAL.Services.Interfaces.MealOrder;
 using DAL;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 using FRS.Attributes;
@@ -16,6 +13,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OpenIddict.Validation.AspNetCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FRS.Controllers
 {
@@ -302,5 +303,14 @@ namespace FRS.Controllers
             );
         }
         #endregion
+
+        [HttpGet("report/fas-billing-report")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<FASMonthlyBillingReportDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetWalletTransactions(FASMonthlyBillingFilter filter)
+        {
+            var datas = await _tokenOrderService.GetFASMonthlyBillingReport(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<FASMonthlyBillingReportDTO>>(datas));
+        }
     }
 }

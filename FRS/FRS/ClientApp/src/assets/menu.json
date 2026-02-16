@@ -440,6 +440,16 @@
           "childMenus": []
         },
         {
+          "label": "FAS Mothly Billing Report",
+          "active": true,
+          "link": "/fasmonthlybilling",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.reportmgt.fasmonthlybillingreport.view" ],
+          "childMenus": []
+        },
+        {
           "label": "User Account",
           "active": true,
           "link": "/useraccountreport",

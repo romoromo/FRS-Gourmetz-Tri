@@ -5,7 +5,7 @@ import { Observable, Subject, forkJoin } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
 import { CommonEndpoint } from './common-endpoint.service';
 import { AuthService } from './auth.service';
-import { Filter, PagedResult } from '../models/sieve-filter.model';
+import { FASMonthlyBillingFilter, Filter, PagedResult } from '../models/sieve-filter.model';
 import { ConfigurationService } from './configuration.service';
 import { AuditLog } from '../models/audit-log';
 
@@ -83,5 +83,9 @@ export class AuditService {
 
   downloadOrderCollectionLogsReport(filter: Filter) {
     return this.commonEndpoint.getFile<any>(this.auditUrl + '/export/collection/flatten', filter);
+  }
+
+  getFasMothlyBillingReport(filter: FASMonthlyBillingFilter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.auditUrl + '/report/fas-billing-report', filter);
   }
 }

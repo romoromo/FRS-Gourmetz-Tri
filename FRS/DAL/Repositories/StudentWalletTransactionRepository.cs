@@ -17,6 +17,7 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using static NPOI.HSSF.Util.HSSFColor;
 
 namespace DAL.Repositories
 {
@@ -1541,7 +1542,7 @@ namespace DAL.Repositories
                     TotalAutoDebitFAS = !s.IsFAS ? 0 : (double)stTx.Where(x => x.TransactionType == WalletTransactionType.DEBIT.ToString()
                                             && WalletDescriptionHelper.IsAutoDebitFAS(x.Description)).Sum(x => x.Amount),
 
-                    FASWalletBalance = !s.IsFAS ? 0 : (double)(lastFas ?? 0m),                    
+                    FASWalletBalance = !s.IsFAS ? 0 : (double)(lastFas ?? 0m),
                     WrongTopupFASCredit = !s.IsFAS ? 0 : utilizedWrongFasAmount
                 };
             }).ToList();
@@ -1554,6 +1555,70 @@ namespace DAL.Repositories
                 PageSize = pageSize,
                 CurrentPage = page,
                 PageCount = (int)Math.Ceiling((double)totalStudents / pageSize)
+            };
+        }
+
+        public async Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
+        {
+            //DECLARE @Role VARCHAR(50)
+            //SELECT @Role = Id FROM[Role] WHERE Name = 'CAT_ADMIN'
+            //
+            //IF NOT EXISTS(SELECT * FROM UserRoleClaim WHERE ClaimValue = 'mosmgt.reportmgt.fasmonthlybillingreport.view')
+            //BEGIN
+            //    INSERT INTO UserRoleClaim(RoleId, ClaimType, ClaimValue) VALUES
+            //    (@Role, 'permission', 'mosmgt.reportmgt.fasmonthlybillingreport.view')
+            //END
+
+
+
+            List<string> transactionUsers = ["pos_admin", "smv_admin"];
+
+            var query = from transactionLog in _appContext.StudentWalletTransactions.AsNoTracking().Where(m => m.Id == 98769 || m.Id == 95942 || m.Id == 81570 || m.Id == 74754)
+                        join payments in _appContext.Payments.AsNoTracking()
+                            on transactionLog.PaymentId equals payments.Id into tLogPayment
+                        from logPayment in tLogPayment.DefaultIfEmpty()
+                        join tokenOrder in _appContext.TokenOrders.AsNoTracking()
+                            on logPayment.Id equals tokenOrder.PaymentId into paymentTokenOrder
+                        from paymentOrder in paymentTokenOrder.DefaultIfEmpty()
+                        where transactionLog.IsActive &&
+                              transactionLog.TransactionType == WalletTransactionType.DEBIT.ToString() &&
+                              transactionUsers.Contains(transactionLog.CreatedByUser.UserName)
+                        select new FASMonthlyBillingReportDTO
+                        {
+                            StudentID = transactionLog.StudentId,
+                            StudentName = transactionLog.student.Name,
+                            ClasslevelID = transactionLog.student.ClassLevelId ?? 0,
+                            ClassID = transactionLog.student.ClassId,
+                            Class = transactionLog.student.Class != null ? transactionLog.student.Class.Name : "",
+                            FASStudent = transactionLog.student.IsFAS,
+                            DeliveryDate = transactionLog.CreatedDate,
+
+                            MealType = "",
+                            MealName = "",
+                            Qty = 0,
+                            Price = 0,
+                            InvoiceNumber = "",
+                            POSInvoiceNumber = "",
+                            Amount = 0
+                        };
+            var total = await query.CountAsync();
+
+            var page = filter.Page ?? 1;
+            var pageSize = filter.PageSize ?? int.MaxValue;
+            var skip = (page - 1) * pageSize;
+
+            var queryPaged = await query
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedEntity<FASMonthlyBillingReportDTO>()
+            {
+                TotalCount = total,
+                PagedData = queryPaged,
+                Filter = filter,
+                CurrentPage = page,
+                PageCount = (int)Math.Ceiling((double)total / pageSize)
             };
         }
 

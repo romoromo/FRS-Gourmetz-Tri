@@ -152,4 +152,9 @@ namespace DAL.Filters
     {
         public int StudentId { get; set; } = 0;
     }
+
+    public class FASMonthlyBillingFilter : BaseFilter
+    {
+        
+    }
 }

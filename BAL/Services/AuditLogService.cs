@@ -19,6 +19,7 @@ using Microsoft.Data.SqlClient;
 using DAL.Models.StoredProcedures;
 using System.Data;
 using BAL.DTO.MealOrder;
+using DAL.Core.DTO;
 
 namespace BAL.Services
 {

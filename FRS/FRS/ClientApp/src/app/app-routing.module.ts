@@ -168,6 +168,7 @@ import { AssetCmpManagementComponent } from './components/meal-order-system/asse
 import { SortingAreaManagementComponent } from './components/meal-order-system/sorting-area/sorting-area-management.component';
 import { title } from 'process';
 import { WalletTransactionManagementComponent } from './components/meal-order-system/wallet-transaction/wallet-transaction-management.component';
+import {FASMothlyBillingReportManagementComponent} from './components/meal-order-system/fas-mothly-billing-report/fas-mothly-billing-report-management.component';
 
 
 const routes: Routes = [
@@ -343,7 +344,8 @@ const routes: Routes = [
       { path: "catererasset", component: CatererAssetsManagementComponent, canActivate: [AuthGuard], data: { title: "Assets" } },
       { path: "assetcomponent", component: AssetCmpManagementComponent, canActivate: [AuthGuard], data: {title: "Asset Components"}},
       { path: "sortingarea", component: SortingAreaManagementComponent, canActivate: [AuthGuard], data: {title: "Sorting Area"}},
-      { path: "wallettransaction", component: WalletTransactionManagementComponent, canActivate: [AuthGuard], data: {title: "Wallet Transaction"}}
+      { path: "wallettransaction", component: WalletTransactionManagementComponent, canActivate: [AuthGuard], data: {title: "Wallet Transaction"}},
+      { path: "fasmonthlybilling", component: FASMothlyBillingReportManagementComponent, canActivate: [AuthGuard], data: {title: "FAS Monthly Billing Report"}}
       //{ path: "orderportalcontents", component: OrderPortalContentComponent, canActivate: [AuthGuard], data: { title: "Order Portal Content" } },
 
       //{ path: "display/:mac", redirectTo: "/display/:mac" },

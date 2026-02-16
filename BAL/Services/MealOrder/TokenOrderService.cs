@@ -5605,7 +5605,12 @@ namespace BAL.Services.MealOrder
 
             return result;
         }
-
         #endregion
+
+
+        public Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
+        {
+            return _studentWalletService.GetFASMonthlyBillingReport(filter);
+        }
     }
 }

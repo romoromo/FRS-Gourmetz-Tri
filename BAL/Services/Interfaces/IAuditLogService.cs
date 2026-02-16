@@ -1,5 +1,6 @@
 ﻿using BAL.DTO;
 using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
 using DAL.Models;
 using DAL.Models.StoredProcedures;

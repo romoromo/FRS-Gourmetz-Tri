@@ -1,0 +1,69 @@
+<div>
+    <header class="pageHeader" *ngIf="!isHideHeader">
+        <h3>FAS Monthly Billing Report</h3>
+    </header>
+    <div class="row">
+        <div class="col-xs-6 col-sm-4 col-md-2">
+            <mat-form-field>
+                <input matInput [matDatepicker]="startpicker" placeholder="Transaction Start Date" [value]="start"
+                    (dateChange)="onChangeDate('start', $event)" [max]="end">
+                <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+                <mat-datepicker #startpicker></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="col-xs-6 col-sm-4 col-md-2">
+            <mat-form-field>
+                <input matInput [matDatepicker]="endpicker" placeholder="Transaction End Date" [value]="end"
+                    (dateChange)="onChangeDate('end',$event)" [min]="start">
+                <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+                <mat-datepicker #endpicker></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-4 col-md-2">
+            <mat-form-field style="width: 100%;">
+                <mat-select multiple name="outletId" [(ngModel)]="filter.outletId" placeholder="Outlet"
+                    (selectionChange)="getGetSelectedOutlet()">
+                    <mat-option #allSelected value="all" (click)="toggleAllSelection(allSelected.selected)">
+                        All
+                    </mat-option>
+                    <mat-option *ngFor="let t of outlets" [value]="t.id">
+                        {{t.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-xs-6 col-sm-4 col-md-2">
+            <mat-form-field style="width: 100%;">
+                <mat-select name="classLevelIds" multiple placeholder="Class Level" [(ngModel)]="filter.classLevelIds"
+                    [disabled]="isLoading">
+
+                    <mat-optgroup *ngFor="let g of classLevelsGrouped" [label]="g.outletName">
+                        <mat-option *ngFor="let t of g.items" [value]="t.id">
+                            {{ t.name }}
+                        </mat-option>
+                    </mat-optgroup>
+
+                    <!-- <mat-option *ngFor="let t of classLevels | orderBy: 'name'" [value]="t.id">{{t.name}}</mat-option> -->
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>   
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6" style="padding-bottom:10px;">
+            <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>
+            <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
+            <button type="button" class="btn btn-sm btn-info" style="margin-left:5px;" [disabled]="isLoading"
+                (click)="downloadWalletTransaction();">Download</button>
+        </div>
+    </div>
+    <div class="row" style=" padding-left: 15px; padding-right: 15px;">
+        <ngx-datatable class="material colored-header" #walletTransactionTable
+            [loadingIndicator]="loadingIndicator" [rows]="rows" [rowHeight]="'auto'" [headerHeight]="'auto'"
+            [footerHeight]="35" [columns]="columns" [columnMode]="'force'" [externalPaging]="true"
+            [externalSorting]="true" [count]="pagedResult.totalCount" [limit]="pagedResult.filter.pageSize"
+            (page)="loadData($event)" (sort)="loadData($event)">
+        </ngx-datatable>
+    </div>
+</div>

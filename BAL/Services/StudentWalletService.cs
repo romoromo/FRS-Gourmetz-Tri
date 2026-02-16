@@ -4,6 +4,7 @@ using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces;
 using DAL;
 using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Core.Helpers;
 using DAL.Filters;
 using DAL.Models;
@@ -390,6 +391,11 @@ namespace BAL.Services
         public async Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransactionDTO dto)
         {
             return await this._uow.StudentWalletTransactions.UpdateStudentWalletTransaction(_mapper.Map<StudentWalletTransaction>(dto));
+        }
+
+        public async Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
+        {
+            return await this._uow.StudentWalletTransactions.GetFASMonthlyBillingReport(filter);
         }
     }
 }

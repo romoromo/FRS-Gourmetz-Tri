@@ -31,5 +31,6 @@ namespace DAL.Repositories.Interfaces
         Task<(double TopUp, double Refund, double Balance, double Redemption)> GetWalletTransactions(int studentId, WalletTransactionType walletTransaction);
         Task<DataTable> GetWalletTransactionForReport(DateTime startDate, DateTime endDate, List<int> outletIds, List<int> classLevelIds, bool isFAS);
         Task<PagedEntity<WalletTransactionReportRow>> GetWalletTransactions(WalletTransactionFilter filter);
+        Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
     }
 }

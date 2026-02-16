@@ -1271,6 +1271,12 @@
               "children": []
             },
             {
+              "name": "FAS Mothly Billing Report",
+              "value": "mosmgt.reportmgt.fasmonthlybillingreport.view",
+              "description": "Permission to view FAS Mothly Billing Report",
+              "children": []
+            },
+            {
               "name": "Order Cancellation Report",
               "value": "mosmgt.reportmgt.ordercancellation",
               "description": "",
