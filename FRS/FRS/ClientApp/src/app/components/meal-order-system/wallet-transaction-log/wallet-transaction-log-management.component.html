@@ -3,7 +3,20 @@
     <h3>EWallet Transactions</h3>
   </header>
   <div class="row control-box">
-
+    <div class="col-xs-6 col-sm-4">
+      <mat-form-field style="width: 100%;">
+        <mat-select multiple name="outletId" [(ngModel)]="filter.outletId" placeholder="Outlet"
+          (selectionChange)="getGetSelectedOutlet()">
+          <mat-option #allSelected value="all" (click)="toggleAllSelection(allSelected.selected)">
+            All
+          </mat-option>
+          <mat-option *ngFor="let t of outlets" [value]="t.id">
+            {{t.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="clearfix"></div>
     <mat-form-field class="col-xs-6 col-sm-4">
       <input matInput autocomplete="off" type="text" id="keyword" name="keyword" placeholder="Student Name"
         [(ngModel)]="filter.keyword" #keyword="ngModel" />
@@ -24,7 +37,7 @@
           DEBIT
         </mat-option>
       </mat-select>
-    </mat-form-field>  
+    </mat-form-field>
     <mat-form-field class="col-sm-4">
       <mat-label>Source</mat-label>
       <mat-select id="source" name="source" [(ngModel)]="filter.source" #type="ngModel">
@@ -37,19 +50,25 @@
       </mat-select>
     </mat-form-field>
     <div class="clearfix"></div>
-    <mat-form-field class="col-xs-12 col-sm-3">
+    <mat-form-field class="col-xs-12 col-sm-2">
       <input matInput [matDatepicker]="startpicker" placeholder="Transaction Start Date" [value]="start"
         (dateChange)="onChangeDate('start', $event)">
       <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
       <mat-datepicker #startpicker></mat-datepicker>
     </mat-form-field>
 
-    <mat-form-field class="col-xs-12 col-sm-3">
+    <mat-form-field class="col-xs-12 col-sm-2">
       <input matInput [matDatepicker]="endpicker" placeholder="Transaction End Date" [value]="end"
         (dateChange)="onChangeDate('end',$event)">
       <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
       <mat-datepicker #endpicker></mat-datepicker>
     </mat-form-field>
+    <div class="col-xs-12 col-sm-1">
+      <mat-checkbox [(ngModel)]="filter.isFAS">
+        <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">FAS
+          Only</label>
+      </mat-checkbox>
+    </div>
     <!--<div class="col-xs-6 col-sm-4 col-md-2">
     <mat-form-field>
       <mat-select name="status" [(ngModel)]="status" placeholder="Status">
