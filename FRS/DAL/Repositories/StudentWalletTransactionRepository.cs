@@ -1576,62 +1576,82 @@ namespace DAL.Repositories
 
         public async Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
         {
-            //DECLARE @Role VARCHAR(50)
-            //SELECT @Role = Id FROM[Role] WHERE Name = 'CAT_ADMIN'
-            //
-            //IF NOT EXISTS(SELECT * FROM UserRoleClaim WHERE ClaimValue = 'mosmgt.reportmgt.fasmonthlybillingreport.view')
-            //BEGIN
-            //    INSERT INTO UserRoleClaim(RoleId, ClaimType, ClaimValue) VALUES
-            //    (@Role, 'permission', 'mosmgt.reportmgt.fasmonthlybillingreport.view')
-            //END
+            var txQuery = _appContext.StudentWalletTransactions.AsNoTracking().Where(m => m.IsActive && m.TransactionType == "DEBIT");
+            var fromDate = filter.StartDate.Date;
+            var toExclusive = filter.EndDate.Date.AddDays(1).AddSeconds(-1);
 
+            if (fromDate != DateTime.MinValue) txQuery = txQuery.Where(m => m.CreatedDate >= fromDate);
+            if (toExclusive != DateTime.MaxValue) txQuery = txQuery.Where(m => m.CreatedDate <= toExclusive);
 
+            var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
+            var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
 
-            List<string> transactionUsers = ["pos_admin", "smv_admin"];
+            if (outletFilter.Any())
+                txQuery = txQuery.Where(m => m.student.OutletId.HasValue && outletFilter.Contains(m.student.OutletId.Value));
 
-            var query = from transactionLog in _appContext.StudentWalletTransactions.AsNoTracking().Where(m => m.Id == 98769 || m.Id == 95942 || m.Id == 81570 || m.Id == 74754)
-                        join payments in _appContext.Payments.AsNoTracking()
-                            on transactionLog.PaymentId equals payments.Id into tLogPayment
-                        from logPayment in tLogPayment.DefaultIfEmpty()
-                        join tokenOrder in _appContext.TokenOrders.AsNoTracking()
-                            on logPayment.Id equals tokenOrder.PaymentId into paymentTokenOrder
-                        from paymentOrder in paymentTokenOrder.DefaultIfEmpty()
-                        where transactionLog.IsActive &&
-                              transactionLog.TransactionType == WalletTransactionType.DEBIT.ToString() &&
-                              transactionUsers.Contains(transactionLog.CreatedByUser.UserName)
-                        select new FASMonthlyBillingReportDTO
-                        {
-                            StudentID = transactionLog.StudentId,
-                            StudentName = transactionLog.student.Name,
-                            ClasslevelID = transactionLog.student.ClassLevelId ?? 0,
-                            ClassID = transactionLog.student.ClassId,
-                            Class = transactionLog.student.Class != null ? transactionLog.student.Class.Name : "",
-                            FASStudent = transactionLog.student.IsFAS,
-                            DeliveryDate = transactionLog.CreatedDate,
+            if (classLevelFilter.Any())
+                txQuery = txQuery.Where(m => m.student.ClassLevelId.HasValue && classLevelFilter.Contains(m.student.ClassLevelId.Value));
 
-                            MealType = "",
-                            MealName = "",
-                            Qty = 0,
-                            Price = 0,
-                            InvoiceNumber = "",
-                            POSInvoiceNumber = "",
-                            Amount = 0
-                        };
-            var total = await query.CountAsync();
+            var total = await txQuery.CountAsync();
 
             var page = filter.Page ?? 1;
             var pageSize = filter.PageSize ?? int.MaxValue;
             var skip = (page - 1) * pageSize;
 
-            var queryPaged = await query
+            var pagedIds = await txQuery
+                .OrderByDescending(m => m.CreatedDate)
                 .Skip(skip)
                 .Take(pageSize)
+                .Select(m => m.Id)
                 .ToListAsync();
+
+
+            var query = await (from walletTx in _appContext.StudentWalletTransactions.Where(m => pagedIds.Contains(m.Id))
+                         
+                               join payment in _appContext.Payments.AsNoTracking()
+                                   on walletTx.PaymentId equals payment.Id into paymentGroup
+                               from currentPayment in paymentGroup.DefaultIfEmpty()
+                               
+                               join order in _appContext.TokenOrders.AsNoTracking()
+                                   on currentPayment.Id equals order.PaymentId into orderGroup
+                               from currentOrder in orderGroup.DefaultIfEmpty()
+                               
+                               join orderItem in _appContext.TokenOrdereds.AsNoTracking()
+                                   on currentOrder.Id equals orderItem.OrderId into itemGroup
+                               from currentItem in itemGroup.DefaultIfEmpty()
+                               
+                               join orderDish in _appContext.TokenOrderDishes.AsNoTracking()
+                                   on currentItem.Id equals orderDish.TokenOrderedId into dishGroup
+                               from currentDish in dishGroup.DefaultIfEmpty()
+                               
+                               where walletTx.IsActive &&
+                                     walletTx.TransactionType == WalletTransactionType.DEBIT.ToString()
+                               select new FASMonthlyBillingReportDTO
+                               {
+                                   StudentID = walletTx.StudentId,
+                                   StudentName = walletTx.student.Name,
+                                   OutletID = walletTx.student.OutletId,
+                                   OutletName = walletTx.student.Outlet.Name,
+                                   ClasslevelID = walletTx.student.ClassLevelId ?? 0,
+                                   ClassLevel = walletTx.student.ClassLevel != null ? walletTx.student.ClassLevel.Name : "",
+                                   ClassID = walletTx.student.ClassId,
+                                   Class = walletTx.student.Class != null ? walletTx.student.Class.Name : "",
+                                   FASStudent = walletTx.student.IsFAS,
+                                   DeliveryDate = walletTx.CreatedDate,
+                               
+                                   MealType = currentItem != null ? currentItem.TokenDesc : "",
+                                   MealName = currentDish != null ? currentDish.Dish.Label : "",
+                                   Qty = currentItem != null ? currentItem.Qty : 0,
+                                   Price = currentOrder != null ? currentOrder.TotalAmount : 0,
+                                   InvoiceNumber = currentPayment != null ? currentPayment.InvoiceNumber : "",
+                                   POSInvoiceNumber = currentPayment != null ? currentPayment.PosInvoiceId : "",
+                                   Amount = currentOrder != null ? currentOrder.TotalAmount : 0
+                               }).OrderByDescending(m => m.DeliveryDate).ToListAsync();
 
             return new PagedEntity<FASMonthlyBillingReportDTO>()
             {
                 TotalCount = total,
-                PagedData = queryPaged,
+                PagedData = query,
                 Filter = filter,
                 CurrentPage = page,
                 PageCount = (int)Math.Ceiling((double)total / pageSize)

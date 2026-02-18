@@ -163,6 +163,9 @@ namespace DAL.Filters
 
     public class FASMonthlyBillingFilter : BaseFilter
     {
-        
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public List<int> OutletId { get; set; }
+        public List<int> ClassLevelIds { get; set; }
     }
 }

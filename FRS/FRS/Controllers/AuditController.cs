@@ -312,5 +312,24 @@ namespace FRS.Controllers
             var datas = await _tokenOrderService.GetFASMonthlyBillingReport(filter);
             return Ok(_mapper.Map<PagedEntityViewModel<FASMonthlyBillingReportDTO>>(datas));
         }
+
+        [HttpPost("report/generate-fas-billing-report")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateWalletTransaction(FASMonthlyBillingFilter filter)
+        {
+            var xls = await _tokenOrderService.GenerateFASMonthlyBillingReport(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "FAS-Monthly-Billing-Report.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
     }
 }

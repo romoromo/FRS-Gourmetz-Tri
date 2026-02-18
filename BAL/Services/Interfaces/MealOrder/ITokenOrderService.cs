@@ -115,5 +115,6 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<byte[]> GenerateVoucherUtilisationReport(VoucherUtilisationReportFilter filter);
 
         Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
+        Task<byte[]> GenerateFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
     }
 }

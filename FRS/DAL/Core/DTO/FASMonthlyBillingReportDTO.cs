@@ -7,6 +7,8 @@ namespace DAL.Core.DTO
         public int ID { get; set; }
         public int StudentID { get; set; }
         public string StudentName { get; set; }
+        public int? OutletID { get; set; }
+        public string OutletName { get; set; }
         public int ClasslevelID { get; set; }
         public string ClassLevel { get; set; }
         public int ClassID { get; set; }

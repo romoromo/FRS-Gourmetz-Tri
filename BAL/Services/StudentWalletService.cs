@@ -417,5 +417,161 @@ namespace BAL.Services
         {
             return await this._uow.StudentWalletTransactions.GetFASMonthlyBillingReport(filter);
         }
+
+        public async Task<byte[]> GenerateFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
+        {
+            filter.PageSize = null;
+            var datas = await this._uow.StudentWalletTransactions.GetFASMonthlyBillingReport(filter);
+
+            if (datas.PagedData != null)
+            {
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    var wb = new XSSFWorkbook();
+                    var rowCount = 0;
+                    var sheet = (XSSFSheet)wb.CreateSheet("Sheet1");
+                    var headers = new string[] { "Student ID", "Name", "Class Level", "Class", "FAS Student", "Delivery Date", "Meal Type", "Meal Name", "QTY", "Dish Price", "Invoice Number", "POS Invoice", "Total Amount Spent" };
+
+                    #region Headers
+
+                    var headerStyle = wb.CreateCellStyle();
+                    var headerFont = wb.CreateFont();
+                    headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                    headerStyle.SetFont(headerFont);
+                    headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+
+                    var borderedTitleStyle = wb.CreateCellStyle();
+                    borderedTitleStyle.SetFont(headerFont);
+
+                    var borderedHeaderStyle = wb.CreateCellStyle();
+                    borderedHeaderStyle.SetFont(headerFont);
+                    borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+
+                    ICell cell;
+
+                    var outlets = string.Join(",", datas.PagedData.Select(m => m.OutletName).Distinct());
+                    if (filter.OutletId == null) outlets = "ALL";
+                    var row = sheet.CreateRow(rowCount);
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue($"Downloaded by : {outlets}");
+                    cell.CellStyle = borderedTitleStyle;
+                    rowCount++;
+
+                    var classLevels = string.Join(",", datas.PagedData.Select(m => m.ClassLevel).Distinct());
+                    if (filter.ClassLevelIds == null) classLevels = "ALL";
+                    row = sheet.CreateRow(rowCount);
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue($"Class Level : {classLevels}");
+                    cell.CellStyle = borderedTitleStyle;
+                    rowCount++;
+
+                    row = sheet.CreateRow(rowCount);
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue($"Month : {filter.StartDate:dd/MM/yyyy} - {filter.EndDate:dd/MM/yyyy}");
+                    cell.CellStyle = borderedTitleStyle;
+                    rowCount++;
+
+
+                    rowCount++;
+
+                    row = sheet.CreateRow(rowCount);
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue(headers[i]);
+                        cell.CellStyle = borderedHeaderStyle;
+                    }
+                    sheet.AutoSizeColumn(0);
+
+                    #endregion
+
+                    #region Content
+                    var contentStyle = wb.CreateCellStyle();
+                    contentStyle.BorderTop = BorderStyle.Thin;
+                    contentStyle.BorderBottom = BorderStyle.Thin;
+                    contentStyle.BorderLeft = BorderStyle.Thin;
+                    contentStyle.BorderRight = BorderStyle.Thin;
+                    contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentStyle.Alignment = HorizontalAlignment.Left;
+                    contentStyle.WrapText = true;
+                    var dataFormatCustom = wb.CreateDataFormat();
+                    datas.PagedData.ToList().ForEach(dt =>
+                    {
+                        row = sheet.CreateRow(++rowCount);
+
+                        cell = row.CreateCell(0);
+                        cell.SetCellValue(dt.StudentID);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(1);
+                        cell.SetCellValue(dt.StudentName);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(2);
+                        cell.SetCellValue(dt.ClassLevel);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(3);
+                        cell.SetCellValue(dt.Class);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(4);
+                        cell.SetCellValue(dt.FASStudent ? "Y" : "N");
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(5);
+                        cell.SetCellValue(dt.DeliveryDate.ToString("dd/MM/yyyy HH:mm:ss"));
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(6);
+                        cell.SetCellValue(dt.MealType);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(7);
+                        cell.SetCellValue(dt.MealName);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(8);
+                        cell.SetCellValue(dt.Qty);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(9);
+                        cell.SetCellValue(Common.Round(dt.Price));
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(10);
+                        cell.SetCellValue(dt.InvoiceNumber);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(11);
+                        cell.SetCellValue(dt.POSInvoiceNumber);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(12);
+                        cell.SetCellValue(Common.Round(dt.Amount));
+                        cell.CellStyle = contentStyle;
+                    });
+
+                    #endregion
+
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        sheet.AutoSizeColumn(i, true);
+                    }
+
+                    wb.Write(stream);
+
+                    return stream.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

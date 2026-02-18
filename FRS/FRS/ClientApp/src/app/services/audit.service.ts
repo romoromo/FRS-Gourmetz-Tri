@@ -88,4 +88,8 @@ export class AuditService {
   getFasMothlyBillingReport(filter: FASMonthlyBillingFilter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.auditUrl + '/report/fas-billing-report', filter);
   }
+
+  generateFasMothlyBillingReport(filter: FASMonthlyBillingFilter) {
+    return this.commonEndpoint.getFile<any>(this.auditUrl + '/report/generate-fas-billing-report', filter);
+  }
 }

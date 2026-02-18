@@ -13,16 +13,18 @@ import { Subscription } from "rxjs";
 import { DeliveryService } from "src/app/services/meal-order/delivery.service";
 import { StudentService } from "src/app/services/meal-order/student.service";
 import { AppTranslationService } from "src/app/services/app-translation.service";
-import { DecimalPipe } from "@angular/common";
+import { DatePipe, DecimalPipe } from "@angular/common";
 import { FASMonthlyBillingReportModel } from "src/app/models/fas-monthly-billing-report.model";
 import { AuditService } from "src/app/services/audit.service";
 import { Utilities } from "src/app/services/utilities";
+import { saveAs } from "file-saver";
+import * as moment from "moment";
 
 @Component({
   selector: "fas-mothly-billing-report-management",
   templateUrl: "./fas-mothly-billing-report-management.component.html",
   styleUrls: ["./fas-mothly-billing-report-management.component.css"],
-  providers: [DecimalPipe],
+  providers: [DecimalPipe, DatePipe],
 })
 export class FASMothlyBillingReportManagementComponent implements OnInit {
   private subscription: Subscription = new Subscription();
@@ -55,7 +57,8 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
     private studentService: StudentService,
     private translationService: AppTranslationService,
     private decimalPipe: DecimalPipe,
-    private auditService: AuditService
+    private auditService: AuditService,
+    private datePipe: DatePipe,
   ) {}
 
   ngOnInit() {
@@ -110,6 +113,9 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
         prop: "deliveryDate",
         name: "Delivery Date",
         sortable: false,
+        pipe: {
+          transform: (val: string) => this.datePipe.transform(val, 'dd/MM/yyyy HH:mm:ss')
+        }
       },
       {
         prop: "mealType",
@@ -217,6 +223,9 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
     this.classLevels = [];
     this.classLevelsGrouped = [];
     this.filter.outletId = [];
+    this.filter.classLevelIds = [];
+
+    this.loadData();
   }
 
   onChangeDate(type: string, event: MatDatepickerInputEvent<Date>) {
@@ -339,30 +348,29 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
   }
 
   downloadWalletTransaction() {
-    alert('downloadWalletTransaction');
-    //this.filter.startDate = this.start.toDateString();
-    //this.filter.endDate = this.end.toDateString();
-    //this.filter.page = 1;
-    //this.isLoading = true;
-    //this.alertService.startLoadingMessage("Downloading...");
-    //const fileName =
-    //  moment().format("DDMMYYYY_hhmmss") + "_Student-Wallet-Transactions.xlsx";
-//
-    //this.studentService.generateWalletTransactions(this.filter).subscribe(
-    //  (data) => {
-    //    console.log(data);
-    //    saveAs(data, fileName);
-//
-    //    this.alertService.stopLoadingMessage();
-    //    this.isLoading = false;
-    //  },
-    //  (err) => {
-    //    this.alertService.stopLoadingMessage();
-    //    alert("Problem while downloading the file.");
-    //    console.error(err);
-    //    this.isLoading = false;
-    //  },
-    //);
+    this.filter.startDate = this.start.toDateString();
+    this.filter.endDate = this.end.toDateString();
+    this.filter.page = 1;
+    this.isLoading = true;
+    this.alertService.startLoadingMessage("Downloading...");
+    const fileName =
+     moment().format("DDMMYYYY_hhmmss") + "_FAS-Monthly-Billing-Report.xlsx";
+
+    this.auditService.generateFasMothlyBillingReport(this.filter).subscribe(
+     (data) => {
+       console.log(data);
+       saveAs(data, fileName);
+
+       this.alertService.stopLoadingMessage();
+       this.isLoading = false;
+     },
+     (err) => {
+       this.alertService.stopLoadingMessage();
+       alert("Problem while downloading the file.");
+       console.error(err);
+       this.isLoading = false;
+     },
+    );
   }
 
   get canManageEmailTemplates() {

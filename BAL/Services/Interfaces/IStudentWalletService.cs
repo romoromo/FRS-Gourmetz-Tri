@@ -29,5 +29,6 @@ namespace BAL.Services.Interfaces
         Task<BaseOperationResponse> UpdateStudentWalletTransaction(StudentWalletTransactionDTO dto);
 
         Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
+        Task<byte[]> GenerateFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
     }
 }

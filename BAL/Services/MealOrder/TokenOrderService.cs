@@ -5608,9 +5608,14 @@ namespace BAL.Services.MealOrder
         #endregion
 
 
-        public Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
+        public async Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
         {
-            return _studentWalletService.GetFASMonthlyBillingReport(filter);
+            return await _studentWalletService.GetFASMonthlyBillingReport(filter);
+        }
+
+        public async Task<byte[]> GenerateFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
+        {
+            return await _studentWalletService.GenerateFASMonthlyBillingReport(filter);
         }
     }
 }
