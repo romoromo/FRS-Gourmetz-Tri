@@ -35,7 +35,9 @@ import * as moment from "moment";
 import { saveAs } from "file-saver";
 import { MenuService } from "../../../services/meal-order/menu.service";
 import { Dish } from "../../../models/meal-order/dish.model";
-import { MealType } from "../../../models/meal-order/meal-type.model";
+import { MealType } from "../../../models/meal-order/meal-type.model"; 
+import { Route } from "../../../models/meal-order/route.model";
+
 import { MealService } from "src/app/services/meal-order/meal.service";
 import { DishService } from "src/app/services/meal-order/dish.service";
 import {
@@ -77,6 +79,7 @@ export class PrintAllocationComponent implements OnInit {
   mealPeriods: any[];
   mealSessions: any[];
   routes = [];
+  newRoutes: Route[] = [];
   //dish_count: TokenDishLabel[] = [];
 
   constructor(

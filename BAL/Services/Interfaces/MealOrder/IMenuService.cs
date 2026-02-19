@@ -48,6 +48,7 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<List<MealSessionDetailDTO>> GetOutleOnlyMealSessions(int outletId, DateTime orderDate);
         Task<List<MealSessionDetailDTO>> GetOutletMealSessions(int outletId, DateTime orderDate, DateTime? startDate, DateTime? endDate, DateTime? orderDateTo = null);
         Task<List<MealSessionDetailDTO>> GetMealAllocationSessionDetail(int outletId, DateTime orderDate);
+        Task<List<RouteDTO>> GetMealAllocationRoute(int outletId, DateTime orderDate);
         Task<BaseOperationResponse> CreateMenuGroupAsync(MenuGroupDTO dto);
         Task<BaseOperationResponse> DeleteMenuGroupAsync(int id);
         Task<MenuGroupDTO> GetMenuGroupByIdAsync(int id);

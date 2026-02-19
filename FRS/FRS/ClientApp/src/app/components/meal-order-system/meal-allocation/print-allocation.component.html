@@ -28,9 +28,18 @@
         </mat-form-field>
         <mat-form-field class="col-xs-6">
           <mat-label>Packing Time</mat-label>
-           <input matInput (keydown)="$event.preventDefault()" [disabled]="isSaving || filterLoading || isLoading" type="time" id="packingTime" datetime="packingTime"
-          name="packingTime" [ngModel]="allocation.packingTime | date:  'HH:mm'"
-          (ngModelChange)="allocation.packingTime = $event" />
+          <input matInput (keydown)="$event.preventDefault()" [disabled]="isSaving || filterLoading || isLoading" type="time" id="packingTime" datetime="packingTime"
+                 name="packingTime" [ngModel]="allocation.packingTime | date:  'HH:mm'"
+                 (ngModelChange)="allocation.packingTime = $event" />
+        </mat-form-field>
+
+        <mat-form-field class="col-xs-6">
+          <mat-label>Route</mat-label>
+          <mat-select (selectionChange)="onChangeRoute()" id="route" name="route" [(ngModel)]="allocation.routeId" #route="ngModel" [disabled]="isSaving || filterLoading || isLoading">
+            <mat-option *ngFor="let route of routes" [value]="route.id">
+              {{route.label}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
 
       </div>

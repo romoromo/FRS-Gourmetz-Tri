@@ -22,6 +22,9 @@ namespace DAL.Models.MealOrder
         public int? outletId { get; set; }
         [ForeignKey("outletId")]
         public virtual Outlet Outlet { get; set; }
+        public int? RouteId { get; set; }
+        [ForeignKey("RouteId")]
+        public virtual Route Route { get; set; }
         public virtual ICollection<TokenLabel> tokens { get; set; }
     }
 }

@@ -2256,15 +2256,19 @@ namespace DAL.Filters
                    .CanFilter()
                    .CanSort();
 
+            mapper.Property<MealAllocation>(p => p.RouteId)
+                   .CanFilter()
+                   .CanSort();
+
             mapper.Property<MealAllocation>(p => p.mealSessionId)
                     .CanFilter()
                     .CanSort()
                     .HasName("sessionId");
 
-            mapper.Property<MealAllocation>(p => p.MealSessionDetail.RouteId)
-                    .CanFilter()
-                    .CanSort()
-                    .HasName("routeId");
+            //mapper.Property<MealAllocation>(p => p.MealSessionDetail.RouteId)
+            //        .CanFilter()
+            //        .CanSort()
+            //        .HasName("routeId");
 
         }
 
