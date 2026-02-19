@@ -1017,6 +1017,7 @@ namespace FRS
             });
 
             RecurringJob.AddOrUpdate<BackgroundService>("fas-recharge", m => m.FASRechargeable(CancellationToken.None), Cron.Minutely);
+            RecurringJob.AddOrUpdate<BackgroundService>("sync-with-pos-sales", m => m.SyncWithPOSSales(CancellationToken.None), "*/10 * * * *");
 
             app.UseSpa(spa =>
             {

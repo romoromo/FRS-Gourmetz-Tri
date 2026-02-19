@@ -285,6 +285,8 @@ namespace DAL
         public DbSet<SortingArea> SortingAreas { get; set; }
         public DbSet<ClassLevelSchedule> ClassLevelSchedules { get; set; }
         public DbSet<ClassLevelScheduleItem> ClassLevelScheduleItems { get; set; }
+        public DbSet<POSSales> POSSales { get; set; }
+        public DbSet<SalesItem> POSSalesItem { get; set; }
 
         #region Stored Procedures
 
@@ -777,6 +779,13 @@ namespace DAL
                 e.HasIndex(x => new { x.ClassLevelId, x.CreatedAt });
             });
 
+            builder.Entity<POSSales>()
+                .Property(p => p.id_penjualan)
+                .ValueGeneratedNever();
+
+            builder.Entity<SalesItem>()
+                .Property(p => p.id_penjualan_detail)
+                .ValueGeneratedNever();
         }
 
         #region Used Methods

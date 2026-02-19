@@ -32,5 +32,7 @@ namespace DAL.Repositories.Interfaces
         Task<DataTable> GetWalletTransactionForReport(DateTime startDate, DateTime endDate, List<int> outletIds, List<int> classLevelIds, bool isFAS);
         Task<PagedEntity<WalletTransactionReportRow>> GetWalletTransactions(WalletTransactionFilter filter);
         Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
+
+        Task SyncWithPOSSales(CancellationToken ct = default);
     }
 }

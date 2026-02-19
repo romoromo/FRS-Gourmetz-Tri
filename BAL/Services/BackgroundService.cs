@@ -10,11 +10,11 @@ namespace BAL.Services
     public class BackgroundService : IBackgroundService
     {
         private IUnitOfWork _uow;
-        readonly ILogger _logger;        
+        readonly ILogger _logger;
 
         public BackgroundService(IUnitOfWork uow, ILogger<BackgroundService> logger)
         {
-            _uow = uow; 
+            _uow = uow;
             _logger = logger;
         }
 
@@ -24,6 +24,14 @@ namespace BAL.Services
             _logger.LogInformation("Background Service: FAS Rechargeable started.");
             await _uow.StudentWalletTransactions.FASRechargeable(ct);
             _logger.LogInformation("Background Service: FAS Rechargeable completed.");
+        }
+
+        [AutomaticRetry(Attempts = 0)]
+        public async Task SyncWithPOSSales(CancellationToken ct = default)
+        {
+            _logger.LogInformation("Background Service: Sync With POS Sales.");
+            await _uow.StudentWalletTransactions.SyncWithPOSSales(ct);
+            _logger.LogInformation("Background Service: Sync With POS Sales.");
         }
     }
 }

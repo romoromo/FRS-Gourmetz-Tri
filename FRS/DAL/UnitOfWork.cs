@@ -744,7 +744,7 @@ namespace DAL
             {
                 if (_studentWalletTransactions == null)
                     _studentWalletTransactions = new StudentWalletTransactionRepository(_context, this._sieveProcessor, CurrentUserId, CurrentInstitutionId,
-                        NullLogger<StudentWalletTransactionRepository>.Instance, _sqlAppLock);
+                        NullLogger<StudentWalletTransactionRepository>.Instance, _sqlAppLock, _configuration);
 
                 return _studentWalletTransactions;
             }

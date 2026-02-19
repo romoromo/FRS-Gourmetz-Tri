@@ -6,18 +6,19 @@ using DAL.Models;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NPOI.SS.Formula.Functions;
-using Org.BouncyCastle.Asn1.IsisMtt.X509;
+using Newtonsoft.Json;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using static NPOI.HSSF.Util.HSSFColor;
 
 namespace DAL.Repositories
 {
@@ -28,15 +29,17 @@ namespace DAL.Repositories
         private int? _currentInstitutionId;
         readonly ILogger _logger;
         private readonly ISqlAppLock _sqlAppLock;
+        private readonly IConfiguration _configuration;
 
         public StudentWalletTransactionRepository(ApplicationDbContext context, ISieveProcessor sieveProcessor, int? currentUserId, int? currentInstitutionId, ILogger<StudentWalletTransactionRepository> logger,
-            ISqlAppLock sqlAppLock) : base(context)
+            ISqlAppLock sqlAppLock, IConfiguration configuration) : base(context)
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
             this._currentUserId = currentInstitutionId;
             this._logger = logger;
             this._sqlAppLock = sqlAppLock;
+            this._configuration = configuration;
         }
 
         #region Sieved
@@ -1576,7 +1579,8 @@ namespace DAL.Repositories
 
         public async Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
         {
-            var txQuery = _appContext.StudentWalletTransactions.AsNoTracking().Where(m => m.IsActive && m.TransactionType == "DEBIT");
+            var txQuery = _appContext.StudentWalletTransactions.AsNoTracking()
+                .Where(m => m.IsActive && m.TransactionType == "DEBIT");
             var fromDate = filter.StartDate.Date;
             var toExclusive = filter.EndDate.Date.AddDays(1).AddSeconds(-1);
 
@@ -1592,70 +1596,241 @@ namespace DAL.Repositories
             if (classLevelFilter.Any())
                 txQuery = txQuery.Where(m => m.student.ClassLevelId.HasValue && classLevelFilter.Contains(m.student.ClassLevelId.Value));
 
-            var total = await txQuery.CountAsync();
+            var query = from walletTx in txQuery
+
+                        join payment in _appContext.Payments.AsNoTracking()
+                            on walletTx.PaymentId equals payment.Id into paymentGroup
+                        from currentPayment in paymentGroup.DefaultIfEmpty()
+
+                        join order in _appContext.TokenOrders.AsNoTracking()
+                            on currentPayment.Id equals order.PaymentId into orderGroup
+                        from currentOrder in orderGroup.DefaultIfEmpty()
+
+                        join orderItem in _appContext.TokenOrdereds.AsNoTracking()
+                            on currentOrder.Id equals orderItem.OrderId into itemGroup
+                        from currentItem in itemGroup.DefaultIfEmpty()
+
+                        join orderDish in _appContext.TokenOrderDishes.AsNoTracking()
+                            on currentItem.Id equals orderDish.TokenOrderedId into dishGroup
+                        from currentDish in dishGroup.DefaultIfEmpty()
+
+                        join pos in _appContext.POSSales.AsNoTracking()
+                             on currentPayment.Id equals pos.PaymentID into posGroup
+                        from currentPos in posGroup.DefaultIfEmpty()
+
+                        join posItem in _appContext.POSSalesItem.AsNoTracking()
+                            on currentPos.id_penjualan equals posItem.id_penjualan into posItemGroup
+                        from currentPosItem in posItemGroup.DefaultIfEmpty()
+
+                        where walletTx.IsActive &&
+                              walletTx.TransactionType == WalletTransactionType.DEBIT.ToString()
+                        select new FASMonthlyBillingReportDTO
+                        {
+                            ID = walletTx.Id,
+                            StudentID = walletTx.StudentId,
+                            StudentName = walletTx.student.Name,
+                            OutletID = walletTx.student.OutletId,
+                            OutletName = walletTx.student.Outlet.Name,
+                            ClasslevelID = walletTx.student.ClassLevelId ?? 0,
+                            ClassLevel = walletTx.student.ClassLevel != null ? walletTx.student.ClassLevel.Name : "",
+                            ClassID = walletTx.student.ClassId,
+                            Class = walletTx.student.Class != null ? walletTx.student.Class.Name : "",
+                            FASStudent = walletTx.student.IsFAS,
+                            DeliveryDate = walletTx.CreatedDate,
+
+                            MealType = currentItem != null ? currentItem.TokenDesc : "POS Sale",
+                            MealName = currentDish != null ? currentDish.Dish.Label : (currentPosItem != null ? currentPosItem.nama_barang : ""),
+                            Qty = currentItem != null ? currentItem.Qty.ToString("N", CultureInfo.InvariantCulture) : (currentPosItem != null ? currentPosItem.qty : ""),
+                            Price = currentOrder != null ? currentOrder.TotalAmount.ToString("N", CultureInfo.InvariantCulture) : (currentPosItem != null ? currentPosItem.harga_satuan : ""),
+                            InvoiceNumber = currentPayment != null ? currentPayment.InvoiceNumber : "",
+                            POSInvoiceNumber = currentPayment != null ? currentPayment.PosInvoiceId : "",
+                            Amount = walletTx != null ? walletTx.Amount : 0
+                        };
+
+            var total = await query.CountAsync();
 
             var page = filter.Page ?? 1;
             var pageSize = filter.PageSize ?? int.MaxValue;
             var skip = (page - 1) * pageSize;
 
-            var pagedIds = await txQuery
-                .OrderByDescending(m => m.CreatedDate)
+            var queryPaged = await query
+                .OrderByDescending(m => m.DeliveryDate)
                 .Skip(skip)
                 .Take(pageSize)
-                .Select(m => m.Id)
                 .ToListAsync();
-
-
-            var query = await (from walletTx in _appContext.StudentWalletTransactions.Where(m => pagedIds.Contains(m.Id))
-                         
-                               join payment in _appContext.Payments.AsNoTracking()
-                                   on walletTx.PaymentId equals payment.Id into paymentGroup
-                               from currentPayment in paymentGroup.DefaultIfEmpty()
-                               
-                               join order in _appContext.TokenOrders.AsNoTracking()
-                                   on currentPayment.Id equals order.PaymentId into orderGroup
-                               from currentOrder in orderGroup.DefaultIfEmpty()
-                               
-                               join orderItem in _appContext.TokenOrdereds.AsNoTracking()
-                                   on currentOrder.Id equals orderItem.OrderId into itemGroup
-                               from currentItem in itemGroup.DefaultIfEmpty()
-                               
-                               join orderDish in _appContext.TokenOrderDishes.AsNoTracking()
-                                   on currentItem.Id equals orderDish.TokenOrderedId into dishGroup
-                               from currentDish in dishGroup.DefaultIfEmpty()
-                               
-                               where walletTx.IsActive &&
-                                     walletTx.TransactionType == WalletTransactionType.DEBIT.ToString()
-                               select new FASMonthlyBillingReportDTO
-                               {
-                                   StudentID = walletTx.StudentId,
-                                   StudentName = walletTx.student.Name,
-                                   OutletID = walletTx.student.OutletId,
-                                   OutletName = walletTx.student.Outlet.Name,
-                                   ClasslevelID = walletTx.student.ClassLevelId ?? 0,
-                                   ClassLevel = walletTx.student.ClassLevel != null ? walletTx.student.ClassLevel.Name : "",
-                                   ClassID = walletTx.student.ClassId,
-                                   Class = walletTx.student.Class != null ? walletTx.student.Class.Name : "",
-                                   FASStudent = walletTx.student.IsFAS,
-                                   DeliveryDate = walletTx.CreatedDate,
-                               
-                                   MealType = currentItem != null ? currentItem.TokenDesc : "",
-                                   MealName = currentDish != null ? currentDish.Dish.Label : "",
-                                   Qty = currentItem != null ? currentItem.Qty : 0,
-                                   Price = currentOrder != null ? currentOrder.TotalAmount : 0,
-                                   InvoiceNumber = currentPayment != null ? currentPayment.InvoiceNumber : "",
-                                   POSInvoiceNumber = currentPayment != null ? currentPayment.PosInvoiceId : "",
-                                   Amount = currentOrder != null ? currentOrder.TotalAmount : 0
-                               }).OrderByDescending(m => m.DeliveryDate).ToListAsync();
 
             return new PagedEntity<FASMonthlyBillingReportDTO>()
             {
                 TotalCount = total,
-                PagedData = query,
+                PagedData = queryPaged,
                 Filter = filter,
                 CurrentPage = page,
                 PageCount = (int)Math.Ceiling((double)total / pageSize)
             };
+        }
+
+
+        public async Task SyncWithPOSSales(CancellationToken ct = default)
+        {
+            var syncDate = DateTime.Now;
+            _logger.LogInformation("Start - SyncWithPOSSales");
+
+            var posSalesURL = _configuration["AppSettings:POS_URL"];
+            _logger.LogInformation($"POS_URL : {posSalesURL}");
+
+            if (string.IsNullOrEmpty(posSalesURL)) return;
+
+            var startCorrectTransaction = new DateTime(2026, 1, 19);
+            var queryData = await (
+                            from walletTx in _appContext.StudentWalletTransactions.AsNoTracking()
+                            join payment in _appContext.Payments.AsNoTracking()
+                                on walletTx.PaymentId equals payment.Id
+
+                            join pos in _appContext.POSSales.AsNoTracking()
+                            on payment.Id equals pos.PaymentID into posGroup
+                            from posSale in posGroup.DefaultIfEmpty()
+
+                            where posSale == null &&
+                                  payment.version == "SUCCESS" &&
+                                  walletTx.IsActive &&
+                                  walletTx.Remarks != "VOID" &&
+                                  walletTx.TransactionType == "DEBIT" &&
+                                  walletTx.CreatedDate >= startCorrectTransaction
+                            orderby walletTx.CreatedDate descending
+                            select new
+                            {
+                                walletTx.StudentId,
+                                walletTx.Amount,
+                                walletTx.CreatedDate,
+                                payment.Id
+                            }).Take(500).ToListAsync(ct);
+
+            if (!queryData.Any()) return;
+
+            var paymentIds = queryData.Select(q => q.Id).ToList();
+            var paymentsToUpdateMap = await _appContext.Payments
+                .Where(p => paymentIds.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id, ct);
+
+            var studentIDs = queryData.Select(q => q.StudentId).Distinct();
+            var startDate = queryData.Min(q => q.CreatedDate);
+            var endDate = queryData.Max(q => q.CreatedDate);
+
+            if (!studentIDs.Any()) return;
+
+            using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(2) };
+            var studentBatches = studentIDs.Chunk(50);
+
+            foreach (var batch in studentBatches)
+            {
+                string url = $"{posSalesURL}/POS/anon_api/ajaxGetWalletSalesByDate?dateStart={startDate.Date:yyyy-MM-dd}&dateEnd={endDate.Date:yyyy-MM-dd}&StudentId[]={string.Join("&StudentId[]=", batch)}";
+                _logger.LogInformation($"Requesting POS Sales data from {url}");
+
+                var response = await httpClient.GetAsync(url, ct);
+                if (!response.IsSuccessStatusCode) continue;
+
+                var content = await response.Content.ReadAsStringAsync();
+                var posResponse = JsonConvert.DeserializeObject<POSResponse>(content);
+                if (posResponse?.data?.sales == null) continue;
+
+                var salesToInsert = new List<POSSales>();
+                var paymentsToUpdate = new List<Payment>();
+
+                var salesLookup = posResponse.data.sales
+                .Select(s =>
+                {
+                    decimal.TryParse(s.sub_total, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal amt);
+                    return new { Original = s, Amt = amt };
+                })
+                .ToLookup(x => new { x.Original.student_id, x.Amt, Tgl = x.Original.tgl_penjualan.Date });
+
+                var incomingIdPenjualans = posResponse.data.sales.Select(s => s.id_penjualan).ToList();
+                var alreadyInDb = _appContext.POSSales
+                    .AsNoTracking()
+                    .Where(s => incomingIdPenjualans.Contains(s.id_penjualan))
+                    .Select(s => s.id_penjualan);
+
+                var usedIdPenjualan = new HashSet<int>();
+
+                foreach (var local in queryData)
+                {
+                    var key = new { student_id = local.StudentId, Amt = (decimal)local.Amount, Tgl = local.CreatedDate.Date };
+                    var matches = salesLookup[key];
+
+                    var match = salesLookup[key]
+                        .Select(m => m.Original)
+                        .FirstOrDefault(m => !alreadyInDb.Contains(m.id_penjualan) && !usedIdPenjualan.Contains(m.id_penjualan));
+
+                    if (match != null)
+                    {
+                        usedIdPenjualan.Add(match.id_penjualan);
+
+                        var newSale = new POSSales
+                        {
+                            card_serial_number = match.card_serial_number,
+                            id_jenis_harga = match.id_jenis_harga,
+                            id_penjualan = match.id_penjualan,
+                            id_pos = match.id_pos,
+                            jenis_bayar = match.jenis_bayar,
+                            neto = match.neto,
+                            total_bayar = match.total_bayar,
+                            total_qty = match.total_qty,
+
+                            no_invoice = match.no_invoice,
+                            id_gudang = match.id_gudang,
+                            outlet_name = match.outlet_name,
+                            tgl_invoice = match.tgl_invoice,
+                            tgl_penjualan = match.tgl_penjualan,
+                            sub_total = match.sub_total,
+                            student_id = match.student_id,
+                            nama_customer = match.nama_customer,
+                            PaymentID = local.Id,
+                            SyncDate = syncDate,
+                            sales_items = match.sales_items.Select(i => new Models.SalesItem
+                            {
+                                id_barang = i.kode_barang,
+                                harga_satuan = i.harga_satuan,
+                                qty = i.qty,
+                                harga_total = i.harga_total,
+                                nama_barang = i.nama_barang,
+
+                                deskripsi = i.deskripsi,
+                                diskon = i.diskon,
+                                id_penjualan = i.id_penjualan,
+                                id_penjualan_detail = i.id_penjualan_detail,
+                                kode_barang = i.kode_barang,
+                            }).ToList()
+                        };
+
+                        salesToInsert.Add(newSale);
+
+                        if (paymentsToUpdateMap.TryGetValue(local.Id, out var p))
+                        {
+                            p.PosInvoiceId = match.no_invoice;
+                        }
+                    }
+                }
+
+                if (salesToInsert.Any())
+                {
+                    using var transaction = await _appContext.Database.BeginTransactionAsync(ct);
+                    try
+                    {
+                        await _appContext.POSSales.AddRangeAsync(salesToInsert);
+                        _appContext.Payments.UpdateRange(paymentsToUpdate);
+
+                        await _appContext.SaveChangesAsync(ct);
+
+                        await transaction.CommitAsync(ct);
+                        _logger.LogInformation($"Berhasil Sync {salesToInsert.Count} data baru.");
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync(ct);
+                        _logger.LogError($"Gagal Bulk Insert: {ex.Message}");
+                    }
+                }
+            }
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

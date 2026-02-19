@@ -540,7 +540,7 @@ namespace BAL.Services
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(9);
-                        cell.SetCellValue(Common.Round(dt.Price));
+                        cell.SetCellValue(dt.Price);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(10);

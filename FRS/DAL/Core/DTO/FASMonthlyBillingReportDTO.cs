@@ -17,8 +17,8 @@ namespace DAL.Core.DTO
         public DateTime DeliveryDate { get; set; }
         public string MealType { get; set; }
         public string MealName { get; set; }
-        public int Qty { get; set; }
-        public double Price { get; set; }
+        public string Qty { get; set; }
+        public string Price { get; set; }
         public string InvoiceNumber { get; set; }
         public string POSInvoiceNumber { get; set; }
         public double Amount { get; set; }
