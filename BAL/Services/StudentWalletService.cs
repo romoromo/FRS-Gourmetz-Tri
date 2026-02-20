@@ -430,7 +430,7 @@ namespace BAL.Services
                     var wb = new XSSFWorkbook();
                     var rowCount = 0;
                     var sheet = (XSSFSheet)wb.CreateSheet("Sheet1");
-                    var headers = new string[] { "Student ID", "Name", "Class Level", "Class", "FAS Student", "Delivery Date", "Meal Type", "Meal Name", "QTY", "Dish Price", "Invoice Number", "POS Invoice", "Total Amount Spent" };
+                    var headers = new string[] { "Outlet", "Student ID", "Name", "Class Level", "Class", "FAS Student", "Delivery Date", "Meal Type", "Meal Name", "QTY", "Dish Price", "Invoice Number", "POS Invoice", "Total Amount Spent" };
 
                     #region Headers
 
@@ -504,54 +504,58 @@ namespace BAL.Services
                         row = sheet.CreateRow(++rowCount);
 
                         cell = row.CreateCell(0);
-                        cell.SetCellValue(dt.StudentID);
+                        cell.SetCellValue(dt.OutletName);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(1);
-                        cell.SetCellValue(dt.StudentName);
+                        cell.SetCellValue(dt.StudentID);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(2);
-                        cell.SetCellValue(dt.ClassLevel);
+                        cell.SetCellValue(dt.StudentName);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(3);
-                        cell.SetCellValue(dt.Class);
+                        cell.SetCellValue(dt.ClassLevel);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(4);
-                        cell.SetCellValue(dt.FASStudent ? "Y" : "N");
+                        cell.SetCellValue(dt.Class);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(5);
-                        cell.SetCellValue(dt.DeliveryDate.ToString("dd/MM/yyyy HH:mm:ss"));
+                        cell.SetCellValue(dt.FASStudent ? "Y" : "N");
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(6);
-                        cell.SetCellValue(dt.MealType);
+                        cell.SetCellValue(dt.DeliveryDate.ToString("dd/MM/yyyy HH:mm:ss"));
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(7);
-                        cell.SetCellValue(dt.MealName);
+                        cell.SetCellValue(dt.MealType);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(8);
-                        cell.SetCellValue(dt.Qty);
+                        cell.SetCellValue(dt.MealName);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(9);
-                        cell.SetCellValue(dt.Price);
+                        cell.SetCellValue(dt.QtyNumber);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(10);
-                        cell.SetCellValue(dt.InvoiceNumber);
+                        cell.SetCellValue(dt.Price);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(11);
+                        cell.SetCellValue(dt.InvoiceNumber);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(1);
                         cell.SetCellValue(dt.POSInvoiceNumber);
                         cell.CellStyle = contentStyle;
 
-                        cell = row.CreateCell(12);
+                        cell = row.CreateCell(13);
                         cell.SetCellValue(Common.Round(dt.Amount));
                         cell.CellStyle = contentStyle;
                     });

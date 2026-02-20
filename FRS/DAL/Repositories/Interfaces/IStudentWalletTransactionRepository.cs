@@ -1,8 +1,10 @@
 ﻿using DAL.Core;
 using DAL.Core.DTO;
+using DAL.Core.Logging;
 using DAL.Filters;
 using DAL.Models;
 using iTextSharp.text;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,6 +35,6 @@ namespace DAL.Repositories.Interfaces
         Task<PagedEntity<WalletTransactionReportRow>> GetWalletTransactions(WalletTransactionFilter filter);
         Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
 
-        Task SyncWithPOSSales(CancellationToken ct = default);
+        Task SyncWithPOSSales(ILogger logger, CancellationToken ct = default);
     }
 }

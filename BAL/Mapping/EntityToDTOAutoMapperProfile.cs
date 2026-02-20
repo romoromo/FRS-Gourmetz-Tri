@@ -107,7 +107,8 @@ namespace BAL.Mapping
                 .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
                 .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path))
-                .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => s.Payment.PosInvoiceId));
+                .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => s.Payment.PosInvoiceId))
+                .ForMember(d => d.Source, map => map.MapFrom(s => s.Payment.version == "SUCCESS" && !s.Payment.TokenOrders.Any() ? "Live Stalls" : ""));
             CreateMap<StudentWalletTransactionDTO, StudentWalletTransaction>()
                 .ForMember(d => d.File, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() })); ;
 
@@ -116,7 +117,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
                 .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
-                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId)); 
+                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId));
 
             CreateMap<StudentWalletTransactionDetail, StudentWalletTransactionDetailDTO>();
             CreateMap<StudentWalletTransactionDetailDTO, StudentWalletTransactionDetail>();
@@ -999,7 +1000,7 @@ namespace BAL.Mapping
                 .ForMember(d => d.Icon, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() }));
 
             CreateMap<SortingArea, SortingAreaDTO>()
-                .ForMember(m=> m.CatererId, map => map.MapFrom(m => m.CatererInfo.Id))
+                .ForMember(m => m.CatererId, map => map.MapFrom(m => m.CatererInfo.Id))
                 .ForMember(m => m.CatererName, map => map.MapFrom(m => m.CatererInfo.Name))
                 .ForMember(m => m.RouteId, map => map.MapFrom(m => m.Route.Id))
                 .ForMember(m => m.RouteColor, map => map.MapFrom(m => m.Route.Color))

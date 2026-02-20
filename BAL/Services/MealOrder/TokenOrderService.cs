@@ -1250,7 +1250,7 @@ namespace BAL.Services.MealOrder
                                     }
 
                                     cell = row.CreateCell(c++);
-                                    cell.SetCellValue(o.IsFAS ? "Y" : "N");
+                                    cell.SetCellValue(o.Student.IsFAS ? "Y" : "N");
                                     cell.CellStyle = contentStyle;
                                 }
                             }

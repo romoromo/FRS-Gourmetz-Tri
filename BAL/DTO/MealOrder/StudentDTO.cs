@@ -220,6 +220,7 @@ namespace BAL.DTO.MealOrder
         public string FilePath { get; set; }
 
         public string PosInvoiceId { get; set; }
+        public string Source { get; set; }
     }
 
     public class StudentWalletTransactionSimpleDTO

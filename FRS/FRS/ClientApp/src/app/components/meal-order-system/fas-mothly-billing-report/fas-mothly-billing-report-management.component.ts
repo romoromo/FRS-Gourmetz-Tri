@@ -97,6 +97,7 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
+      { prop: "outletName", name: "Outlet Name", sortable: false },
       { prop: "studentID", name: "Student ID", sortable: false },
       { prop: "studentName", name: "Name", sortable: false },
       { prop: "classLevel", name: "Class Level", sortable: false },
@@ -128,7 +129,7 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
         sortable: false,
       },
       {
-        prop: "qty",
+        prop: "qtyNumber",
         name: "QTY",
         sortable: false,
       },

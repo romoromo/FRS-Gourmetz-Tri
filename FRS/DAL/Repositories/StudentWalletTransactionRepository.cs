@@ -16,7 +16,6 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -1580,7 +1579,7 @@ namespace DAL.Repositories
         public async Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
         {
             var txQuery = _appContext.StudentWalletTransactions.AsNoTracking()
-                .Where(m => m.IsActive && m.TransactionType == "DEBIT");
+                .Where(m => m.IsActive && m.TransactionType == "DEBIT" && m.student.IsFAS && m.PaymentId.HasValue);
             var fromDate = filter.StartDate.Date;
             var toExclusive = filter.EndDate.Date.AddDays(1).AddSeconds(-1);
 
@@ -1602,7 +1601,7 @@ namespace DAL.Repositories
                             on walletTx.PaymentId equals payment.Id into paymentGroup
                         from currentPayment in paymentGroup.DefaultIfEmpty()
 
-                        join order in _appContext.TokenOrders.AsNoTracking()
+                        join order in _appContext.TokenOrders.AsNoTracking().Where(m => m.Status == "paid")
                             on currentPayment.Id equals order.PaymentId into orderGroup
                         from currentOrder in orderGroup.DefaultIfEmpty()
 
@@ -1623,7 +1622,8 @@ namespace DAL.Repositories
                         from currentPosItem in posItemGroup.DefaultIfEmpty()
 
                         where walletTx.IsActive &&
-                              walletTx.TransactionType == WalletTransactionType.DEBIT.ToString()
+                              walletTx.TransactionType == WalletTransactionType.DEBIT.ToString() &&
+                              (currentOrder != null || currentPos != null)
                         select new FASMonthlyBillingReportDTO
                         {
                             ID = walletTx.Id,
@@ -1644,7 +1644,7 @@ namespace DAL.Repositories
                             Price = currentOrder != null ? currentOrder.TotalAmount.ToString("N", CultureInfo.InvariantCulture) : (currentPosItem != null ? currentPosItem.harga_satuan : ""),
                             InvoiceNumber = currentPayment != null ? currentPayment.InvoiceNumber : "",
                             POSInvoiceNumber = currentPayment != null ? currentPayment.PosInvoiceId : "",
-                            Amount = walletTx != null ? walletTx.Amount : 0
+                            //Amount = walletTx != null ? walletTx.Amount : 0
                         };
 
             var total = await query.CountAsync();
@@ -1654,7 +1654,7 @@ namespace DAL.Repositories
             var skip = (page - 1) * pageSize;
 
             var queryPaged = await query
-                .OrderByDescending(m => m.DeliveryDate)
+                .OrderByDescending(m => m.OutletName).ThenBy(m => m.StudentName)
                 .Skip(skip)
                 .Take(pageSize)
                 .ToListAsync();
@@ -1670,26 +1670,31 @@ namespace DAL.Repositories
         }
 
 
-        public async Task SyncWithPOSSales(CancellationToken ct = default)
+        public async Task SyncWithPOSSales(ILogger logger, CancellationToken ct = default)
         {
             var syncDate = DateTime.Now;
-            _logger.LogInformation("Start - SyncWithPOSSales");
+            logger.LogInformation(">>> [SYNC START] SyncWithPOSSales started at {syncDate}", syncDate);
 
+            // 1. Configuration Check
             var posSalesURL = _configuration["AppSettings:POS_URL"];
-            _logger.LogInformation($"POS_URL : {posSalesURL}");
+            if (string.IsNullOrEmpty(posSalesURL))
+            {
+                logger.LogError("!!! [CONFIG ERROR] AppSettings:POS_URL is missing in appsettings.json. Aborting sync.");
+                return;
+            }
+            logger.LogInformation(">>> [CONFIG] POS_URL retrieved: {posSalesURL}", posSalesURL);
 
-            if (string.IsNullOrEmpty(posSalesURL)) return;
-
+            // 2. Fetch Local Transactions (Unsynced)
+            logger.LogInformation("--- [STEP 1] Querying local Wallet transactions that have not been synced...");
             var startCorrectTransaction = new DateTime(2026, 1, 19);
+
             var queryData = await (
                             from walletTx in _appContext.StudentWalletTransactions.AsNoTracking()
                             join payment in _appContext.Payments.AsNoTracking()
                                 on walletTx.PaymentId equals payment.Id
-
                             join pos in _appContext.POSSales.AsNoTracking()
-                            on payment.Id equals pos.PaymentID into posGroup
+                                on payment.Id equals pos.PaymentID into posGroup
                             from posSale in posGroup.DefaultIfEmpty()
-
                             where posSale == null &&
                                   payment.version == "SUCCESS" &&
                                   walletTx.IsActive &&
@@ -1705,105 +1710,131 @@ namespace DAL.Repositories
                                 payment.Id
                             }).Take(500).ToListAsync(ct);
 
-            if (!queryData.Any()) return;
+            logger.LogInformation(">>> [LOCAL DATA] Found {count} local transactions eligible for syncing.", queryData.Count);
 
+            if (!queryData.Any())
+            {
+                logger.LogInformation(">>> [SYNC END] No pending transactions found. Job finished.");
+                return;
+            }
+
+            // Prepare metadata for API request
             var paymentIds = queryData.Select(q => q.Id).ToList();
             var paymentsToUpdateMap = await _appContext.Payments
                 .Where(p => paymentIds.Contains(p.Id))
                 .ToDictionaryAsync(p => p.Id, ct);
 
-            var studentIDs = queryData.Select(q => q.StudentId).Distinct();
+            var studentIDs = queryData.Select(q => q.StudentId).Distinct().ToList();
             var startDate = queryData.Min(q => q.CreatedDate);
             var endDate = queryData.Max(q => q.CreatedDate);
 
-            if (!studentIDs.Any()) return;
+            logger.LogInformation("--- [STEP 2] Processing {studentCount} distinct students for date range {start} to {end}",
+                studentIDs.Count, startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"));
 
+            // 3. API Integration
             using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(2) };
             var studentBatches = studentIDs.Chunk(50);
+            int batchCounter = 1;
 
             foreach (var batch in studentBatches)
             {
+                logger.LogInformation("--- [BATCH {batch}] Requesting external POS data...", batchCounter++);
                 string url = $"{posSalesURL}/POS/anon_api/ajaxGetWalletSalesByDate?dateStart={startDate.Date:yyyy-MM-dd}&dateEnd={endDate.Date:yyyy-MM-dd}&StudentId[]={string.Join("&StudentId[]=", batch)}";
-                _logger.LogInformation($"Requesting POS Sales data from {url}");
 
                 var response = await httpClient.GetAsync(url, ct);
-                if (!response.IsSuccessStatusCode) continue;
+                if (!response.IsSuccessStatusCode)
+                {
+                    logger.LogWarning("!!! [API WARNING] Batch failed. HTTP Status: {code}. URL: {url}", response.StatusCode, url);
+                    continue;
+                }
 
                 var content = await response.Content.ReadAsStringAsync();
                 var posResponse = JsonConvert.DeserializeObject<POSResponse>(content);
-                if (posResponse?.data?.sales == null) continue;
 
-                var salesToInsert = new List<POSSales>();
-                var paymentsToUpdate = new List<Payment>();
-
-                var salesLookup = posResponse.data.sales
-                .Select(s =>
+                if (posResponse?.data?.sales == null || !posResponse.data.sales.Any())
                 {
-                    decimal.TryParse(s.sub_total, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal amt);
-                    return new { Original = s, Amt = amt };
-                })
-                .ToLookup(x => new { x.Original.student_id, x.Amt, Tgl = x.Original.tgl_penjualan.Date });
+                    logger.LogInformation("--- [API INFO] No sales data returned from API for this batch.");
+                    continue;
+                }
 
+                logger.LogInformation(">>> [API DATA] Received {count} sales records from POS API.", posResponse.data.sales.Count);
+
+                // 4. In-Memory Matching Logic
+                var salesToInsert = new List<POSSales>();
+                var salesLookup = posResponse.data.sales
+                    .Select(s => {
+                        decimal.TryParse(s.sub_total, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal amt);
+                        return new { Original = s, Amt = amt };
+                    })
+                    .ToLookup(x => new { x.Original.student_id, x.Amt, Tgl = x.Original.tgl_penjualan.Date });
+
+                // Optimization: Fetch existing id_penjualan once per batch to avoid duplicates
                 var incomingIdPenjualans = posResponse.data.sales.Select(s => s.id_penjualan).ToList();
-                var alreadyInDb = _appContext.POSSales
+                var alreadyInDb = await _appContext.POSSales
                     .AsNoTracking()
                     .Where(s => incomingIdPenjualans.Contains(s.id_penjualan))
-                    .Select(s => s.id_penjualan);
+                    .Select(s => s.id_penjualan).ToListAsync();
 
-                var usedIdPenjualan = new HashSet<int>();
+                var usedIdInThisJob = new HashSet<int>();
+                int matchCount = 0;
 
                 foreach (var local in queryData)
                 {
                     var key = new { student_id = local.StudentId, Amt = (decimal)local.Amount, Tgl = local.CreatedDate.Date };
-                    var matches = salesLookup[key];
 
+                    // Deduplication logic: Ensure the record isn't in DB and hasn't been used in this batch
                     var match = salesLookup[key]
                         .Select(m => m.Original)
-                        .FirstOrDefault(m => !alreadyInDb.Contains(m.id_penjualan) && !usedIdPenjualan.Contains(m.id_penjualan));
+                        .FirstOrDefault(m => !alreadyInDb.Contains(m.id_penjualan) && !usedIdInThisJob.Contains(m.id_penjualan));
 
                     if (match != null)
                     {
-                        usedIdPenjualan.Add(match.id_penjualan);
+                        matchCount++;
+                        usedIdInThisJob.Add(match.id_penjualan);
 
                         var newSale = new POSSales
                         {
+                            // Copy identity properties
+                            id_penjualan = match.id_penjualan,
+                            no_invoice = match.no_invoice,
+                            student_id = match.student_id,
                             card_serial_number = match.card_serial_number,
                             id_jenis_harga = match.id_jenis_harga,
-                            id_penjualan = match.id_penjualan,
                             id_pos = match.id_pos,
                             jenis_bayar = match.jenis_bayar,
                             neto = match.neto,
                             total_bayar = match.total_bayar,
                             total_qty = match.total_qty,
-
-                            no_invoice = match.no_invoice,
                             id_gudang = match.id_gudang,
                             outlet_name = match.outlet_name,
                             tgl_invoice = match.tgl_invoice,
                             tgl_penjualan = match.tgl_penjualan,
                             sub_total = match.sub_total,
-                            student_id = match.student_id,
                             nama_customer = match.nama_customer,
+
+                            // Link to local system
                             PaymentID = local.Id,
                             SyncDate = syncDate,
+
+                            // Map items
                             sales_items = match.sales_items.Select(i => new Models.SalesItem
                             {
                                 id_barang = i.kode_barang,
-                                harga_satuan = i.harga_satuan,
-                                qty = i.qty,
-                                harga_total = i.harga_total,
                                 nama_barang = i.nama_barang,
-
+                                qty = i.qty,
+                                harga_satuan = i.harga_satuan,
+                                harga_total = i.harga_total,
                                 deskripsi = i.deskripsi,
                                 diskon = i.diskon,
                                 id_penjualan = i.id_penjualan,
                                 id_penjualan_detail = i.id_penjualan_detail,
-                                kode_barang = i.kode_barang,
+                                kode_barang = i.kode_barang
                             }).ToList()
                         };
 
                         salesToInsert.Add(newSale);
 
+                        // Update payment mapping
                         if (paymentsToUpdateMap.TryGetValue(local.Id, out var p))
                         {
                             p.PosInvoiceId = match.no_invoice;
@@ -1811,26 +1842,37 @@ namespace DAL.Repositories
                     }
                 }
 
+                logger.LogInformation("--- [MATCHING] Successfully matched {matchCount} out of {localCount} local records in this batch.",
+                    matchCount, queryData.Count);
+
+                // 5. Persistence
                 if (salesToInsert.Any())
                 {
                     using var transaction = await _appContext.Database.BeginTransactionAsync(ct);
                     try
                     {
-                        await _appContext.POSSales.AddRangeAsync(salesToInsert);
-                        _appContext.Payments.UpdateRange(paymentsToUpdate);
+                        logger.LogInformation("--- [DB SAVE] Bulk inserting {count} POSSales records...", salesToInsert.Count);
 
+                        await _appContext.POSSales.AddRangeAsync(salesToInsert, ct);
+
+                        // Save only tracked payments that were actually matched
                         await _appContext.SaveChangesAsync(ct);
-
                         await transaction.CommitAsync(ct);
-                        _logger.LogInformation($"Berhasil Sync {salesToInsert.Count} data baru.");
+
+                        logger.LogInformation(">>> [SUCCESS] Database transaction committed successfully.");
                     }
                     catch (Exception ex)
                     {
                         await transaction.RollbackAsync(ct);
-                        _logger.LogError($"Gagal Bulk Insert: {ex.Message}");
+                        logger.LogError(ex, "!!! [DB ERROR] Failed to save sync batch. Error: {msg}", ex.Message);
                     }
                 }
+
+                // Clean up tracker to prevent memory bloat during large batches
+                _appContext.ChangeTracker.Clear();
             }
+
+            _logger.LogInformation(">>> [SYNC COMPLETED] Job finished successfully at {time}", DateTime.Now);
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

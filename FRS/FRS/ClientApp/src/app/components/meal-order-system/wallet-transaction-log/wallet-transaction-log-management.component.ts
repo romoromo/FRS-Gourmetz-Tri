@@ -164,6 +164,7 @@ export class WalletTransactionLogManagementComponent
       },
       { prop: "studentId", name: "Student Id" },
       { prop: "studentName", name: "Student Name" },
+      { prop: "source", name: "Source" },
       { prop: "remarks", name: "Remarks" },
       { prop: "userName", name: "Processed By" },
       {

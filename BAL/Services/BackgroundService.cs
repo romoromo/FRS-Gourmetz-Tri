@@ -30,8 +30,8 @@ namespace BAL.Services
         public async Task SyncWithPOSSales(CancellationToken ct = default)
         {
             _logger.LogInformation("Background Service: Sync With POS Sales.");
-            await _uow.StudentWalletTransactions.SyncWithPOSSales(ct);
-            _logger.LogInformation("Background Service: Sync With POS Sales.");
+            await _uow.StudentWalletTransactions.SyncWithPOSSales(_logger, ct);
+            _logger.LogInformation("Background Service: Sync With POS Sales completed.");
         }
     }
 }
