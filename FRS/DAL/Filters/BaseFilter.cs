@@ -152,4 +152,12 @@ namespace DAL.Filters
     {
         public int StudentId { get; set; } = 0;
     }
+
+    public class EWalletTransactionFilter : BaseFilter
+    {
+        public string PosInvoiceId { get; set; }
+        public string Source { get; set; }
+        public List<int> OutletId { get; set; }
+        public bool? IsFAS { get; set; }
+    }
 }

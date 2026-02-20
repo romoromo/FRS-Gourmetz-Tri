@@ -147,3 +147,13 @@ export class WalletTransactionFilter extends Filter{
   public endDate: string;
   public isFAS: boolean;
 }
+
+export class EWalletTransactionFilter extends Filter{
+  public studentId: string;
+  public transactionType: string;
+  public transactionDate: string;
+  public keyword: string;
+  
+  public outletId?: number[];
+  public isFAS: boolean;
+}
