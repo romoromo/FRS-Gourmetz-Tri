@@ -551,7 +551,7 @@ namespace BAL.Services
                         cell.SetCellValue(dt.InvoiceNumber);
                         cell.CellStyle = contentStyle;
 
-                        cell = row.CreateCell(1);
+                        cell = row.CreateCell(12);
                         cell.SetCellValue(dt.POSInvoiceNumber);
                         cell.CellStyle = contentStyle;
 

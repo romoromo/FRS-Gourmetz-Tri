@@ -53,6 +53,11 @@ namespace DAL.Repositories
             {
                 query = query.Where(m => m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any());
             }
+            else if (filter.Source == "FASTOPUP")
+            {
+                query = query.Where(m => m.Description.Contains("Auto Debit FAS"));
+            }
+
             if (filter.OutletId != null && filter.OutletId.Count != 0)
             {
                 query = query.Where(m => filter.OutletId.Contains(m.student.OutletId.Value));
@@ -1636,14 +1641,14 @@ namespace DAL.Repositories
                             ClassID = walletTx.student.ClassId,
                             Class = walletTx.student.Class != null ? walletTx.student.Class.Name : "",
                             FASStudent = walletTx.student.IsFAS,
-                            DeliveryDate = walletTx.CreatedDate,
+                            DeliveryDate = currentOrder != null ? currentOrder.DeliveryDate : (currentPos != null ? currentPos.tgl_penjualan : DateTime.MinValue),
 
                             MealType = currentItem != null ? currentItem.TokenDesc : "POS Sale",
                             MealName = currentDish != null ? currentDish.Dish.Label : (currentPosItem != null ? currentPosItem.nama_barang : ""),
                             Qty = currentItem != null ? currentItem.Qty.ToString("N", CultureInfo.InvariantCulture) : (currentPosItem != null ? currentPosItem.qty : ""),
                             Price = currentOrder != null ? currentOrder.TotalAmount.ToString("N", CultureInfo.InvariantCulture) : (currentPosItem != null ? currentPosItem.harga_satuan : ""),
                             InvoiceNumber = currentPayment != null ? currentPayment.InvoiceNumber : "",
-                            POSInvoiceNumber = currentPayment != null ? currentPayment.PosInvoiceId : "",
+                            POSInvoiceNumber = currentPayment != null ? (currentPayment.PosInvoiceId ?? (currentPos != null ? currentPos.no_invoice : "")) : "",
                             //Amount = walletTx != null ? walletTx.Amount : 0
                         };
 
@@ -1762,7 +1767,8 @@ namespace DAL.Repositories
                 // 4. In-Memory Matching Logic
                 var salesToInsert = new List<POSSales>();
                 var salesLookup = posResponse.data.sales
-                    .Select(s => {
+                    .Select(s =>
+                    {
                         decimal.TryParse(s.sub_total, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal amt);
                         return new { Original = s, Amt = amt };
                     })
