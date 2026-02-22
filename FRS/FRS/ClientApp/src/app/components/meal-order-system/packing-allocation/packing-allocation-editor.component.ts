@@ -96,9 +96,13 @@ export class PackingAllocationEditorComponent implements OnInit {
       if (data.allocation.id) {
         this.editAllocation(data.allocation);
         this.getSessions();
+        this.getNewRoutes();
       } else {
         this.newAllocation(data.allocation.packingDate);
-        if (data.allocation.packingDate) this.getSessions();
+        if (data.allocation.packingDate) {
+          this.getSessions();
+          this.getNewRoutes();
+        } 
       }
     }
   }
@@ -133,6 +137,7 @@ export class PackingAllocationEditorComponent implements OnInit {
     this.orderDate = new Date(event.value);
     this.allocation.packingDate = this.orderDate;
     this.getSessions();
+    this.getNewRoutes();
 
     if (this.allocation.routeId) {
       //this.getMealAllocation();
@@ -258,13 +263,52 @@ export class PackingAllocationEditorComponent implements OnInit {
         .subscribe(
           (results) => {
             this.sessions = results;
-            console.log("sessions: ", this.sessions);
-            this.sessions.forEach((s) => {
-              let route = this.newRoutes.find((x) => x.id === s.routeId);
+            //console.log("sessions: ", this.sessions);
+            //this.sessions.forEach((s) => {
+            //  let route = this.newRoutes.find((x) => x.id === s.routeId);
+            //  if (route == null) {
+            //    var newRoute = new Route();
+            //    newRoute.id = s.routeId;
+            //    newRoute.label = s.routeName;
+            //    this.newRoutes.push(newRoute);
+            //  }
+            //});
+
+            //this.filterLoading = false;
+          },
+          (error) => {
+            //this.filterLoading = false;
+            //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+            this.alertService.showStickyMessage(
+              "Get Error",
+              `An error occured while retrieving meal sessions.\r\n"`,
+              MessageSeverity.error
+            );
+          }
+        );
+    }
+  }
+
+  getNewRoutes() {
+    if (this.orderDate) {
+      var date = new Date(
+        this.orderDate.getTime() - this.orderDate.getTimezoneOffset() * 60000
+      )
+        .toJSON()
+        .split("T");
+      console.log("order date: ", date[0]);
+      this.menuService
+        .getRoutesFromMealAllocation(this.outletId, date[0])
+        .subscribe(
+          (results) => {
+            //this.newRoutes = results;
+
+            results.forEach((s) => {
+              let route = this.newRoutes.find((x) => x.id === s.id);
               if (route == null) {
                 var newRoute = new Route();
-                newRoute.id = s.routeId;
-                newRoute.label = s.routeName;
+                newRoute.id = s.id;
+                newRoute.label = s.label;
                 this.newRoutes.push(newRoute);
               }
             });
@@ -276,7 +320,7 @@ export class PackingAllocationEditorComponent implements OnInit {
             //this.alertService.showStickyMessage("Get Error", `An error occured while retrieving locations.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
             this.alertService.showStickyMessage(
               "Get Error",
-              `An error occured while retrieving meal sessions.\r\n"`,
+              `An error occured while retrieving routes.\r\n"`,
               MessageSeverity.error
             );
           }
@@ -434,7 +478,7 @@ export class PackingAllocationEditorComponent implements OnInit {
 
     var strDate = moment(this.orderDate).format().split("T");
     let f = this.allocation.routeId
-      ? "(routeId)==" + this.allocation.routeId + ","
+      ? "(RouteId)==" + this.allocation.routeId + ","
       : "";
     insideFilter.filters =
       f +

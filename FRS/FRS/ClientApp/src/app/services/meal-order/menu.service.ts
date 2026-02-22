@@ -14,6 +14,7 @@ import { MenuCycleCalendar } from 'src/app/models/meal-order/menu-cycle-calendar
 import { TokenOrder, TokenLabel, TokenDishLabel, MealAllocation, PackingAllocation } from 'src/app/models/meal-order/token-order.model';
 import { OutletClassRoster, OutletClassRosterSchedule, OutletClassRosterScheduleByDay } from 'src/app/models/meal-order/outlet-class-roster.model';
 import { MealSessionDetail } from 'src/app/models/meal-order/meal-session.model';
+import { Route } from "src/app/models/meal-order/route.model";
 import { MenuGroup } from 'src/app/models/meal-order/menu-group.model';
 
 @Injectable()
@@ -141,6 +142,10 @@ export class MenuService {
 
   getMealsessionsFromMealAllocation(outletId, orderDate){
     return this.commonEndpoint.get<MealSessionDetail[]>(`${this.configurations.baseUrl}/api/menu/outlets/mealsessionsFromMealAllocation?outletId=${outletId}&orderDate=${orderDate}`);
+  }
+
+  getRoutesFromMealAllocation(outletId, orderDate) {
+    return this.commonEndpoint.get<Route[]>(`${this.configurations.baseUrl}/api/menu/outlets/routesFromMealAllocation?outletId=${outletId}&orderDate=${orderDate}`);
   }
 
   newMenuCycle(menuCycle: MenuCycle) {

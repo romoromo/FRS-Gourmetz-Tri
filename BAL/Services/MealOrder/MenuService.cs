@@ -484,5 +484,12 @@ namespace BAL.Services.MealOrder
             var mealSessionDetails = mealAllocation.Select(m => m.MealSessionDetail);
             return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetails.Distinct());
         }
+
+        public async Task<List<RouteDTO>> GetMealAllocationRoute(int outletId, DateTime orderDate)
+        {
+            var mealAllocation = await this._uow.MealAllocations.GetMealAllocations(outletId, orderDate);
+            var routes = mealAllocation.Select(m => m.Route);
+            return _mapper.Map<List<RouteDTO>>(routes.Distinct());
+        }
     }
 }

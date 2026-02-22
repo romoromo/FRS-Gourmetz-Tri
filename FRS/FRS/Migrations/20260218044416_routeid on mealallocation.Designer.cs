@@ -4,14 +4,17 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260218044416_routeid on mealallocation")]
+    partial class routeidonmealallocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -10726,67 +10729,6 @@ namespace FRS.Migrations
                     b.ToTable("PIBTemplateLocations");
                 });
 
-            modelBuilder.Entity("DAL.Models.POSSales", b =>
-                {
-                    b.Property<int>("id_penjualan")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PaymentID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("SyncDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("card_serial_number")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("id_gudang")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("id_jenis_harga")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("id_pos")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("jenis_bayar")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("nama_customer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("neto")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("no_invoice")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("outlet_name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("student_id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("sub_total")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("tgl_invoice")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("tgl_penjualan")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("total_bayar")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("total_qty")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id_penjualan");
-
-                    b.ToTable("POSSales");
-                });
-
             modelBuilder.Entity("DAL.Models.Playlist", b =>
                 {
                     b.Property<int>("Id")
@@ -11598,45 +11540,6 @@ namespace FRS.Migrations
                     b.HasIndex("UpdatedBy");
 
                     b.ToTable("RewardTransactions");
-                });
-
-            modelBuilder.Entity("DAL.Models.SalesItem", b =>
-                {
-                    b.Property<int>("id_penjualan_detail")
-                        .HasColumnType("int");
-
-                    b.Property<string>("deskripsi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("diskon")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("harga_satuan")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("harga_total")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("id_barang")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("id_penjualan")
-                        .HasColumnType("int");
-
-                    b.Property<string>("kode_barang")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("nama_barang")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("qty")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id_penjualan_detail");
-
-                    b.HasIndex("id_penjualan");
-
-                    b.ToTable("POSSalesItem");
                 });
 
             modelBuilder.Entity("DAL.Models.ServiceContract", b =>
@@ -19597,17 +19500,6 @@ namespace FRS.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
-            modelBuilder.Entity("DAL.Models.SalesItem", b =>
-                {
-                    b.HasOne("DAL.Models.POSSales", "POSSales")
-                        .WithMany("sales_items")
-                        .HasForeignKey("id_penjualan")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("POSSales");
-                });
-
             modelBuilder.Entity("DAL.Models.ServiceContract", b =>
                 {
                     b.HasOne("DAL.Models.ApplicationUser", "CreatedByUser")
@@ -20795,11 +20687,6 @@ namespace FRS.Migrations
             modelBuilder.Entity("DAL.Models.PIBTemplate", b =>
                 {
                     b.Navigation("Locations");
-                });
-
-            modelBuilder.Entity("DAL.Models.POSSales", b =>
-                {
-                    b.Navigation("sales_items");
                 });
 
             modelBuilder.Entity("DAL.Models.Playlist", b =>

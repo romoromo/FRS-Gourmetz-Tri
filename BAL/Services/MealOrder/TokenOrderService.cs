@@ -2086,6 +2086,12 @@ namespace BAL.Services.MealOrder
                         {
                             var alr = AllRoutes.Find(r => r.routeId == a.MealSessionDetail.RouteId.Value);
 
+                            if (a.Route != null)
+                            {
+                                alr = AllRoutes.Find(r => r.routeId == a.Route.Id);
+                            }
+
+
                             //route
                             if (alr == null)
                             {
@@ -2094,6 +2100,14 @@ namespace BAL.Services.MealOrder
                                 rot.routeId = a.MealSessionDetail.RouteId.Value;
                                 rot.routeLabel = a.MealSessionDetail.Route.Label;
                                 rot.startTime = a.MealSessionDetail.Route.Pickup.TimeOfDay;
+
+                                if (a.Route != null)
+                                {
+                                    rot.routeId = a.Route.Id;
+                                    rot.routeLabel = a.Route.Label;
+                                    rot.startTime = a.Route.Pickup.TimeOfDay;
+                                }
+
                                 rot.isFas = false;
 
                                 rot.sessions = new List<DOReportSessionDTO>();
@@ -2180,6 +2194,13 @@ namespace BAL.Services.MealOrder
                                         routeIn.routeId = a.MealSessionDetail.RouteId.Value;
                                         routeIn.routeLabel = a.MealSessionDetail.Route.Label;
 
+                                        if (a.Route != null)
+                                        {
+                                            routeIn.routeId = a.Route.Id;
+                                            routeIn.routeLabel = a.Route.Label;
+                                        }
+
+
                                         routeIn.qty = tod.t_qty ?? 0;
 
                                         repDish.routes.Add(routeIn);
@@ -2214,6 +2235,11 @@ namespace BAL.Services.MealOrder
                                         }
                                         var route = rep.routes.Find(r => (r.routeId == a.MealSessionDetail.RouteId) && (r.isFas == isFas));
 
+                                        if (a.Route != null)
+                                        {
+                                            route = rep.routes.Find(r => (r.routeId == a.RouteId) && (r.isFas == isFas));
+                                        }
+
                                         if (route == null)
                                         {
                                             var routeIn = new DOReportRouteDTO();
@@ -2221,6 +2247,12 @@ namespace BAL.Services.MealOrder
 
                                             routeIn.routeId = a.MealSessionDetail.RouteId.Value;
                                             routeIn.routeLabel = a.MealSessionDetail.Route.Label;
+
+                                            if (a.Route != null)
+                                            {
+                                                routeIn.routeId = a.Route.Id;
+                                                routeIn.routeLabel = a.Route.Label;
+                                            }
 
                                             routeIn.qty = tod.t_qty ?? 0;
                                             rep.routes.Add(routeIn);

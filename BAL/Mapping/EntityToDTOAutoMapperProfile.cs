@@ -376,8 +376,8 @@ namespace BAL.Mapping
             CreateMap<TokenDishLabel, TokenDishLabelDTO>();
 
             CreateMap<MealAllocationDTO, MealAllocation>();
-            CreateMap<MealAllocation, MealAllocationDTO>()
-                .ForMember(e => e.routeId, map => map.MapFrom(e => e.MealSessionDetail != null ? e.MealSessionDetail.RouteId : null));
+            CreateMap<MealAllocation, MealAllocationDTO>();
+                //.ForMember(e => e.routeId, map => map.MapFrom(e => e.MealSessionDetail != null ? e.MealSessionDetail.RouteId : null));
 
             CreateMap<MealAllocation, KioskOrderDishDTO>()
                 .ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSessionDetail != null ? e.MealSessionDetail.Name : null));
