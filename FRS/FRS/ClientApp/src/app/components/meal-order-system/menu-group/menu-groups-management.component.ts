@@ -93,7 +93,7 @@ export class MenuGroupsManagementComponent implements OnInit {
     let gT = (key: string) => this.translationService.getTranslation(key);
 
     this.columns = [
-      { prop: 'name', name: 'Name' },
+      { prop: 'name', name: 'Menu' },
       { prop: 'startDate', name: 'Start Date', pipe: new DateOnlyPipe('en-SG') },
       { prop: 'endDate', name: 'End Date', pipe: new DateOnlyPipe('en-SG') },
       { prop: 'isPublished', name: 'Is Published', cellTemplate: this.publishTemplate, },

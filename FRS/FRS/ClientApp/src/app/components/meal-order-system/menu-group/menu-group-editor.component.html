@@ -28,12 +28,12 @@
         <div style="padding-left:25px;min-height:300px">
           <h4>Details</h4>
           <mat-tab-group dynamicHeight>
-            <mat-tab label="Dish Cycles">
+            <mat-tab label="Menu Categories">
               <div class="container-fluid" style="padding-top:20px">
-                <mat-error *ngIf="showValidationErrors && f.submitted && validDishCycle">Select at least one dish cycle</mat-error>
+                <mat-error *ngIf="showValidationErrors && f.submitted && validDishCycle">Select at least one menu category</mat-error>
                 <div class="list-group-selection col-md-6">
                   <div href="javascript:;" class="list-group-item list-group-item-action active">
-                    List of Dish Cycles
+                    Menu Categories
                   </div>
                   <div class="list-group-item list-group-item-action" *ngFor="let dishCycle of dishCycles" (click)="selectDishCycle(dishCycle)">
                     {{dishCycle.label}}
@@ -41,7 +41,7 @@
                 </div>
                 <div class="list-group-selection col-md-6">
                   <div class="list-group-item list-group-item-action active">
-                    Selected Dish Cycles
+                    Selected Menu Categories
                   </div>
                   <div class="list-group-item list-group-item-action" *ngFor="let dishCycle of selectedDishCycles" (click)="removeSelectDishCycle(dishCycle)">
                     {{dishCycle.label}}

@@ -108,7 +108,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
                 .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path))
                 .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => s.Payment.PosInvoiceId))
-                .ForMember(d => d.Source, map => map.MapFrom(s => s.Payment.version == "SUCCESS" && !s.Payment.TokenOrders.Any() ? "Live Stalls" : ""));
+                .ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)));
             CreateMap<StudentWalletTransactionDTO, StudentWalletTransaction>()
                 .ForMember(d => d.File, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() })); ;
 
@@ -1011,6 +1011,17 @@ namespace BAL.Mapping
 
             CreateMap<ClassLevelScheduleDTO, ClassLevelSchedule>().ReverseMap();
             CreateMap<ScheduleItemDTO, ClassLevelScheduleItem>().ReverseMap();
+        }
+
+        private string ResolveSourceType(StudentWalletTransaction s)
+        {
+            bool isLiveStall = s.Payment?.version == "SUCCESS" && !s.Payment.TokenOrders.Any();
+            if (isLiveStall) return "Live Stalls";
+
+            if (s.Description != null && s.Description.Contains("Auto Debit FAS"))
+                return "FAS topup";
+
+            return string.Empty;
         }
     }
 }
