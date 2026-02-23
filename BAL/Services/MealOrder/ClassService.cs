@@ -111,7 +111,7 @@ namespace BAL.Services.MealOrder
         {
             var result = new List<MealSessionDetail>();
             var mealSessionDetails = await this._uow.ClassLevels.GetMealSessionDetail(classLevelId, outletId, orderDate);
-            return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetails.DistinctBy(m => m.Id));
+            return _mapper.Map<List<MealSessionDetailDTO>>(mealSessionDetails.DistinctBy(m => m.Id).OrderBy(m => m.MealSession.MealPeriod.Sequence));
         }
 
         public async Task<ClassLevelScheduleDTO> GetClassLevelSchedules(int classLevelId)

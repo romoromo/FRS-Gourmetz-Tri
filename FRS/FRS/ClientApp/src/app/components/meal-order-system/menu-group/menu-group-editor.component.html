@@ -30,10 +30,10 @@
           <mat-tab-group dynamicHeight>
             <mat-tab label="Menu Categories">
               <div class="container-fluid" style="padding-top:20px">
-                <mat-error *ngIf="showValidationErrors && f.submitted && validDishCycle">Select at least one menu category</mat-error>
+                <mat-error *ngIf="showValidationErrors && f.submitted && validDishCycle">Select at least one menu categories</mat-error>
                 <div class="list-group-selection col-md-6">
                   <div href="javascript:;" class="list-group-item list-group-item-action active">
-                    Menu Categories
+                    List of Menu Categories
                   </div>
                   <div class="list-group-item list-group-item-action" *ngFor="let dishCycle of dishCycles" (click)="selectDishCycle(dishCycle)">
                     {{dishCycle.label}}

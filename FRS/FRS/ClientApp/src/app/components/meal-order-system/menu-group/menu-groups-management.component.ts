@@ -163,7 +163,7 @@ export class MenuGroupsManagementComponent implements OnInit {
   }
 
   newGroup() {
-    this.header = 'New Menu Group';
+    this.header = 'New Menu Category';
     this.editedGroup = new MenuGroup();
     this.openDialog(this.editedGroup);
   }
@@ -171,12 +171,12 @@ export class MenuGroupsManagementComponent implements OnInit {
 
   editGroup(row: MenuGroup) {
     this.editedGroup = row;
-    this.header = 'Edit Menu Group';
+    this.header = 'Edit Menu Category';
     this.openDialog(this.editedGroup);
   }
 
   deleteGroup(row: MenuGroup) {
-    this.alertService.showDialog('Are you sure you want to delete the \"' + row.name + '\" menu group?', DialogType.confirm, () => this.deleteGroupHelper(row));
+    this.alertService.showDialog('Are you sure you want to delete the \"' + row.name + '\" menu categories?', DialogType.confirm, () => this.deleteGroupHelper(row));
   }
 
 
