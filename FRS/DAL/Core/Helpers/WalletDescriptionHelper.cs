@@ -178,11 +178,17 @@ namespace DAL.Core.Helpers
     {
         public const string AutoDebitFAS = "Auto Debit FAS";
         public const string AutoCreditFAS = "Auto Credit FAS";
+        public const string TopUpBasicWallet = "Top-up BASIC wallet";
+
         public const string FasTopup = "FAS Topup";
         public const string LiveStalls = "Live Stalls";
+        public const string GoePortal = "GOe Portal";
 
         public static bool IsLiveStall(StudentWalletTransaction s) =>
         s.Payment?.version == "SUCCESS" && (s.Payment.TokenOrders == null || !s.Payment.TokenOrders.Any());
+
+        public static bool IsGoePrtal(StudentWalletTransaction s) => 
+            (s.Payment?.TokenOrders?.Any() ?? false) || s.Description.Contains(TopUpBasicWallet);
 
         public static bool IsFasTopup(string description) =>
             description != null && (description.Contains(AutoDebitFAS) || description.Contains(AutoCreditFAS));

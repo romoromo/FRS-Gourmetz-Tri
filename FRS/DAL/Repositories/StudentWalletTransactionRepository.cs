@@ -107,7 +107,9 @@ namespace DAL.Repositories
 
                     Payment = new Payment
                     {
-                        PosInvoiceId = m.Payment == null ? string.Empty : m.Payment.PosInvoiceId
+                        PosInvoiceId = m.Payment == null ? string.Empty : m.Payment.PosInvoiceId,
+                        TokenOrders = m.Payment.TokenOrders,
+                        version = m.Payment.version
                     },
                 });
 

@@ -1020,6 +1020,7 @@ namespace BAL.Mapping
         private string ResolveSourceType(StudentWalletTransaction s)
         {
             if (WalletTransactionHelper.IsLiveStall(s)) return WalletTransactionHelper.LiveStalls;
+            if (WalletTransactionHelper.IsGoePrtal(s)) return WalletTransactionHelper.GoePortal;
             if (WalletTransactionHelper.IsFasTopup(s.Description)) return WalletTransactionHelper.FasTopup;
 
             return string.Empty;
