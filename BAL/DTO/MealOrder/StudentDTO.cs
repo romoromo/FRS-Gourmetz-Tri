@@ -221,6 +221,9 @@ namespace BAL.DTO.MealOrder
 
         public string PosInvoiceId { get; set; }
         public string Source { get; set; }
+        public double FasTopup { get; set; }
+        public double FasExpensed { get; set; }
+        public string ClassLevel { get; set; }
     }
 
     public class StudentWalletTransactionSimpleDTO
@@ -247,6 +250,9 @@ namespace BAL.DTO.MealOrder
         public string StripeId { get; set; }
 
         public string PosInvoiceId { get; set; }
+        public string Source { get; set; }
+        public double FasTopup { get; set; }
+        public double FasExpensed { get; set; }
     }
 
     public class StudentWalletTransactionDetailDTO

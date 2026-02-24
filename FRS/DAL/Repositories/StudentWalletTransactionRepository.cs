@@ -44,7 +44,9 @@ namespace DAL.Repositories
         #region Sieved
         public async Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsAsync(EWalletTransactionFilter filter)
         {
-            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions.Where(m => m.student.IsActive);
+            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
+                .Include(m => m.student).ThenInclude(m => m.ClassLevel)
+                .Where(m => m.student.IsActive);
             if (!string.IsNullOrEmpty(filter.PosInvoiceId))
             {
                 query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));
@@ -55,7 +57,7 @@ namespace DAL.Repositories
             }
             else if (filter.Source == "FASTOPUP")
             {
-                query = query.Where(m => m.Description.Contains("Auto Debit FAS"));
+                query = query.Where(m => m.Description.Contains(WalletTransactionHelper.AutoDebitFAS) || m.Description.Contains(WalletTransactionHelper.AutoCreditFAS));
             }
 
             if (filter.OutletId != null && filter.OutletId.Count != 0)
@@ -87,7 +89,12 @@ namespace DAL.Repositories
                     Remarks = m.Remarks,
                     student = new Student
                     {
-                        Name = m.student.Name
+                        Name = m.student.Name,
+                        ClassLevel = new ClassLevel
+                        {
+                            Name = m.student.ClassLevel.Name,
+                            Amount = m.student.ClassLevel.Amount
+                        }
                     },
                     WalletPayment = new WalletPayment
                     {
@@ -101,7 +108,7 @@ namespace DAL.Repositories
                     Payment = new Payment
                     {
                         PosInvoiceId = m.Payment == null ? string.Empty : m.Payment.PosInvoiceId
-                    }
+                    },
                 });
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
@@ -1691,12 +1698,18 @@ namespace DAL.Repositories
 
             // 2. Fetch Local Transactions (Unsynced)
             logger.LogInformation("--- [STEP 1] Querying local Wallet transactions that have not been synced...");
-            var startCorrectTransaction = new DateTime(2026, 1, 19);
+            var startCorrectTransaction = new DateTime(2026, 1, 9);
 
             var queryData = await (
                             from walletTx in _appContext.StudentWalletTransactions.AsNoTracking()
+                                where walletTx.IsActive &&
+                                    walletTx.TransactionType == "DEBIT" &&
+                                    walletTx.CreatedDate >= startCorrectTransaction &&
+                                    walletTx.PaymentId != null
+
                             join payment in _appContext.Payments.AsNoTracking()
                                 on walletTx.PaymentId equals payment.Id
+
                             join pos in _appContext.POSSales.AsNoTracking()
                                 on payment.Id equals pos.PaymentID into posGroup
                             from posSale in posGroup.DefaultIfEmpty()

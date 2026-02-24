@@ -112,6 +112,21 @@ export class DetailStudentWalletTransactionComponent
         sortable: false,
         cellTemplate: this.invoiceIdTemplate,
       },
+      { prop: "source", name: "Source" },
+      {
+        prop: "fasTopup",
+        name: "FAS Topup",
+        pipe: {
+          transform: (val: number) => this.decimalPipe.transform(val, "1.2-2"),
+        },
+      },
+      {
+        prop: "fasExpensed",
+        name: "FAS Expensed",
+        pipe: {
+          transform: (val: number) => this.decimalPipe.transform(val, "1.2-2"),
+        },
+      },
       { prop: "remarks", name: "Remarks", sortable: false },
       { prop: "userName", name: "Processed By", sortable: false },
     ];

@@ -3,18 +3,18 @@ using BAL.DTO;
 using BAL.DTO.MealOrder;
 using DAL.Core;
 using DAL.Core.DTO;
+using DAL.Core.Helpers;
 using DAL.Models;
 using DAL.Models.MealOrder;
+using DAL.Models.StoredProcedures;
+using Microsoft.AspNetCore.Http;
+using SMV.FOMOPay.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using static DAL.Core.Helpers.TreeExtensions;
-
-using SMV.FOMOPay.Model;
-using DAL.Models.StoredProcedures;
-using System.Data;
-using Microsoft.AspNetCore.Http;
 
 namespace BAL.Mapping
 {
@@ -108,7 +108,9 @@ namespace BAL.Mapping
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
                 .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path))
                 .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => s.Payment.PosInvoiceId))
-                .ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)));
+                .ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)))
+                .ForMember(d => d.FasTopup, opt => opt.MapFrom(s => ResolveFasTopupType(s)))
+                .ForMember(d => d.ClassLevel, map => map.MapFrom(s => s.student.ClassLevel.Name));
             CreateMap<StudentWalletTransactionDTO, StudentWalletTransaction>()
                 .ForMember(d => d.File, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() })); ;
 
@@ -117,7 +119,9 @@ namespace BAL.Mapping
                 .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
                 .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
-                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId));
+                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId))
+                .ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)))
+                .ForMember(d => d.FasTopup, opt => opt.MapFrom(s => ResolveFasTopupType(s)));
 
             CreateMap<StudentWalletTransactionDetail, StudentWalletTransactionDetailDTO>();
             CreateMap<StudentWalletTransactionDetailDTO, StudentWalletTransactionDetail>();
@@ -377,7 +381,7 @@ namespace BAL.Mapping
 
             CreateMap<MealAllocationDTO, MealAllocation>();
             CreateMap<MealAllocation, MealAllocationDTO>();
-                //.ForMember(e => e.routeId, map => map.MapFrom(e => e.MealSessionDetail != null ? e.MealSessionDetail.RouteId : null));
+            //.ForMember(e => e.routeId, map => map.MapFrom(e => e.MealSessionDetail != null ? e.MealSessionDetail.RouteId : null));
 
             CreateMap<MealAllocation, KioskOrderDishDTO>()
                 .ForMember(e => e.MealSessionName, map => map.MapFrom(e => e.MealSessionDetail != null ? e.MealSessionDetail.Name : null));
@@ -1015,13 +1019,23 @@ namespace BAL.Mapping
 
         private string ResolveSourceType(StudentWalletTransaction s)
         {
-            bool isLiveStall = s.Payment?.version == "SUCCESS" && !s.Payment.TokenOrders.Any();
-            if (isLiveStall) return "Live Stalls";
-
-            if (s.Description != null && s.Description.Contains("Auto Debit FAS"))
-                return "FAS topup";
+            if (WalletTransactionHelper.IsLiveStall(s)) return WalletTransactionHelper.LiveStalls;
+            if (WalletTransactionHelper.IsFasTopup(s.Description)) return WalletTransactionHelper.FasTopup;
 
             return string.Empty;
+        }
+
+        private double ResolveFasTopupType(StudentWalletTransaction s)
+        {
+            var amount = s.student?.ClassLevel?.Amount ?? 0;
+
+            if (WalletTransactionHelper.IsFasCredit(s.Description))
+                return (double)amount;
+
+            if (WalletTransactionHelper.IsFasDebit(s.Description))
+                return (double)amount * -1;
+
+            return 0;
         }
     }
 }

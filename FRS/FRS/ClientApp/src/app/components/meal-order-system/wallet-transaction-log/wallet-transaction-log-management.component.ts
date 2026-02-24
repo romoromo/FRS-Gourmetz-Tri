@@ -108,7 +108,7 @@ export class WalletTransactionLogManagementComponent
     private studentService: StudentService,
     public dialog: MatDialog,
     private decimalPipe: DecimalPipe,
-    private deliveryService: DeliveryService
+    private deliveryService: DeliveryService,
   ) {}
 
   ngOnDestroy(): void {
@@ -117,7 +117,7 @@ export class WalletTransactionLogManagementComponent
 
   initializeFilter() {
     this.filter = new EWalletTransactionFilter(1, 10);
-    this.filter.sorts = "-id";
+    this.filter.sorts = "student.Name";
     this.filter.filters = "";
     this.filter.page = 1;
   }
@@ -165,6 +165,21 @@ export class WalletTransactionLogManagementComponent
       { prop: "studentId", name: "Student Id" },
       { prop: "studentName", name: "Student Name" },
       { prop: "source", name: "Source" },
+      {
+        prop: "fasTopup",
+        name: "FAS Topup",
+        pipe: {
+          transform: (val: number) => this.decimalPipe.transform(val, "1.2-2"),
+        },
+      },
+      {
+        prop: "fasExpensed",
+        name: "FAS Expensed",
+        pipe: {
+          transform: (val: number) => this.decimalPipe.transform(val, "1.2-2"),
+        },
+      },
+      { prop: "classLevel", name: "Class Level" },
       { prop: "remarks", name: "Remarks" },
       { prop: "userName", name: "Processed By" },
       {
