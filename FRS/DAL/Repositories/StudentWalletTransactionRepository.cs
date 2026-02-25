@@ -51,6 +51,7 @@ namespace DAL.Repositories
             {
                 query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));
             }
+
             if (!string.IsNullOrEmpty(filter.Source) && filter.Source == "POS")
             {
                 query = query.Where(m => m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any());
@@ -58,6 +59,22 @@ namespace DAL.Repositories
             else if (filter.Source == "FASTOPUP")
             {
                 query = query.Where(m => m.Description.Contains(WalletTransactionHelper.AutoDebitFAS) || m.Description.Contains(WalletTransactionHelper.AutoCreditFAS));
+            }
+            else if (filter.Source == "GOEPortal")
+            {
+                query = query.Where(m => (m.Payment.TokenOrders.Any()) || m.Description.Contains(WalletTransactionHelper.TopUpBasicWallet));
+            }
+            else
+            {
+                query = query.Where(m =>
+                        !(m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any()) &&
+
+                        !m.Description.Contains(WalletTransactionHelper.AutoDebitFAS) &&
+                        !m.Description.Contains(WalletTransactionHelper.AutoCreditFAS) &&
+
+                        !m.Payment.TokenOrders.Any() &&
+                        !m.Description.Contains(WalletTransactionHelper.TopUpBasicWallet)
+                        );
             }
 
             if (filter.OutletId != null && filter.OutletId.Count != 0)
@@ -1704,10 +1721,10 @@ namespace DAL.Repositories
 
             var queryData = await (
                             from walletTx in _appContext.StudentWalletTransactions.AsNoTracking()
-                                where walletTx.IsActive &&
-                                    walletTx.TransactionType == "DEBIT" &&
-                                    walletTx.CreatedDate >= startCorrectTransaction &&
-                                    walletTx.PaymentId != null
+                            where walletTx.IsActive &&
+                                walletTx.TransactionType == "DEBIT" &&
+                                walletTx.CreatedDate >= startCorrectTransaction &&
+                                walletTx.PaymentId != null
 
                             join payment in _appContext.Payments.AsNoTracking()
                                 on walletTx.PaymentId equals payment.Id

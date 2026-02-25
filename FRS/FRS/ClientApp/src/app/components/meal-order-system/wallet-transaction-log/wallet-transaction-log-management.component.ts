@@ -41,6 +41,7 @@ import { WalletTransactionLogEditorComponent } from "./wallet-transaction-log-ed
 import { DecimalPipe } from "@angular/common";
 import { PosDetailComponent } from "./pos-detail.component";
 import { DeliveryService } from "src/app/services/meal-order/delivery.service";
+import { SourceType } from "src/app/models/enums";
 
 @Component({
   selector: "wallet-transaction-log-management",
@@ -100,6 +101,11 @@ export class WalletTransactionLogManagementComponent
   @ViewChild("orderTable") table: any;
 
   outlets: any[] = [];
+
+  public sourceOptions = Object.entries(SourceType).map(([key, value]) => ({
+    value: key,
+    label: value
+  }));
 
   constructor(
     private alertService: AlertService,

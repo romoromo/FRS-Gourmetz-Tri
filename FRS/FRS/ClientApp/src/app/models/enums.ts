@@ -65,3 +65,10 @@ export enum ScheduleDay {
   Saturday,
   Sunday
 }
+
+export enum SourceType {
+  POS = 'Live Stalls',
+  FASTOPUP = 'FAS TOPUP',
+  GOEPortal = 'GOe Portal',
+  Others = 'Others'
+}

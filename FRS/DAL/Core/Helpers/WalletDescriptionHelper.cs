@@ -183,6 +183,7 @@ namespace DAL.Core.Helpers
         public const string FasTopup = "FAS Topup";
         public const string LiveStalls = "Live Stalls";
         public const string GoePortal = "GOe Portal";
+        public const string Others = "Others";
 
         public static bool IsLiveStall(StudentWalletTransaction s) =>
         s.Payment?.version == "SUCCESS" && (s.Payment.TokenOrders == null || !s.Payment.TokenOrders.Any());

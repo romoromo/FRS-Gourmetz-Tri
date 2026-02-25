@@ -44,11 +44,8 @@
         <mat-option value="">
           ALL
         </mat-option>
-        <mat-option value="POS">
-          Live Stalls
-        </mat-option>
-        <mat-option value="FASTOPUP">
-          FAS TOPUP
+        <mat-option *ngFor="let option of sourceOptions" [value]="option.value">
+          {{ option.label }}
         </mat-option>
       </mat-select>
     </mat-form-field>

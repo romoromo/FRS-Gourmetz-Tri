@@ -4,14 +4,17 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260225043346_AddRelationPOSwithPayment")]
+    partial class AddRelationPOSwithPayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -10784,8 +10787,7 @@ namespace FRS.Migrations
 
                     b.HasKey("id_penjualan");
 
-                    b.HasIndex("PaymentID")
-                        .IsUnique();
+                    b.HasIndex("PaymentID");
 
                     b.ToTable("POSSales");
                 });
@@ -19235,8 +19237,8 @@ namespace FRS.Migrations
             modelBuilder.Entity("DAL.Models.POSSales", b =>
                 {
                     b.HasOne("DAL.Models.MealOrder.Payment", "Payment")
-                        .WithOne("POSSales")
-                        .HasForeignKey("DAL.Models.POSSales", "PaymentID")
+                        .WithMany()
+                        .HasForeignKey("PaymentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -20697,8 +20699,6 @@ namespace FRS.Migrations
             modelBuilder.Entity("DAL.Models.MealOrder.Payment", b =>
                 {
                     b.Navigation("MealPlanOrders");
-
-                    b.Navigation("POSSales");
 
                     b.Navigation("TokenOrders");
                 });

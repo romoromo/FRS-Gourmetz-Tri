@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Models.MealOrder;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -28,6 +29,9 @@ namespace DAL.Models
 
         public int PaymentID { get; set; }
         public DateTime SyncDate { get; set; }
+
+        [ForeignKey("PaymentID")]
+        public virtual Payment Payment { get; set; }
     }
 
     public class SalesItem

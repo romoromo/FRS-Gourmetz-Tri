@@ -66,5 +66,6 @@ namespace DAL.Models.MealOrder
 
         public string PosInvoiceId { get; set; }
 
+        public virtual POSSales POSSales { get; set; }
     }
 }

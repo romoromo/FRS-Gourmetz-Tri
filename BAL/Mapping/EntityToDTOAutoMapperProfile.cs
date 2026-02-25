@@ -107,7 +107,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
                 .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path))
-                .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => s.Payment.PosInvoiceId))
+                .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => string.IsNullOrEmpty(s.Payment.PosInvoiceId) ? s.Payment.POSSales.no_invoice : s.Payment.PosInvoiceId))
                 .ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)))
                 .ForMember(d => d.FasTopup, opt => opt.MapFrom(s => ResolveFasTopupType(s)))
                 .ForMember(d => d.ClassLevel, map => map.MapFrom(s => s.student.ClassLevel.Name));
@@ -1023,7 +1023,7 @@ namespace BAL.Mapping
             if (WalletTransactionHelper.IsGoePrtal(s)) return WalletTransactionHelper.GoePortal;
             if (WalletTransactionHelper.IsFasTopup(s.Description)) return WalletTransactionHelper.FasTopup;
 
-            return string.Empty;
+            return WalletTransactionHelper.Others;
         }
 
         private double ResolveFasTopupType(StudentWalletTransaction s)
