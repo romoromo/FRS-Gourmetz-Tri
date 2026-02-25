@@ -1611,12 +1611,7 @@ namespace DAL.Repositories
         {
             var txQuery = _appContext.StudentWalletTransactions.AsNoTracking()
                 .Where(m => m.IsActive && m.TransactionType == "DEBIT" && m.student.IsFAS && m.PaymentId.HasValue);
-            var fromDate = filter.StartDate.Date;
-            var toExclusive = filter.EndDate.Date.AddDays(1).AddSeconds(-1);
-
-            if (fromDate != DateTime.MinValue) txQuery = txQuery.Where(m => m.CreatedDate >= fromDate);
-            if (toExclusive != DateTime.MaxValue) txQuery = txQuery.Where(m => m.CreatedDate <= toExclusive);
-
+           
             var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
             var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
 
@@ -1625,6 +1620,9 @@ namespace DAL.Repositories
 
             if (classLevelFilter.Any())
                 txQuery = txQuery.Where(m => m.student.ClassLevelId.HasValue && classLevelFilter.Contains(m.student.ClassLevelId.Value));
+
+            var fromDate = filter.StartDate.Date;
+            var toExclusive = filter.EndDate.Date.AddDays(1).AddSeconds(-1);
 
             var query = from walletTx in txQuery
 
@@ -1652,8 +1650,11 @@ namespace DAL.Repositories
                             on currentPos.id_penjualan equals posItem.id_penjualan into posItemGroup
                         from currentPosItem in posItemGroup.DefaultIfEmpty()
 
-                        where walletTx.IsActive &&
-                              walletTx.TransactionType == WalletTransactionType.DEBIT.ToString() &&
+                        let calculatedDeliveryDate = currentOrder != null ? currentOrder.DeliveryDate :
+                                         (currentPos != null ? currentPos.tgl_penjualan : DateTime.MinValue)
+
+                        where (calculatedDeliveryDate >= fromDate || fromDate == DateTime.MinValue) &&
+                              (calculatedDeliveryDate <= toExclusive || toExclusive == DateTime.MaxValue) &&
                               (currentOrder != null || currentPos != null)
                         select new FASMonthlyBillingReportDTO
                         {
