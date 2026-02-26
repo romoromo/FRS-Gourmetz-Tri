@@ -146,11 +146,14 @@ export class WalletTransactionLogManagementComponent
         headerCheckboxable: true,
         headerTemplate: this.hdrTpl,
       },
+      { prop: "studentId", name: "Student Id" },
+      { prop: "studentName", name: "Student Name" },
       {
         prop: "transactionDateTime",
         name: "Date",
         pipe: new DateTimeOnlyPipe("en-SG"),
       },
+      { prop: "source", name: "Source" },
       {
         prop: "amount",
         name: "Amount",
@@ -167,10 +170,7 @@ export class WalletTransactionLogManagementComponent
         name: "POS Invoice Id",
         sortable: false,
         cellTemplate: this.invoiceIdTemplate,
-      },
-      { prop: "studentId", name: "Student Id" },
-      { prop: "studentName", name: "Student Name" },
-      { prop: "source", name: "Source" },
+      },            
       {
         prop: "normalTopup",
         name: "Normal Topup",
