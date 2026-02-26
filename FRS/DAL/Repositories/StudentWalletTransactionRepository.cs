@@ -52,31 +52,9 @@ namespace DAL.Repositories
                 query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));
             }
 
-            if (!string.IsNullOrEmpty(filter.Source) && filter.Source == "POS")
-            {
-                query = query.Where(m => m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any());
-            }
-            else if (filter.Source == "FASTOPUP")
-            {
-                query = query.Where(m => m.Description.Contains(WalletTransactionHelper.AutoDebitFAS) || m.Description.Contains(WalletTransactionHelper.AutoCreditFAS));
-            }
-            else if (filter.Source == "GOEPortal")
-            {
-                query = query.Where(m => (m.Payment.TokenOrders.Any()) || m.Description.Contains(WalletTransactionHelper.TopUpBasicWallet));
-            }
-            else
-            {
-                query = query.Where(m =>
-                        !(m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any()) &&
-
-                        !m.Description.Contains(WalletTransactionHelper.AutoDebitFAS) &&
-                        !m.Description.Contains(WalletTransactionHelper.AutoCreditFAS) &&
-
-                        !m.Payment.TokenOrders.Any() &&
-                        !m.Description.Contains(WalletTransactionHelper.TopUpBasicWallet)
-                        );
-            }
-
+            if (!string.IsNullOrEmpty(filter.Source) && filter.Source != "ALL")
+                query = query.Where(m => m.Source == filter.Source);
+            
             if (filter.OutletId != null && filter.OutletId.Count != 0)
             {
                 query = query.Where(m => filter.OutletId.Contains(m.student.OutletId.Value));
@@ -1611,7 +1589,7 @@ namespace DAL.Repositories
         {
             var txQuery = _appContext.StudentWalletTransactions.AsNoTracking()
                 .Where(m => m.IsActive && m.TransactionType == "DEBIT" && m.student.IsFAS && m.PaymentId.HasValue);
-           
+
             var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
             var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
 
