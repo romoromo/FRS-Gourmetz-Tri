@@ -172,6 +172,20 @@ export class WalletTransactionLogManagementComponent
       { prop: "studentName", name: "Student Name" },
       { prop: "source", name: "Source" },
       {
+        prop: "normalTopup",
+        name: "Normal Topup",
+        pipe: {
+          transform: (val: number) => this.decimalPipe.transform(val, "1.2-2"),
+        },
+      },
+      {
+        prop: "normalExpensed",
+        name: "Normal Expensed",
+        pipe: {
+          transform: (val: number) => this.decimalPipe.transform(val, "1.2-2"),
+        },
+      },
+      {
         prop: "fasTopup",
         name: "FAS Topup",
         pipe: {

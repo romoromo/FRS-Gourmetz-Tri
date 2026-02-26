@@ -124,6 +124,12 @@ export class StudentWalletTransaction {
   public filePath: string = '';
   public posInvoiceId: string = '';
 
+  public Source: string = '';
+  public FasTopup: number;
+  public FasExpensed: number;
+  public NormalTopup: number;
+  public NormalExpensed: number;
+
 }
 
 export class StudentPointTransaction {

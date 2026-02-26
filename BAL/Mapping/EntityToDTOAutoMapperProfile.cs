@@ -108,8 +108,8 @@ namespace BAL.Mapping
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
                 .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path))
                 .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => string.IsNullOrEmpty(s.Payment.PosInvoiceId) ? s.Payment.POSSales.no_invoice : s.Payment.PosInvoiceId))
-                .ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)))
-                .ForMember(d => d.FasTopup, opt => opt.MapFrom(s => ResolveFasTopupType(s)))
+                //.ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)))
+                //.ForMember(d => d.FasTopup, opt => opt.MapFrom(s => ResolveFasTopupType(s)))
                 .ForMember(d => d.ClassLevel, map => map.MapFrom(s => s.student.ClassLevel.Name));
             CreateMap<StudentWalletTransactionDTO, StudentWalletTransaction>()
                 .ForMember(d => d.File, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() })); ;
@@ -119,9 +119,9 @@ namespace BAL.Mapping
                 .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
                 .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
-                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId))
-                .ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)))
-                .ForMember(d => d.FasTopup, opt => opt.MapFrom(s => ResolveFasTopupType(s)));
+                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId));
+                //.ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)))
+                //.ForMember(d => d.FasTopup, opt => opt.MapFrom(s => ResolveFasTopupType(s)));
 
             CreateMap<StudentWalletTransactionDetail, StudentWalletTransactionDetailDTO>();
             CreateMap<StudentWalletTransactionDetailDTO, StudentWalletTransactionDetail>();

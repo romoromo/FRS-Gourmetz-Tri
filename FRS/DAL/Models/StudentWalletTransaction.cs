@@ -52,5 +52,11 @@ namespace DAL.Models
         public int? FileId { get; set; }
         [ForeignKey("FileId")]
         public virtual File File { get; set; }
+
+        public string Source { get; set; }
+        public double FasTopup { get; set; }
+        public double FasExpensed { get; set; }
+        public double NormalTopup { get; set; }
+        public double NormalExpensed { get; set; }
     }
 }
