@@ -92,6 +92,9 @@ export class WalletTransactionLogManagementComponent
   @ViewChild("invoiceIdTemplate")
   invoiceIdTemplate: TemplateRef<any>;
 
+  @ViewChild("invoiceTemplate")
+  invoiceTemplate: TemplateRef<any>;
+
   @ViewChild("editorModal")
   editorModal: ModalDirective;
 
@@ -104,7 +107,7 @@ export class WalletTransactionLogManagementComponent
 
   public sourceOptions = Object.entries(SourceType).map(([key, value]) => ({
     value: key,
-    label: value
+    label: value,
   }));
 
   constructor(
@@ -170,7 +173,13 @@ export class WalletTransactionLogManagementComponent
         name: "POS Invoice Id",
         sortable: false,
         cellTemplate: this.invoiceIdTemplate,
-      },            
+      },
+      {
+        prop: "invoiceNumber",
+        name: "Invoice",
+        sortable: false,
+        cellTemplate: this.invoiceTemplate,
+      },
       {
         prop: "normalTopup",
         name: "Normal Topup",
@@ -419,6 +428,49 @@ export class WalletTransactionLogManagementComponent
     this.selectedRow = row;
     this.studentService
       .getPOSInvoiceDetail(this.selectedRow.posInvoiceId)
+      .subscribe(
+        (results) => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+
+          console.log(results);
+
+          if (results.error) {
+            this.alertService.showStickyMessage(
+              "Load Error",
+              `"${Utilities.getHttpResponseMessage(results.message)}"`,
+              MessageSeverity.error,
+            );
+          } else {
+            this.dialog.open(PosDetailComponent, {
+              data: { data: results },
+              width: "1000px",
+              disableClose: true,
+            });
+          }
+        },
+        (error) => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+
+          this.alertService.showStickyMessage(
+            "Load Error",
+            `Unable to retrieve order cancellations from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(
+              error,
+            )}"`,
+            MessageSeverity.error,
+          );
+        },
+      );
+  }
+
+  showInvoiceDetail(row: StudentWalletTransaction) {
+    this.alertService.startLoadingMessage();
+    this.loadingIndicator = true;
+
+    this.selectedRow = row;
+    this.studentService
+      .getInvoiceDetail(this.selectedRow.id)
       .subscribe(
         (results) => {
           this.alertService.stopLoadingMessage();

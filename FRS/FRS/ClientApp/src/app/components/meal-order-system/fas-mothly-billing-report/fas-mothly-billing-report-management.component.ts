@@ -119,6 +119,14 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
         }
       },
       {
+        prop: "collectionTime",
+        name: "Collection Time",
+        sortable: false,
+        pipe: {
+          transform: (val: string) => this.datePipe.transform(val, 'dd/MM/yyyy HH:mm:ss')
+        }
+      },
+      {
         prop: "mealType",
         name: "Meal Type",
         sortable: false,

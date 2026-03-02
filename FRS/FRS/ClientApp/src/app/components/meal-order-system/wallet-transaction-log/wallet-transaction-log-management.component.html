@@ -44,7 +44,7 @@
         <mat-option value="">
           ALL
         </mat-option>
-        <mat-option *ngFor="let option of sourceOptions" [value]="option.value">
+        <mat-option *ngFor="let option of sourceOptions" [value]="option.label">
           {{ option.label }}
         </mat-option>
       </mat-select>
@@ -113,5 +113,8 @@
 
   <ng-template #invoiceIdTemplate let-row="row" let-value="value" let-i="index">
     <a class="ng-star-inserted" href="javascript:;" (click)="showPosDetail(row)">{{value}}</a>
+  </ng-template>
+  <ng-template #invoiceTemplate let-row="row" let-value="value" let-i="index">
+    <a class="ng-star-inserted" href="javascript:;" (click)="showInvoiceDetail(row)">{{value}}</a>
   </ng-template>
 </div>

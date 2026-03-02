@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NPOI.POIFS.Properties;
+using NPOI.SS.Formula.Functions;
+using Org.BouncyCastle.Asn1.Pkcs;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
@@ -54,7 +57,7 @@ namespace DAL.Repositories
 
             if (!string.IsNullOrEmpty(filter.Source) && filter.Source != "ALL")
                 query = query.Where(m => m.Source == filter.Source);
-            
+
             if (filter.OutletId != null && filter.OutletId.Count != 0)
             {
                 query = query.Where(m => filter.OutletId.Contains(m.student.OutletId.Value));
@@ -104,7 +107,8 @@ namespace DAL.Repositories
                     {
                         PosInvoiceId = m.Payment == null ? string.Empty : m.Payment.PosInvoiceId,
                         TokenOrders = m.Payment.TokenOrders,
-                        version = m.Payment.version
+                        version = m.Payment.version,
+                        InvoiceNumber = m.Payment.InvoiceNumber
                     },
                 });
 
@@ -1654,7 +1658,7 @@ namespace DAL.Repositories
                             Price = currentOrder != null ? currentOrder.TotalAmount.ToString("N", CultureInfo.InvariantCulture) : (currentPosItem != null ? currentPosItem.harga_satuan : ""),
                             InvoiceNumber = currentPayment != null ? currentPayment.InvoiceNumber : "",
                             POSInvoiceNumber = currentPayment != null ? (currentPayment.PosInvoiceId ?? (currentPos != null ? currentPos.no_invoice : "")) : "",
-                            //Amount = walletTx != null ? walletTx.Amount : 0
+                            CollectionTime = currentOrder != null ? currentOrder.CollectionTime : (currentPos != null ? currentPos.tgl_penjualan : null),
                         };
 
             var total = await query.CountAsync();
@@ -1890,6 +1894,59 @@ namespace DAL.Repositories
             }
 
             _logger.LogInformation(">>> [SYNC COMPLETED] Job finished successfully at {time}", DateTime.Now);
+        }
+
+        public object GetInvoiceDetail(int id)
+        {
+            var rawData = (from walletTx in _appContext.StudentWalletTransactions.AsNoTracking()
+                                 where walletTx.Id == id
+                                 join payment in _appContext.Payments.AsNoTracking() on walletTx.PaymentId equals payment.Id into paymentGroup
+                                 from currentPayment in paymentGroup.DefaultIfEmpty()
+                                 join order in _appContext.TokenOrders.AsNoTracking() on currentPayment.Id equals order.PaymentId into orderGroup
+                                 from currentOrder in orderGroup.DefaultIfEmpty()
+                                 join orderItem in _appContext.TokenOrdereds.AsNoTracking() on currentOrder.Id equals orderItem.OrderId into itemGroup
+                                 from currentItem in itemGroup.DefaultIfEmpty()
+                                 join orderDish in _appContext.TokenOrderDishes.AsNoTracking() on currentItem.Id equals orderDish.TokenOrderedId into dishGroup
+                                 from currentDish in dishGroup.DefaultIfEmpty()
+                                 select new
+                                 {
+                                     walletTx.student.Name,
+                                     currentPayment.InvoiceNumber,
+                                     currentPayment.CreatedDate,
+                                     currentPayment.total,
+                                     OutletName = walletTx.student.Outlet.Name,
+                                     DishLabel = currentDish != null ? currentDish.Dish.Label : null,
+                                     Qty = currentDish != null ? currentDish.Qty : 0,
+                                     TotalAmount = currentOrder != null ? currentOrder.TotalAmount : 0
+                                 }).ToList();
+
+            if (!rawData.Any()) return new { data = new { sales = (object)null, sales_items = new object[0] }, error = false };
+
+            var header = rawData.First();
+            return new
+            {
+                data = new
+                {
+                    sales = new
+                    {
+                        nama_customer = header.Name,
+                        no_invoice = header.InvoiceNumber,
+                        tgl_penjualan = header.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                        outlet_name = header.OutletName,
+                        sub_total = header.total,
+                        neto = header.total
+                    },
+                    sales_items = rawData.Where(x => x.DishLabel != null).Select(x => new
+                    {
+                        nama_barang = x.DishLabel,
+                        qty = x.Qty.Value,
+                        harga_satuan = x.TotalAmount,
+                        diskon = "0.00",
+                        harga_total = (x.Qty * x.TotalAmount)
+                    }).ToList()
+                },
+                error = false
+            };
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

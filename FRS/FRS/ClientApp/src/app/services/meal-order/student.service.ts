@@ -213,6 +213,10 @@ export class StudentService {
     return this.commonEndpoint.get<any>(this.walletUrl + `/pos-details?invoiceId=${invoiceId}`);
   }
 
+  getInvoiceDetail(id: number) {
+    return this.commonEndpoint.get<any>(this.walletUrl + `/invoice-details?invoiceId=${id}`);
+  }
+
   getStudentWalletTransactionsSimpleByFilter(filter: Filter) {
     return this.commonEndpoint.getSieve<PagedResult>(this.walletUrl + '/simple-transactions/sieve/list', filter);
   }

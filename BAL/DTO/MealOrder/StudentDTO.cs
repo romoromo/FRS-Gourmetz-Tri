@@ -226,7 +226,7 @@ namespace BAL.DTO.MealOrder
         public string ClassLevel { get; set; }
         public double NormalTopup { get; set; }
         public double NormalExpensed { get; set; }
-
+        public string InvoiceNumber { get; set; }
     }
 
     public class StudentWalletTransactionSimpleDTO
@@ -258,6 +258,7 @@ namespace BAL.DTO.MealOrder
         public double FasExpensed { get; set; }
         public double NormalTopup { get; set; }
         public double NormalExpensed { get; set; }
+        public string InvoiceNumber { get; set; }
     }
 
     public class StudentWalletTransactionDetailDTO

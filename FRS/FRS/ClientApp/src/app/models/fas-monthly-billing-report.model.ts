@@ -16,4 +16,5 @@ export class FASMonthlyBillingReportModel
     public invoiceNumber: string;
     public posInvoiceNumber: string;
     public amount: number;
+    public collectionTime: Date;
 }

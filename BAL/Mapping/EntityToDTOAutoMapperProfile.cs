@@ -108,6 +108,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
                 .ForMember(d => d.FilePath, map => map.MapFrom(s => s.File.Path))
                 .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => string.IsNullOrEmpty(s.Payment.PosInvoiceId) ? s.Payment.POSSales.no_invoice : s.Payment.PosInvoiceId))
+                .ForMember(d => d.InvoiceNumber, map => map.MapFrom(s => s.Payment.version == "SUCCESS" ? "" : s.Payment.InvoiceNumber))
                 //.ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)))
                 //.ForMember(d => d.FasTopup, opt => opt.MapFrom(s => ResolveFasTopupType(s)))
                 .ForMember(d => d.ClassLevel, map => map.MapFrom(s => s.student.ClassLevel.Name));
@@ -119,7 +120,8 @@ namespace BAL.Mapping
                 .ForMember(e => e.UserName, map => map.MapFrom(e => e.CreatedByUser.UserName))
                 .ForMember(e => e.StudentName, map => map.MapFrom(e => e.student.Name))
                 .ForMember(e => e.StripeId, map => map.MapFrom(e => e.WalletPayment.fomoid))
-                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId));
+                .ForMember(e => e.PosInvoiceId, map => map.MapFrom(e => e.Payment.PosInvoiceId))
+                .ForMember(d => d.InvoiceNumber, map => map.MapFrom(s => s.Payment.version == "SUCCESS" ? "" : s.Payment.InvoiceNumber));
                 //.ForMember(d => d.Source, opt => opt.MapFrom(s => ResolveSourceType(s)))
                 //.ForMember(d => d.FasTopup, opt => opt.MapFrom(s => ResolveFasTopupType(s)));
 

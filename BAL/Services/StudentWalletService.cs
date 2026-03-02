@@ -430,7 +430,7 @@ namespace BAL.Services
                     var wb = new XSSFWorkbook();
                     var rowCount = 0;
                     var sheet = (XSSFSheet)wb.CreateSheet("Sheet1");
-                    var headers = new string[] { "Outlet", "Student ID", "Name", "Class Level", "Class", "FAS Student", "Delivery Date", "Meal Type", "Meal Name", "QTY", "Dish Price", "Invoice Number", "POS Invoice", "Total Amount Spent" };
+                    var headers = new string[] { "Outlet", "Student ID", "Name", "Class Level", "Class", "FAS Student", "Delivery Date", "Collection Time", "Meal Type", "Meal Name", "QTY", "Dish Price", "Invoice Number", "POS Invoice", "Total Amount Spent" };
 
                     #region Headers
 
@@ -532,30 +532,34 @@ namespace BAL.Services
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(7);
-                        cell.SetCellValue(dt.MealType);
+                        cell.SetCellValue(dt.CollectionTime?.ToString("dd/MM/yyyy HH:mm:ss"));
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(8);
-                        cell.SetCellValue(dt.MealName);
+                        cell.SetCellValue(dt.MealType);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(9);
-                        cell.SetCellValue(dt.QtyNumber);
+                        cell.SetCellValue(dt.MealName);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(10);
-                        cell.SetCellValue(dt.Price);
+                        cell.SetCellValue(dt.QtyNumber);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(11);
-                        cell.SetCellValue(dt.InvoiceNumber);
+                        cell.SetCellValue(dt.Price);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(12);
-                        cell.SetCellValue(dt.POSInvoiceNumber);
+                        cell.SetCellValue(dt.InvoiceNumber);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(13);
+                        cell.SetCellValue(dt.POSInvoiceNumber);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(14);
                         cell.SetCellValue(Common.Round(dt.Amount));
                         cell.CellStyle = contentStyle;
                     });
@@ -576,6 +580,11 @@ namespace BAL.Services
             {
                 return null;
             }
+        }
+
+        public async Task<object> GetInvoiceDetail(int id)
+        {
+            return this._uow.StudentWalletTransactions.GetInvoiceDetail(id);
         }
     }
 }

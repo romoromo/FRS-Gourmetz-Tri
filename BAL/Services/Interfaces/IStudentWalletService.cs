@@ -30,5 +30,7 @@ namespace BAL.Services.Interfaces
 
         Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
         Task<byte[]> GenerateFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
+
+        Task<object> GetInvoiceDetail(int id);
     }
 }

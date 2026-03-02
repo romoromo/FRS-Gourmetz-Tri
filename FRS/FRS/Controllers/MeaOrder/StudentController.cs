@@ -2032,5 +2032,19 @@ namespace FRS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("wallet/invoice-details")]
+        public async Task<IActionResult> GetInvoiceDetails(int invoiceId)
+        {
+            try
+            {
+                var response = await _walletService.GetInvoiceDetail(invoiceId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

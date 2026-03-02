@@ -50,5 +50,6 @@ namespace DAL.Core.DTO
                 return 0;
             }
         }
+        public DateTime? CollectionTime { get; set; }
     }
 }

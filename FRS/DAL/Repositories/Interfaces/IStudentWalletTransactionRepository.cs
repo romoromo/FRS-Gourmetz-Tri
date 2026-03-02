@@ -36,5 +36,6 @@ namespace DAL.Repositories.Interfaces
         Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
 
         Task SyncWithPOSSales(ILogger logger, CancellationToken ct = default);
+        object GetInvoiceDetail(int id);
     }
 }
