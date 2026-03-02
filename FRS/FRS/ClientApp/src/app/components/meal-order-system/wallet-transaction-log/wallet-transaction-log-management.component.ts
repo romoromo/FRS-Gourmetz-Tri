@@ -42,6 +42,7 @@ import { DecimalPipe } from "@angular/common";
 import { PosDetailComponent } from "./pos-detail.component";
 import { DeliveryService } from "src/app/services/meal-order/delivery.service";
 import { SourceType } from "src/app/models/enums";
+import { InvoiceDetailComponent } from "./invoice-detail.components";
 
 @Component({
   selector: "wallet-transaction-log-management",
@@ -101,9 +102,14 @@ export class WalletTransactionLogManagementComponent
   @ViewChild("mealDescription")
   mealDescriptionTemplate: TemplateRef<any>;
 
+  @ViewChild("dishTemplate")
+  dishTemplate: TemplateRef<any>;
+
   @ViewChild("orderTable") table: any;
 
   outlets: any[] = [];
+
+  isLoading: boolean;
 
   public sourceOptions = Object.entries(SourceType).map(([key, value]) => ({
     value: key,
@@ -181,6 +187,12 @@ export class WalletTransactionLogManagementComponent
         cellTemplate: this.invoiceTemplate,
       },
       {
+        prop: "tokenOrder", 
+        name: "Dish Name",
+        cellTemplate: this.dishTemplate,
+        sortable: false,
+      },
+      {
         prop: "normalTopup",
         name: "Normal Topup",
         pipe: {
@@ -222,6 +234,18 @@ export class WalletTransactionLogManagementComponent
       },
     ];
   }
+
+  getDishLabels(row: any): string {
+  if (!row.tokenOrder || !row.tokenOrder.tokens) {
+    return '-';
+  }
+
+  const labels = row.tokenOrder.tokens
+    .flatMap((t: any) => t.selectedDishes || [])
+    .map((d: any) => d.dishLabel);              
+
+  return labels.length > 0 ? labels.join(', ') : '-';
+}
 
   clearFilterAndPagedResult() {
     this.initializeFilter();
@@ -384,6 +408,8 @@ export class WalletTransactionLogManagementComponent
   }
 
   downloadResults() {
+    this.isLoading = true;
+    this.alertService.startLoadingMessage("Downloading...");
     const fileName =
       moment().format("DDMMYYYY_hhmmss") + "_WalletTransactions.xlsx";
     console.log(this.filter);
@@ -391,10 +417,14 @@ export class WalletTransactionLogManagementComponent
       (data) => {
         console.log(data);
         saveAs(data, fileName);
+        this.alertService.stopLoadingMessage();
+        this.isLoading = false;
       },
       (err) => {
         alert("Problem while downloading the file.");
         console.error(err);
+        this.alertService.stopLoadingMessage();
+        this.isLoading = false;
       },
     );
   }
@@ -469,42 +499,40 @@ export class WalletTransactionLogManagementComponent
     this.loadingIndicator = true;
 
     this.selectedRow = row;
-    this.studentService
-      .getInvoiceDetail(this.selectedRow.id)
-      .subscribe(
-        (results) => {
-          this.alertService.stopLoadingMessage();
-          this.loadingIndicator = false;
+    this.studentService.getInvoiceDetail(this.selectedRow.id).subscribe(
+      (results) => {
+        this.alertService.stopLoadingMessage();
+        this.loadingIndicator = false;
 
-          console.log(results);
+        console.log(results);
 
-          if (results.error) {
-            this.alertService.showStickyMessage(
-              "Load Error",
-              `"${Utilities.getHttpResponseMessage(results.message)}"`,
-              MessageSeverity.error,
-            );
-          } else {
-            this.dialog.open(PosDetailComponent, {
-              data: { data: results },
-              width: "1000px",
-              disableClose: true,
-            });
-          }
-        },
-        (error) => {
-          this.alertService.stopLoadingMessage();
-          this.loadingIndicator = false;
-
+        if (results.error) {
           this.alertService.showStickyMessage(
             "Load Error",
-            `Unable to retrieve order cancellations from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(
-              error,
-            )}"`,
+            `"${Utilities.getHttpResponseMessage(results.message)}"`,
             MessageSeverity.error,
           );
-        },
-      );
+        } else {
+          this.dialog.open(InvoiceDetailComponent, {
+            data: { data: results },
+            width: "1000px",
+            disableClose: true,
+          });
+        }
+      },
+      (error) => {
+        this.alertService.stopLoadingMessage();
+        this.loadingIndicator = false;
+
+        this.alertService.showStickyMessage(
+          "Load Error",
+          `Unable to retrieve order cancellations from the server.\r\nErrors: "${Utilities.getHttpResponseMessage(
+            error,
+          )}"`,
+          MessageSeverity.error,
+        );
+      },
+    );
   }
 
   private buildOutletFilterFromSelection(): string {

@@ -573,6 +573,7 @@ import { WalletTransactionManagementComponent } from "./components/meal-order-sy
 import { DetailStudentWalletTransactionComponent } from "./components/meal-order-system/student/detail-student-wallet-transactions/detail-student-wallet-transactions.component";
 import { PosDetailComponent } from "./components/meal-order-system/wallet-transaction-log/pos-detail.component";
 import {FASMothlyBillingReportManagementComponent} from "./components/meal-order-system/fas-mothly-billing-report/fas-mothly-billing-report-management.component";
+import { InvoiceDetailComponent } from "./components/meal-order-system/wallet-transaction-log/invoice-detail.components";
 
 export const configFactory = (configService: ConfigurationService) => {
   return () => {
@@ -1050,7 +1051,8 @@ export const configFactory = (configService: ConfigurationService) => {
     WalletTransactionManagementComponent,
     DetailStudentWalletTransactionComponent,
     PosDetailComponent,
-    FASMothlyBillingReportManagementComponent
+    FASMothlyBillingReportManagementComponent,
+    InvoiceDetailComponent
   ],
   providers: [
     { provide: "BASE_URL", useFactory: getBaseUrl },
@@ -1427,7 +1429,8 @@ export const configFactory = (configService: ConfigurationService) => {
     WalletTransactionManagementComponent,
     DetailStudentWalletTransactionComponent,
     PosDetailComponent,
-    FASMothlyBillingReportManagementComponent
+    FASMothlyBillingReportManagementComponent,
+    InvoiceDetailComponent
   ],
 })
 export class AppModule {}

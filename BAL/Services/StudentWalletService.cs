@@ -149,10 +149,8 @@ namespace BAL.Services
                 query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));
             }
 
-            if (!string.IsNullOrEmpty(filter.Source) && filter.Source == "POS")
-            {
-                query = query.Where(m => m.Payment.version == "SUCCESS" && !m.Payment.TokenOrders.Any());
-            }
+            if (!string.IsNullOrEmpty(filter.Source) && filter.Source != "ALL")
+                query = query.Where(m => m.Source == filter.Source);
 
             if (filter.OutletId != null && filter.OutletId.Count != 0)
             {
@@ -165,7 +163,29 @@ namespace BAL.Services
             }
 
             query = this._sieveProcessor.Apply(filter, query, applyPagination: false);
-            var logs = _mapper.Map<List<StudentWalletTransactionDTO>>(await query.ToListAsync());
+            var logs = query.Select(m =>
+
+            new StudentWalletTransactionDTO
+            {
+                StudentId = m.StudentId,
+                StudentName = m.student.Name,
+                TransactionDateTime = m.CreatedDate,
+                Source = m.Source,
+                Amount = m.Amount,
+                TransactionType = m.TransactionType,
+                Description = m.Description,
+                StripeId = m.WalletPayment.fomoid,
+                PosInvoiceId = string.IsNullOrEmpty(m.Payment.PosInvoiceId) ? m.Payment.POSSales.no_invoice : m.Payment.PosInvoiceId,
+                InvoiceNumber = m.Payment.version == "SUCCESS" ? "" : m.Payment.InvoiceNumber,
+                DishLabels = m.TokenOrder.Tokens.SelectMany(t => t.SelectedDishes.Select(d => d.Dish.Label)).ToList(),
+                NormalTopup = m.NormalTopup,
+                NormalExpensed = m.NormalExpensed,
+                FasTopup = m.FasTopup,
+                FasExpensed = m.FasExpensed,
+                ClassLevel = m.student.ClassLevel.Name,
+                Remarks = m.Remarks,
+                UserName = m.CreatedByUser.UserName
+            }).AsAsyncEnumerable();
 
             if (logs != null)
             {
@@ -174,7 +194,24 @@ namespace BAL.Services
                     var wb = new XSSFWorkbook();
                     var rowCount = 0;
                     var sheet = (XSSFSheet)wb.CreateSheet("Wallet Transactions");
-                    var headers = new string[] { "Student", "Date", "Amount", "Type", "Description", "Remarks", "Processed By" };
+                    var headers = new string[] {
+                        "Student",
+                        "Date",
+                        "Source",
+                        "Amount",
+                        "Type",
+                        "Description",
+                        "REF_ID",
+                        "POS Invoice",
+                        "Invoice",
+                        "Dish Name",
+                        "Normal Topup",
+                        "Normal Expensed",
+                        "FAS Topup",
+                        "FAS Expensed",
+                        "Class Level",
+                        "Remarks",
+                        "Processed By" };
 
                     #region Headers
 
@@ -212,7 +249,7 @@ namespace BAL.Services
                     contentStyle.Alignment = HorizontalAlignment.Left;
                     contentStyle.WrapText = true;
                     var dataFormatCustom = wb.CreateDataFormat();
-                    logs.ForEach(dt =>
+                    await foreach (var dt in logs)
                     {
                         row = sheet.CreateRow(++rowCount);
 
@@ -225,26 +262,66 @@ namespace BAL.Services
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(2);
-                        cell.SetCellValue(dt.Amount);
+                        cell.SetCellValue(dt.Source);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(3);
-                        cell.SetCellValue(dt.TransactionType);
+                        cell.SetCellValue(dt.Amount);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(4);
-                        cell.SetCellValue(dt.Description);
+                        cell.SetCellValue(dt.TransactionType);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(5);
-                        cell.SetCellValue(dt.Remarks);
+                        cell.SetCellValue(dt.Description);
                         cell.CellStyle = contentStyle;
 
                         cell = row.CreateCell(6);
+                        cell.SetCellValue(dt.StripeId);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(7);
+                        cell.SetCellValue(dt.PosInvoiceId);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(8);
+                        cell.SetCellValue(dt.InvoiceNumber);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(9);
+                        cell.SetCellValue(string.Join(", ", dt.DishLabels));
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(10);
+                        cell.SetCellValue(dt.NormalTopup);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(11);
+                        cell.SetCellValue(dt.NormalExpensed);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(12);
+                        cell.SetCellValue(dt.FasTopup);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(13);
+                        cell.SetCellValue(dt.FasExpensed);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(14);
+                        cell.SetCellValue(dt.ClassLevel);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(15);
+                        cell.SetCellValue(dt.Remarks);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(16);
                         cell.SetCellValue(dt.UserName);
                         cell.CellStyle = contentStyle;
 
-                    });
+                    };
 
                     #endregion
 

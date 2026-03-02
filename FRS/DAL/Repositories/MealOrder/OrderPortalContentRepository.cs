@@ -1,16 +1,17 @@
-﻿using System;
+﻿using DAL.Core;
+using DAL.Filters;
+using DAL.Models;
+using DAL.Models.MealOrder;
+using DAL.Repositories.Interfaces;
+using DAL.Repositories.Interfaces.MealOrder;
+using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
+using Sieve.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Repositories.Interfaces;
-using DAL.Core;
-using Sieve.Services;
-using DAL.Filters;
-using DAL.Models.MealOrder;
-using DAL.Repositories.Interfaces.MealOrder;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -29,7 +30,8 @@ namespace DAL.Repositories.MealOrder
         #region Sieved
         public async Task<PagedEntity<OrderPortalContent>> GetOrderPortalContentsAsync(BaseFilter filter)
         {
-            IQueryable<OrderPortalContent> query = _appContext.OrderPortalContents;
+            var today = DateTime.Today;
+            IQueryable<OrderPortalContent> query = _appContext.OrderPortalContents.Where(x => x.EffectiveStartDate <= today && x.EffectiveEndDate >= today);
 
             var result = await this._sieveProcessor.GetPagedAsync(query, filter);
 

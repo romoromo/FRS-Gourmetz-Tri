@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DAL.Core.DTO
 {
@@ -47,5 +48,21 @@ namespace DAL.Core.DTO
         public string kode_barang { get; set; }
         public string nama_barang { get; set; }
         public string deskripsi { get; set; }
+        public string delivery_date { get; set; }
+    }
+
+
+
+    public class InvoiceResponseDto
+    {
+        public InvoiceDataDto Data { get; set; }
+        public bool Error { get; set; }
+    }
+
+    public class InvoiceDataDto
+    {
+        public POSSalesDTO Sales { get; set; }
+        [JsonPropertyName("sales_items")]
+        public List<SalesItem> SalesItems { get; set; }
     }
 }

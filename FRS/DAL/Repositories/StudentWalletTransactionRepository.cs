@@ -1899,53 +1899,55 @@ namespace DAL.Repositories
         public object GetInvoiceDetail(int id)
         {
             var rawData = (from walletTx in _appContext.StudentWalletTransactions.AsNoTracking()
-                                 where walletTx.Id == id
-                                 join payment in _appContext.Payments.AsNoTracking() on walletTx.PaymentId equals payment.Id into paymentGroup
-                                 from currentPayment in paymentGroup.DefaultIfEmpty()
-                                 join order in _appContext.TokenOrders.AsNoTracking() on currentPayment.Id equals order.PaymentId into orderGroup
-                                 from currentOrder in orderGroup.DefaultIfEmpty()
-                                 join orderItem in _appContext.TokenOrdereds.AsNoTracking() on currentOrder.Id equals orderItem.OrderId into itemGroup
-                                 from currentItem in itemGroup.DefaultIfEmpty()
-                                 join orderDish in _appContext.TokenOrderDishes.AsNoTracking() on currentItem.Id equals orderDish.TokenOrderedId into dishGroup
-                                 from currentDish in dishGroup.DefaultIfEmpty()
-                                 select new
-                                 {
-                                     walletTx.student.Name,
-                                     currentPayment.InvoiceNumber,
-                                     currentPayment.CreatedDate,
-                                     currentPayment.total,
-                                     OutletName = walletTx.student.Outlet.Name,
-                                     DishLabel = currentDish != null ? currentDish.Dish.Label : null,
-                                     Qty = currentDish != null ? currentDish.Qty : 0,
-                                     TotalAmount = currentOrder != null ? currentOrder.TotalAmount : 0
-                                 }).ToList();
+                           where walletTx.Id == id
+                           join payment in _appContext.Payments.AsNoTracking() on walletTx.PaymentId equals payment.Id into paymentGroup
+                           from currentPayment in paymentGroup.DefaultIfEmpty()
+                           join order in _appContext.TokenOrders.AsNoTracking() on currentPayment.Id equals order.PaymentId into orderGroup
+                           from currentOrder in orderGroup.DefaultIfEmpty()
+                           join orderItem in _appContext.TokenOrdereds.AsNoTracking() on currentOrder.Id equals orderItem.OrderId into itemGroup
+                           from currentItem in itemGroup.DefaultIfEmpty()
+                           join orderDish in _appContext.TokenOrderDishes.AsNoTracking() on currentItem.Id equals orderDish.TokenOrderedId into dishGroup
+                           from currentDish in dishGroup.DefaultIfEmpty()
+                           select new
+                           {
+                               walletTx.student.Name,
+                               currentPayment.InvoiceNumber,
+                               currentPayment.CreatedDate,
+                               currentPayment.total,
+                               OutletName = walletTx.student.Outlet.Name,
+                               DishLabel = currentDish != null ? currentDish.Dish.Label : null,
+                               Qty = currentDish != null ? currentDish.Qty : 0,
+                               TotalAmount = currentOrder != null ? currentOrder.TotalAmount : 0,
+                               DeliveryDate = currentOrder != null ? currentOrder.DeliveryDate : DateTime.MinValue,
+                           }).ToList();
 
-            if (!rawData.Any()) return new { data = new { sales = (object)null, sales_items = new object[0] }, error = false };
+            if (!rawData.Any()) return new InvoiceResponseDto { Data = new InvoiceDataDto { Sales = null, SalesItems = new List<Core.DTO.SalesItem>() }, Error = false };
 
             var header = rawData.First();
-            return new
+            return new InvoiceResponseDto
             {
-                data = new
+                Error = false,
+                Data = new InvoiceDataDto
                 {
-                    sales = new
+                    Sales = new POSSalesDTO
                     {
                         nama_customer = header.Name,
                         no_invoice = header.InvoiceNumber,
-                        tgl_penjualan = header.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                        tgl_penjualan = header.CreatedDate,
                         outlet_name = header.OutletName,
-                        sub_total = header.total,
-                        neto = header.total
+                        sub_total = header.total.ToString(),
+                        neto = header.total.ToString()
                     },
-                    sales_items = rawData.Where(x => x.DishLabel != null).Select(x => new
+                    SalesItems = rawData.Where(x => x.DishLabel != null).Select(x => new Core.DTO.SalesItem
                     {
+                        delivery_date = header.DeliveryDate == DateTime.MinValue ? null : header.DeliveryDate.ToString("dd/MM/yyyy HH:mm:ss"),
                         nama_barang = x.DishLabel,
-                        qty = x.Qty.Value,
-                        harga_satuan = x.TotalAmount,
+                        qty = x.Qty.Value.ToString(),
+                        harga_satuan = x.TotalAmount.ToString(),
                         diskon = "0.00",
-                        harga_total = (x.Qty * x.TotalAmount)
+                        harga_total = (x.Qty * x.TotalAmount).ToString()
                     }).ToList()
-                },
-                error = false
+                }
             };
         }
 
