@@ -670,7 +670,11 @@ namespace BAL.Mapping
             CreateMap<DishDTO, Dish>()
                 .ForMember(d => d.Icon, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() }))
                 .ForMember(d => d.ProductionPicture, map => map.MapFrom(s => new File { Path = s.ProductionPicturePath, FileName = s.ProductionPictureName, Type = FileType.Icon.ToString() }));
-
+            CreateMap<Dish, MenuResponse>()
+                .ForMember(e => e.LastUpdated, map => map.MapFrom(f => f.UpdatedDate));
+            CreateMap<Dish, DishSimpleWithFile>()
+                .ForMember(d => d.FilePath, map => map.MapFrom(s => s.Icon.Path))
+                .ForMember(d => d.ProductionPicturePath, map => map.MapFrom(s => s.ProductionPicture.Path));
             CreateMap<Dish, DishSimple>();
 
             CreateMap<DishDetailDTO, DishDetail>();

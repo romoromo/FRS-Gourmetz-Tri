@@ -68,5 +68,6 @@ namespace DAL.Models.MealOrder
 
         public string PointsType { get; set; }
         public float Points { get; set; }
+        public string SerialNumber { get; set; } = Guid.NewGuid().ToString();
     }
 }
