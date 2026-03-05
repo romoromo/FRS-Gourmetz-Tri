@@ -521,11 +521,25 @@ namespace DAL.Repositories
                     fasTopup = amount;
                 }
 
+                StudentWalletTransaction existingPaymentInWalletTransaction = null;
+
                 if (walletPaymentId != null && walletPaymentId != 0)
                 {
                     source = "GOe Portal";
+
+                    //check existing payment to prevent double topup for same payment
+                    existingPaymentInWalletTransaction = await _appContext.StudentWalletTransactions
+                        .FirstOrDefaultAsync(e => e.WalletPaymentId == walletPaymentId);
                 }
 
+
+                if (existingPaymentInWalletTransaction != null)
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Payment with Id={walletPaymentId} already used for top up.";
+                    _logger.LogInformation(result.Message);
+                    return result;
+                }
 
 
                 var transaction = new StudentWalletTransaction
