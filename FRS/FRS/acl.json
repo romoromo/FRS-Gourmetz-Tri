@@ -1277,6 +1277,12 @@
               "children": []
             },
             {
+              "name": "Detailed Basic Wallet Top Up Transaction",
+              "value": "mosmgt.reportmgt.detailedbasicwallettopup.view",
+              "description": "Permission to view Detailed Basic Wallet Top Up Transaction",
+              "children": []
+            },
+            {
               "name": "Order Cancellation Report",
               "value": "mosmgt.reportmgt.ordercancellation",
               "description": "",

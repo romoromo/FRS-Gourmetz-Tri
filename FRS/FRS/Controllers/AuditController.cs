@@ -331,5 +331,33 @@ namespace FRS.Controllers
                 fileDownloadName: reportName
             );
         }
+
+        [HttpGet("report/detailed-basic-report")]
+        [ProducesResponseType(200, Type = typeof(PagedEntityViewModel<FASMonthlyBillingReportDTO>))]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> GetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter)
+        {
+            var datas = await _tokenOrderService.GetDetailedBasicWalletTopUpReport(filter);
+            return Ok(_mapper.Map<PagedEntityViewModel<DetailedBasicWalletTopUpReport>>(datas));
+        }
+
+        [HttpPost("report/generate-detailed-basic-report")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GenerateGetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter)
+        {
+            var xls = await _tokenOrderService.GenerateGetDetailedBasicWalletTopUpReport(filter);
+            var reportName = DateTime.Now.ToString("ddMMyyyy_hhmmss") + "_Detailed-Basic-Wallet-Top-Up-Report.xlsx";
+
+            if (xls == null || xls.Length == 0)
+            {
+                return BadRequest("");
+            }
+
+            return File(
+                fileContents: xls,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: reportName
+            );
+        }
     }
 }

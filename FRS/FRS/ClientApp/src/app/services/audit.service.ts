@@ -5,7 +5,7 @@ import { Observable, Subject, forkJoin } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
 import { CommonEndpoint } from './common-endpoint.service';
 import { AuthService } from './auth.service';
-import { FASMonthlyBillingFilter, Filter, PagedResult } from '../models/sieve-filter.model';
+import { DetailedBasicWalletTopUpFilter, FASMonthlyBillingFilter, Filter, PagedResult } from '../models/sieve-filter.model';
 import { ConfigurationService } from './configuration.service';
 import { AuditLog } from '../models/audit-log';
 
@@ -91,5 +91,13 @@ export class AuditService {
 
   generateFasMothlyBillingReport(filter: FASMonthlyBillingFilter) {
     return this.commonEndpoint.getFile<any>(this.auditUrl + '/report/generate-fas-billing-report', filter);
+  }
+
+  getDetailedBasicWalletTopUpReport(filter: DetailedBasicWalletTopUpFilter) {
+    return this.commonEndpoint.getSieve<PagedResult>(this.auditUrl + '/report/detailed-basic-report', filter);
+  }
+
+  generateDetailedBasicWalletTopUpReport(filter: DetailedBasicWalletTopUpFilter) {
+    return this.commonEndpoint.getFile<any>(this.auditUrl + '/report/generate-detailed-basic-report', filter);
   }
 }

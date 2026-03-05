@@ -5649,5 +5649,15 @@ namespace BAL.Services.MealOrder
         {
             return await _studentWalletService.GenerateFASMonthlyBillingReport(filter);
         }
+
+        public async Task<PagedEntity<DetailedBasicWalletTopUpReport>> GetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter)
+        {
+            return await _studentWalletService.GetDetailedBasicWalletTopUpReport(filter);
+        }
+
+        public async Task<byte[]> GenerateGetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter)
+        {
+            return await _studentWalletService.GenerateGetDetailedBasicWalletTopUpReport(filter);
+        }
     }
 }

@@ -663,5 +663,157 @@ namespace BAL.Services
         {
             return this._uow.StudentWalletTransactions.GetInvoiceDetail(id);
         }
+
+        public async Task<PagedEntity<DetailedBasicWalletTopUpReport>> GetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter)
+        {
+            return await this._uow.StudentWalletTransactions.GetDetailedBasicWalletTopUpReport(filter);
+        }
+
+        public async Task<byte[]> GenerateGetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter)
+        {
+            filter.PageSize = null;
+            var datas = await this._uow.StudentWalletTransactions.GetDetailedBasicWalletTopUpReport(filter);
+
+            if (datas.PagedData != null)
+            {
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    var wb = new XSSFWorkbook();
+                    var rowCount = 0;
+                    var sheet = (XSSFSheet)wb.CreateSheet("Sheet1");
+                    var headers = new string[] { "Transaction Date", "Student ID", "Student Name", "Outlet", "Class Level", "Top up Amount", "Source", "REF_ID", "Processed By"};
+
+                    #region Headers
+
+                    var headerStyle = wb.CreateCellStyle();
+                    var headerFont = wb.CreateFont();
+                    headerFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                    headerStyle.SetFont(headerFont);
+                    headerStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+
+                    var borderedTitleStyle = wb.CreateCellStyle();
+                    borderedTitleStyle.SetFont(headerFont);
+
+                    var borderedHeaderStyle = wb.CreateCellStyle();
+                    borderedHeaderStyle.SetFont(headerFont);
+                    borderedHeaderStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+                    borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                    borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+
+                    ICell cell;
+
+                    var row = sheet.CreateRow(rowCount);
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue($"Report Name : Detailed Basic Wallet Top Up Transaction");
+                    cell.CellStyle = borderedTitleStyle;
+                    rowCount++;
+
+                    var outlets = string.Join(",", datas.PagedData.Select(m => m.Outlet).Distinct());
+                    if (filter.OutletId == null) outlets = "ALL";
+                    row = sheet.CreateRow(rowCount);
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue($"Outlet : {outlets}");
+                    cell.CellStyle = borderedTitleStyle;
+                    rowCount++;
+
+                    var classLevels = string.Join(",", datas.PagedData.Select(m => m.ClassLevel).Distinct());
+                    if (filter.ClassLevelIds == null) classLevels = "ALL";
+                    row = sheet.CreateRow(rowCount);
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue($"Class Level : {classLevels}");
+                    cell.CellStyle = borderedTitleStyle;
+                    rowCount++;
+
+                    row = sheet.CreateRow(rowCount);
+                    cell = row.CreateCell(0);
+                    cell.SetCellValue($"Month : {filter.StartDate:dd/MM/yyyy} - {filter.EndDate:dd/MM/yyyy}");
+                    cell.CellStyle = borderedTitleStyle;
+                    rowCount++;
+
+
+                    rowCount++;
+
+                    row = sheet.CreateRow(rowCount);
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        cell = row.CreateCell(i);
+                        cell.SetCellValue(headers[i]);
+                        cell.CellStyle = borderedHeaderStyle;
+                    }
+                    sheet.AutoSizeColumn(0);
+
+                    #endregion
+
+                    #region Content
+                    var contentStyle = wb.CreateCellStyle();
+                    contentStyle.BorderTop = BorderStyle.Thin;
+                    contentStyle.BorderBottom = BorderStyle.Thin;
+                    contentStyle.BorderLeft = BorderStyle.Thin;
+                    contentStyle.BorderRight = BorderStyle.Thin;
+                    contentStyle.VerticalAlignment = VerticalAlignment.Top;
+                    contentStyle.Alignment = HorizontalAlignment.Left;
+                    contentStyle.WrapText = true;
+                    var dataFormatCustom = wb.CreateDataFormat();
+                    datas.PagedData.ToList().ForEach(dt =>
+                    {
+                        row = sheet.CreateRow(++rowCount);
+
+                        cell = row.CreateCell(0);
+                        cell.SetCellValue(dt.TransactionDate.ToString("dd/MM/yyyy HH:mm:ss"));
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(1);
+                        cell.SetCellValue(dt.StudentId);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(2);
+                        cell.SetCellValue(dt.StudentName);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(3);
+                        cell.SetCellValue(dt.Outlet);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(4);
+                        cell.SetCellValue(dt.ClassLevel);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(5);
+                        cell.SetCellValue(Common.Round(dt.Amount));
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(6);
+                        cell.SetCellValue(dt.Source);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(7);
+                        cell.SetCellValue(dt.RefId);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(8);
+                        cell.SetCellValue(dt.ProcessedBy);
+                        cell.CellStyle = contentStyle;
+
+                    });
+
+                    #endregion
+
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        sheet.AutoSizeColumn(i, true);
+                    }
+
+                    wb.Write(stream);
+
+                    return stream.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

@@ -37,5 +37,7 @@ namespace DAL.Repositories.Interfaces
 
         Task SyncWithPOSSales(ILogger logger, CancellationToken ct = default);
         object GetInvoiceDetail(int id);
+
+        Task<PagedEntity<DetailedBasicWalletTopUpReport>> GetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter);
     }
 }

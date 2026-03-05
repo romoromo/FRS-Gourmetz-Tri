@@ -450,6 +450,16 @@
           "childMenus": []
         },
         {
+          "label": "Detailed Basic Wallet Top Up Transaction",
+          "active": true,
+          "link": "/detailedbasicwallettopup",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.reportmgt.detailedbasicwallettopup.view" ],
+          "childMenus": []
+        },
+        {
           "label": "User Account",
           "active": true,
           "link": "/useraccountreport",

@@ -32,5 +32,8 @@ namespace BAL.Services.Interfaces
         Task<byte[]> GenerateFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
 
         Task<object> GetInvoiceDetail(int id);
+
+        Task<PagedEntity<DetailedBasicWalletTopUpReport>> GetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter);
+        Task<byte[]> GenerateGetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter);
     }
 }

@@ -169,7 +169,7 @@ import { SortingAreaManagementComponent } from './components/meal-order-system/s
 import { title } from 'process';
 import { WalletTransactionManagementComponent } from './components/meal-order-system/wallet-transaction/wallet-transaction-management.component';
 import {FASMothlyBillingReportManagementComponent} from './components/meal-order-system/fas-mothly-billing-report/fas-mothly-billing-report-management.component';
-
+import { DetailedBasicWalletTopUpReport } from './components/meal-order-system/detailed-basic-topup-report/detailed-basic-topup-report.component';
 
 const routes: Routes = [
   //{ path: "", component: HomeComponent, canActivate: [AuthGuard], data: { title: "Home" } },
@@ -345,7 +345,8 @@ const routes: Routes = [
       { path: "assetcomponent", component: AssetCmpManagementComponent, canActivate: [AuthGuard], data: {title: "Asset Components"}},
       { path: "sortingarea", component: SortingAreaManagementComponent, canActivate: [AuthGuard], data: {title: "Sorting Area"}},
       { path: "wallettransaction", component: WalletTransactionManagementComponent, canActivate: [AuthGuard], data: {title: "Wallet Transaction"}},
-      { path: "fasmonthlybilling", component: FASMothlyBillingReportManagementComponent, canActivate: [AuthGuard], data: {title: "FAS Monthly Billing Report"}}
+      { path: "fasmonthlybilling", component: FASMothlyBillingReportManagementComponent, canActivate: [AuthGuard], data: {title: "FAS Monthly Billing Report"}},
+      { path: "detailedbasicwallettopup", component: DetailedBasicWalletTopUpReport, canActivate: [AuthGuard], data: {title: "Detailed Basic Wallet Top Up Report"}}
       //{ path: "orderportalcontents", component: OrderPortalContentComponent, canActivate: [AuthGuard], data: { title: "Order Portal Content" } },
 
       //{ path: "display/:mac", redirectTo: "/display/:mac" },

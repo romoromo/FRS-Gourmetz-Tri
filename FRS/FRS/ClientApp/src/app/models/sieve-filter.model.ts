@@ -166,3 +166,11 @@ export class FASMonthlyBillingFilter extends Filter{
   public endDate: string;
   public isFAS: boolean;
 }
+
+export class DetailedBasicWalletTopUpFilter extends Filter{
+  public outletId?: number[];
+  public classLevelIds: number[];
+
+  public startDate: string;
+  public endDate: string;
+}

@@ -168,4 +168,12 @@ namespace DAL.Filters
         public List<int> OutletId { get; set; }
         public List<int> ClassLevelIds { get; set; }
     }
+
+    public class DetailedBasicWalletTopUpFilter : BaseFilter
+    {
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public List<int> OutletId { get; set; }
+        public List<int> ClassLevelIds { get; set; }
+    }
 }

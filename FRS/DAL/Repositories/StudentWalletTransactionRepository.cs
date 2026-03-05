@@ -1951,6 +1951,65 @@ namespace DAL.Repositories
             };
         }
 
+        public async Task<PagedEntity<DetailedBasicWalletTopUpReport>> GetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter)
+        {
+            var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
+            var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
+
+            var txQuery = _appContext.StudentWalletTransactions.AsNoTracking()
+                .Where(m => m.IsActive && m.TransactionType == "CREDIT" && m.Description.Contains("Top-up BASIC wallet"));
+
+            if (outletFilter.Any())
+                txQuery = txQuery.Where(m => m.student.OutletId.HasValue && outletFilter.Contains(m.student.OutletId.Value));
+
+            if (classLevelFilter.Any())
+                txQuery = txQuery.Where(m => m.student.ClassLevelId.HasValue && classLevelFilter.Contains(m.student.ClassLevelId.Value));
+
+            var fromDate = filter.StartDate.Date;
+            var toExclusive = filter.EndDate.Date.AddDays(1).AddSeconds(-1);
+            txQuery = txQuery.Where(m => m.CreatedDate >= fromDate && m.CreatedDate <= toExclusive);
+
+            var query = from walletTx in txQuery
+                        from walletPay in _appContext.WalletPayments.AsNoTracking()
+                            .Where(p => p.StudentId == walletTx.StudentId &&
+                                        p.amount == (decimal)walletTx.Amount)
+                            .DefaultIfEmpty()
+                        orderby walletTx.CreatedDate descending
+                        select new DetailedBasicWalletTopUpReport
+                        {
+                            ID = walletTx.Id,
+                            TransactionDate = walletTx.CreatedDate,
+                            StudentId = walletTx.StudentId,
+                            StudentName = walletTx.student.Name,
+                            Outlet = walletTx.student.Outlet.Name,
+                            ClassLevel = walletTx.student.ClassLevel.Name,
+                            Amount = walletTx.Amount,
+                            Source = walletTx.Source,
+                            RefId = walletPay != null ? walletPay.fomoid : null,
+                            ProcessedBy = walletTx.CreatedByUser.Email
+                        };
+
+            var total = await query.CountAsync();
+
+            var page = filter.Page ?? 1;
+            var pageSize = filter.PageSize ?? int.MaxValue;
+            var skip = (page - 1) * pageSize;
+
+            var queryPaged = await query
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedEntity<DetailedBasicWalletTopUpReport>()
+            {
+                TotalCount = total,
+                PagedData = queryPaged,
+                Filter = filter,
+                CurrentPage = page,
+                PageCount = (int)Math.Ceiling((double)total / pageSize)
+            };
+        }
+
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;
     }
 }

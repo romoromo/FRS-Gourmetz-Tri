@@ -116,5 +116,9 @@ namespace BAL.Services.Interfaces.MealOrder
 
         Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
         Task<byte[]> GenerateFASMonthlyBillingReport(FASMonthlyBillingFilter filter);
+
+
+        Task<PagedEntity<DetailedBasicWalletTopUpReport>> GetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter);
+        Task<byte[]> GenerateGetDetailedBasicWalletTopUpReport(DetailedBasicWalletTopUpFilter filter); 
     }
 }
