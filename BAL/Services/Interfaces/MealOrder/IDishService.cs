@@ -63,6 +63,9 @@ namespace BAL.Services.Interfaces.MealOrder
         Task<CatererAssetTypeDTO> GetCatererAssetTypeByIdAsync(int id);
         Task<BaseOperationResponse> CreateCatererAssetTypeAsync(CatererAssetTypeDTO dto);
         Task<BaseOperationResponse> UpdateCatererAssetTypeAsync(CatererAssetTypeDTO dto);
-        Task<BaseOperationResponse> DeleteCatererAssetTypeAsync(int id);        
+        Task<BaseOperationResponse> DeleteCatererAssetTypeAsync(int id);
+
+        Task<List<MenuResponse>> GetCurrentMenu();
+        Task<List<DishSimpleWithFile>> GetDishForDownload(List<string> serialNumbers);
     }
 }

@@ -78,7 +78,7 @@ namespace BAL.DTO.MealOrder
         public List<DishComponentDTO> DishComponents { get; set; }
 
         public string PointsType { get; set; }
-        public float Points { get; set; }        
+        public float Points { get; set; }
     }
 
     public class DishComponentDTO
@@ -116,5 +116,27 @@ namespace BAL.DTO.MealOrder
 
         public string Code { get; set; }
         public string Label { get; set; }
+    }
+
+    public class DishSimpleWithFile : DishSimple
+    {
+        public int? FileId { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
+        public string ProductionPicturePath { get; set; }
+    }
+
+    public class MenuResponse
+    {
+        public int Id { get; set; }
+        public string Code { get; set; }
+        public string Label { get; set; }
+        public string SerialNumber { get; set; }
+        public DateTime LastUpdated { get; set; }
+    }
+
+    public class DownloadMenuRequest
+    {
+        public List<string> SerialNumbers { get; set; }
     }
 }

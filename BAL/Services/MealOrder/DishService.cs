@@ -558,6 +558,18 @@ namespace BAL.Services.MealOrder
             var result = await this._uow.CatererAssetType.DeleteAsync(id);
             return result;
         }
+
+        public async Task<List<MenuResponse>> GetCurrentMenu()
+        {
+            var result = await this._uow.Dishes.GetCurrentMenu();
+            return _mapper.Map<List<MenuResponse>>(result);
+        }
+
+        public async Task<List<DishSimpleWithFile>> GetDishForDownload(List<string> serialNumbers)
+        {
+            var result = await this._uow.Dishes.GetDishForDownload(serialNumbers);
+            return _mapper.Map<List<DishSimpleWithFile>>(result);
+        }
         #endregion
     }
 }

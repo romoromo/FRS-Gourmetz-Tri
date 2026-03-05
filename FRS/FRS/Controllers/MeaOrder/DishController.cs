@@ -1,25 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using BAL.DTO.MealOrder;
 using BAL.Services.Interfaces.MealOrder;
 using DAL.Core;
 using DAL.Core.DTO;
 using DAL.Core.Helpers;
 using DAL.Filters;
+using DAL.Models.MealOrder;
 using FRS.Attributes;
 using FRS.ViewModels;
 using FRS.ViewModels.MealOrder;
+using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
+using NPOI.OpenXmlFormats.Vml;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using OpenIddict.Validation.AspNetCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace FRS.Controllers
 {
@@ -380,7 +385,7 @@ namespace FRS.Controllers
                     int colCount = sheet.GetRow(reqNumCells).PhysicalNumberOfCells;
 
                     int rowCount = sheet.PhysicalNumberOfRows;
-                    for (int i = startRow; ExcelUtility.GetRowWithNonEmptyCell(sheet, i,1) != null; i++)
+                    for (int i = startRow; ExcelUtility.GetRowWithNonEmptyCell(sheet, i, 1) != null; i++)
                     {
                         var fRow = sheet.GetRow(i);
                         if (fRow == null) continue;
@@ -481,6 +486,66 @@ namespace FRS.Controllers
                 return BadRequest(new { Error = "Error", ErrorDescription = ex.GetBaseException().Message });
             }
 
+        }
+
+        [HttpGet("GetCurrentMenu")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> GetCurrentMenu()
+        {
+            var response = new BaseOperationResponse
+            {
+                Data = await _service.GetCurrentMenu(),
+                IsSuccess = true
+            };
+
+            return Ok(response);
+        }
+
+        [HttpPost("DownloadMenuImages")]
+        public async Task<IActionResult> DownloadMenuImages([FromBody] DownloadMenuRequest request)
+        {
+            if (!request.SerialNumbers.Any()) return NotFound();
+
+            var datas = await _service.GetDishForDownload(request.SerialNumbers);
+            if(!datas.Any()) return NotFound();
+
+            var memoryStream = new MemoryStream();
+
+            var addedFiles = new HashSet<string>();
+            var folderName = Guid.NewGuid().ToString().Replace("-", "");
+
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                foreach (var item in datas)
+                {
+                    var filesToProcess = new[] { item.FilePath, item.ProductionPicturePath };
+
+                    foreach (var filePath in filesToProcess)
+                    {
+                        if (string.IsNullOrEmpty(filePath)) continue;
+
+                        string sourcePath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+                        if (System.IO.File.Exists(sourcePath))
+                        {
+                            string fileName = $"{item.Id}-{Path.GetFileName(sourcePath)}";
+
+                            if (addedFiles.Add(fileName))
+                            {
+                                var entry = archive.CreateEntry(fileName);
+                                using (var entryStream = entry.Open())
+                                using (var fileStream = new FileStream(sourcePath, FileMode.Open, FileAccess.Read))
+                                {
+                                    await fileStream.CopyToAsync(entryStream);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            memoryStream.Position = 0;
+            return File(memoryStream, "application/zip", $"{folderName}.zip");
         }
         #endregion
 

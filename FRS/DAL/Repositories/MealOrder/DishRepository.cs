@@ -337,7 +337,7 @@ namespace DAL.Repositories.MealOrder
                     f.ProductionPicture.Type = FileType.Icon.ToString();
                 }
             }
-
+            f.SerialNumber = Guid.NewGuid().ToString();
             Update(f);
             if (await _appContext.SaveChangesAsync() > 0)
             {
@@ -642,6 +642,27 @@ namespace DAL.Repositories.MealOrder
             }
 
             return (validatedList, result);
+        }
+
+        public async Task<List<Dish>> GetCurrentMenu()
+        {
+            IQueryable<Dish> query = _appContext.Dishes.AsNoTracking()
+                .Where(m => m.IsActive).OrderByDescending(m => m.UpdatedDate);
+
+            return await query.Select(m => new Dish
+            {
+                Id = m.Id,
+                Code = m.Code,
+                Label = m.Label,
+                SerialNumber = m.SerialNumber,
+                UpdatedDate = m.UpdatedDate
+            }).ToListAsync();
+        }
+
+        public async Task<List<Dish>> GetDishForDownload(List<string> serialNumbers)
+        {
+            return await _appContext.Dishes.AsNoTracking()
+                .Where(m => serialNumbers.Contains(m.SerialNumber)).ToListAsync();
         }
 
         private ApplicationDbContext _appContext => (ApplicationDbContext)_context;

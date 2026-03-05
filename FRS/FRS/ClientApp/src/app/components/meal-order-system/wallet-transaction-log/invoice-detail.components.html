@@ -1,0 +1,72 @@
+<h2 mat-dialog-title>Invoice Detail</h2>
+
+<mat-dialog-content>
+    <mat-form-field class="col-md-12">
+        <input matInput autocomplete="off" readonly="true" type="text" id="customerName" name="customerName"
+            placeholder="Customer Name" [value]="invoiceData.nama_customer" />
+    </mat-form-field>
+
+    <mat-form-field class="col-md-12">
+        <input matInput autocomplete="off" readonly="true" type="text" id="invoiceNumber" name="invoiceNumber"
+            placeholder="Invoice Number" [value]="invoiceData.no_invoice" />
+    </mat-form-field>
+
+    <mat-form-field class="col-md-12">
+        <input matInput autocomplete="off" readonly="true" type="text" id="date" name="date" placeholder="Date"
+            [value]="invoiceData.tgl_penjualan" />
+    </mat-form-field>
+
+    <mat-form-field class="col-md-12">
+        <input matInput autocomplete="off" readonly="true" type="text" id="warehouse" name="warehouse"
+            placeholder="Warehouse" [value]="invoiceData.outlet_name" />
+    </mat-form-field>
+
+    <table class="table table-bordered mt-3" *ngIf="details.length > 0">
+        <thead>
+            <tr>
+                <th width="50">No</th>
+                <th>Item Name</th>
+                <th>Delivery Date</th>
+                <th>Price per Unit</th>
+                <th>Qty</th>
+                <th>Discount</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let d of details; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>
+                    <small class="text-muted">{{ d.kode_barang }}</small><br>
+                    {{ d.nama_barang }}
+                </td>
+                <td>
+                    {{ d.delivery_date }}
+                </td>
+                <td class="text-right">{{ d.harga_satuan}}</td>
+                <td class="text-center">{{ d.qty }}</td>
+                <td class="text-center">{{ d.diskon}}</td>
+                <td class="text-right font-weight-bold">{{ d.harga_total}}</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr class="bg-light">
+                <td colspan="6" class="text"><strong>Sub Total</strong></td>
+                <td class="text-right"><strong>{{ invoiceData.sub_total}}</strong></td>
+            </tr>
+            <tr class="table-success">
+                <td colspan="6" class="text"><strong>Grand Total (Neto)</strong></td>
+                <td class="text-right"><strong>{{ invoiceData.neto}}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+    <div *ngIf="details.length === 0" class="alert alert-warning">
+        No items found for this invoice.
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button type="button" mat-button (click)="close()"><i class='fa fa-times'></i>
+        Close</button>
+</mat-dialog-actions>
