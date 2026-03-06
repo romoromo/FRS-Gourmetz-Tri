@@ -1970,10 +1970,8 @@ namespace DAL.Repositories
             txQuery = txQuery.Where(m => m.CreatedDate >= fromDate && m.CreatedDate <= toExclusive);
 
             var query = from walletTx in txQuery
-                        from walletPay in _appContext.WalletPayments.AsNoTracking()
-                            .Where(p => p.StudentId == walletTx.StudentId &&
-                                        p.amount == (decimal)walletTx.Amount)
-                            .DefaultIfEmpty()
+                        join walletPay in _appContext.WalletPayments.AsNoTracking()
+                            on walletTx.WalletPaymentId equals walletPay.Id
                         orderby walletTx.CreatedDate descending
                         select new DetailedBasicWalletTopUpReport
                         {
