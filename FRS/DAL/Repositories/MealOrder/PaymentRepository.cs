@@ -8,6 +8,7 @@ using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NPOI.SS.Formula.Functions;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;
@@ -367,6 +368,14 @@ namespace DAL.Repositories.MealOrder
                     Type = WalletType.BASIC.ToString()
                 };
 
+                double fasExpensed = (double)oldFasBalance - fasWallet.Balance;
+                double normalExpensed = (double)oldNormalBalance - normalWallet.Balance;
+                string source = "GOe Portal";
+
+                if(Payment.version == "SUCCESS")
+                {
+                    source = "Live Stalls";
+                }
 
 
 
@@ -384,6 +393,9 @@ namespace DAL.Repositories.MealOrder
                     UpdatedBy = Payment.UserId,
                     Payment = Payment,
                     Details = new List<StudentWalletTransactionDetail>(),
+                    Source = source,
+                    FasExpensed = fasExpensed,
+                    NormalExpensed = normalExpensed
                 };
 
                 transaction.Details.Add(fasDetail);

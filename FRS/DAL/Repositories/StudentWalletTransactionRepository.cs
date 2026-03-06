@@ -401,6 +401,20 @@ namespace DAL.Repositories
                     wallet.UpdatedBy = userId;
                 }
 
+                double fasTopup = 0;
+                double normalTopup = 0;
+                string source = "Others";
+
+                if (walletTypeData == WalletType.BASIC)
+                {
+                    normalTopup = amount;
+                } else if (walletTypeData == WalletType.FAS)
+                {
+                    fasTopup = amount;
+                }
+
+
+
                 transactions.Add(new StudentWalletTransaction
                 {
                     Amount = amount,
@@ -409,7 +423,10 @@ namespace DAL.Repositories
                     Description = $"Top-up {walletType} wallet by {amount:C} for student '{studentData.Name}' (ID={studentId}). " +
                                   $"Old Balance: {oldBalance:C}, New Balance: {wallet.Balance:C}, via Group Id={studentGroupData.Id} ({studentGroupData.Name}).",
                     CreatedBy = userId,
-                    UpdatedBy = userId
+                    UpdatedBy = userId,
+                    FasTopup = fasTopup,
+                    NormalTopup = normalTopup,
+                    Source = source
                 });
 
                 studentData.WalletBalance = wallets
@@ -491,6 +508,40 @@ namespace DAL.Repositories
                     wallet.UpdatedBy = userId;
                 }
 
+                double fasTopup = 0;
+                double normalTopup = 0;
+                string source = "Others";
+
+                if (walletTypeData == WalletType.BASIC)
+                {
+                    normalTopup = amount;
+                }
+                else if (walletTypeData == WalletType.FAS)
+                {
+                    fasTopup = amount;
+                }
+
+                StudentWalletTransaction existingPaymentInWalletTransaction = null;
+
+                if (walletPaymentId != null && walletPaymentId != 0)
+                {
+                    source = "GOe Portal";
+
+                    //check existing payment to prevent double topup for same payment
+                    existingPaymentInWalletTransaction = await _appContext.StudentWalletTransactions
+                        .FirstOrDefaultAsync(e => e.WalletPaymentId == walletPaymentId);
+                }
+
+
+                if (existingPaymentInWalletTransaction != null)
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Payment with Id={walletPaymentId} already used for top up.";
+                    _logger.LogInformation(result.Message);
+                    return result;
+                }
+
+
                 var transaction = new StudentWalletTransaction
                 {
                     Amount = amount,
@@ -500,7 +551,10 @@ namespace DAL.Repositories
                                   $"Old Balance: {oldBalance:C}, New Balance: {wallet.Balance:C}.",
                     CreatedBy = userId,
                     UpdatedBy = userId,
-                    WalletPaymentId = walletPaymentId
+                    WalletPaymentId = walletPaymentId,
+                    FasTopup = fasTopup,
+                    NormalTopup = normalTopup,
+                    Source = source
                 };
 
                 var totalWalletBalance = await _appContext.StudentWallets
@@ -619,7 +673,9 @@ namespace DAL.Repositories
                                           $"Old Balance: {oldBalance:C}, New Balance: {wallet.Balance:C}.",
                             CreatedBy = userId,
                             UpdatedBy = userId,
-                            TokenOrderId = tokenOrderId
+                            TokenOrderId = tokenOrderId,
+                            NormalTopup = amount,
+                            Source = "Others"
                         };
 
                         var totalWalletBalance = await _appContext.StudentWallets
@@ -756,7 +812,10 @@ namespace DAL.Repositories
                     Description = description,
                     CreatedBy = userId,
                     UpdatedBy = userId,
-                    TokenOrderId = tokenOrderId
+                    TokenOrderId = tokenOrderId,
+                    NormalTopup = normalRefund,
+                    FasTopup = fasRefund,
+                    Source = "Others"
                 };
 
                 //var totalWalletBalance = await _appContext.StudentWallets
@@ -852,7 +911,10 @@ namespace DAL.Repositories
                     StudentId = studentData.Id,
                     Description = $"Offboarding adjustment by userId={userId}. Previous balance: {oldWalletBalance} (From FAS: {fasWalletBalance}, From BASIC: {basicWalletBalance})",
                     CreatedBy = userId,
-                    UpdatedBy = userId
+                    UpdatedBy = userId,
+                    FasExpensed = fasWalletBalance,
+                    NormalExpensed = basicWalletBalance,
+                    Source = "Others"
                 };
                 await _appContext.StudentWalletTransactions.AddAsync(walletTransaction);
 
@@ -983,7 +1045,9 @@ namespace DAL.Repositories
                                 Amount = amount,
                                 TransactionType = WalletTransactionType.DEBIT.ToString(),
                                 Description = $"Transfer to StudentId {studentIdTo} - amount: {amount}",
-                                CreatedBy = userId
+                                CreatedBy = userId,
+                                NormalExpensed  = amount,
+                                Source = "Others"
                             },
                             new StudentWalletTransaction
                             {
@@ -991,7 +1055,9 @@ namespace DAL.Repositories
                                 Amount = amount,
                                 TransactionType = WalletTransactionType.CREDIT.ToString(),
                                 Description = $"Transfer from StudentId {studentIdFrom} - amount: {amount}",
-                                CreatedBy = userId
+                                CreatedBy = userId,
+                                NormalTopup = amount,
+                                Source = "Others"
                             }
                         );
                 await _appContext.SaveChangesAsync();
@@ -1142,7 +1208,9 @@ namespace DAL.Repositories
                                     Amount = oldBalance,
                                     TransactionType = WalletTransactionType.DEBIT.ToString(),
                                     Description = $"Auto Debit FAS from {oldBalance} to 0 at {serverDateTimeNow:yyyy-MM-dd HH:mm} for {student.Name}",
-                                    CreatedBy = null
+                                    CreatedBy = null,
+                                    FasExpensed = oldBalance,
+                                    Source = "Others"
                                 }, ct);
 
                                 _logger.LogInformation($"Loop Class Level : {classLevel.Id} for Student {student.Name}. Auto Debit FAS amount to $0");
@@ -1154,7 +1222,9 @@ namespace DAL.Repositories
                                 Amount = classLevel.Amount,
                                 TransactionType = WalletTransactionType.CREDIT.ToString(),
                                 Description = $"Auto Credit FAS {classLevel.Amount} at {serverDateTimeNow:yyyy-MM-dd HH:mm} for {student.Name}",
-                                CreatedBy = null
+                                CreatedBy = null,
+                                FasTopup = classLevel.Amount,
+                                Source = "Others"
                             }, ct);
 
                             fasWallet.Balance = classLevel.Amount;
@@ -1180,7 +1250,9 @@ namespace DAL.Repositories
                                 Amount = classLevel.Amount,
                                 TransactionType = WalletTransactionType.CREDIT.ToString(),
                                 Description = $"Auto Credit FAS {classLevel.Amount} at {serverDateTimeNow:yyyy-MM-dd HH:mm} for {student.Name}",
-                                CreatedBy = null
+                                CreatedBy = null,
+                                FasTopup = classLevel.Amount,
+                                Source = "Others"
                             }, ct);
 
                             _logger.LogInformation($"Loop Class Level : {classLevel.Id} for Student {student.Name}. Auto Credit FAS amount to ${classLevel.Amount}");
