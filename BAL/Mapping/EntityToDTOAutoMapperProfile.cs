@@ -327,6 +327,7 @@ namespace BAL.Mapping
                 .ForMember(e => e.MealDescription, map => map.MapFrom(e => e.DishLabel))
                 .ForMember(e => e.TransactionTime, map => map.MapFrom(e => e.OrderDate))
                 .ForMember(e => e.TotalAmount, map => map.MapFrom(e => e.DishPrice))
+                .ForMember(e => e.CancelRequestStatus, map => map.MapFrom(e => e.CancelRequestStatus))
                 .ForMember(e => e.CancelledOn, map => map.MapFrom(e => string.IsNullOrEmpty(e.CancelledOn) ? DateTime.MinValue : DateTime.Parse(e.CancelledOn)))
                 .ForMember(e => e.CollectionTime, map => map.MapFrom(e => string.IsNullOrEmpty(e.CollectionTime) ? DateTime.MinValue : DateTime.Parse(e.CollectionTime)))
                 .ForMember(e => e.ReturnTime, map => map.MapFrom(e => string.IsNullOrEmpty(e.ReturnTime) ? DateTime.MinValue : DateTime.Parse(e.ReturnTime)));

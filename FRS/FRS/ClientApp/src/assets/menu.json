@@ -430,6 +430,16 @@
           "childMenus": []
         },
         {
+          "label": "Revenue Report",
+          "active": true,
+          "link": "/orderlognews",
+          "showLabel": true,
+          "showLogo": false,
+          "logoClass": "",
+          "permissions": [ "mosmgt.reportmgt.order.view" ],
+          "childMenus": []
+        },
+        {
           "label": "eWallet Summary Report",
           "active": true,
           "link": "/wallettransaction",
@@ -488,7 +498,7 @@
           "logoClass": "",
           "permissions": [ "mosmgt.outletmgt.reports.voucherutilisation.view" ],
           "childMenus": []
-        }        
+        }
       ]
     }
   ]

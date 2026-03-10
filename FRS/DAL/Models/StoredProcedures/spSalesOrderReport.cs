@@ -46,6 +46,7 @@ namespace DAL.Models.StoredProcedures
         public bool IsFAS { get; set; }
         public string CancellationReason { get; set; }
         public string CancelledOn { get; set; }
+        public string CancelRequestStatus { get; set; }
         public int OrderCount { get; set; }
         //public string ProcessedBy { get; set; }
     }

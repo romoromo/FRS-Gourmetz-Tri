@@ -40,11 +40,11 @@ import { MatOption } from "@angular/material/core";
 import { ClassService } from "src/app/services/meal-order/class.service";
 
 @Component({
-  selector: "order-logs-management",
-  templateUrl: "./order-logs-management.component.html",
-  styleUrls: ["./order-logs-management.component.css"],
+  selector: "order-log-news-management",
+  templateUrl: "./order-log-news-management.component.html",
+  styleUrls: ["./order-log-news-management.component.css"],
 })
-export class OrderLogsManagementComponent implements OnInit, OnDestroy {
+export class OrderLogNewsManagementComponent implements OnInit, OnDestroy {
   private subscription: Subscription = new Subscription();
   statuses = ["All", "pending", "paid", "cancelled"];
   ordertypes = [
@@ -169,6 +169,11 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
         pipe: new DateOnlyPipe("en-SG"),
       },
       {
+        prop: "deliveryDate",
+        name: "Days Before Delivery",
+        pipe: new DaysBeforeDeliveryPipe(),
+      },
+      {
         prop: "transactionTime",
         name: "Order Date",
         pipe: new DateOnlyPipe("en-SG"),
@@ -184,12 +189,23 @@ export class OrderLogsManagementComponent implements OnInit, OnDestroy {
       { prop: "discount", name: "Discount" },
       { prop: "totalAmount", name: "Total Amount" },
       { prop: "status", name: "Status" },
+      {
+        prop: "collectionTime",
+        name: "Collection Date",
+        pipe: new DateOnlyPipe("en-SG"),
+      },
+      {
+        prop: "collectionTime",
+        name: "Collection Time",
+        pipe: new TimeOnlyPipe("en-SG"),
+      },
       //{ prop: 'remarks', name: 'Remarks' },
       { prop: "paymentMethod", name: "Payment Type" },
       { prop: "paymentNumber", name: "Order No." },
       { prop: "fomoId", name: "Stripe ID" },
       { prop: "invoiceNumber", name: "Invoice No." },
       { prop: "voucherCode", name: "Voucher" },
+      { prop: "cancelRequestStatus", name: "Cancellation Status" },
       { prop: "cancellationReason", name: "Cancellation Reason" },
       //{ prop: 'processedBy', name: 'Processed By' }
     ];

@@ -142,6 +142,7 @@ import { NotificationEventsManagementComponent } from './components/meal-order-s
 import { CancelOrderRequestsManagementComponent } from './components/meal-order-system/cancel-order-request/cancel-order-requests-management.component';
 import { ExternalLoginLogsManagementComponent } from './components/audit/external-login-log/external-login-logs-management.component';
 import { OrderLogsManagementComponent } from './components/audit/order-log/order-logs-management.component';
+import { OrderLogNewsManagementComponent } from './components/audit/order-log-new/order-log-news-management.component';
 import { UserChangePasswordComponent } from './components/user-change-password/user-change-password.component';
 import { UserAccountsReportManagementComponent } from './components/reports/user-account/user-accounts-management.component';
 import { MenuGroupsManagementComponent } from './components/meal-order-system/menu-group/menu-groups-management.component';
@@ -326,6 +327,7 @@ const routes: Routes = [
       { path: "cancelorderrequests", component: CancelOrderRequestsManagementComponent, canActivate: [AuthGuard], data: { title: "Cancel Order Requests" } },
       { path: "externalapploginlogs", component: ExternalLoginLogsManagementComponent, canActivate: [AuthGuard], data: { title: "Order Portal Login Logs" } },
       { path: "orderlogs", component: OrderLogsManagementComponent, canActivate: [AuthGuard], data: { title: "Order Report" } },
+      { path: "orderlognews", component: OrderLogNewsManagementComponent, canActivate: [AuthGuard], data: { title: "Revenue Report" } },
       { path: "useraccountreport", component: UserAccountsReportManagementComponent, canActivate: [AuthGuard], data: { title: "User Account Report" } },
       { path: "rolereport", component: UserRolesReportManagementComponent, canActivate: [AuthGuard], data: { title: "Role Report" } },
       { path: "menugroup", component: MenuGroupsManagementComponent, canActivate: [AuthGuard], data: { title: "Menu Group" } },

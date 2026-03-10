@@ -1,0 +1,152 @@
+<div>
+  <header class="pageHeader">
+    <h3>Revenue Report</h3>
+  </header>
+  <div class="row control-box">
+    <div class="col-xs-12 col-sm-4 col-md-2">
+      <div class="form-group search-box">
+        <search-box #searchbox (searchChange)="onSearchChanged($event)" (onEnter)="onSearch()"
+          placeholder="Search"></search-box>
+      </div>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-form-field>
+        <input matInput [matDatepicker]="startpicker" placeholder="Delivery Start Date" [value]="start"
+          (dateChange)="onChangeDate('start', $event)">
+        <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+        <mat-datepicker #startpicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-form-field>
+        <input matInput [matDatepicker]="endpicker" placeholder="Delivery End Date" [value]="end"
+          (dateChange)="onChangeDate('end',$event)">
+        <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+        <mat-datepicker #endpicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-form-field>
+        <mat-select name="status" [(ngModel)]="status" placeholder="Status">
+          <mat-option *ngFor="let t of statuses" [value]="t">
+            {{t}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-form-field>
+        <mat-select name="studentGroupId" [formControl]="studentGroupIds" multiple placeholder="Student Groups"
+          [(ngModel)]="filter.studentGroupIds">
+          <!--<mat-option value="">
+            All
+          </mat-option>-->
+          <mat-option *ngFor="let t of groups | orderBy: 'name'" [value]="t.id">{{t.name}}</mat-option>
+        </mat-select>
+
+        <!--<mat-select name="studentGroupId" [(ngModel)]="filter.studentGroupIds" placeholder="Student Groups">
+          <mat-option value="">
+            All
+          </mat-option>
+          <mat-option *ngFor="let t of groups" [value]="t.id">
+            <mat-checkbox [checked]="isSelected(t.id)">
+              {{ t.name }}
+            </mat-checkbox>
+          </mat-option>
+          <mat-option *ngFor="let t of groups" [value]="t.id">
+      {{t.name}}
+    </mat-option>
+        </mat-select>-->
+      </mat-form-field>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-form-field>
+        <mat-select name="ordertype" [(ngModel)]="ordertype" placeholder="Type">
+          <mat-option *ngFor="let t of ordertypes" [value]="t">
+            {{t}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-checkbox [(ngModel)]="isFAS">
+        <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">FAS
+          Only</label>
+      </mat-checkbox>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-form-field style="width: 100%;">
+        <mat-select multiple name="outletId" [(ngModel)]="filter.outletId" placeholder="Outlet" (selectionChange)="getGetSelectedOutlet()">
+          <mat-option #allSelected
+                      value="all"
+                      (click)="toggleAllSelection(allSelected.selected)">
+            All
+          </mat-option>
+          <mat-option *ngFor="let t of outlets" [value]="t.id">
+            {{t.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <mat-form-field style="width: 100%;">
+        <mat-select name="classLevelIds" multiple placeholder="Class Level"
+          [(ngModel)]="filter.classLevelIds">
+
+          <mat-optgroup *ngFor="let g of classLevelsGrouped" [label]="g.outletName">
+            <mat-option *ngFor="let t of g.items" [value]="t.id">
+              {{ t.name }}
+            </mat-option>
+          </mat-optgroup>
+
+          <!-- <mat-option *ngFor="let t of classLevels | orderBy: 'name'" [value]="t.id">{{t.name}}</mat-option> -->
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6" style="padding-bottom:10px;">
+      <button type="button" class="btn btn-sm" (click)="clearFilters();">Clear</button>
+      <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>
+      <button type="button" class="btn btn-sm btn-info" (click)="downloadResults();" style="margin-left:5px;">Download
+        (Financial) </button>
+      <button type="button" class="btn btn-sm btn-info" (click)="downloadFlattentResults();"
+        style="margin-left:5px;">Download (Operations)</button>
+      <button type="button" class="btn btn-sm btn-warning" (click)="cancelSelectedOrders();" style="margin-left: 5px;"
+        [disabled]="loadingIndicator">Cancel Order</button>
+    </div>
+  </div>
+
+  <div>
+    <span>Show </span>
+    <select (change)="onLimitChange($event.target.value)">
+      <option *ngFor="let option of pageLimitOptions" [value]="option.value"
+        [selected]="option.value == currentPageLimit">
+        {{ option.value }} per page
+      </option>
+    </select>
+  </div>
+
+  <div class="table-responsive" style="padding-top: 5px;">
+    <ngx-datatable class="material colored-header" #orderLogTable [loadingIndicator]="loadingIndicator" [rows]="rows"
+      [rowHeight]="'auto'" [headerHeight]="'auto'" [footerHeight]="35" [columns]="columns" [columnMode]="'force'"
+      [externalPaging]="true" [externalSorting]="true" [count]="pagedResult.totalCount"
+      [limit]="pagedResult.filter.pageSize" (page)="loadData($event)" (sort)="loadData($event)" [selected]="selected"
+      [selectionType]="'checkbox'" [selectAllRowsOnPage]="true" (select)="onSelect($event)">
+    </ngx-datatable>
+  </div>
+  <ng-template #indexTemplate let-value="value" let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn"
+    let-rowCount="rowCount" let-pageSize="pageSize" let-curPage="curPage" let-offset="offset">
+    <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+  </ng-template>
+  <ng-template #mealDescription let-row="row" let-rowCount="rowCount" let-pageSize="pageSize" let-curPage="curPage"
+    let-offset="offset">
+    <div *ngFor="let token of row.tokens">
+      <div *ngFor="let dish of token.selectedDishes">
+        {{dish.dishLabel}}
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #hdrTpl let-column="column" let-selectFn="selectFn" let-allRowsSelected="allRowsSelected"
+    let-value="value">
+    <input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" />
+  </ng-template>
+</div>

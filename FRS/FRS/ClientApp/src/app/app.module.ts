@@ -506,6 +506,7 @@ import { StudentNotificationDialogComponent } from "./components/meal-order-syst
 import { CancelOrderRequestEditorComponent } from "./components/meal-order-system/cancel-order-request/cancel-order-request-editor.component";
 import { CancelOrderRequestsManagementComponent } from "./components/meal-order-system/cancel-order-request/cancel-order-requests-management.component";
 import { OrderLogsManagementComponent } from "./components/audit/order-log/order-logs-management.component";
+import { OrderLogNewsManagementComponent } from "./components/audit/order-log-new/order-log-news-management.component";
 import { ExternalLoginLogsManagementComponent } from "./components/audit/external-login-log/external-login-logs-management.component";
 import { OrderMealSummaryComponent } from "./components/meal-order-system/outlet/order-meal-summary/order-meal-summary.component";
 import { UserChangePasswordComponent } from "./components/user-change-password/user-change-password.component";
@@ -999,6 +1000,7 @@ export const configFactory = (configService: ConfigurationService) => {
     CancelOrderRequestsManagementComponent,
     CancelOrderRequestEditorComponent,
     OrderLogsManagementComponent,
+    OrderLogNewsManagementComponent,
     ExternalLoginLogsManagementComponent,
     UserChangePasswordComponent,
     FasMealOrderSummaryComponent,
