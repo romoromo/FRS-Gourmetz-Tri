@@ -559,10 +559,10 @@ namespace BAL.Services.MealOrder
             return result;
         }
 
-        public async Task<List<MenuResponse>> GetCurrentMenu()
+        public async Task<List<DishWithMenuDTO>> GetCurrentMenu()
         {
             var result = await this._uow.Dishes.GetCurrentMenu();
-            return _mapper.Map<List<MenuResponse>>(result);
+            return _mapper.Map<List<DishWithMenuDTO>>(result);
         }
 
         public async Task<List<DishSimpleWithFile>> GetDishForDownload(List<string> serialNumbers)

@@ -23,7 +23,7 @@ namespace DAL.Repositories.Interfaces.MealOrder
         Task<PagedEntity<DishLiteDTO>> GetDishesLiteAsync(BaseFilter filter);
         Task<DishImportDTO> DishImport(int catererInfoId, List<DishImportInputDTO> dtos,int userId);
         Task<List<int?>> GetDishesIdsByCycleIdAsync(int dishCycleId);
-        Task<List<Dish>> GetCurrentMenu();
+        Task<List<DishWithMenuDTO>> GetCurrentMenu();
         Task<List<Dish>> GetDishForDownload(List<string> serialNumbers);
     }
 }

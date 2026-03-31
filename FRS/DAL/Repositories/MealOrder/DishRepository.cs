@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DAL.Models;
-using DAL.Core;
-using Sieve.Services;
+﻿using DAL.Core;
+using DAL.Core.DTO;
 using DAL.Filters;
+using DAL.Models;
 using DAL.Models.MealOrder;
 using DAL.Repositories.Interfaces.MealOrder;
-using DAL.Core.DTO;
-using System.IO;
 using iTextSharp.text.pdf;
+using Microsoft.EntityFrameworkCore;
+using Sieve.Services;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace DAL.Repositories.MealOrder
 {
@@ -644,19 +645,44 @@ namespace DAL.Repositories.MealOrder
             return (validatedList, result);
         }
 
-        public async Task<List<Dish>> GetCurrentMenu()
+        public async Task<List<DishWithMenuDTO>> GetCurrentMenu()
         {
-            IQueryable<Dish> query = _appContext.Dishes.AsNoTracking()
-                .Where(m => m.IsActive).OrderByDescending(m => m.UpdatedDate);
+            var result = from dc in _appContext.DishCycles.AsNoTracking()
+                         where dc.IsActive 
 
-            return await query.Select(m => new Dish
-            {
-                Id = m.Id,
-                Code = m.Code,
-                Label = m.Label,
-                SerialNumber = m.SerialNumber,
-                UpdatedDate = m.UpdatedDate
-            }).ToListAsync();
+                         join dcs in _appContext.DishCycleSchedules on dc.Id equals dcs.DishCycleId into joinSchedules
+                         from dcs in joinSchedules.DefaultIfEmpty()
+
+                         join dcsd in _appContext.DishCycleScheduleDetails on (dcs == null ? -1 : dcs.Id) equals dcsd.DishCycleScheduleId into joinDetails
+                         from dcsd in joinDetails.DefaultIfEmpty()
+
+                         join dcsdm in _appContext.DishCycleScheduleDetailMenus on (dcsd == null ? -1 : dcsd.Id) equals dcsdm.DishCycleScheduleDetailId into joinMenus
+                         from dcsdm in joinMenus.DefaultIfEmpty()
+
+                         join d in _appContext.Dishes.Where(x => x.IsActive) on (dcsdm == null ? -1 : dcsdm.DishId) equals d.Id into joinDish
+                         from d in joinDish.DefaultIfEmpty()
+
+                         group d by new { dc.Id, dc.Label, dc.UpdatedDate } into grouped
+                         select new DishWithMenuDTO
+                         {
+                             MenuID = grouped.Key.Id,
+                             Label = grouped.Key.Label,
+                             LastUpdated = grouped.Key.UpdatedDate,
+                             Dishes = grouped
+                                 .Where(x => x != null) 
+                                 .Select(x => new DishWithMenuDetailDTO
+                                 {
+                                     ID = x.Id,
+                                     Code = x.Code,
+                                     Label = x.Label,
+                                     SerialNumber = x.SerialNumber,
+                                     LastUpdated = x.UpdatedDate
+                                 })
+                                 .Distinct() 
+                                 .ToList()
+                         };
+
+            return await result.ToListAsync();
         }
 
         public async Task<List<Dish>> GetDishForDownload(List<string> serialNumbers)
