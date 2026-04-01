@@ -73,6 +73,8 @@ export class PrintAllocationComponent implements OnInit {
   isLoading = false;
   filterLoading = true;
   isNewAllocation = false;
+  cantPrint = true;
+  cantSave = true;
   selectedPeriodName = "";
   selectedPeriodId: string | null = null;
   periodPlaceholder = "Meal Period have not been setup";
@@ -99,8 +101,12 @@ export class PrintAllocationComponent implements OnInit {
     }
     if (typeof data.allocation != typeof undefined) {
       if (data.allocation.id) {
+        this.cantPrint = false;
+        this.cantSave = false;
         this.editAllocation(data.allocation);
       } else {
+        this.cantPrint = true;
+        this.cantSave = true;
         this.newAllocation();
       }
     }
@@ -143,6 +149,13 @@ export class PrintAllocationComponent implements OnInit {
       this.allocation.mealSessionId = null;
     }
   }
+
+  onChangePackingTime(event: any) {
+    this.allocation.packingTime = event;
+    console.log("packing time: ", this.allocation.packingTime);
+    this.cantSave = false;
+  }
+
 
   sessionSelect() {
     if (this.allocation.mealSessionId) {
@@ -496,6 +509,9 @@ export class PrintAllocationComponent implements OnInit {
         this.token_count.forEach((t) => {
           t.qty_pdishes = 0;
           t.qty_tdishes = 0;
+
+          t.dishes.sort((a, b) => a.dish_name.localeCompare(b.dish_name));
+
           t.dishes.forEach((d) => {
             console.log(
               "hasil awal: ",
@@ -511,6 +527,8 @@ export class PrintAllocationComponent implements OnInit {
             t.qty_tdishes += d.t_qty;
           });
         });
+
+
 
         this.isLoading = false;
         console.log("token count: ", this.token_count);
@@ -531,6 +549,7 @@ export class PrintAllocationComponent implements OnInit {
     );
     console.log("saving: ", this.allocation);
 
+
     if (this.isNewAllocation) {
       this.menuService.newMealAllocation(this.allocation).subscribe(
         (allocation) => this.saveSuccessHelper(allocation),
@@ -547,6 +566,7 @@ export class PrintAllocationComponent implements OnInit {
   private saveSuccessHelper(allocation?: MealAllocation) {
     if (allocation) Object.assign(this.allocation, allocation);
 
+    this.cantPrint = false;
     this.isSaving = false;
     this.alertService.stopLoadingMessage();
 
@@ -591,6 +611,7 @@ export class PrintAllocationComponent implements OnInit {
   }
 
   editAllocation(allocation: MealAllocation) {
+    this.cantPrint = false;
     if (allocation) {
       this.isNewAllocation = false;
 
