@@ -47,7 +47,7 @@ namespace BAL.Services.MealOrder
         private IMealSessionResolver _sessionResolverService;
 
         public TokenOrderService(IUnitOfWork uow, ISieveProcessor sieveProcessor, IAccountManager accountManager, ApplicationDbContext context,
-            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService, IStudentWalletService studentWalletService, ILogger<TokenOrderService> logger, IMealSessionResolver sessionResolverService)
+            IClassService classService, IMapper mapper, IDeliveryService deliveryService, IDishService dishService, IStudentWalletService studentWalletService, ILogger<TokenOrderService> logger, IMealSessionResolver sessionResolverService, IMenuService menuService)
         {
             this._sieveProcessor = sieveProcessor;
             this._uow = uow;
