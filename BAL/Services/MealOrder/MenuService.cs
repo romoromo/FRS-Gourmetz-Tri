@@ -448,6 +448,39 @@ namespace BAL.Services.MealOrder
             return result.Distinct().ToList();
         }
 
+        public async Task<List<OutletDishBlockedDateDTO>> GetStudentBlockedDates(int studentId)
+        {
+            var result = _mapper.Map<List<MenuGroupDTO>>(await this._uow.MenuGroups.GetActiveMenuGroupDishCyclesAsync(studentId));
+
+            var student = await this._uow.MenuCycles.GetStudentAsync(studentId);
+
+            var outletId = student.OutletId.HasValue ? student.OutletId.Value : 0;
+
+            List<OutletDishBlockedDateDTO> outletBlockedDates = [];
+
+            foreach (var mg in result)
+            {
+                foreach (var cycle in mg.MenuGroupDishCycles)
+                {
+                    List<OutletDishBlockedDateDTO> outletBlocks = [];
+
+                    foreach (var block in cycle.DishCycle.OutletDishBlockedDates)
+                    {
+                        if (block.OutletId == outletId)
+                        {
+                            outletBlocks.Add(block);
+                            outletBlockedDates.Add(block);
+                        }
+                    }
+
+                    cycle.DishCycle.OutletDishBlockedDates = outletBlocks;
+                }
+
+            }
+
+            return outletBlockedDates;
+        }
+
         public async Task<List<DishByDateDTO>> GetMenuGroupDishesByDateAsync(int studentId, DateTime startDate, DateTime endDate)
         {
             var result = _mapper.Map<List<DishByDateDTO>>(await this._uow.MenuGroups.GetMenuGroupDishesByDateAsync(studentId, startDate, endDate));
