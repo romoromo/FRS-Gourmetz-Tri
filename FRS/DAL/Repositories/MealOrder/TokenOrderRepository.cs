@@ -1899,6 +1899,26 @@ namespace DAL.Repositories.MealOrder
                                     if (cycle.StartDate.Date > deliveryDate.Date)
                                         continue;
 
+                                    foreach(var blockedDate in cycle.BlockedDates)
+                                    {
+                                        if (blockedDate.EffectiveDate.Date >= deliveryDate.Date && blockedDate.EffectiveDate.Date <= deliveryDateTo.Date)
+                                        {
+                                            result.IsSuccess = false;
+                                            result.Message = $"This date {blockedDate.EffectiveDate:dd MMM yyyy} are blocked for order. Please exclude this date from the order date range";
+                                            return result;
+                                        }
+                                    }
+
+                                    foreach (var outletBlockedDate in cycle.OutletDishBlockedDates)
+                                    {
+                                        if (outletBlockedDate.EffectiveDate.Date >= deliveryDate.Date && outletBlockedDate.EffectiveDate.Date <= deliveryDateTo.Date)
+                                        {
+                                            result.IsSuccess = false;
+                                            result.Message = $"This date {outletBlockedDate.EffectiveDate:dd MMM yyyy} are blocked for order. Please exclude this date from the order date range";
+                                            return result;
+                                        }
+                                    }
+
                                     //identify what day from the date passed
                                     var span = deliveryDate.Date.Subtract(cycle.StartDate.Date);
                                     int day = span.Days + 1;
