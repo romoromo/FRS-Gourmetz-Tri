@@ -67,7 +67,7 @@ namespace DAL.Repositories.MealOrder
 
         public async Task<List<WalletPayment>> GetCreatedWalletPaymentsAsync(int? studentId = null)
         {
-            IQueryable<WalletPayment> query = _appContext.WalletPayments.Where(d => d.Status == "CREATED" && d.CreatedDate >= DateTime.Now.AddDays(-7))
+            IQueryable<WalletPayment> query = _appContext.WalletPayments.Where(d => d.Status == "CREATED" && d.CreatedDate >= DateTime.Now.AddDays(-30))
                 .Include(e => e.Institution);
 
             if (studentId != null) query = query.Where(d => d.StudentId == studentId);
