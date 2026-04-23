@@ -198,6 +198,15 @@ export class AccountEndpoint extends EndpointFactory {
       }));
   }
 
+  getTrueDeleteUserEndpoint<T>(userId: string): Observable<T> {
+    let endpointUrl = `${this.usersUrl}/true/${userId}`;
+
+    return this.http.delete<T>(endpointUrl, this.getRequestHeaders()).pipe<T>(
+      catchError(error => {
+        return this.handleError(error, () => this.getTrueDeleteUserEndpoint(userId));
+      }));
+  }
+
 
 
 

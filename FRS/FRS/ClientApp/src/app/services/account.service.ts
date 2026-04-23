@@ -148,6 +148,25 @@ export class AccountService {
     }
   }
 
+  trueDeleteUser(userOrUserId: string | UserEdit): Observable<User> {
+
+    if (typeof userOrUserId === 'string' || userOrUserId instanceof String ||
+      typeof userOrUserId === 'number' || userOrUserId instanceof Number) {
+      return this.accountEndpoint.getTrueDeleteUserEndpoint<User>(<string>userOrUserId).pipe<User>(
+        tap(data => this.onRolesUserCountChanged(data.roles)));
+    }
+    else {
+
+      if (userOrUserId.id) {
+        return this.trueDeleteUser(userOrUserId.id);
+      }
+      else {
+        return this.accountEndpoint.getUserByUserNameEndpoint<User>(userOrUserId.userName).pipe<User>(
+          mergeMap(user => this.trueDeleteUser(user.id)));
+      }
+    }
+  }
+
   resetPassword(userId: string) {
     return this.accountEndpoint.getResetUserEndpoint<any>(userId);
   }
