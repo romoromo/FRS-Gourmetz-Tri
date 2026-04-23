@@ -1280,6 +1280,12 @@ namespace DAL.Core
             return Tuple.Create(result.Succeeded, result.Errors.Select(e => e.Description).ToArray());
         }
 
+        public async Task<Tuple<bool, string[]>> TrueDeleteUserAsync(ApplicationUser user)
+        {
+            var result = await _userManager.TrueDeleteAsync(user);
+            return Tuple.Create(result.Succeeded, result.Errors.Select(e => e.Description).ToArray());
+        }
+
 
         public async Task<IEnumerable<string>> GetRolePermissionsByRoleName(List<string> roleNames)
         {

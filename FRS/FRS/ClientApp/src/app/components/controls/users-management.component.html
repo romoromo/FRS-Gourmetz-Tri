@@ -92,6 +92,7 @@
     <div *ngIf="canManageUsers">
       <a class="btn btn-link btn-xs" href="javascript:;" (click)="editUser(row)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'users.management.Edit' | translate}}</a>
       <a class="btn btn-link btn-xs" href="javascript:;" (click)="deleteUser(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> {{'users.management.Delete' | translate}}</a>
+      <a class="btn btn-link btn-xs" href="javascript:;" (click)="trueDeleteUser(row)"><i class="fa fa-trash-o" aria-hidden="true"></i> True Delete</a>
       <!--<a class="btn btn-link btn-xs" href="javascript:;" (click)="addRewardPoints(row)"><i class="fa fa-gift" aria-hidden="true"></i> {{'users.management.AddRewardPoints' | translate}}</a>-->
       <a class="btn btn-link btn-xs" href="javascript:;" (click)="resetPassword(row)"><i class="fa fa-refresh" aria-hidden="true"></i>Reset Password</a>
     </div>

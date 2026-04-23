@@ -238,6 +238,44 @@ namespace BAL.Services.MealOrder
             var result = new BaseOperationResponse();
             var order = _mapper.Map<TokenOrder>(dto);
             var tokens = _mapper.Map<List<TokenOrdered>>(dto.Tokens);
+
+
+            var blockFlag = false;
+
+            var blockedDates = await _menuService.GetStudentBlockedDates(dto.ProfileId.Value);
+
+            if (blockedDates.Count != 0)
+            {
+                var count = blockedDates.Count;
+
+                blockedDates.ForEach(blockedDates =>
+                {
+                    var effectiveDate = blockedDates.EffectiveDate;
+                    var deliveryDate = dto.DeliveryDate;
+
+                    if (blockedDates.EffectiveDate == dto.DeliveryDate)
+                    {
+                        blockFlag = true;
+                        result.IsSuccess = false;
+                        result.Message = $"This date {blockedDates.EffectiveDate:dd MMM yyyy} are blocked for order. Please select another date.";
+                        return;
+                    }
+
+                    //if (tokens.Any(t => t.SelectedDishes.Any(d => d.DishId == blockedDates.DishCycleId) && blockedDates.EffectiveDate.Date == order.DeliveryDate.Date))
+                    //{
+                    //    result.IsSuccess = false;
+                    //    result.Message = $"One or more dishes in the order are blocked for delivery on {blockedDates.EffectiveDate:dd MMM yyyy}. Please remove the blocked dishes to proceed.";
+                    //    return;
+                    //}
+                });
+
+                if (blockFlag)
+                {
+                    return result;
+                }
+            }
+
+
             result = await this._uow.TokenOrders.UpdateAsync(order, tokens);
 
             if (result.IsSuccess)

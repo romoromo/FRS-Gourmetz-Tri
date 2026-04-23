@@ -1009,6 +1009,46 @@ namespace FRS.Controllers
             return Ok(userVM);
         }
 
+        [HttpDelete("users/true/{id}")]
+        //[AllowAnonymous]
+        [ProducesResponseType(200, Type = typeof(UserViewModel))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> TrueDeleteUser(int id)
+        {
+            _logger.LogInformation($"TrueDeleteUser Id : {id}");
+            //if (!(await _authorizationService.AuthorizeAsync(this.User, id, AccountManagementOperations.Delete)).Succeeded)
+            //    return new ChallengeResult();
+
+            if (!await _accountManager.TestCanDeleteUserAsync(id))
+                return BadRequest("User has active events and cannot be deleted.");
+
+
+            UserViewModel userVM = null;
+            ApplicationUser appUser = await this._accountManager.GetUserByIdAsync(id);
+
+            if (appUser != null)
+                userVM = await GetUserViewModelHelper(appUser.Id);
+
+
+            if (userVM == null)
+                return NotFound(id);
+
+            var result = await this._accountManager.TrueDeleteUserAsync(appUser);
+            if (!result.Item1)
+            {
+                _logger.LogDebug($"Error TrueDeleteUser : {string.Join(", ", result.Item2)}");
+                throw new Exception("The following errors occurred while true deleting user: " + string.Join(", ", result.Item2));
+            }
+
+
+
+            //broadcast newly deleted user
+            await _userHub.Clients.All.SendAsync("BroadcastDeletedUser", userVM);
+            return Ok(userVM);
+        }
+
 
         [HttpPut("users/unblock/{id}")]
         [Authorize(Authorization.Policies.ManageAllUsersPolicy)]

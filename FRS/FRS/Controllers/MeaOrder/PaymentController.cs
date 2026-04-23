@@ -39,6 +39,7 @@ namespace FRS.Controllers
         private IPaymentService _service;
         private IStudentService _studentService;
         private ITokenOrderService _tokenService;
+        private IMenuService _menuService;
         readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
@@ -46,7 +47,7 @@ namespace FRS.Controllers
         private readonly INotificationService _notificationService;
 
         public PaymentController(IPaymentService service, ILogger<PaymentController> logger, ITokenOrderService tokenService, IEmailSender emailSender, IStudentService studentservice, IMapper mapper, OrderController orderController,
-            INotificationService notificationService)
+            INotificationService notificationService, IMenuService menuService)
         {
             _service = service;
             _logger = logger;
@@ -56,6 +57,7 @@ namespace FRS.Controllers
             _mapper = mapper;
             _orderController = orderController;
             _notificationService = notificationService;
+            _menuService = menuService;
         }
 
         #region Payment Types
@@ -181,6 +183,9 @@ namespace FRS.Controllers
             {
                 if (ModelState.IsValid)
                 {
+
+                    var result = new BaseOperationResponse();
+
                     if (dto == null)
                         return BadRequest($"{nameof(dto)} cannot be null");
 
@@ -192,9 +197,45 @@ namespace FRS.Controllers
                     var mpos = dto.MealPlanOrders;
                     dto.MealPlanOrders = null;
 
+                    if (tos != null)
+                    {
+                        foreach (var to in tos)
+                        {
+                            var blockFlag = false;
+
+                            var blockedDates = await _menuService.GetStudentBlockedDates(to.ProfileId.Value);
+
+                            if (blockedDates.Count != 0)
+                            {
+                                var count = blockedDates.Count;
+
+                                blockedDates.ForEach(blockedDate =>
+                                {
+                                    var effectiveDate = blockedDate.EffectiveDate;
+                                    var deliveryDate = to.DeliveryDate;
+
+                                    if (blockedDate.EffectiveDate == to.DeliveryDate)
+                                    {
+                                        blockFlag = true;
+                                        result.IsSuccess = false;
+                                        result.Message = $"This date {blockedDate.EffectiveDate:dd MMM yyyy} are blocked for order. Please select another date.";
+                                        return;
+                                    }
+                                });
+
+                                if (blockFlag)
+                                {
+                                    AddErrors(new string[] { result.Message });
+
+                                    return BadRequest(ModelState);
+                                }
+                            }
+                        }
+                    }
+
                     _logger.LogInformation($"CreatePayment - {JsonConvert.SerializeObject(dto)}");
 
-                    var result = await this._service.CreatePaymentAsync(dto);
+                    result = await this._service.CreatePaymentAsync(dto);
                     if (result.IsSuccess)
                     {
                         PaymentDTO vm = _mapper.Map<PaymentDTO>(result.Data);

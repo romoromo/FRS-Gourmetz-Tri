@@ -130,6 +130,34 @@ namespace DAL.Core
             return await UpdateAsync(user);
         }
 
+        public async Task<IdentityResult> TrueDeleteAsync(ApplicationUser user)
+        {
+            user.IsActive = false;
+            user.Claims = null;
+            user.DeletedDate = DateTime.Now;
+            user.UserName = "delete_" + user.UserName;
+            user.Email = "delete_" + user.Email;
+            user.NormalizedUserName = "DELETE_" + user.NormalizedUserName;
+            user.NormalizedEmail = "DELETE_" + user.NormalizedEmail;
+
+            if (user.UserPhonebooks.Any())
+            {
+                user.UserPhonebooks.ToList().ForEach(e => e.IsActive = false);
+            }
+
+            if (user.UserVehicles.Any())
+            {
+                user.UserVehicles.ToList().ForEach(e => e.IsActive = false);
+            }
+
+            if (user.UserCardIds.Any())
+            {
+                user.UserCardIds.ToList().ForEach(e => e.IsActive = false);
+            }
+
+            return await UpdateAsync(user);
+        }
+
         public async Task<Institution> GetCurrentInstitution()
         {
             var institutions = await _unitOfWork.Institutions.FindAsync(e => e.IsActive && (e.Name == InstitutionCode || e.Id == InstitutionId));

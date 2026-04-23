@@ -605,6 +605,10 @@ export class UsersManagementComponent implements OnInit, AfterViewInit, OnDestro
     this.alertService.showDialog('Are you sure you want to delete \"' + row.userName + '\"?', DialogType.confirm, () => this.deleteUserHelper(row));
   }
 
+  trueDeleteUser(row: UserEdit) {
+    this.alertService.showDialog('Are you sure you want to delete \"' + row.userName + '\"?', DialogType.confirm, () => this.trueDeleteUserHelper(row));
+  }
+
 
   deleteUserHelper(row: UserEdit) {
 
@@ -612,6 +616,29 @@ export class UsersManagementComponent implements OnInit, AfterViewInit, OnDestro
     this.loadingIndicator = true;
 
     this.subscription.add(this.accountService.deleteUser(row)
+      .subscribe(results => {
+        this.alertService.stopLoadingMessage();
+        this.loadingIndicator = false;
+
+        this.rowsCache = this.rowsCache.filter(item => item !== row)
+        this.rows = this.rows.filter(item => item !== row)
+      },
+        error => {
+          this.alertService.stopLoadingMessage();
+          this.loadingIndicator = false;
+
+          this.alertService.showStickyMessage("Delete Error", `An error occured while deleting the user.\r\nError: "${Utilities.getHttpResponseMessage(error)}"`,
+            MessageSeverity.error);
+        }));
+  }
+
+
+  trueDeleteUserHelper(row: UserEdit) {
+
+    this.alertService.startLoadingMessage("Deleting...");
+    this.loadingIndicator = true;
+
+    this.subscription.add(this.accountService.trueDeleteUser(row)
       .subscribe(results => {
         this.alertService.stopLoadingMessage();
         this.loadingIndicator = false;

@@ -21,6 +21,7 @@ namespace DAL.Core.Interfaces
         Task<Tuple<bool, string[]>> DeleteRoleAsync(ApplicationRole role);
         Task<Tuple<bool, string[]>> DeleteRoleAsync(string roleName);
         Task<Tuple<bool, string[]>> DeleteUserAsync(ApplicationUser user);
+        Task<Tuple<bool, string[]>> TrueDeleteUserAsync(ApplicationUser user);
         Task<Tuple<bool, string[]>> DeleteUserAsync(int userId);
         Task<ApplicationRole> GetRoleByIdAsync(int roleId);
         Task<ApplicationRole> GetRoleByNameAsync(string roleName);
