@@ -110,6 +110,11 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
           transform: (val: boolean) => (val ? "Y" : "N"),
         },
       },
+	  {
+        prop: "studentStatus",
+        name: "Student Status",
+        sortable: false,
+      },
       {
         prop: "deliveryDate",
         name: "Delivery Date",

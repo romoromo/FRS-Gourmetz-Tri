@@ -1,50 +1,64 @@
-using AspNetCore.Proxy;
-using BAL.DTO;
-using BAL.Mapping;
-using BAL.Services;
-using BAL.Services.Interfaces;
-using BAL.Services.Interfaces.MealOrder;
-using BAL.Services.MealOrder;
-using BAL.Utilities;
+using AutoMapper;
 using DAL;
 using DAL.Core;
 using DAL.Core.Interfaces;
-using DAL.Filters;
 using DAL.Models;
-using DAL.Repositories;
-using DAL.Repositories.Interfaces;
-using FRS.Authorization;
-using FRS.Filters;
-using FRS.Helpers;
-using FRS.Hubs;
-using FRS.Middleware;
-using FRS.ViewModels;
-using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using OpenIddict.Abstractions;
-using OpenIddict.Validation.AspNetCore;
-using ServiceModels;
+using FRS.Authorization;
+using FRS.Helpers;
+using FRS.ViewModels;
+using Swashbuckle.AspNetCore.Swagger;
+using System;
+using AppPermissions = DAL.Core.ApplicationPermissionsTrees;
+using System.IO;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
+using FRS.Hubs;
+using Microsoft.AspNetCore.Http.Connections;
+using DAL.Repositories.Interfaces;
+using DAL.Repositories;
 using Sieve.Models;
 using Sieve.Services;
-using System;
-using System.IO;
-using System.Threading;
+using DAL.Filters;
+using BAL.Mapping;
+using BAL.Services.Interfaces;
+using BAL.Services;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using AspNetCore.Proxy;
+using ServiceModels;
+using SoapCore;
+using System.ServiceModel;
+using BAL.Utilities;
+using BAL.Services.MealOrder;
+using BAL.Services.Interfaces.MealOrder;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Http.Features;
+using BAL.DTO;
+using FRS.Middleware;
+using Microsoft.AspNetCore.DataProtection;
 using System.Threading.Tasks;
-using AppPermissions = DAL.Core.ApplicationPermissionsTrees;
+using WebSocketOptions = Microsoft.AspNetCore.Builder.WebSocketOptions;
+using OpenIddict.Validation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using DAL.Core.Helpers;
+using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Net.Http;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Globalization;
 
 namespace FRS
 {
@@ -102,10 +116,10 @@ namespace FRS
 
 
             /* Uncomment when cookie affinity doesn't fix the issue on jwt*/
-            services.AddDataProtection()
-                .PersistKeysToDbContext<ApplicationDbContext>()
-                //.PersistKeysToFileSystem(new DirectoryInfo(@"\\server\share\directory\"))
-                .SetApplicationName("FRS");
+            //services.AddDataProtection()
+            //    .PersistKeysToDbContext<ApplicationDbContext>()
+            //    //.PersistKeysToFileSystem(new DirectoryInfo(@"\\server\share\directory\"))
+            //    .SetApplicationName("FRS");
 
             /* Uncomment when cookie affinity doesn't fix the issue on jwt
             //services.AddDataProtection()
@@ -271,6 +285,7 @@ namespace FRS
                     //options.UseJsonWebTokens();
                     options.SetAccessTokenLifetime(TimeSpan.FromDays(1));
                     options.SetRefreshTokenLifetime(TimeSpan.FromDays(30));
+                    options.SetRefreshTokenLifetime(TimeSpan.FromDays(30));
                 })
                 .AddValidation(options =>
                 {
@@ -331,7 +346,7 @@ namespace FRS
                     .AllowAnyMethod()
                     .AllowCredentials()
                     //.AllowAnyOrigin()
-                    //.DisallowCredentials()
+                    ///.DisallowCredentials()
 
 
                     );
@@ -349,11 +364,11 @@ namespace FRS
 
             services.AddMvc().AddControllersAsServices();
 
-            services.AddControllers()
+            /*services.AddControllers()
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.IgnoreNullValues = true;
-            });
+            });*/
 
             // If you still need Newtonsoft.Json:
             services.AddControllers()
@@ -440,14 +455,6 @@ namespace FRS
                 //}
             });
 
-            services.AddHangfire(hangfire =>
-            {
-                hangfire.UseSqlServerStorage(Configuration["ConnectionStrings:DefaultConnection"]);
-            });
-            services.AddHangfireServer(option =>
-            {
-                option.WorkerCount = 2;
-            });   
 
             //Todo: ***Using DataAnnotations for validation until Swashbuckle supports FluentValidation***
             //services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
@@ -523,8 +530,12 @@ namespace FRS
                 //options.AddPolicy(Authorization.Policies.ManageAllPIBTemplatesPolicy, policy => policy.RequireClaim(CustomClaimTypes.Permission, AppPermissions.ManageUserPhonebooks));
             });
 
-            services.AddAuthenticationCore().AddOpenIddict();
-            services.AddAuthentication();
+            //services.AddAuthentication().AddGoogle(googleOptions =>
+            //{
+            //    googleOptions.CallbackPath = new PathString("/google-callback");
+            //    googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+            //    googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            //});
 
             // TODO: Uncomment if required. SATS version doesn't have this
             //services.AddAuthentication().AddGoogle(googleOptions =>
@@ -594,9 +605,11 @@ namespace FRS
             services.AddScoped<IEmailSender, EmailSender>();
 
             // Repositories
-            services.AddScoped<IUnitOfWork, HttpUnitOfWork>();
-            services.AddScoped<IAccountManager, AccountManager>();
-            services.AddScoped<IContactGroupRepository, ContactGroupRepository>();
+			services.AddScoped<IUnitOfWork, HttpUnitOfWork>();
+			services.AddScoped<IAccountManager, AccountManager>();
+			services.AddScoped<IContactGroupRepository, ContactGroupRepository>();
+			services.AddScoped<ISqlAppLock, SqlAppLock>();
+			
             // Auth Handlers
             services.AddSingleton<IAuthorizationHandler, ViewUserAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, ManageUserAuthorizationHandler>();
@@ -663,22 +676,19 @@ namespace FRS
             services.AddScoped<IMenuService, MenuService>();
             services.AddScoped<IDeliveryService, DeliveryService>();
             services.AddScoped<IOrderPortalService, OrderPortalService>();
-
-            services.AddScoped<MealSessionByClassRoaster>();
+            // new added for MealSessionResolver dependencies
             services.AddScoped<MealSessionByClassLevel>();
+            services.AddScoped<MealSessionByClassRoaster>();
             services.AddScoped<MealSessionByStudentSelect>();
             services.AddScoped<IMealSessionResolver, MealSessionResolver>();
-            services.AddScoped<BackgroundService>();
 
-            services.AddScoped<ISqlAppLock, SqlAppLock>();
-            services.AddSingleton<ISqlAppLock>(sp => new SqlAppLock(Configuration["ConnectionStrings:DefaultConnection"]));
             #endregion
         }
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ILogger<Startup> logger, IDatabaseInitializer databaseInitializer, IConfiguration configuration,
-             IApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, ILogger<Startup> logger, IDatabaseInitializer databaseInitializer, IConfiguration configuration,
+             IHostApplicationLifetime lifetime)
         {
             // Add file logging if using a third-party provider
             loggerFactory.AddFile(Configuration.GetSection("Logging"));
@@ -707,7 +717,7 @@ namespace FRS
             Utilities.ConfigureLogger(loggerFactory, configuration);
             Logger.ConfigureLogger(loggerFactory, configuration);
             ApplicationPermissionsTrees.SetAclPath(configuration["AppSettings:ACL_PATH"]);
-            EmailTemplates.Initialize(env);
+            EmailTemplates.Initialize((Microsoft.AspNetCore.Hosting.IHostingEnvironment)env);
 
             bool enableErrorPage = configuration["AppSettings:ENABLE_ERROR_PAGE"] == "Y";
             if (env.IsDevelopment() && !enableErrorPage)
@@ -724,7 +734,7 @@ namespace FRS
             {
                 //Having database seeding here rather than in Program.Main() ensures logger is configured before seeding occurs
                 string migrationDB = configuration["AppSettings:ENABLE_DB_MIGRATION"];
-                databaseInitializer.SeedAsync(string.IsNullOrEmpty(migrationDB) || migrationDB == "Y", false).Wait();
+                //databaseInitializer.SeedAsync(string.IsNullOrEmpty(migrationDB) || migrationDB == "Y", false).Wait();
 
                 string resetConnectionAtStartup = configuration["AppSettings:resetConnectionAtStartup"];
                 logger.LogInformation(LoggingEvents.CONNECTION_STATUS, string.Format("Connection reset enabled: {0}", resetConnectionAtStartup));
@@ -798,6 +808,23 @@ namespace FRS
             //    .AllowAnyHeader()
             //    .AllowAnyMethod());
 
+
+            //app.Use(async (context, next) =>
+            //{
+            //    // If the request is an OPTIONS request, and we are using CORS, 
+            //    // we manually ensure it responds with 200 OK and skips authentication/authorization checks.
+            //    if (context.Request.Method == "OPTIONS")
+            //    {
+            //        context.Response.Headers.Add("Access-Control-Allow-Origin", "*"); // Match your CORS policy
+            //        context.Response.Headers.Add("Access-Control-Allow-Headers", "*");
+            //        context.Response.Headers.Add("Access-Control-Allow-Methods", "*");
+            //        context.Response.StatusCode = 200;
+            //        return; // Short circuit the pipeline, no authentication needed for OPTIONS
+            //    }
+
+            //    await next();
+            //});
+
             try
             {
                 string proxiedAddress = configuration["AppSettings:PROXIED_ADDRESS"];
@@ -861,7 +888,7 @@ namespace FRS
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseFileServer();
+            app.UseFileServer();
 
             //Sanitize models
             app.UseMiddleware<SanitizeMiddleware<Sanitizeable>>();
@@ -976,6 +1003,14 @@ namespace FRS
                         options.WebSockets.CloseTimeout = TimeSpan.FromMinutes(6);
                     });
 
+                    routes.MapHub<UserHub>("/hub/user", options =>
+                    {
+                        options.Transports =
+                            HttpTransportType.WebSockets
+                            | HttpTransportType.LongPolling;
+                        options.WebSockets.CloseTimeout = TimeSpan.FromMinutes(6);
+                    });
+
                     routes.MapHub<MeetingRoomHub>("/hub/meetingroom", options =>
                     {
                         options.Transports =
@@ -1010,29 +1045,21 @@ namespace FRS
             //                opt.SoapSerializer = SoapSerializer.DataContractSerializer;
             //            });
             //});
-            GlobalJobFilters.Filters.Add(new JobExpirationAttribute(7));
-            app.UseHangfireDashboard("/dashboard-hangfire", new DashboardOptions
-            {
-                Authorization = new [] { new HanfireAuthorizationFilter() }
-            });
-
-            RecurringJob.AddOrUpdate<BackgroundService>("fas-recharge", m => m.FASRechargeable(CancellationToken.None), Cron.Minutely);
-            RecurringJob.AddOrUpdate<BackgroundService>("sync-with-pos-sales", m => m.SyncWithPOSSales(CancellationToken.None), "*/10 * * * *");
 
             app.UseSpa(spa =>
             {
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
                 spa.Options.SourcePath = "ClientApp";
-#if DEBUG
+
                 if (env.IsDevelopment())
                 {
                     spa.UseAngularCliServer(npmScript: "start");
                     spa.Options.StartupTimeout = TimeSpan.FromSeconds(240); // Increase the timeout if angular app is taking longer to startup
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"); // Use this instead to use the angular cli server
                 }
-#endif
-            });            
+            });
+
         }
 
         private StaticFileOptions GetStaticFileOptions()
@@ -1040,7 +1067,6 @@ namespace FRS
             //var p = new FileExtensionContentTypeProvider();
             //p.Mappings[".exe"] = "application/octet-stream";
             //return new StaticFileOptions { ContentTypeProvider = p };
-
             var staticFileOptions = new StaticFileOptions
             {
                 // Configure options here if needed

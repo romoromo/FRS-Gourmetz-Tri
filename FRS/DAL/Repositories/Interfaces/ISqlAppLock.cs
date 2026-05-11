@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace DAL.Repositories.Interfaces
 {
@@ -16,9 +17,15 @@ namespace DAL.Repositories.Interfaces
 
     public sealed class SqlAppLock : ISqlAppLock
     {
-
         private readonly string _connStr;
+        // Old constructor — STILL THERE, not removed
         public SqlAppLock(string connStr) => _connStr = connStr;
+		
+		// New constructor for Dependency Injection
+        public SqlAppLock(IConfiguration configuration)
+        {
+            _connStr = configuration["ConnectionStrings:DefaultConnection"];
+        }
 
         public async Task<IAsyncDisposable?> TryAcquireAsync(string resource, int timeoutMs = 0, CancellationToken ct = default)
         {
@@ -42,7 +49,7 @@ namespace DAL.Repositories.Interfaces
                 if (code < 0)
                 {
                     await conn.DisposeAsync();
-                    return null; // lock not acquired
+                    return null;
                 }
 
                 return new Releaser(conn, resource);

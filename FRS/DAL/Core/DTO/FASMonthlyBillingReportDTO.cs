@@ -14,6 +14,8 @@ namespace DAL.Core.DTO
         public int ClassID { get; set; }
         public string Class { get; set; }
         public bool FASStudent { get; set; }
+        public bool IsStudentActive { get; set; }
+        public string StudentStatus => IsStudentActive ? "Active" : "Offboarded";
         public DateTime DeliveryDate { get; set; }
         public string MealType { get; set; }
         public string MealName { get; set; }

@@ -229,6 +229,8 @@ namespace BAL.DTO.MealOrder
         public string InvoiceNumber { get; set; }
         public string Items { get; set; }
         public List<string> DishLabels { get; set; }
+        public bool IsStudentActive { get; set; }
+        public string StudentStatus => IsStudentActive ? "Active" : "Offboarded";
     }
 
     public class StudentWalletTransactionSimpleDTO
