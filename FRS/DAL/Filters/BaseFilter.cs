@@ -167,6 +167,7 @@ namespace DAL.Filters
         public DateTime EndDate { get; set; }
         public List<int> OutletId { get; set; }
         public List<int> ClassLevelIds { get; set; }
+        public bool IncludeOffboarded { get; set; }
     }
 
     public class DetailedBasicWalletTopUpFilter : BaseFilter

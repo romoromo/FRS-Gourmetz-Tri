@@ -1,22 +1,22 @@
 import { Component, OnInit } from "@angular/core";
 import { AccountService } from "../../../services/account.service";
-import { Permission } from "src/app/models/permission.model";
+import { Permission } from "../../../models/permission.model";
 import { MatDatepickerInputEvent } from "@angular/material";
 import {
   Filter,
   PagedResult,
   WalletTransactionFilter,
-} from "src/app/models/sieve-filter.model";
-import { ClassService } from "src/app/services/meal-order/class.service";
-import { AlertService, MessageSeverity } from "src/app/services/alert.service";
+} from "../../../models/sieve-filter.model";
+import { ClassService } from "../../../services/meal-order/class.service";
+import { AlertService, MessageSeverity } from "../../../services/alert.service";
 import { Subscription } from "rxjs";
-import { DeliveryService } from "src/app/services/meal-order/delivery.service";
+import { DeliveryService } from "../../../services/meal-order/delivery.service";
 import * as moment from "moment";
-import { StudentService } from "src/app/services/meal-order/student.service";
+import { StudentService } from "../../../services/meal-order/student.service";
 import { saveAs } from "file-saver";
-import { Utilities } from "src/app/services/utilities";
-import { WallterTransactionReportRow } from "src/app/models/wallet-transaction-report-row.model";
-import { AppTranslationService } from "src/app/services/app-translation.service";
+import { Utilities } from "../../../services/utilities";
+import { WallterTransactionReportRow } from "../../../models/wallet-transaction-report-row.model";
+import { AppTranslationService } from "../../../services/app-translation.service";
 import { DecimalPipe } from "@angular/common";
 
 @Component({
@@ -106,6 +106,11 @@ export class WalletTransactionManagementComponent implements OnInit {
         pipe: {
           transform: (val: boolean) => (val ? "Y" : "N"),
         },
+      },
+      {
+        prop: "studentStatus",
+        name: "Student Status",
+        sortable: false,
       },
       {
         prop: "totalTopUpBasic",
@@ -419,8 +424,12 @@ export class WalletTransactionManagementComponent implements OnInit {
     this.filter.page = 1;
     this.isLoading = true;
     this.alertService.startLoadingMessage("Downloading...");
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
     const fileName =
-      moment().format("DDMMYYYY_hhmmss") + "_Student-Wallet-Transactions.xlsx";
+      //moment().format("DDMMYYYY_hhmmss") + "_Student-Wallet-Transactions.xlsx";
+      `${now.getDate().toString().padStart(2, '0')}${pad(now.getMonth() + 1)}${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}` +
+      "_Student-Wallet-Transactions.xlsx";
 
     this.studentService.generateWalletTransactions(this.filter).subscribe(
       (data) => {

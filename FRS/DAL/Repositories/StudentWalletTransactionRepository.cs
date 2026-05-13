@@ -38,7 +38,7 @@ namespace DAL.Repositories
         {
             this._sieveProcessor = sieveProcessor;
             this._currentInstitutionId = currentInstitutionId;
-            this._currentUserId = currentInstitutionId;
+            this._currentUserId = currentUserId;
             this._logger = logger;
             this._sqlAppLock = sqlAppLock;
             this._configuration = configuration;
@@ -48,8 +48,8 @@ namespace DAL.Repositories
         public async Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsAsync(EWalletTransactionFilter filter)
         {
             IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
-                .Include(m => m.student).ThenInclude(m => m.ClassLevel)
-                .Where(m => m.student.IsActive);
+                .Include(m => m.student).ThenInclude(m => m.ClassLevel);
+                //.Where(m => m.student.IsActive);
             if (!string.IsNullOrEmpty(filter.PosInvoiceId))
             {
                 query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));
@@ -1366,7 +1366,8 @@ namespace DAL.Repositories
                     ClassLevelName = s.ClassLevel != null ? s.ClassLevel.Name : "",
                     ClassId = s.ClassId,
                     ClassName = s.Class != null ? s.Class.Name : "",
-                    FAS = s.IsFAS
+                    FAS = s.IsFAS,
+                    IsActive = s.IsActive
                 }
                 into g
                 select new
@@ -1380,6 +1381,7 @@ namespace DAL.Repositories
                     g.Key.ClassId,
                     g.Key.ClassName,
                     g.Key.FAS,
+                    IsActive = g.Key.IsActive,
 
                     TotalTopUpNormalAccount =
                         g.Where(x => x.TransactionType == WalletTransactionType.CREDIT.ToString()
@@ -1440,6 +1442,7 @@ namespace DAL.Repositories
 
             //FAS
             dt.Columns.Add("IsFAS", typeof(bool));
+            dt.Columns.Add("StudentStatus", typeof(string));
             dt.Columns.Add("TotalToupupFASAccount", typeof(double));
             dt.Columns.Add("TotalRefundFAS", typeof(double));
             dt.Columns.Add("TotalFASRedemption", typeof(double));
@@ -1473,6 +1476,7 @@ namespace DAL.Repositories
 
                     //FAS
                     x.FAS,
+                    x.IsActive ? "Active" : "Offboarded",
                     x.TotalToupupFASAccount,
                     x.TotalRefundFAS,
                     x.TotalFASRedemption,
@@ -1493,11 +1497,19 @@ namespace DAL.Repositories
             var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
             var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
 
-            var studentsQ = _appContext.Students.AsNoTracking()
+            /*var studentsQ = _appContext.Students.AsNoTracking()
                 .Where(s => s.IsActive &&
                             s.Class.IsActive &&
                             s.ClassLevel.IsActive &&
-                            s.Outlet.IsActive);
+                            s.Outlet.IsActive);*/
+
+            var cutOffDate = new DateTime(2025, 10, 1);
+            var studentsQ = _appContext.Students.AsNoTracking()
+                .Where(s => s.Class.IsActive &&
+                            s.ClassLevel.IsActive &&
+                            s.Outlet.IsActive &&
+                            (s.IsActive ||  // Active students always appear
+                             (!s.IsActive && s.UpdatedDate >= cutOffDate))); // Offboarded since 1 Oct 2025
 
             if (outletFilter.Any())
                 studentsQ = studentsQ.Where(s => s.OutletId.HasValue && outletFilter.Contains(s.OutletId.Value));
@@ -1614,7 +1626,7 @@ namespace DAL.Repositories
                 else
                 {
                     reundFas = refundTx.Where(x => !(x.CreatedDate >= startTime && x.CreatedDate <= endTime)).ToList();
-                    paymentTxFAS = [.. paymentTxFAS.Where(x => x.CreatedDate <= startTime && x.CreatedDate >= endTime)];
+                    paymentTxFAS = paymentTxFAS.Where(x => !(x.CreatedDate >= startTime && x.CreatedDate <= endTime)).ToList();
                 }
 
                 return new WalletTransactionReportRow
@@ -1646,7 +1658,8 @@ namespace DAL.Repositories
                                             && WalletDescriptionHelper.IsAutoDebitFAS(x.Description)).Sum(x => x.Amount),
 
                     FASWalletBalance = !s.IsFAS ? 0 : (double)(lastFas ?? 0m),
-                    WrongTopupFASCredit = !s.IsFAS ? 0 : utilizedWrongFasAmount
+                    WrongTopupFASCredit = !s.IsFAS ? 0 : utilizedWrongFasAmount,
+                    StudentStatus = s.IsActive ? "Active" : "Offboarded"
                 };
             }).ToList();
 
@@ -1663,8 +1676,12 @@ namespace DAL.Repositories
 
         public async Task<PagedEntity<FASMonthlyBillingReportDTO>> GetFASMonthlyBillingReport(FASMonthlyBillingFilter filter)
         {
+            var cutOffDate = new DateTime(2025, 10, 1);
             var txQuery = _appContext.StudentWalletTransactions.AsNoTracking()
-                .Where(m => m.IsActive && m.TransactionType == "DEBIT" && m.student.IsFAS && m.PaymentId.HasValue);
+                .Where(m => m.IsActive && m.TransactionType == "DEBIT" && m.student.IsFAS && m.PaymentId.HasValue &&
+                            (m.student.IsActive ||
+                             (!m.student.IsActive && m.student.UpdatedDate >= cutOffDate &&
+                              filter.IncludeOffboarded)));
 
             var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
             var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
@@ -1731,6 +1748,7 @@ namespace DAL.Repositories
                             InvoiceNumber = currentPayment != null ? currentPayment.InvoiceNumber : "",
                             POSInvoiceNumber = currentPayment != null ? (currentPayment.PosInvoiceId ?? (currentPos != null ? currentPos.no_invoice : "")) : "",
                             CollectionTime = currentOrder != null ? currentOrder.CollectionTime : (currentPos != null ? currentPos.tgl_penjualan : null),
+                            IsStudentActive = walletTx.student.IsActive,
                         };
 
             var total = await query.CountAsync();

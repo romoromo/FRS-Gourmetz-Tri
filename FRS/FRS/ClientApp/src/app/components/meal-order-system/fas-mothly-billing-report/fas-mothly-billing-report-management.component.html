@@ -49,7 +49,16 @@
                 </mat-select>
             </mat-form-field>
         </div>
-    </div>   
+    </div> 
+	<div class="row">
+        <div class="col-xs-6 col-sm-4 col-md-2">
+            <mat-checkbox [(ngModel)]="filter.includeOffboarded">
+                <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">
+                    Include Offboarded
+                </label>
+            </mat-checkbox>
+        </div>
+    </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-6" style="padding-bottom:10px;">
             <button type="button" class="btn btn-sm btn-info" (click)="loadData();">Filter</button>

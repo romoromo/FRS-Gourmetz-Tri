@@ -165,6 +165,7 @@ export class FASMonthlyBillingFilter extends Filter{
   public startDate: string;
   public endDate: string;
   public isFAS: boolean;
+  public includeOffboarded?: boolean = false;
 }
 
 export class DetailedBasicWalletTopUpFilter extends Filter{

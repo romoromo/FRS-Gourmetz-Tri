@@ -32,5 +32,6 @@
         public double TotalAutoDebitFAS { get; set; }
 
         public double WrongTopupFASCredit { get; set; }
+        public string StudentStatus { get; set; }
     }
 }

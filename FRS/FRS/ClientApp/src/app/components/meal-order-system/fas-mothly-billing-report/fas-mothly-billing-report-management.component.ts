@@ -1,22 +1,22 @@
 import { Component, OnInit } from "@angular/core";
 import { AccountService } from "../../../services/account.service";
-import { Permission } from "src/app/models/permission.model";
+import { Permission } from "../../../models/permission.model";
 import { MatDatepickerInputEvent } from "@angular/material";
 import {
   FASMonthlyBillingFilter,
   Filter,
   PagedResult,
-} from "src/app/models/sieve-filter.model";
-import { ClassService } from "src/app/services/meal-order/class.service";
-import { AlertService, MessageSeverity } from "src/app/services/alert.service";
+} from "../../../models/sieve-filter.model";
+import { ClassService } from "../../../services/meal-order/class.service";
+import { AlertService, MessageSeverity } from "../../../services/alert.service";
 import { Subscription } from "rxjs";
-import { DeliveryService } from "src/app/services/meal-order/delivery.service";
-import { StudentService } from "src/app/services/meal-order/student.service";
-import { AppTranslationService } from "src/app/services/app-translation.service";
+import { DeliveryService } from "../../../services/meal-order/delivery.service";
+import { StudentService } from "../../../services/meal-order/student.service";
+import { AppTranslationService } from "../../../services/app-translation.service";
 import { DatePipe, DecimalPipe } from "@angular/common";
-import { FASMonthlyBillingReportModel } from "src/app/models/fas-monthly-billing-report.model";
-import { AuditService } from "src/app/services/audit.service";
-import { Utilities } from "src/app/services/utilities";
+import { FASMonthlyBillingReportModel } from "../../../models/fas-monthly-billing-report.model";
+import { AuditService } from "../../../services/audit.service";
+import { Utilities } from "../../../services/utilities";
 import { saveAs } from "file-saver";
 import * as moment from "moment";
 
@@ -238,6 +238,7 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
     this.classLevelsGrouped = [];
     this.filter.outletId = [];
     this.filter.classLevelIds = [];
+    this.filter.includeOffboarded = false;
 
     this.loadData();
   }
@@ -367,8 +368,12 @@ export class FASMothlyBillingReportManagementComponent implements OnInit {
     this.filter.page = 1;
     this.isLoading = true;
     this.alertService.startLoadingMessage("Downloading...");
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
     const fileName =
-     moment().format("DDMMYYYY_hhmmss") + "_FAS-Monthly-Billing-Report.xlsx";
+      //moment().format("DDMMYYYY_hhmmss") + "_FAS-Monthly-Billing-Report.xlsx";
+      `${now.getDate().toString().padStart(2, '0')}${pad(now.getMonth() + 1)}${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}` +
+      "_FAS-Monthly-Billing-Report.xlsx";
 
     this.auditService.generateFasMothlyBillingReport(this.filter).subscribe(
      (data) => {

@@ -142,7 +142,8 @@ namespace BAL.Services
 
         public async Task<byte[]> GenerateXls(EWalletTransactionFilter filter)
         {
-            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions.Where(m => m.student.IsActive);
+            //IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions.Where(m => m.student.IsActive);
+            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions;
 
             if (!string.IsNullOrEmpty(filter.PosInvoiceId))
             {
@@ -184,7 +185,8 @@ namespace BAL.Services
                 FasExpensed = m.FasExpensed,
                 ClassLevel = m.student.ClassLevel.Name,
                 Remarks = m.Remarks,
-                UserName = m.CreatedByUser.UserName
+                UserName = m.CreatedByUser.UserName,
+                IsStudentActive = m.student.IsActive
             }).AsAsyncEnumerable();
 
             if (logs != null)
@@ -211,7 +213,8 @@ namespace BAL.Services
                         "FAS Expensed",
                         "Class Level",
                         "Remarks",
-                        "Processed By" };
+                        "Processed By",
+                        "Student Status"};
 
                     #region Headers
 
@@ -319,6 +322,10 @@ namespace BAL.Services
 
                         cell = row.CreateCell(16);
                         cell.SetCellValue(dt.UserName);
+                        cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(17);
+                        cell.SetCellValue(dt.StudentStatus);
                         cell.CellStyle = contentStyle;
 
                     };
@@ -507,7 +514,7 @@ namespace BAL.Services
                     var wb = new XSSFWorkbook();
                     var rowCount = 0;
                     var sheet = (XSSFSheet)wb.CreateSheet("Sheet1");
-                    var headers = new string[] { "Outlet", "Student ID", "Name", "Class Level", "Class", "FAS Student", "Delivery Date", "Collection Time", "Meal Type", "Meal Name", "QTY", "Dish Price", "Invoice Number", "POS Invoice", "Total Amount Spent" };
+                    var headers = new string[] { "Outlet", "Student ID", "Name", "Class Level", "Class", "FAS Student", "Delivery Date", "Collection Time", "Meal Type", "Meal Name", "QTY", "Dish Price", "Invoice Number", "POS Invoice", "Total Amount Spent", "Student Status" };
 
                     #region Headers
 
@@ -639,6 +646,10 @@ namespace BAL.Services
                         cell = row.CreateCell(14);
                         cell.SetCellValue(Common.Round(dt.Amount));
                         cell.CellStyle = contentStyle;
+
+                        cell = row.CreateCell(15);
+                        cell.SetCellValue(dt.StudentStatus);
+                        cell.CellStyle = contentStyle;
                     });
 
                     #endregion
@@ -681,7 +692,7 @@ namespace BAL.Services
                     var wb = new XSSFWorkbook();
                     var rowCount = 0;
                     var sheet = (XSSFSheet)wb.CreateSheet("Sheet1");
-                    var headers = new string[] { "Transaction Date", "Student ID", "Student Name", "Outlet", "Class Level", "Top up Amount", "Source", "REF_ID", "Processed By"};
+                    var headers = new string[] { "Transaction Date", "Student ID", "Student Name", "Outlet", "Class Level", "Top up Amount", "Source", "REF_ID", "Processed By", "Student Status" };
 
                     #region Headers
 
