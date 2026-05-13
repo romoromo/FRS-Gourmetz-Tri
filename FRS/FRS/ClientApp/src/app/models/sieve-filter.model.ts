@@ -153,9 +153,12 @@ export class EWalletTransactionFilter extends Filter{
   public transactionType: string;
   public transactionDate: string;
   public keyword: string;
+  public posinvoiceid: string;
+  public source: string;
   
   public outletId?: number[];
   public isFAS: boolean;
+  public includeOffboarded?: boolean = false;
 }
 
 export class FASMonthlyBillingFilter extends Filter{

@@ -1,4 +1,4 @@
-﻿using DAL.Core;
+using DAL.Core;
 using DAL.Core.DTO;
 using DAL.Core.Helpers;
 using DAL.Filters;
@@ -47,9 +47,13 @@ namespace DAL.Repositories
         #region Sieved
         public async Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsAsync(EWalletTransactionFilter filter)
         {
-            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
-                .Include(m => m.student).ThenInclude(m => m.ClassLevel);
-                //.Where(m => m.student.IsActive);
+            var cutOffDate = new DateTime(2025, 10, 1);
+			IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
+				.Include(m => m.student).ThenInclude(m => m.ClassLevel)
+				.Where(m => m.student.IsActive ||
+							(!m.student.IsActive && m.student.UpdatedDate >= cutOffDate &&
+							filter.IncludeOffboarded));
+				//.Where(m => m.student.IsActive);
             if (!string.IsNullOrEmpty(filter.PosInvoiceId))
             {
                 query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));

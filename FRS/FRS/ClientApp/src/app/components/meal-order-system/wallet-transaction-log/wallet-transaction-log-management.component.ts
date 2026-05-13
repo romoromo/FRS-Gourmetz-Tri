@@ -25,8 +25,8 @@ import {
 } from "../../../models/sieve-filter.model";
 import { Permission } from "../../../models/permission.model";
 import { MatDatepickerInputEvent, MatDialog } from "@angular/material";
-import { AuditService } from "src/app/services/audit.service";
-import { DateTimeOnlyPipe } from "src/app/pipes/datetime.pipe";
+import { AuditService } from "../../../services/audit.service";
+import { DateTimeOnlyPipe } from "../../../pipes/datetime.pipe";
 import { Subscription } from "rxjs";
 import { SearchBoxComponent } from "../../controls/search-box.component";
 import { saveAs } from "file-saver";
@@ -34,14 +34,14 @@ import * as moment from "moment";
 import {
   Student,
   StudentWalletTransaction,
-} from "src/app/models/meal-order/student.model";
+} from "../../../models/meal-order/student.model";
 //import { StudentEditorComponent } from './student-editor.component';
-import { StudentService } from "src/app/services/meal-order/student.service";
+import { StudentService } from "../../../services/meal-order/student.service";
 import { WalletTransactionLogEditorComponent } from "./wallet-transaction-log-editor.component";
 import { DecimalPipe } from "@angular/common";
 import { PosDetailComponent } from "./pos-detail.component";
-import { DeliveryService } from "src/app/services/meal-order/delivery.service";
-import { SourceType } from "src/app/models/enums";
+import { DeliveryService } from "../../../services/meal-order/delivery.service";
+import { SourceType } from "../../../models/enums";
 import { InvoiceDetailComponent } from "./invoice-detail.components";
 
 @Component({
@@ -219,6 +219,11 @@ export class WalletTransactionLogManagementComponent
         pipe: {
           transform: (val: number) => this.decimalPipe.transform(val, "1.2-2"),
         },
+      },
+	  {
+        prop: "studentStatus",
+        name: "Student Status",
+        sortable: false,
       },
       { prop: "classLevel", name: "Class Level" },
       { prop: "remarks", name: "Remarks" },
@@ -410,8 +415,12 @@ export class WalletTransactionLogManagementComponent
   downloadResults() {
     this.isLoading = true;
     this.alertService.startLoadingMessage("Downloading...");
+	const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
     const fileName =
-      moment().format("DDMMYYYY_hhmmss") + "_WalletTransactions.xlsx";
+      //moment().format("DDMMYYYY_hhmmss") + "_WalletTransactions.xlsx";
+	  `${now.getDate().toString().padStart(2, '0')}${pad(now.getMonth() + 1)}${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}` +
+      "_Student-Wallet-Transactions.xlsx";
     console.log(this.filter);
     this.studentService.downloadWalletTransactions(this.filter).subscribe(
       (data) => {

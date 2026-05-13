@@ -146,11 +146,13 @@ namespace DAL.Filters
         public bool? isFAS { get; set; }
 
         public int StudentId { get; set; } = 0;
+        public bool IncludeOffboarded { get; set; }
     }
 
     public class DetailWalletTansactionFilter : BaseFilter
     {
         public int StudentId { get; set; } = 0;
+        public bool IncludeOffboarded { get; set; }
     }
 
     public class EWalletTransactionFilter : BaseFilter
@@ -159,6 +161,7 @@ namespace DAL.Filters
         public string Source { get; set; }
         public List<int> OutletId { get; set; }
         public bool? IsFAS { get; set; }
+        public bool IncludeOffboarded { get; set; }
     }
 
     public class FASMonthlyBillingFilter : BaseFilter

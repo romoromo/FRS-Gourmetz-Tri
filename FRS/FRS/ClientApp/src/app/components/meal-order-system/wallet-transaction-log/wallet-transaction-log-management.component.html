@@ -6,7 +6,7 @@
     <div class="col-xs-6 col-sm-4">
       <mat-form-field style="width: 100%;">
         <mat-select multiple name="outletId" [(ngModel)]="filter.outletId" placeholder="Outlet"
-          (selectionChange)="getGetSelectedOutlet()">
+                    (selectionChange)="getGetSelectedOutlet()">
           <mat-option #allSelected value="all" (click)="toggleAllSelection(allSelected.selected)">
             All
           </mat-option>
@@ -19,12 +19,12 @@
     <div class="clearfix"></div>
     <mat-form-field class="col-xs-6 col-sm-4">
       <input matInput autocomplete="off" type="text" id="keyword" name="keyword" placeholder="Student Name"
-        [(ngModel)]="filter.keyword" #keyword="ngModel" />
+             [(ngModel)]="filter.keyword" #keyword="ngModel" />
     </mat-form-field>
 
     <mat-form-field class="col-xs-6 col-sm-4">
       <input matInput autocomplete="off" type="text" id="keyword" name="keyword" placeholder="POS Invoice ID"
-        [(ngModel)]="filter.posinvoiceid" #keyword="ngModel" />
+             [(ngModel)]="filter.posinvoiceid" #keyword="ngModel" />
     </mat-form-field>
     <div class="clearfix"></div>
     <mat-form-field class="col-sm-4">
@@ -52,21 +52,28 @@
     <div class="clearfix"></div>
     <mat-form-field class="col-xs-12 col-sm-2">
       <input matInput [matDatepicker]="startpicker" placeholder="Transaction Start Date" [value]="start"
-        (dateChange)="onChangeDate('start', $event)">
+             (dateChange)="onChangeDate('start', $event)">
       <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
       <mat-datepicker #startpicker></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field class="col-xs-12 col-sm-2">
       <input matInput [matDatepicker]="endpicker" placeholder="Transaction End Date" [value]="end"
-        (dateChange)="onChangeDate('end',$event)">
+             (dateChange)="onChangeDate('end',$event)">
       <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
       <mat-datepicker #endpicker></mat-datepicker>
     </mat-form-field>
     <div class="col-xs-12 col-sm-1">
       <mat-checkbox [(ngModel)]="filter.isFAS">
-        <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">FAS
-          Only</label>
+        <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">
+          FAS
+          Only
+        </label>
+      </mat-checkbox>
+    </div>
+    <div class="col-xs-12 col-sm-2">
+      <mat-checkbox [(ngModel)]="filter.includeOffboarded">
+        <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Include Offboarded</label>
       </mat-checkbox>
     </div>
     <!--<div class="col-xs-6 col-sm-4 col-md-2">
@@ -82,9 +89,13 @@
       <button type="button" class="btn btn-sm" (click)="clearFilters();" [disabled]="isLoading">Clear</button>
       <button type="button" class="btn btn-sm btn-info" (click)="loadData();" [disabled]="isLoading">Filter</button>
       <button *ngIf="canManageWalletTransaction" type="button" class="btn btn-sm btn-warning" (click)="cancelOrder();"
-        style="margin-left:10px" [disabled]="isLoading">Cancel Order</button>
-      <button type="button" class="btn btn-sm btn-info" (click)="downloadResults();" style="margin-left:5px;" [disabled]="isLoading">Download
-        Results</button>
+              style="margin-left:10px" [disabled]="isLoading">
+        Cancel Order
+      </button>
+      <button type="button" class="btn btn-sm btn-info" (click)="downloadResults();" style="margin-left:5px;" [disabled]="isLoading">
+        Download
+        Results
+      </button>
     </div>
   </div>
 

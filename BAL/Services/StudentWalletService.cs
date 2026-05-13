@@ -143,7 +143,10 @@ namespace BAL.Services
         public async Task<byte[]> GenerateXls(EWalletTransactionFilter filter)
         {
             //IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions.Where(m => m.student.IsActive);
-            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions;
+            var offboardedCutoff = new DateTime(2025, 10, 1);
+            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
+                .Where(m => m.student.IsActive ||
+                            (filter.IncludeOffboarded && !m.student.IsActive && m.CreatedDate >= offboardedCutoff));
 
             if (!string.IsNullOrEmpty(filter.PosInvoiceId))
             {
