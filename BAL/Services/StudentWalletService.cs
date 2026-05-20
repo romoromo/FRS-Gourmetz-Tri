@@ -143,10 +143,24 @@ namespace BAL.Services
         public async Task<byte[]> GenerateXls(EWalletTransactionFilter filter)
         {
             //IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions.Where(m => m.student.IsActive);
-            var offboardedCutoff = new DateTime(2025, 10, 1);
+            //var cutOffDate = new DateTime(2025, 10, 1);
+
             IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
-                .Where(m => m.student.IsActive ||
-                            (filter.IncludeOffboarded && !m.student.IsActive && m.CreatedDate >= offboardedCutoff));
+                .Where(m => m.student != null);
+
+            //.Where(m => m.student.IsActive ||
+            //			(filter.IncludeOffboarded && !m.student.IsActive && m.CreatedDate >= cutOffDate));			
+
+            // Filter by StudentType: All / Active / Offboarded
+            if (!string.IsNullOrEmpty(filter.StudentType) && filter.StudentType != "All")
+            {
+                if (filter.StudentType == "Active")
+                    query = query.Where(m => m.student.IsActive);
+                else if (filter.StudentType == "Offboarded")
+                    query = query.Where(m => !m.student.IsActive);
+					//query = query.Where(m => !m.student.IsActive && m.student.UpdatedDate >= cutOffDate);
+			}
+			// If StudentType == "All" or null/empty: does not filter IsActive at all
 
             if (!string.IsNullOrEmpty(filter.PosInvoiceId))
             {

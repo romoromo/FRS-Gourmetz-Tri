@@ -71,6 +71,14 @@
         </label>
       </mat-checkbox>
     </div>
+	<mat-form-field class="col-sm-3">
+		<mat-label>Student Type</mat-label>
+		<mat-select id="studentType" name="studentType" [(ngModel)]="filter.studentType">
+			<mat-option value="All">All</mat-option>
+			<mat-option value="Active">Active</mat-option>
+			<mat-option value="Offboarded">Offboarded</mat-option>
+		</mat-select>
+	</mat-form-field>
     <div class="col-xs-12 col-sm-2">
       <mat-checkbox [(ngModel)]="filter.includeOffboarded">
         <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">Include Offboarded</label>

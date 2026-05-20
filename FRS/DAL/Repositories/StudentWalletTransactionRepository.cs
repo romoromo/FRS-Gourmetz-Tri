@@ -47,13 +47,29 @@ namespace DAL.Repositories
         #region Sieved
         public async Task<PagedEntity<StudentWalletTransaction>> GetWalletTransactionsAsync(EWalletTransactionFilter filter)
         {
-            var cutOffDate = new DateTime(2025, 10, 1);
-			IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
-				.Include(m => m.student).ThenInclude(m => m.ClassLevel)
-				.Where(m => m.student.IsActive ||
-							(!m.student.IsActive && m.student.UpdatedDate >= cutOffDate &&
-							filter.IncludeOffboarded));
-				//.Where(m => m.student.IsActive);
+            //var cutOffDate = new DateTime(2025, 10, 1);
+            //IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
+            //.Include(m => m.student).ThenInclude(m => m.ClassLevel)
+            //.Where(m => m.student.IsActive ||
+            //			(!m.student.IsActive && m.student.UpdatedDate >= cutOffDate &&
+            //			filter.IncludeOffboarded));
+            //.Where(m => m.student.IsActive);
+
+            IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
+                .Include(m => m.student).ThenInclude(m => m.ClassLevel)
+                .Where(m => m.student != null);
+
+            // Filter by StudentType: All / Active / Offboarded
+            if (!string.IsNullOrEmpty(filter.StudentType) && filter.StudentType != "All")
+            {
+                if (filter.StudentType == "Active")
+                    query = query.Where(m => m.student.IsActive);
+                else if (filter.StudentType == "Offboarded")
+                    query = query.Where(m => !m.student.IsActive);
+					//query = query.Where(m => !m.student.IsActive && m.student.UpdatedDate >= cutOffDate);
+			}
+			// If StudentType == "All" or null/empty: does not filter IsActive at all			
+				
             if (!string.IsNullOrEmpty(filter.PosInvoiceId))
             {
                 query = query.Where(m => m.Payment.PosInvoiceId.Contains(filter.PosInvoiceId));

@@ -110,7 +110,8 @@ namespace BAL.Mapping
                 .ForMember(d => d.PosInvoiceId, map => map.MapFrom(s => string.IsNullOrEmpty(s.Payment.PosInvoiceId) ? s.Payment.POSSales.no_invoice : s.Payment.PosInvoiceId))
                 .ForMember(d => d.InvoiceNumber, map => map.MapFrom(s => s.Payment.version == "SUCCESS" ? "" : s.Payment.InvoiceNumber))
                 .ForMember(d => d.Items, map => map.MapFrom(s => ResolveItems(s)))
-                .ForMember(d => d.ClassLevel, map => map.MapFrom(s => s.student.ClassLevel.Name));
+                .ForMember(d => d.ClassLevel, map => map.MapFrom(s => s.student.ClassLevel.Name))
+                .ForMember(d => d.IsStudentActive, map => map.MapFrom(s => s.student.IsActive));
             CreateMap<StudentWalletTransactionDTO, StudentWalletTransaction>()
                 .ForMember(d => d.File, map => map.MapFrom(s => new File { Path = s.FilePath, FileName = s.FileName, Type = FileType.Icon.ToString() })); ;
 

@@ -155,10 +155,11 @@ export class EWalletTransactionFilter extends Filter{
   public keyword: string;
   public posinvoiceid: string;
   public source: string;
-  
+
   public outletId?: number[];
   public isFAS: boolean;
   public includeOffboarded?: boolean = false;
+  public studentType?: string = 'All';
 }
 
 export class FASMonthlyBillingFilter extends Filter{

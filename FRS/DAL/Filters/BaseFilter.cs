@@ -162,6 +162,7 @@ namespace DAL.Filters
         public List<int> OutletId { get; set; }
         public bool? IsFAS { get; set; }
         public bool IncludeOffboarded { get; set; }
+		public string StudentType { get; set; } = "All";
     }
 
     public class FASMonthlyBillingFilter : BaseFilter
