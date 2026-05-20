@@ -147,6 +147,7 @@ namespace DAL.Filters
 
         public int StudentId { get; set; } = 0;
         public bool IncludeOffboarded { get; set; }
+		public string StudentType { get; set; } = "All";
     }
 
     public class DetailWalletTansactionFilter : BaseFilter
@@ -172,6 +173,7 @@ namespace DAL.Filters
         public List<int> OutletId { get; set; }
         public List<int> ClassLevelIds { get; set; }
         public bool IncludeOffboarded { get; set; }
+		public string StudentType { get; set; } = "All";
     }
 
     public class DetailedBasicWalletTopUpFilter : BaseFilter

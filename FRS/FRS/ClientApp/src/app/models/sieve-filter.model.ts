@@ -146,6 +146,8 @@ export class WalletTransactionFilter extends Filter{
   public startDate: string;
   public endDate: string;
   public isFAS: boolean;
+  public includeOffboarded?: boolean = false;
+  public studentType?: string = 'All';
 }
 
 export class EWalletTransactionFilter extends Filter{
@@ -170,6 +172,7 @@ export class FASMonthlyBillingFilter extends Filter{
   public endDate: string;
   public isFAS: boolean;
   public includeOffboarded?: boolean = false;
+  public studentType?: string = 'All';
 }
 
 export class DetailedBasicWalletTopUpFilter extends Filter{

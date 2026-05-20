@@ -55,9 +55,10 @@ namespace DAL.Repositories
             //			filter.IncludeOffboarded));
             //.Where(m => m.student.IsActive);
 
+            var cutOffDate = new DateTime(2025, 10, 1);
             IQueryable<StudentWalletTransaction> query = _appContext.StudentWalletTransactions
-                .Include(m => m.student).ThenInclude(m => m.ClassLevel)
-                .Where(m => m.student != null);
+                    .Include(m => m.student).ThenInclude(m => m.ClassLevel)
+                    .Where(m => m.student != null);
 
             // Filter by StudentType: All / Active / Offboarded
             if (!string.IsNullOrEmpty(filter.StudentType) && filter.StudentType != "All")
@@ -65,8 +66,7 @@ namespace DAL.Repositories
                 if (filter.StudentType == "Active")
                     query = query.Where(m => m.student.IsActive);
                 else if (filter.StudentType == "Offboarded")
-                    query = query.Where(m => !m.student.IsActive);
-					//query = query.Where(m => !m.student.IsActive && m.student.UpdatedDate >= cutOffDate);
+                    query = query.Where(m => !m.student.IsActive && m.student.UpdatedDate >= cutOffDate);
 			}
 			// If StudentType == "All" or null/empty: does not filter IsActive at all			
 				
@@ -1542,6 +1542,16 @@ namespace DAL.Repositories
 
             if (filter.isFAS.HasValue)
                 studentsQ = studentsQ.Where(s => s.IsFAS == filter.isFAS.Value);
+			
+			// Filter by StudentType: All / Active / Offboarded
+            if (!string.IsNullOrEmpty(filter.StudentType) && filter.StudentType != "All")
+            {
+                if (filter.StudentType == "Active")
+                    studentsQ = studentsQ.Where(s => s.IsActive);
+                else if (filter.StudentType == "Offboarded")
+                    studentsQ = studentsQ.Where(s => !s.IsActive && s.UpdatedDate >= cutOffDate);
+            }
+            // StudentType == "All": the initial query already includes active + offboarded since cutOffDate
 
             var totalStudents = await studentsQ.CountAsync();
 
@@ -1700,8 +1710,24 @@ namespace DAL.Repositories
             var txQuery = _appContext.StudentWalletTransactions.AsNoTracking()
                 .Where(m => m.IsActive && m.TransactionType == "DEBIT" && m.student.IsFAS && m.PaymentId.HasValue &&
                             (m.student.IsActive ||
-                             (!m.student.IsActive && m.student.UpdatedDate >= cutOffDate &&
-                              filter.IncludeOffboarded)));
+                             (!m.student.IsActive && m.student.UpdatedDate >= cutOffDate)));
+                //             (!m.student.IsActive && m.student.UpdatedDate >= cutOffDate &&
+                //              filter.IncludeOffboarded)));
+							  
+			// Filter by StudentType: All / Active / Offboarded
+            if (!string.IsNullOrEmpty(filter.StudentType) && filter.StudentType != "All")
+            {
+                if (filter.StudentType == "Active")
+                    txQuery = txQuery.Where(m => m.student.IsActive);
+                else if (filter.StudentType == "Offboarded")
+                    txQuery = txQuery.Where(m => !m.student.IsActive && m.student.UpdatedDate >= cutOffDate);
+            }
+			else
+            {
+                // StudentType == "All": force include offboarded without needing to check the checkbox
+                txQuery = txQuery.Where(m => m.student.IsActive ||
+                            (!m.student.IsActive && m.student.UpdatedDate >= cutOffDate));
+            }			
 
             var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
             var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
