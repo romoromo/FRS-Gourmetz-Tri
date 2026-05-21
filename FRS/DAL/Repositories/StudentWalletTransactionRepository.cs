@@ -68,7 +68,12 @@ namespace DAL.Repositories
                 else if (filter.StudentType == "Offboarded")
                     query = query.Where(m => !m.student.IsActive && m.student.UpdatedDate >= cutOffDate);
 			}
-			// If StudentType == "All" or null/empty: does not filter IsActive at all			
+			else
+			{
+                // If StudentType == "All" or null/empty: does not filter IsActive at all
+                query = query.Where(m => m.student.IsActive ||
+                            (!m.student.IsActive && m.student.UpdatedDate >= cutOffDate));
+			}
 				
             if (!string.IsNullOrEmpty(filter.PosInvoiceId))
             {
@@ -762,6 +767,24 @@ namespace DAL.Repositories
 
                     await this.UpdateAsync(paymentTransaction);
                 }
+				else if (fasTrans != null && normalTrans == null)
+                {
+                    // FAS-only transaction — all refund goes to FAS
+                    double fasBalance = Math.Round(fasTrans.Amount, 2) - fasTrans.AmountRefunded;
+                    double remainingAmount = Math.Min(amount, fasBalance);
+                    fasTrans.AmountRefunded += remainingAmount;
+                    fasRefund += remainingAmount;
+                    await this.UpdateAsync(paymentTransaction);
+                }
+                else if (normalTrans != null && fasTrans == null)
+                {
+                    // BASIC-only transaction — all refund goes to Normal
+                    double normalBalance = Math.Round(normalTrans.Amount, 2) - normalTrans.AmountRefunded;
+                    double remainingAmount = Math.Min(amount, normalBalance);
+                    normalTrans.AmountRefunded += remainingAmount;
+                    normalRefund += remainingAmount;
+                    await this.UpdateAsync(paymentTransaction);
+                }
                 double oldFasBalance = 0;
                 double oldNormalBalance = 0;
 
@@ -823,6 +846,14 @@ namespace DAL.Repositories
                 }
 
                 _logger.LogInformation(description);
+				
+				// If normalRefund and fasRefund are both 0 (fasTrans or normalTrans was null),
+                // fallback based on wallet description:
+                // - if description contains "Fas Balance" → it's a FAS refund → put amount in FasTopup
+                // - otherwise → put amount in NormalTopup
+                var isFasRefund = description.Contains("Fas Balance");
+                var resolvedFasTopup = (normalRefund == 0 && fasRefund == 0 && isFasRefund) ? amount : fasRefund;
+                var resolvedNormalTopup = normalRefund;
 
                 var transaction = new StudentWalletTransaction
                 {
@@ -833,7 +864,9 @@ namespace DAL.Repositories
                     CreatedBy = userId,
                     UpdatedBy = userId,
                     TokenOrderId = tokenOrderId,
-                    NormalTopup = normalRefund,
+                    NormalTopup = resolvedNormalTopup,
+                    //NormalTopup = normalRefund,
+                    //FasTopup = resolvedFasTopup,
                     FasTopup = fasRefund,
                     Source = "Others"
                 };
@@ -1542,8 +1575,8 @@ namespace DAL.Repositories
 
             if (filter.isFAS.HasValue)
                 studentsQ = studentsQ.Where(s => s.IsFAS == filter.isFAS.Value);
-			
-			// Filter by StudentType: All / Active / Offboarded
+
+            // Filter by StudentType: All / Active / Offboarded
             if (!string.IsNullOrEmpty(filter.StudentType) && filter.StudentType != "All")
             {
                 if (filter.StudentType == "Active")
@@ -1551,8 +1584,8 @@ namespace DAL.Repositories
                 else if (filter.StudentType == "Offboarded")
                     studentsQ = studentsQ.Where(s => !s.IsActive && s.UpdatedDate >= cutOffDate);
             }
-            // StudentType == "All": the initial query already includes active + offboarded since cutOffDate
-
+            // StudentType == "All": force include offboarded without needing to check the checkbox
+           
             var totalStudents = await studentsQ.CountAsync();
 
             var page = filter.Page ?? 1;
@@ -1722,12 +1755,11 @@ namespace DAL.Repositories
                 else if (filter.StudentType == "Offboarded")
                     txQuery = txQuery.Where(m => !m.student.IsActive && m.student.UpdatedDate >= cutOffDate);
             }
-			else
+            // StudentType == "All": force include offboarded without needing to check the checkbox	
+            else
             {
-                // StudentType == "All": force include offboarded without needing to check the checkbox
-                txQuery = txQuery.Where(m => m.student.IsActive ||
-                            (!m.student.IsActive && m.student.UpdatedDate >= cutOffDate));
-            }			
+                txQuery = txQuery.Where(m => m.student.IsActive || (!m.student.IsActive && m.student.UpdatedDate >= cutOffDate));
+            }
 
             var outletFilter = filter.OutletId?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();
             var classLevelFilter = filter.ClassLevelIds?.Where(x => x > 0).Distinct().ToArray() ?? Array.Empty<int>();

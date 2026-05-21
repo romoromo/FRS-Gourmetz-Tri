@@ -38,30 +38,16 @@
             <mat-form-field style="width: 100%;">
                 <mat-select name="classLevelIds" multiple placeholder="Class Level" [(ngModel)]="filter.classLevelIds"
                     [disabled]="isLoading">
-
                     <mat-optgroup *ngFor="let g of classLevelsGrouped" [label]="g.outletName">
                         <mat-option *ngFor="let t of g.items" [value]="t.id">
                             {{ t.name }}
                         </mat-option>
                     </mat-optgroup>
-
                     <!-- <mat-option *ngFor="let t of classLevels | orderBy: 'name'" [value]="t.id">{{t.name}}</mat-option> -->
                 </mat-select>
             </mat-form-field>
         </div>
-    </div> 
-	<div class="row">
-        <!-- Include Offboarded checkbox removed - replaced by Student Type filter -->
-        <!--
         <div class="col-xs-6 col-sm-4 col-md-2">
-            <mat-checkbox [(ngModel)]="filter.includeOffboarded">
-                <label style="margin: 3px 8px auto 0;color: rgba(0,0,0,.54);font-weight: 500;font-size: smaller;">
-                    Include Offboarded
-                </label>
-            </mat-checkbox>
-        </div>
-        -->
-		<div class="col-xs-6 col-sm-4 col-md-3">
             <mat-form-field style="width: 100%;">
                 <mat-label>Student Type</mat-label>
                 <mat-select id="studentType" name="studentType" [(ngModel)]="filter.studentType">
