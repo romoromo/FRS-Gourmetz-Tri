@@ -1723,7 +1723,7 @@ namespace DAL.Repositories
                     FASWalletBalance = !s.IsFAS ? 0 : (double)(lastFas ?? 0m),
                     WrongTopupFASCredit = !s.IsFAS ? 0 : utilizedWrongFasAmount,
                     StudentStatus = s.IsActive ? "Active" : "Offboarded",
-					Amount = (double)(lastBasic ?? 0m) + (!s.IsFAS ? 0 : (double)(lastFas ?? 0m))
+                    Amount = (double)(lastBasic ?? 0m) + (!s.IsFAS ? 0 : (double)(lastFas ?? 0m))
                 };
             }).ToList();
 
