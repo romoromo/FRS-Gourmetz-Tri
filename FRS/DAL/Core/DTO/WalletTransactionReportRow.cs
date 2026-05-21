@@ -33,5 +33,6 @@
 
         public double WrongTopupFASCredit { get; set; }
         public string StudentStatus { get; set; }
+		public double Amount { get; set; }
     }
 }
